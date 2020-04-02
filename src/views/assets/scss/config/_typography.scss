@@ -1,0 +1,35 @@
+/* ==========================================================================
+   Config - Typography
+
+   This file is exclusively intended for setting up variables
+   Never add styles directly to this file
+   ========================================================================== */
+
+/* Fonts
+   ========================================================================== */
+$roboto: 'Roboto';
+
+/* Family
+   ========================================================================== */
+$font-family--base:         $roboto, Helvetica, Arial, sans-serif;
+// $font-family--alt:          $trade-gothic, Georgia, serif;
+
+
+/* Font-sizes
+   ========================================================================== */
+$font-size--base:           1rem; // 16px - browsers default
+
+
+/* Font-weights
+   ========================================================================== */
+$font-weight--light:        300;
+$font-weight--regular:      400;
+$font-weight--semibold:     600;
+$font-weight--bold:         700;
+
+
+/* Line-height
+   ========================================================================== */
+$line-height--base:         1.4;
+$line-height--small:        1.1;
+$line-height--medium:       1.2;

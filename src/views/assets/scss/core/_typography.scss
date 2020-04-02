@@ -1,0 +1,22 @@
+/* ==========================================================================
+   Core - Typography
+   ========================================================================== */
+
+* {
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+}
+
+html,
+body {
+    color: $color-text;
+    font-family: $font-family--base;
+    line-height: $line-height--base;
+}
+
+
+/* Headings
+   ========================================================================== */
+h1 {
+    color: $color-primary;
+}

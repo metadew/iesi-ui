@@ -1,0 +1,23 @@
+/* ==========================================================================
+   Button
+   ========================================================================== */
+
+/* Imports
+   ========================================================================== */
+// @import '../../../assets/scss/imports';
+// @import '../../../assets/scss/core/buttons';
+
+
+.Button {
+    &.MuiButtonBase-root {
+        text-transform: none;
+    }
+
+    &.MuiButton-containedSecondary {
+        background-color: tomato;
+
+        &:hover {
+            background-color: darken(tomato, 10);
+        }
+    }
+}

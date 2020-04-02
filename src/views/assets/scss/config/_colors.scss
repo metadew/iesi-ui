@@ -1,0 +1,40 @@
+/* ==========================================================================
+   Config - Colors
+
+   This file is exclusively intended for setting up variables
+   Never add styles directly to this file
+   ========================================================================== */
+
+/* Colors
+   ========================================================================== */
+$black:                     #000000;
+$grey--dark:                #868686;
+$grey:                      #A8A8A8;
+$grey--light:               #E7E2D9;
+$grey--lighter:             #F1EFED;
+$grey--lightest:            #F8F7F6;
+$white:                     #FFFFFF;
+
+$blue:                      #019DC6;
+
+$green:                     #2F9E1E;
+
+$red:                       #C5450D;
+
+
+/* Brand colors
+   ========================================================================== */
+$color-primary:             $green;
+
+$color-secondary:           $red;
+
+$color-tertiary:            $blue;
+
+$color-danger:              $red;
+$color-success:             $green;
+
+
+/* Defaults
+   ========================================================================== */
+$color-text:                $black;
+$color-border:              $grey--light;
