@@ -14,10 +14,10 @@
     }
 
     &.MuiButton-containedSecondary {
-        background-color: tomato;
+        background-color: #FF0000;
 
         &:hover {
-            background-color: darken(tomato, 10);
+            background-color: darken(#FF0000, 10);
         }
     }
 }

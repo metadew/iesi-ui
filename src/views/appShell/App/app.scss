@@ -1,4 +1,5 @@
-$bgcolor: #282c34;
+$bgcolor: #282C34;
+$tomato: #FF6347;
 
 nav ul {
     display: flex;
@@ -9,10 +10,10 @@ nav ul {
         }
 
         > a {
-            color: black;
+            color: #000000;
 
             &.active {
-                color: tomato;
+                color: $tomato;
             }
         }
     }
@@ -42,12 +43,12 @@ nav ul {
     justify-content: center;
     min-height: 100vh;
 
-    color: white;
+    color: #FFFFFF;
     font-size: calc(10px + 2vmin);
 }
 
 .App-link {
-    color: #61dafb;
+    color: #61DAFB;
 }
 
 @keyframes App-logo-spin {

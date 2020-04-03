@@ -27,6 +27,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
+    "stylelint-webpack-plugin": "^1.2.3",
     "typescript": "^3.7.5"
   },
   "devDependencies": {

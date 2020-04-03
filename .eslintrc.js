@@ -18,11 +18,6 @@ module.exports = {
         sourceType: 'module',  // Allows for the use of imports
     },
     rules: {
-        'no-unused-vars': [ERROR, {
-            vars: 'all',
-            args: 'after-used',
-            ignoreRestSiblings: true,
-        }],
-        '@typescript-eslint/explicit-function-return-type': 0, // but enable for libraries!
+        '@typescript-eslint/explicit-function-return-type': [OFF],
     },
 };
