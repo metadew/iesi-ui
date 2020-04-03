@@ -1,0 +1,6 @@
+module.exports = {
+    rules: {
+        'import/no-extraneous-dependencies': ['off'],
+        '@typescript-eslint/no-var-requires': ['off'],
+    },
+};

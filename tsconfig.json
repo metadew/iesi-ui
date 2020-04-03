@@ -18,7 +18,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "preserve",
-    "strictNullChecks": false,
+    "strictNullChecks": false
   },
   "include": [
     "src/**/*.ts",

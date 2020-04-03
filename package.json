@@ -1,12 +1,13 @@
 {
   "name": "iesi-ui",
   "version": "0.1.0",
+  "description": "Visual user interface for the IESI automation framework.",
   "private": true,
   "scripts": {
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
-    "eslint": "eslint src --ext .js,.ts,.tsx",
+    "eslint": "eslint --ext .js,.ts,.tsx src bin *.js",
     "stylelint": "stylelint src/**/*.scss",
     "lint": "npm run eslint && npm run stylelint"
   },
