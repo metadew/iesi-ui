@@ -6,16 +6,21 @@
   "scripts": {
     "start": "craco start",
     "build": "craco build",
-    "test": "craco test",
+    "test": "npm run lint && craco test",
     "eslint": "eslint --ext .js,.ts,.tsx src bin *.js",
     "stylelint": "stylelint src/**/*.scss",
-    "lint": "npm run eslint && npm run stylelint"
+    "lint": "npm run eslint && npm run stylelint",
+    "init-env-config": "node bin/init/initEnvConfigFile.js"
   },
   "dependencies": {
     "@craco/craco": "^5.6.4",
     "@material-ui/core": "^4.9.8",
     "@material-ui/icons": "^4.9.1",
     "@reach/router": "^1.3.3",
+    "@snipsonian/axios": "^1.11.0",
+    "@snipsonian/browser": "^1.11.0",
+    "@snipsonian/core": "^1.11.0",
+    "@snipsonian/dvlp": "^1.11.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
@@ -23,6 +28,7 @@
     "@types/node": "^12.12.34",
     "@types/react": "^16.9.29",
     "@types/react-dom": "^16.9.5",
+    "axios": "^0.19.2",
     "classnames": "^2.2.6",
     "node-sass": "^4.13.1",
     "react": "^16.13.1",
@@ -34,8 +40,10 @@
   "devDependencies": {
     "@kunstmaan/eslint-typescript-config": "^2.0.1",
     "@kunstmaan/stylelint-config": "^1.2.0",
+    "@snipsonian/node": "^1.8.0",
     "@types/classnames": "^2.2.10",
     "@types/reach__router": "^1.3.2",
+    "chalk": "^4.0.0",
     "eslint": "6.8.0",
     "eslint-loader": "3.0.3"
   },

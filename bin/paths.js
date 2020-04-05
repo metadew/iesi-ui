@@ -9,4 +9,5 @@ const resolveApp = (relativePath) => path.resolve(appDirectory, relativePath);
 module.exports = {
     appBuild: resolveApp('build'),
     appPublic: resolveApp('public'),
+    appSrc: resolveApp('src'),
 };

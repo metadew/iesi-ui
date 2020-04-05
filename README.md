@@ -6,7 +6,12 @@ Visual user interface for the IESI automation framework.
 
 ## Usage
 
-To do
+1. install nvm (https://github.com/creationix/nvm) if not installed yet
+2. git clone <this repo>
+3. switch to correct node version: `nvm install` (first time) or `nvm use` (later)
+4. download dependencies: `npm install`
+5. initialise the environment config file: `npm run init-env-config`
+6. fill in the generated env config file
 
 ## Development
 
