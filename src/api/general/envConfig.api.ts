@@ -1,4 +1,4 @@
-import { IEnvConfig } from '../../models/envConfig.models';
+import { IEnvConfig } from '../../models/state/envConfig.models';
 import { get } from '../requestWrapper';
 import API_URLS from '../apiUrls';
 
