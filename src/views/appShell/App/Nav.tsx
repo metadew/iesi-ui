@@ -11,6 +11,7 @@ function Nav() {
                 <li><NavLink route={ROUTES.DASHBOARD}>Dashboard</NavLink></li>
                 <li><NavLink route={ROUTES.ABOUT}>About</NavLink></li>
                 <li><NavLink route="test">Not found</NavLink></li>
+                <li><NavLink route={ROUTES.REACT_START_PAGE}>React start page</NavLink></li>
             </ul>
         </nav>
     );

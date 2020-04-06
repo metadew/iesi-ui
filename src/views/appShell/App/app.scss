@@ -8,21 +8,10 @@ nav ul {
         + li {
             margin-left: 1rem;
         }
-
-        > a {
-            color: #000000;
-
-            &.active {
-                color: $tomato;
-            }
-        }
     }
 }
 
 .App {
-    background-color: $bgcolor;
-
-    text-align: center;
 }
 
 .App-logo {
@@ -43,12 +32,10 @@ nav ul {
     justify-content: center;
     min-height: 100vh;
 
-    color: #FFFFFF;
     font-size: calc(10px + 2vmin);
 }
 
 .App-link {
-    color: #61DAFB;
 }
 
 @keyframes App-logo-spin {
