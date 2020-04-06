@@ -1,4 +1,5 @@
 import { createActionableObservableStateStore } from '@snipsonian/observable-state/es';
+import produce from 'immer';
 import { IExtraProcessInput, IState, StateChangeNotification } from '../../models/state.models';
 import { STATE_STORAGE_KEY } from '../../config/state.config';
 import { isStateLoggingEnabled, isStateStorageEnabled } from '../../config/develop.config';
@@ -31,6 +32,7 @@ const configuredStore = createActionableObservableStateStore<IState, IExtraProce
     },
     observableStateActionExtraProcessInput: {
         api,
+        produce,
     },
 });
 

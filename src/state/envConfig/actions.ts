@@ -5,37 +5,35 @@ import { AsyncStatus } from '../../snipsonian/observable-state/src/actionableSto
 // TODO reduce the boilerplate with an 'entities' mechanism?
 // (or is this the exception because we keep it out of the 'entities' state part?)
 
+/* eslint-disable no-param-reassign */
+
 export const fetchEnvConfig = () => createAction<{}>({
     type: 'FETCH_ENV_CONFIG',
     payload: {},
-    async process({ getState, setState, api }) {
-        let newState;
+    async process({ getState, setState, api, produce }) {
         try {
-            newState = getState();
-            newState.envConfig.fetch.status = AsyncStatus.Busy;
-
             setState({
-                newState,
+                newState: produce(getState(), (draft) => {
+                    draft.envConfig.fetch.status = AsyncStatus.Busy;
+                }),
                 notificationsToTrigger: [StateChangeNotification.ENV_CONFIG],
             });
 
-            const envConfig = await api.envConfig.fetchEnvironmentConfig();
-
-            newState = getState();
-            newState.envConfig.fetch.status = AsyncStatus.Success;
-            newState.envConfig.data = envConfig;
+            const envConfigData = await api.envConfig.fetchEnvironmentConfig();
 
             setState({
-                newState,
+                newState: produce(getState(), (draft) => {
+                    draft.envConfig.fetch.status = AsyncStatus.Success;
+                    draft.envConfig.data = envConfigData;
+                }),
                 notificationsToTrigger: [StateChangeNotification.ENV_CONFIG],
             });
         } catch (error) {
-            newState = getState();
-            newState.envConfig.fetch.status = AsyncStatus.Error;
-            newState.envConfig.fetch.error = error;
-
             setState({
-                newState,
+                newState: produce(getState(), (draft) => {
+                    draft.envConfig.fetch.status = AsyncStatus.Error;
+                    draft.envConfig.fetch.error = error;
+                }),
                 notificationsToTrigger: [StateChangeNotification.ENV_CONFIG],
             });
         }

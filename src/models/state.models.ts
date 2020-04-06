@@ -1,4 +1,5 @@
 import { IObservableStateAction } from '@snipsonian/observable-state/es/actionableStore/types';
+import produce from 'immer';
 import { IEnvConfig } from './state/envConfig.models';
 import { api } from '../api';
 import { IAsyncEntity } from '../snipsonian/observable-state/src/actionableStore/entities/types';
@@ -18,6 +19,7 @@ export interface IAction<Payload>
 
 export interface IExtraProcessInput {
     api: typeof api;
+    produce: typeof produce;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
