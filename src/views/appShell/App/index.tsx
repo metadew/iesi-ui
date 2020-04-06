@@ -5,10 +5,12 @@ import { ROUTES } from '../../routes';
 import configuredStore from '../../../state/setup/configuredStore';
 import { StoreProvider } from '../../observe';
 import initApp from '../../../state/initApp';
+import ThemeProvider from '../ThemeProvider';
 
 import Nav from './Nav';
 
 // Route Components
+import ReactStartPage from './ReactStartPage';
 import Home from '../../home';
 import Dashboard from '../../dashboard';
 import About from '../../about';
@@ -22,7 +24,9 @@ export default function App() {
     return (
         <div className="App">
             <StoreProvider value={configuredStore}>
-                <DummyExample />
+                <ThemeProvider>
+                    <DummyExample />
+                </ThemeProvider>
             </StoreProvider>
         </div>
     );
@@ -48,6 +52,7 @@ function DummyExample() {
                             <TeamMember path="/:memberId" />
                         </Team>
                     </About>
+                    <ReactStartPage path={ROUTES.REACT_START_PAGE} />
                     <NotFound default />
                 </Router>
             </div>

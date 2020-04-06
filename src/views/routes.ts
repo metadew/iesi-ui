@@ -5,4 +5,6 @@ export enum ROUTES {
 
     ABOUT = 'about',
     ABOUT_TEAM = 'team',
+
+    REACT_START_PAGE = 'react-start-page',
 }
