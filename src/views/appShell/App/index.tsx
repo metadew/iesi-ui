@@ -6,6 +6,7 @@ import configuredStore from '../../../state/setup/configuredStore';
 import { StoreProvider } from '../../observe';
 import initApp from '../../../state/initApp';
 import ThemeProvider from '../ThemeProvider';
+import ShowUntilEnvConfigKnown from '../ShowUntilEnvConfigKnown';
 
 import Nav from './Nav';
 
@@ -24,9 +25,11 @@ export default function App() {
     return (
         <div className="App">
             <StoreProvider value={configuredStore}>
-                <ThemeProvider>
-                    <DummyExample />
-                </ThemeProvider>
+                <ShowUntilEnvConfigKnown>
+                    <ThemeProvider>
+                        <DummyExample />
+                    </ThemeProvider>
+                </ShowUntilEnvConfigKnown>
             </StoreProvider>
         </div>
     );

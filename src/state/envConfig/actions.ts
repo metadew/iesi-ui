@@ -13,8 +13,8 @@ export const fetchEnvConfig = () => createAction<{}>({
     async process({ getState, setState, api, produce }) {
         try {
             setState({
-                newState: produce(getState(), (draft) => {
-                    draft.envConfig.fetch.status = AsyncStatus.Busy;
+                newState: produce(getState(), (draftState) => {
+                    draftState.envConfig.fetch.status = AsyncStatus.Busy;
                 }),
                 notificationsToTrigger: [StateChangeNotification.ENV_CONFIG],
             });
@@ -22,17 +22,17 @@ export const fetchEnvConfig = () => createAction<{}>({
             const envConfigData = await api.envConfig.fetchEnvironmentConfig();
 
             setState({
-                newState: produce(getState(), (draft) => {
-                    draft.envConfig.fetch.status = AsyncStatus.Success;
-                    draft.envConfig.data = envConfigData;
+                newState: produce(getState(), (draftState) => {
+                    draftState.envConfig.fetch.status = AsyncStatus.Success;
+                    draftState.envConfig.data = envConfigData;
                 }),
                 notificationsToTrigger: [StateChangeNotification.ENV_CONFIG],
             });
         } catch (error) {
             setState({
-                newState: produce(getState(), (draft) => {
-                    draft.envConfig.fetch.status = AsyncStatus.Error;
-                    draft.envConfig.fetch.error = error;
+                newState: produce(getState(), (draftState) => {
+                    draftState.envConfig.fetch.status = AsyncStatus.Error;
+                    draftState.envConfig.fetch.error = error;
                 }),
                 notificationsToTrigger: [StateChangeNotification.ENV_CONFIG],
             });
