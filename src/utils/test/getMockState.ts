@@ -1,6 +1,6 @@
-import { ICustomAsyncEntity, IState } from '../../models/state.models';
-import { IEnvConfig } from '../../models/state/envConfig.models';
-import { AsyncStatus } from '../../snipsonian/observable-state/src/actionableStore/entities/types';
+import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import { ICustomAsyncEntity, IState } from 'models/state.models';
+import { IEnvConfig } from 'models/state/envConfig.models';
 
 export default function getMockState({
     envConfig = getDefaultEnvConfig(),

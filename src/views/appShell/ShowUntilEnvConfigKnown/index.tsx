@@ -1,10 +1,10 @@
 import React, { ReactNode } from 'react';
 import isSet from '@snipsonian/core/es/is/isSet';
 import ShowAfterDelay from '@snipsonian/react/es/components/waiting/ShowAfterDelay';
-import observe from '../../observe';
-import { ICustomAsyncEntity, StateChangeNotification } from '../../../models/state.models';
-import { IEnvConfig } from '../../../models/state/envConfig.models';
-import { getAsyncEnvConfig } from '../../../state/envConfig/selectors';
+import observe from 'views/observe';
+import { ICustomAsyncEntity, StateChangeNotification } from 'models/state.models';
+import { IEnvConfig } from 'models/state/envConfig.models';
+import { getAsyncEnvConfig } from 'state/envConfig/selectors';
 
 interface IPublicProps {
     children: ReactNode;

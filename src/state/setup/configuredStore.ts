@@ -1,12 +1,12 @@
 import { createActionableObservableStateStore } from '@snipsonian/observable-state/es';
 import produce from 'immer';
-import { IExtraProcessInput, IState, StateChangeNotification } from '../../models/state.models';
-import { STATE_STORAGE_KEY } from '../../config/state.config';
-import { isStateLoggingEnabled, isStateStorageEnabled } from '../../config/develop.config';
-import { api } from '../../api';
 import { getAsyncEntityInitialState }
-    from '../../snipsonian/observable-state/src/actionableStore/entities/getAsyncEntityInitialState';
-import { AsyncOperation } from '../../snipsonian/observable-state/src/actionableStore/entities/types';
+    from 'snipsonian/observable-state/src/actionableStore/entities/getAsyncEntityInitialState';
+import { AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import { IExtraProcessInput, IState, StateChangeNotification } from 'models/state.models';
+import { STATE_STORAGE_KEY } from 'config/state.config';
+import { isStateLoggingEnabled, isStateStorageEnabled } from 'config/develop.config';
+import { api } from 'api';
 
 // const configuredStore = createObservableStateStore<IState, StateChangeNotification>({
 const configuredStore = createActionableObservableStateStore<IState, IExtraProcessInput, StateChangeNotification>({

@@ -17,6 +17,13 @@ module.exports = {
         ecmaVersion: 2018,  // Allows for the parsing of modern ECMAScript features
         sourceType: 'module',  // Allows for the use of imports
     },
+    settings: {
+        'import/resolver': {
+            node: {
+                paths: ['src'],
+            }
+        },
+    },
     rules: {
         '@typescript-eslint/explicit-function-return-type': [OFF],
     },

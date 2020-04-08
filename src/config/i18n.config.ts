@@ -1,4 +1,4 @@
-import { Locales } from '../models/i18n.models';
+import { Locales } from 'models/i18n.models';
 
 export const LOCALES = Object.values(Locales);
 

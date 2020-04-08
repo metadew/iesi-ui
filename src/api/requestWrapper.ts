@@ -8,9 +8,9 @@ import {
     ITraceableApiError,
     IErrorHandler,
     ICustomApiConfig,
-} from '../models/api.models';
-import { DEFAULT_TIMEOUT_IN_MILLIS } from '../config/api.config';
-import { isApiLoggingEnabled } from '../config/develop.config';
+} from 'models/api.models';
+import { DEFAULT_TIMEOUT_IN_MILLIS } from 'config/api.config';
+import { isApiLoggingEnabled } from 'config/develop.config';
 
 const apiLogger = isApiLoggingEnabled
     ? getApiLogger({ groupLogger: consoleGroupLogger })

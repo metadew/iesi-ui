@@ -1,8 +1,8 @@
 import { IObservableStateAction } from '@snipsonian/observable-state/es/actionableStore/types';
 import produce from 'immer';
+import { api } from 'api';
+import { IAsyncEntity } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { IEnvConfig } from './state/envConfig.models';
-import { api } from '../api';
-import { IAsyncEntity } from '../snipsonian/observable-state/src/actionableStore/entities/types';
 import { ITraceableApiError } from './api.models';
 
 export interface IState {

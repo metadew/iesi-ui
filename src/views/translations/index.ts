@@ -1,7 +1,7 @@
 import flatten from 'flat';
 import produce from 'immer';
 import { ITranslationsPerLocale } from '@snipsonian/react/es/components/i18n/translations/types';
-import { Locales } from '../../models/i18n.models';
+import { Locales } from 'models/i18n.models';
 import translationsEnGB from './en_GB.yml';
 
 const shippedTranslations: ITranslationsPerLocale = {

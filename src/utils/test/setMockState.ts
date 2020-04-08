@@ -1,7 +1,7 @@
 import produce from 'immer';
 import isSet from '@snipsonian/core/es/is/isSet';
-import { IState } from '../../models/state.models';
-import { getStore } from '../../state';
+import { IState } from 'models/state.models';
+import { getStore } from 'state';
 import getMockState from './getMockState';
 
 export default function setMockState({

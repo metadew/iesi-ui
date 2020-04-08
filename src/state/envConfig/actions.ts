@@ -1,8 +1,8 @@
-import { createAction } from '../index';
-import { StateChangeNotification } from '../../models/state.models';
-import { AsyncStatus } from '../../snipsonian/observable-state/src/actionableStore/entities/types';
+import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import { StateChangeNotification } from 'models/state.models';
+import { overrideTranslationsIfAny } from 'views/translations';
 import { getTranslationLabelOverrides } from './selectors';
-import { overrideTranslationsIfAny } from '../../views/translations';
+import { createAction } from '../index';
 
 // TODO reduce the boilerplate with an 'entities' mechanism?
 // (or is this the exception because we keep it out of the 'entities' state part?)

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Router } from '@reach/router';
 import { Typography } from '@material-ui/core';
-import { ROUTES } from '../../routes';
-import configuredStore from '../../../state/setup/configuredStore';
-import { StoreProvider } from '../../observe';
-import initApp from '../../../state/initApp';
+import { ROUTES } from 'views/routes';
+import configuredStore from 'state/setup/configuredStore';
+import { StoreProvider } from 'views/observe';
+import initApp from 'state/initApp';
 import ThemeProvider from '../ThemeProvider';
 import ShowUntilEnvConfigKnown from '../ShowUntilEnvConfigKnown';
 
