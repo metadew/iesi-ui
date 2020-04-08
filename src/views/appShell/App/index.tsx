@@ -45,7 +45,7 @@ function DummyExample() {
     return (
         <div>
             <Typography variant="h1">
-                <Translate msg="app_shell.header.title" />
+                <Translate msg="app_shell.header.title" raw />
             </Typography>
             <div>
                 <Nav />

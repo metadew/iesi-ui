@@ -22,7 +22,7 @@
     "@snipsonian/core": "^1.11.0",
     "@snipsonian/dvlp": "^1.11.0",
     "@snipsonian/observable-state": "^1.11.0",
-    "@snipsonian/react": "^1.11.5",
+    "@snipsonian/react": "^1.11.6",
     "@snipsonian/react-observable-state": "^1.11.4",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
