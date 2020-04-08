@@ -1,16 +1,22 @@
 import { IObservableStateAction } from '@snipsonian/observable-state/es/actionableStore/types';
 import produce from 'immer';
 import { api } from 'api';
-import { IAsyncEntity } from 'snipsonian/observable-state/src/actionableStore/entities/types';
-import { IEnvConfig } from './state/envConfig.models';
-import { ITraceableApiError } from './api.models';
+import { TEnvConfigState } from './state/envConfig.models';
+import { II18nState } from './state/i18n.models';
+import { ICustomAsyncEntity as ICustomAsyncEntityOrig } from './state/types';
+
+export type ICustomAsyncEntity<Data> = ICustomAsyncEntityOrig<Data>;
 
 export interface IState {
-    envConfig: ICustomAsyncEntity<IEnvConfig>;
+    envConfig: TEnvConfigState;
+    i18n: II18nState;
 }
 
 export enum StateChangeNotification {
     ENV_CONFIG = 'ENV_CONFIG',
+    I18N_TRANSLATIONS = 'I18N.TRANSLATIONS',
+    I18N_TRANSLATIONS_REFRESHED = 'I18N.TRANSLATIONS.REFRESHED',
+    I18N_TRANSLATIONS_TOGGLE = 'I18N.TRANSLATIONS.TOGGLE',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -21,6 +27,3 @@ export interface IExtraProcessInput {
     api: typeof api;
     produce: typeof produce;
 }
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ICustomAsyncEntity<Data> extends IAsyncEntity<Data, ITraceableApiError> {}

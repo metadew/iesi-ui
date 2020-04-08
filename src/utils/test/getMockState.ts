@@ -1,14 +1,27 @@
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { ICustomAsyncEntity, IState } from 'models/state.models';
 import { IEnvConfig } from 'models/state/envConfig.models';
+import { II18nState } from 'models/state/i18n.models';
+import { DEFAULT_LOCALE } from 'config/i18n.config';
 
 export default function getMockState({
     envConfig = getDefaultEnvConfig(),
+    i18n: {
+        locale = DEFAULT_LOCALE,
+        areTranslationsRefreshed = true,
+        showTranslationKeys = false,
+    } = {},
 }: {
     envConfig?: ICustomAsyncEntity<IEnvConfig>;
-}): IState {
+    i18n?: Partial<II18nState>;
+} = {}): IState {
     return {
         envConfig,
+        i18n: {
+            locale,
+            areTranslationsRefreshed,
+            showTranslationKeys,
+        },
     } as IState;
 }
 

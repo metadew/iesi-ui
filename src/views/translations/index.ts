@@ -1,34 +1,54 @@
 import flatten from 'flat';
 import produce from 'immer';
 import { ITranslationsPerLocale } from '@snipsonian/react/es/components/i18n/translations/types';
-import { Locales } from 'models/i18n.models';
+import createTranslationsManager from '@snipsonian/react/es/components/i18n/translations/createTranslationsManager';
+import generateTranslatorForEachSupportedLocale
+    from '@snipsonian/react/es/components/i18n/translator/generateTranslatorForEachSupportedLocale';
+import { Locales } from 'models/state/i18n.models';
+import { LOCALES } from 'config/i18n.config';
 import translationsEnGB from './en_GB.yml';
 
 const shippedTranslations: ITranslationsPerLocale = {
     [Locales.en_GB]: flatten(translationsEnGB),
 };
 
-let allTranslations: ITranslationsPerLocale = shippedTranslations;
+export const translationsManager = createTranslationsManager({
+    locales: LOCALES,
+    initialTranslations: shippedTranslations,
+});
 
-export function getTranslations() {
-    return allTranslations;
-}
+generateTranslatorForEachSupportedLocale({
+    translationsManager,
+});
 
-export function overrideTranslationsIfAny(overriddenTranslations: ITranslationsPerLocale) {
+export function overrideTranslationsIfAny(overriddenTranslations: ITranslationsPerLocale): boolean {
+    let didOverride = false;
+
     if (overriddenTranslations) {
-        allTranslations = produce(shippedTranslations, (draftTranslations) => {
-            Object.keys(overriddenTranslations)
-                .forEach((locale) => {
-                    const overriddenTranslationsOfLocale = overriddenTranslations[locale];
+        Object.keys(overriddenTranslations)
+            .filter((locale) => LOCALES.indexOf(locale) > -1)
+            .forEach((locale) => {
+                const overriddenTranslationsOfLocale = overriddenTranslations[locale];
 
-                    if (overriddenTranslationsOfLocale) {
-                        Object.keys(overriddenTranslationsOfLocale)
-                            .forEach((translationKey) => {
-                                // eslint-disable-next-line no-param-reassign,max-len
-                                draftTranslations[locale][translationKey] = overriddenTranslationsOfLocale[translationKey];
-                            });
-                    }
-                });
-        });
+                if (overriddenTranslationsOfLocale) {
+                    translationsManager.setTranslationsOfLocale({
+                        locale,
+                        translations: produce(
+                            translationsManager.getTranslationsOfLocale({ locale }),
+                            (draftTranslationsOfLocale) => {
+                                Object.keys(overriddenTranslationsOfLocale)
+                                    .forEach((translationKey) => {
+                                        // eslint-disable-next-line no-param-reassign,max-len
+                                        draftTranslationsOfLocale[translationKey] = overriddenTranslationsOfLocale[translationKey];
+                                    });
+                            },
+                        ),
+                    });
+
+                    didOverride = true;
+                }
+            });
     }
+
+    return didOverride;
 }

@@ -26,15 +26,20 @@ export const fetchEnvConfig = () => createAction<{}>({
 
             const envConfigData = await api.envConfig.fetchEnvironmentConfig();
 
+            const didOverride = overrideTranslationsIfAny(envConfigData.translation_label_overrides);
+            const i18nNotifications = didOverride
+                ? [StateChangeNotification.I18N_TRANSLATIONS_REFRESHED]
+                : [];
+
             setState({
                 newState: produce(getState(), (draftState) => {
                     draftState.envConfig.fetch.status = AsyncStatus.Success;
                     draftState.envConfig.data = envConfigData;
-                }),
-                notificationsToTrigger: [StateChangeNotification.ENV_CONFIG],
-            });
 
-            overrideTranslationsIfAny(getTranslationLabelOverrides(getState()));
+                    draftState.i18n.areTranslationsRefreshed = true;
+                }),
+                notificationsToTrigger: [StateChangeNotification.ENV_CONFIG, ...i18nNotifications],
+            });
         } catch (error) {
             setState({
                 newState: produce(getState(), (draftState) => {

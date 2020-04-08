@@ -1,11 +1,13 @@
 import React from 'react';
 import { Router } from '@reach/router';
 import { Typography } from '@material-ui/core';
+import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { ROUTES } from 'views/routes';
 import configuredStore from 'state/setup/configuredStore';
 import { StoreProvider } from 'views/observe';
 import initApp from 'state/initApp';
 import ThemeProvider from '../ThemeProvider';
+import I18nAware from '../I18nAware';
 import ShowUntilEnvConfigKnown from '../ShowUntilEnvConfigKnown';
 
 import Nav from './Nav';
@@ -25,11 +27,13 @@ export default function App() {
     return (
         <div className="App">
             <StoreProvider value={configuredStore}>
-                <ShowUntilEnvConfigKnown>
-                    <ThemeProvider>
-                        <DummyExample />
-                    </ThemeProvider>
-                </ShowUntilEnvConfigKnown>
+                <I18nAware>
+                    <ShowUntilEnvConfigKnown>
+                        <ThemeProvider>
+                            <DummyExample />
+                        </ThemeProvider>
+                    </ShowUntilEnvConfigKnown>
+                </I18nAware>
             </StoreProvider>
         </div>
     );
@@ -40,7 +44,9 @@ initApp();
 function DummyExample() {
     return (
         <div>
-            <Typography variant="h1">IESI UI</Typography>
+            <Typography variant="h1">
+                <Translate msg="app_shell.header.title" />
+            </Typography>
             <div>
                 <Nav />
             </div>

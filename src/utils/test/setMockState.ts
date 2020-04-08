@@ -5,12 +5,12 @@ import { getStore } from 'state';
 import getMockState from './getMockState';
 
 export default function setMockState({
-    startingState = getMockState({}),
+    startingState = getMockState(),
     set,
 }: {
     startingState?: IState;
     set?: (mockState: IState) => void;
-}) {
+} = {}) {
     const newState = isSet(set)
         ? produce(startingState, set)
         : startingState;

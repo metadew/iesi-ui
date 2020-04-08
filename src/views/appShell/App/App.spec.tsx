@@ -5,11 +5,11 @@ import App from '.';
 
 describe('App component:', () => {
     it('renders properly', () => {
-        setMockState({});
+        setMockState();
 
         const { getByText } = render(<App />);
 
-        const linkElement = getByText(/IESI UI/i);
+        const linkElement = getByText(/app_shell.header.title/i);
         expect(linkElement).toBeInTheDocument();
     });
 });

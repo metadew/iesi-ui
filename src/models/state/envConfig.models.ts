@@ -3,6 +3,9 @@
  */
 
 import { ITranslationsPerLocale } from '@snipsonian/react/es/components/i18n/translations/types';
+import { ICustomAsyncEntity } from './types';
+
+export type TEnvConfigState = ICustomAsyncEntity<IEnvConfig>;
 
 export interface IEnvConfig {
     /* eslint-disable camelcase */

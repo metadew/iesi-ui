@@ -6,12 +6,18 @@ import { AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/
 import { IExtraProcessInput, IState, StateChangeNotification } from 'models/state.models';
 import { STATE_STORAGE_KEY } from 'config/state.config';
 import { isStateLoggingEnabled, isStateStorageEnabled } from 'config/develop.config';
+import { DEFAULT_LOCALE } from 'config/i18n.config';
 import { api } from 'api';
 
 // const configuredStore = createObservableStateStore<IState, StateChangeNotification>({
 const configuredStore = createActionableObservableStateStore<IState, IExtraProcessInput, StateChangeNotification>({
     initialState: {
         envConfig: getAsyncEntityInitialState({ operations: [AsyncOperation.fetch] }),
+        i18n: {
+            locale: DEFAULT_LOCALE,
+            areTranslationsRefreshed: false,
+            showTranslationKeys: false,
+        },
     },
     storage: isStateStorageEnabled
         ? {
