@@ -1,6 +1,8 @@
 import { createAction } from '../index';
 import { StateChangeNotification } from '../../models/state.models';
 import { AsyncStatus } from '../../snipsonian/observable-state/src/actionableStore/entities/types';
+import { getTranslationLabelOverrides } from './selectors';
+import { overrideTranslationsIfAny } from '../../views/translations';
 
 // TODO reduce the boilerplate with an 'entities' mechanism?
 // (or is this the exception because we keep it out of the 'entities' state part?)
@@ -12,6 +14,9 @@ export const fetchEnvConfig = () => createAction<{}>({
     payload: {},
     async process({ getState, setState, api, produce }) {
         try {
+            /* for if they were stored in browser storage */
+            overrideTranslationsIfAny(getTranslationLabelOverrides(getState()));
+
             setState({
                 newState: produce(getState(), (draftState) => {
                     draftState.envConfig.fetch.status = AsyncStatus.Busy;
@@ -28,6 +33,8 @@ export const fetchEnvConfig = () => createAction<{}>({
                 }),
                 notificationsToTrigger: [StateChangeNotification.ENV_CONFIG],
             });
+
+            overrideTranslationsIfAny(getTranslationLabelOverrides(getState()));
         } catch (error) {
             setState({
                 newState: produce(getState(), (draftState) => {
