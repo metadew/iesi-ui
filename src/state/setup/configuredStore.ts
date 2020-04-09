@@ -3,7 +3,7 @@ import produce from 'immer';
 import { getAsyncEntityInitialState }
     from 'snipsonian/observable-state/src/actionableStore/entities/getAsyncEntityInitialState';
 import { AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
-import { IExtraProcessInput, IState, StateChangeNotification } from 'models/state.models';
+import { IExtraProcessInput, ISetStateImmutableProps, IState, StateChangeNotification } from 'models/state.models';
 import { STATE_STORAGE_KEY } from 'config/state.config';
 import { isStateLoggingEnabled, isStateStorageEnabled } from 'config/develop.config';
 import { DEFAULT_LOCALE } from 'config/i18n.config';
@@ -39,6 +39,14 @@ const configuredStore = createActionableObservableStateStore<IState, IExtraProce
     observableStateActionExtraProcessInput: {
         api,
         produce,
+        setStateImmutable: (props: ISetStateImmutableProps) => {
+            const { toState, ...otherProps } = props;
+
+            configuredStore.setState({
+                newState: produce(configuredStore.getState(), toState),
+                ...otherProps,
+            });
+        },
     },
 });
 

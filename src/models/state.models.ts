@@ -1,4 +1,5 @@
 import { IObservableStateAction } from '@snipsonian/observable-state/es/actionableStore/types';
+import { ISetStateProps } from '@snipsonian/observable-state/es/store/types';
 import produce from 'immer';
 import { api } from 'api';
 import { TEnvConfigState } from './state/envConfig.models';
@@ -26,4 +27,15 @@ export interface IAction<Payload>
 export interface IExtraProcessInput {
     api: typeof api;
     produce: typeof produce;
+    setStateImmutable: ISetStateImmutable;
+}
+
+export interface ISetStateImmutable {
+    (props: ISetStateImmutableProps): void;
+}
+
+export interface ISetStateImmutableProps
+    // eslint-disable-next-line max-len
+    extends Pick<ISetStateProps<IState, StateChangeNotification>, 'notificationsToTrigger' | 'nrOfParentNotificationLevelsToTrigger' | 'context'> {
+    toState: (draftState: IState) => void;
 }

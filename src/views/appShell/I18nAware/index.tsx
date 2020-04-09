@@ -6,7 +6,7 @@ import { StateChangeNotification } from 'models/state.models';
 import { Locales } from 'models/state/i18n.models';
 import { DEFAULT_LOCALE } from 'config/i18n.config';
 import { getLocale, getTranslator } from 'state/i18n/selectors';
-import observe from 'views/observe';
+import { observeXL } from 'views/observe';
 
 interface IPublicProps {
     children: ReactNode;
@@ -29,7 +29,7 @@ function I18nAware({
     );
 }
 
-export default observe<IPrivateProps, IPublicProps>(
+export default observeXL<IPrivateProps, IPublicProps>(
     {
         notifications: [StateChangeNotification.I18N_TRANSLATIONS],
         select: ({ state }) => ({

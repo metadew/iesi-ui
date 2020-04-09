@@ -12,15 +12,15 @@ import { createAction } from '../index';
 export const fetchEnvConfig = () => createAction<{}>({
     type: 'FETCH_ENV_CONFIG',
     payload: {},
-    async process({ getState, setState, api, produce }) {
+    async process({ getState, setStateImmutable, api }) {
         try {
             /* for if they were stored in browser storage */
             overrideTranslationsIfAny(getTranslationLabelOverrides(getState()));
 
-            setState({
-                newState: produce(getState(), (draftState) => {
+            setStateImmutable({
+                toState: (draftState) => {
                     draftState.envConfig.fetch.status = AsyncStatus.Busy;
-                }),
+                },
                 notificationsToTrigger: [StateChangeNotification.ENV_CONFIG],
             });
 
@@ -31,21 +31,21 @@ export const fetchEnvConfig = () => createAction<{}>({
                 ? [StateChangeNotification.I18N_TRANSLATIONS_REFRESHED]
                 : [];
 
-            setState({
-                newState: produce(getState(), (draftState) => {
+            setStateImmutable({
+                toState: (draftState) => {
                     draftState.envConfig.fetch.status = AsyncStatus.Success;
                     draftState.envConfig.data = envConfigData;
 
                     draftState.i18n.areTranslationsRefreshed = true;
-                }),
+                },
                 notificationsToTrigger: [StateChangeNotification.ENV_CONFIG, ...i18nNotifications],
             });
         } catch (error) {
-            setState({
-                newState: produce(getState(), (draftState) => {
+            setStateImmutable({
+                toState: (draftState) => {
                     draftState.envConfig.fetch.status = AsyncStatus.Error;
                     draftState.envConfig.fetch.error = error;
-                }),
+                },
                 notificationsToTrigger: [StateChangeNotification.ENV_CONFIG],
             });
         }

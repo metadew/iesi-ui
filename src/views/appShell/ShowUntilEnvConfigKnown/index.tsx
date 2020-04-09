@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import isSet from '@snipsonian/core/es/is/isSet';
 import ShowAfterDelay from '@snipsonian/react/es/components/waiting/ShowAfterDelay';
-import observe from 'views/observe';
+import { observeXL } from 'views/observe';
 import { ICustomAsyncEntity, StateChangeNotification } from 'models/state.models';
 import { IEnvConfig } from 'models/state/envConfig.models';
 import { getAsyncEnvConfig } from 'state/envConfig/selectors';
@@ -39,7 +39,7 @@ function ShowDuringDelay() {
     );
 }
 
-export default observe<IPrivateProps, IPublicProps>(
+export default observeXL<IPrivateProps, IPublicProps>(
     {
         notifications: [StateChangeNotification.ENV_CONFIG],
         select: ({ state }) => ({
