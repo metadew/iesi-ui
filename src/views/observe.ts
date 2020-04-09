@@ -1,6 +1,7 @@
 import { initActionableReactObservableState } from '@snipsonian/react-observable-state/es';
 import { IActionableStoreForComp } from '@snipsonian/react-observable-state/es/init/types';
 import { IState, StateChangeNotification } from 'models/state.models';
+import { ReactNode } from 'react';
 
 const {
     ObservableStateProvider,
@@ -15,3 +16,7 @@ export const observe = observeOrig;
 export interface IObserveProps extends IActionableStoreForComp<IState, StateChangeNotification> {}
 
 export const observeXL = observeXLOrig;
+
+export interface IPublicPropsWithChildren {
+    children: ReactNode;
+}

@@ -1,15 +1,11 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import isSet from '@snipsonian/core/es/is/isSet';
 import ShowAfterDelay from '@snipsonian/react/es/components/waiting/ShowAfterDelay';
-import { observe, IObserveProps } from 'views/observe';
+import { observe, IObserveProps, IPublicPropsWithChildren } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAsyncEnvConfig } from 'state/envConfig/selectors';
 
-interface IPublicProps {
-    children: ReactNode;
-}
-
-function ShowUntilEnvConfigKnown({ state, children }: IPublicProps & IObserveProps) {
+function ShowUntilEnvConfigKnown({ state, children }: IPublicPropsWithChildren & IObserveProps) {
     const envConfig = getAsyncEnvConfig(state).data;
 
     const waitingOnEnvConfig = !isSet(envConfig);
@@ -34,7 +30,7 @@ function ShowDuringDelay() {
     );
 }
 
-export default observe<IPublicProps>(
+export default observe<IPublicPropsWithChildren>(
     [StateChangeNotification.ENV_CONFIG],
     ShowUntilEnvConfigKnown,
 );
