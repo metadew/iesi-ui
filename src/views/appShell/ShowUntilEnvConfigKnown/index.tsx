@@ -1,21 +1,16 @@
 import React, { ReactNode } from 'react';
 import isSet from '@snipsonian/core/es/is/isSet';
 import ShowAfterDelay from '@snipsonian/react/es/components/waiting/ShowAfterDelay';
-import { observeXL } from 'views/observe';
-import { ICustomAsyncEntity, StateChangeNotification } from 'models/state.models';
-import { IEnvConfig } from 'models/state/envConfig.models';
+import { observe, IObserveProps } from 'views/observe';
+import { StateChangeNotification } from 'models/state.models';
 import { getAsyncEnvConfig } from 'state/envConfig/selectors';
 
 interface IPublicProps {
     children: ReactNode;
 }
 
-interface IPrivateProps {
-    asyncEnvConfig: ICustomAsyncEntity<IEnvConfig>;
-}
-
-function ShowUntilEnvConfigKnown({ asyncEnvConfig, children }: IPublicProps & IPrivateProps) {
-    const { data: envConfig } = asyncEnvConfig;
+function ShowUntilEnvConfigKnown({ state, children }: IPublicProps & IObserveProps) {
+    const envConfig = getAsyncEnvConfig(state).data;
 
     const waitingOnEnvConfig = !isSet(envConfig);
 
@@ -39,12 +34,7 @@ function ShowDuringDelay() {
     );
 }
 
-export default observeXL<IPrivateProps, IPublicProps>(
-    {
-        notifications: [StateChangeNotification.ENV_CONFIG],
-        select: ({ state }) => ({
-            asyncEnvConfig: getAsyncEnvConfig(state),
-        }),
-    },
+export default observe<IPublicProps>(
+    [StateChangeNotification.ENV_CONFIG],
     ShowUntilEnvConfigKnown,
 );
