@@ -1,29 +1,22 @@
 import React from 'react';
-import { Router } from '@reach/router';
 import { Typography } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import { ROUTES } from 'views/routes';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+} from 'react-router-dom';
 import configuredStore from 'state/setup/configuredStore';
-import { StoreProvider } from 'views/observe';
 import initApp from 'state/initApp';
+import { StoreProvider } from 'views/observe';
+import ROUTES from 'views/routes';
 import ThemeProvider from '../ThemeProvider';
 import I18nAware from '../I18nAware';
 import ShowUntilEnvConfigKnown from '../ShowUntilEnvConfigKnown';
+import './app.scss';
+import MainNav from '../MainNav';
 
-import Nav from './Nav';
-
-// Route Components
-import ReactStartPage from './ReactStartPage';
-import Home from '../../home';
-import Dashboard from '../../dashboard';
-import About from '../../about';
-import AboutHome from '../../about/AboutHome';
-import Team from '../../about/Team';
-import TeamOverview from '../../about/Team/TeamOverview';
-import TeamMember from '../../about/Team/Member';
-import NotFound from '../NotFound';
-
-export default function App() {
+function App() {
     return (
         <div className="App">
             <StoreProvider value={configuredStore}>
@@ -39,32 +32,24 @@ export default function App() {
     );
 }
 
+export default App;
+
 initApp();
 
 function DummyExample() {
     return (
-        <div>
+        <Router>
             <Typography variant="h1">
                 <Translate msg="app_shell.header.title" raw />
             </Typography>
+            <MainNav />
             <div>
-                <Nav />
+                <Switch>
+                    <Route path={ROUTES.R_HOME.path} exact component={ROUTES.R_HOME.component} />
+                    <Route path={ROUTES.R_DESIGN.path} component={ROUTES.R_DESIGN.component} />
+                    <Route path={ROUTES.R_REPORT.path} component={ROUTES.R_REPORT.component} />
+                </Switch>
             </div>
-            <div>
-                <Router>
-                    <Home path="/" />
-                    <Dashboard path={ROUTES.DASHBOARD} />
-                    <About path={ROUTES.ABOUT}>
-                        <AboutHome path="/" />
-                        <Team path={ROUTES.ABOUT_TEAM}>
-                            <TeamOverview path="/" />
-                            <TeamMember path="/:memberId" />
-                        </Team>
-                    </About>
-                    <ReactStartPage path={ROUTES.REACT_START_PAGE} />
-                    <NotFound default />
-                </Router>
-            </div>
-        </div>
+        </Router>
     );
 }
