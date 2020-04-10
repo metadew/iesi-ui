@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import setMockState from 'utils/test/setMockState';
-import App from './reach-router-index';
+import App from '.';
 
 describe('App component:', () => {
     it('renders properly', () => {
