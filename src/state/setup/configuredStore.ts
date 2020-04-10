@@ -1,23 +1,15 @@
 import { createActionableObservableStateStore } from '@snipsonian/observable-state/es';
 import produce from 'immer';
 import { IExtraProcessInput, ISetStateImmutableProps, IState, StateChangeNotification } from 'models/state.models';
-import { STATE_STORAGE_KEY } from 'config/state.config';
 import { isStateLoggingEnabled, isStateStorageEnabled } from 'config/develop.config';
 import { api } from 'api';
-import initialState from '../initialState';
+import { initialState, stateStorageConfig } from '../stateConfig';
 
 // const configuredStore = createObservableStateStore<IState, StateChangeNotification>({
 const configuredStore = createActionableObservableStateStore<IState, IExtraProcessInput, StateChangeNotification>({
     initialState,
     storage: isStateStorageEnabled
-        ? {
-            session: {
-                browserStorageKey: STATE_STORAGE_KEY,
-                getStatePartToSave: (state) => ({
-                    envConfig: state.envConfig,
-                }),
-            },
-        }
+        ? stateStorageConfig
         : null,
     middlewares: [],
     logStateUpdates: isStateLoggingEnabled,
