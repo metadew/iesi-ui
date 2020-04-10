@@ -1,55 +1,33 @@
-import React, { ReactNode } from 'react';
-import classNames from 'classnames';
+import React from 'react';
+import { NavLink as RouterNavLink, NavLinkProps } from 'react-router-dom';
 import { makeStyles, Theme } from '@material-ui/core';
-import { Link, LinkGetProps } from '@reach/router';
-import { ROUTES } from '../../routes';
 
-interface IPublicProps {
-    route: ROUTES | string; // for url params
-    className?: string;
-    children: ReactNode;
-}
+type IPublicProps = NavLinkProps;
 
 const ACTIVE_CLASS_NAME = 'active';
 
 const useStyles = makeStyles((theme: Theme) => ({
     root: {
-        '& a': {
-            color: theme.palette.text.primary,
-        },
-        '& a.active': {
+        color: theme.palette.text.primary,
+        '&.active': {
             color: theme.palette.primary.main,
         },
     },
 }));
 
 function NavLink(props: IPublicProps) {
+    const { to, children, exact } = props;
     const classes = useStyles();
 
     return (
-        <span className={classes.root}>
-            <Link
-                to={props.route}
-                getProps={({ isPartiallyCurrent, isCurrent }: LinkGetProps) => {
-                    const isIndexPage = props.route === './';
-                    let shouldGetActiveClass = false;
-
-                    if (isIndexPage) {
-                        shouldGetActiveClass = !!isCurrent;
-                    } else {
-                        shouldGetActiveClass = !!isPartiallyCurrent;
-                    }
-
-                    return {
-                        className: classNames(props.className, {
-                            [ACTIVE_CLASS_NAME]: !!shouldGetActiveClass,
-                        }),
-                    };
-                }}
-            >
-                {props.children}
-            </Link>
-        </span>
+        <RouterNavLink
+            to={to}
+            exact={exact}
+            activeClassName={ACTIVE_CLASS_NAME}
+            className={classes.root}
+        >
+            {children}
+        </RouterNavLink>
     );
 }
 

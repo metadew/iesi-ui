@@ -1,10 +1,28 @@
-export enum ROUTES {
-    CURRENT_INDEX_PAGE = './',
+import { IRoutes } from 'models/router.models';
+import DesignOverview from './design/Overview';
+import ReportOverview from './report/Overview';
+import ROUTE_KEYS from '../routeKeys';
+import NotFound from './appShell/NotFound';
 
-    DASHBOARD = 'dashboard',
+const ROUTES: IRoutes = {
+    [ROUTE_KEYS.R_HOME]: {
+        path: '/',
+        exact: true,
+        component: DesignOverview,
+    },
+    [ROUTE_KEYS.R_DESIGN]: {
+        path: '/design',
+        exact: true,
+        component: DesignOverview,
+    },
+    [ROUTE_KEYS.R_REPORT]: {
+        path: '/report',
+        component: ReportOverview,
+    },
+    [ROUTE_KEYS.R_NOT_FOUND]: {
+        path: '*',
+        component: NotFound,
+    },
+};
 
-    ABOUT = 'about',
-    ABOUT_TEAM = 'team',
-
-    REACT_START_PAGE = 'react-start-page',
-}
+export default ROUTES;

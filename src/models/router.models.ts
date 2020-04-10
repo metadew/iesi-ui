@@ -1,6 +1,10 @@
-import { ReactNode } from 'react';
-import { RouteComponentProps } from '@reach/router';
+import { RouteProps } from 'react-router-dom';
 
-export interface INestedRouteComponentProps extends RouteComponentProps {
-    children: ReactNode;
+export interface IRoutes {
+    [key: string]: IRoute;
+}
+
+interface IRoute extends RouteProps {
+    path: string;
+    permissions?: string;
 }
