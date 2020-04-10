@@ -46,6 +46,27 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
+### Development tips
+
+#### enabling/disabling some dev features
+
+Some dev features can be turned on/off by changing a flag within local storage.
+
+##### general mechanism
+
+* open chrome devtools
+* within Local Storage (Application tab): change a boolean value of a flag within the IESI_UI_DVLP key to true or false
+* refresh your browser page
+
+##### possible stuff to enable/disable
+
+    FLAG         (default value) : set to true if you want ...
+    -----------------------------------------------------------------------------------
+    ENABLE_API_LOGGING   (false) : ... console logging of each api request and response
+    ENABLE_REDUX_LOGGING (false) : ... console logging of state actions and state changes
+    ENABLE_STATE_STORAGE (true)  : ... the state to be stored in Browser storage (so that users do not loose anything when they for example refresh the page).
+                                   Can be annoying during development, if so, toggle to false.
+
 ### Initial bootstrap of project
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
