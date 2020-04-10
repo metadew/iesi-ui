@@ -48,6 +48,7 @@ function DummyExample() {
                     <Route path={ROUTES.R_HOME.path} exact component={ROUTES.R_HOME.component} />
                     <Route path={ROUTES.R_DESIGN.path} component={ROUTES.R_DESIGN.component} />
                     <Route path={ROUTES.R_REPORT.path} component={ROUTES.R_REPORT.component} />
+                    <Route path="*" component={ROUTES.R_NOT_FOUND.component} />
                 </Switch>
             </div>
         </Router>
