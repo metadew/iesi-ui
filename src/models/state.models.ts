@@ -13,6 +13,15 @@ export interface IState {
     i18n: II18nState;
 }
 
+/**
+ * When a notification is triggered, by default also the immediate parent notification (delimited by a .)
+ * gets triggered.
+ * Example:
+ *   triggering I18N.TRANSLATIONS.TOGGLE
+ *   results in the trigger of both I18N.TRANSLATIONS.TOGGLE and I18N.TRANSLATIONS
+ *
+ * p.s. the number of parent levels to get triggered can be overruled per action.
+ */
 export enum StateChangeNotification {
     ENV_CONFIG = 'ENV_CONFIG',
     I18N_TRANSLATIONS = 'I18N.TRANSLATIONS',
