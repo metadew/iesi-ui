@@ -26,5 +26,6 @@ module.exports = {
     },
     rules: {
         '@typescript-eslint/explicit-function-return-type': [OFF],
+        'react/jsx-props-no-spreading': [OFF],
     },
 };

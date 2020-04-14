@@ -13,6 +13,14 @@ export const initialState: IState = {
         areTranslationsRefreshed: false,
         showTranslationKeys: false,
     },
+    auth: {
+        // Dummy auth
+        username: 'dummy-test-user',
+        permissions: {
+            edit: true,
+            execute: true,
+        },
+    },
 };
 
 export const stateStorageConfig: IStateStorageConfig<IState> = {

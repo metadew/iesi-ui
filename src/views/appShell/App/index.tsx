@@ -5,7 +5,6 @@ import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Redirect,
 } from 'react-router-dom';
 import snackbarManager from 'utils/ui/snackbarManager';
 import configuredStore from 'state/setup/configuredStore';
@@ -17,6 +16,8 @@ import I18nAware from '../I18nAware';
 import ShowUntilEnvConfigKnown from '../ShowUntilEnvConfigKnown';
 import './app.scss';
 import MainNav from '../MainNav';
+import PermissionRoute from './PermissionRoute';
+import MockPermissions from './MockPermissions';
 
 function App() {
     return (
@@ -42,19 +43,28 @@ function DummyExample() {
     return (
         <Router>
             <Button onClick={() => snackbarManager.success('succes')}>open message</Button>
+            <MockPermissions />
             <Typography variant="h1">
                 <Translate msg="app_shell.header.title" raw />
             </Typography>
             <MainNav />
             <div>
                 <Switch>
-                    <Route path={ROUTES.R_HOME.path} exact>
-                        {/* Use the design route as "Homepage" */}
-                        <Redirect to={ROUTES.R_DESIGN.path} />
-                    </Route>
-                    <Route path={ROUTES.R_DESIGN.path} component={ROUTES.R_DESIGN.component} />
-                    <Route path={ROUTES.R_REPORT.path} component={ROUTES.R_REPORT.component} />
-                    <Route path="*" component={ROUTES.R_NOT_FOUND.component} />
+                    {Object.keys(ROUTES).map((routeKey) => {
+                        const route = ROUTES[routeKey];
+                        const { path, exact, component, requiredAccessLevels } = route;
+                        return requiredAccessLevels ? (
+                            <PermissionRoute
+                                key={routeKey}
+                                path={path}
+                                component={component}
+                                exact={exact}
+                                requiredAccessLevels={requiredAccessLevels}
+                            />
+                        ) : (
+                            <Route key={routeKey} path={path} component={component} exact={exact} />
+                        );
+                    })}
                 </Switch>
             </div>
         </Router>
