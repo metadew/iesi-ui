@@ -1,13 +1,13 @@
 import React from 'react';
-import { Typography, Button } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
+import { SnackbarProvider } from 'notistack';
 import {
     BrowserRouter as Router,
     Switch,
     Route,
     Redirect,
 } from 'react-router-dom';
-import snackbarManager from 'utils/ui/snackbarManager';
 import configuredStore from 'state/setup/configuredStore';
 import initApp from 'state/initApp';
 import { StoreProvider } from 'views/observe';
@@ -17,6 +17,7 @@ import I18nAware from '../I18nAware';
 import ShowUntilEnvConfigKnown from '../ShowUntilEnvConfigKnown';
 import './app.scss';
 import MainNav from '../MainNav';
+import FlashMessageManager from '../FlashMessageManager';
 
 function App() {
     return (
@@ -25,6 +26,9 @@ function App() {
                 <I18nAware>
                     <ShowUntilEnvConfigKnown>
                         <ThemeProvider>
+                            <SnackbarProvider maxSnack={3} anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}>
+                                <FlashMessageManager />
+                            </SnackbarProvider>
                             <DummyExample />
                         </ThemeProvider>
                     </ShowUntilEnvConfigKnown>
@@ -41,7 +45,6 @@ initApp();
 function DummyExample() {
     return (
         <Router>
-            <Button onClick={() => snackbarManager.success('succes')}>open message</Button>
             <Typography variant="h1">
                 <Translate msg="app_shell.header.title" raw />
             </Typography>
