@@ -2,6 +2,9 @@ import React, { ReactElement } from 'react';
 import ReactDOM from 'react-dom';
 import { SnackbarProvider, useSnackbar, OptionsObject } from 'notistack';
 
+// This is a solution to use notistack outside of components
+// https://github.com/iamhosseindhv/notistack/issues/30#issuecomment-455822993
+
 // add a <div> child to body under which to mount the snackbars
 const mountPoint = document.createElement('div');
 mountPoint.id = 'snackbar';
