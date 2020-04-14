@@ -18,7 +18,6 @@ export const fetchEnvConfig = () => createAction<{}>({
         const { dispatch } = getStore();
         try {
             dispatch(triggerFlashMessage({ msg: 'Fetch ENV: start' }));
-            dispatch(triggerFlashMessage({ msg: 'Fetch ENV: start 2' }));
 
             /* for if they were stored in browser storage */
             overrideTranslationsIfAny(getTranslationLabelOverrides(getState()));
@@ -47,7 +46,6 @@ export const fetchEnvConfig = () => createAction<{}>({
                 notificationsToTrigger: [StateChangeNotification.ENV_CONFIG, ...i18nNotifications],
             });
             dispatch(triggerFlashMessage({ msg: 'Fetch ENV: success', options: { variant: 'success' } }));
-            dispatch(triggerFlashMessage({ msg: 'Fetch ENV: success 2', options: { variant: 'success' } }));
         } catch (error) {
             setStateImmutable({
                 toState: (draftState) => {

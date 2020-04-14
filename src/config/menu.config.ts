@@ -5,6 +5,7 @@ export interface IMenuItem {
     id: string;
     label: string;
     path: string;
+    routeKey: ROUTE_KEYS;
 }
 
 export const MAIN_NAV_ITEMS: IMenuItem[] = [
@@ -23,6 +24,11 @@ export const MAIN_NAV_ITEMS: IMenuItem[] = [
         label: 'Report',
         routeKey: ROUTE_KEYS.R_REPORT,
     }),
+    toMenuItem({
+        id: 'private',
+        label: 'Edit (permissions)',
+        routeKey: ROUTE_KEYS.R_PRIVATE,
+    }),
 ];
 
 interface IMenuItemConfig {
@@ -40,5 +46,6 @@ function toMenuItem({
         id,
         label,
         path: ROUTES[routeKey].path,
+        routeKey,
     };
 }

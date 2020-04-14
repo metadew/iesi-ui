@@ -16,6 +16,14 @@ export const initialState: IState = {
     ui: {
         flashMessages: [],
     },
+    auth: {
+        // Dummy auth
+        username: 'dummy-test-user',
+        permissions: {
+            edit: true,
+            execute: true,
+        },
+    },
 };
 
 export const stateStorageConfig: IStateStorageConfig<IState> = {

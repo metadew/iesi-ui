@@ -14,7 +14,7 @@ export const triggerFlashMessage = (payload: IFlashMessage) => createAction<IFla
                     key: action.payload.key || new Date().getMilliseconds(),
                 });
             },
-            notificationsToTrigger: [StateChangeNotification.TRIGGER_FLASH_MESSAGE],
+            notificationsToTrigger: [StateChangeNotification.FLASH_MESSAGES],
         });
     },
 });
@@ -32,7 +32,7 @@ export const closeFlashMessage = (payload: { key: SnackbarKey }) => createAction
                         : { ...flashMessage }
                 ));
             },
-            notificationsToTrigger: [StateChangeNotification.CLOSE_FLASH_MESSAGE],
+            notificationsToTrigger: [StateChangeNotification.FLASH_MESSAGES],
         });
     },
 });
@@ -47,7 +47,7 @@ export const removeFlashMessage = (payload: { key: SnackbarKey }) => createActio
                 draftState.ui.flashMessages = draftState.ui.flashMessages
                     .filter((flashMessage) => flashMessage.key !== action.payload.key);
             },
-            notificationsToTrigger: [StateChangeNotification.REMOVE_FLASH_MESSAGE],
+            notificationsToTrigger: [StateChangeNotification.FLASH_MESSAGES],
         });
     },
 });
