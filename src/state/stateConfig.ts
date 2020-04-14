@@ -13,6 +13,9 @@ export const initialState: IState = {
         areTranslationsRefreshed: false,
         showTranslationKeys: false,
     },
+    ui: {
+        flashMessages: [],
+    },
     auth: {
         // Dummy auth
         username: 'dummy-test-user',
