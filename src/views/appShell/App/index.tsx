@@ -24,16 +24,21 @@ function App() {
     return (
         <div className="App">
             <StoreProvider value={configuredStore}>
-                <I18nAware>
-                    <ShowUntilEnvConfigKnown>
-                        <ThemeProvider>
-                            <SnackbarProvider maxSnack={3} anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}>
-                                <FlashMessageManager />
-                            </SnackbarProvider>
-                            <DummyExample />
-                        </ThemeProvider>
-                    </ShowUntilEnvConfigKnown>
-                </I18nAware>
+                <Router>
+                    <I18nAware>
+                        <ShowUntilEnvConfigKnown>
+                            <ThemeProvider>
+                                <SnackbarProvider
+                                    maxSnack={3}
+                                    anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+                                >
+                                    <FlashMessageManager />
+                                </SnackbarProvider>
+                                <DummyExample />
+                            </ThemeProvider>
+                        </ShowUntilEnvConfigKnown>
+                    </I18nAware>
+                </Router>
             </StoreProvider>
         </div>
     );
@@ -45,7 +50,7 @@ initApp();
 
 function DummyExample() {
     return (
-        <Router>
+        <>
             <MockPermissions />
             <Typography variant="h1">
                 <Translate msg="app_shell.header.title" raw />
@@ -70,6 +75,6 @@ function DummyExample() {
                     })}
                 </Switch>
             </div>
-        </Router>
+        </>
     );
 }

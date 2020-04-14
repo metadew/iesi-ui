@@ -5,6 +5,7 @@ import { triggerFlashMessage } from 'state/ui/actions';
 import { getStore } from 'state/index';
 import { getTranslationLabelOverrides } from './selectors';
 import { createAction } from '../index';
+import ROUTE_KEYS from '../../routeKeys';
 
 // TODO reduce the boilerplate with an 'entities' mechanism?
 // (or is this the exception because we keep it out of the 'entities' state part?)
@@ -17,7 +18,10 @@ export const fetchEnvConfig = () => createAction<{}>({
     async process({ getState, setStateImmutable, api }) {
         const { dispatch } = getStore();
         try {
-            dispatch(triggerFlashMessage({ msg: 'Fetch ENV: start' }));
+            dispatch(triggerFlashMessage({
+                msg: 'Fetch ENV: start',
+                navigateToRoute: { routeKey: ROUTE_KEYS.R_REPORT },
+            }));
 
             /* for if they were stored in browser storage */
             overrideTranslationsIfAny(getTranslationLabelOverrides(getState()));

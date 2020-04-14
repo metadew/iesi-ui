@@ -6,6 +6,9 @@ import { getFlashMessages } from 'state/ui/selectors';
 import { removeFlashMessage } from 'state/ui/actions';
 import { IconButton } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
+import NavLink from 'views/common/NavLink';
+import ROUTE_KEYS from 'routeKeys';
+import ROUTES from 'views/routes';
 
 /* implemented based on redux example: https://iamhosseindhv.com/notistack/demos#redux-/-mobx-example */
 
@@ -19,13 +22,7 @@ function FlashMessageManager({
     const flashMessages = getFlashMessages(state);
 
     React.useEffect(() => {
-        const closeAction = (key: string) => (
-            <IconButton size="small" aria-label="close" color="inherit" onClick={() => closeSnackbar(key)}>
-                <Close fontSize="small" />
-            </IconButton>
-        );
-
-        flashMessages.forEach(({ key, msg, options = {}, dismissed = false }) => {
+        flashMessages.forEach(({ key, msg, options = {}, dismissed = false, navigateToRoute }) => {
             if (dismissed) {
                 // dismiss snackbar using notistack
                 closeSnackbar(key);
@@ -40,7 +37,10 @@ function FlashMessageManager({
                 key,
                 // Default values
                 autoHideDuration: 1000 * 60,
-                action: closeAction,
+                action: getActions({
+                    onClose: () => closeSnackbar(key),
+                    navigateToRoute,
+                }),
                 // Custom options
                 ...options,
                 onClose: (event, reason, myKey) => {
@@ -64,6 +64,37 @@ function FlashMessageManager({
     }, [flashMessages, closeSnackbar, enqueueSnackbar, dispatch]);
 
     return null;
+}
+
+function getActions({
+    onClose,
+    navigateToRoute,
+}: {
+    onClose: () => void;
+    navigateToRoute: {
+        routeKey: ROUTE_KEYS;
+    };
+}) {
+    return (
+        <>
+            {navigateToRoute && navigateToRoute.routeKey && (
+                renderRoute()
+            )}
+            <IconButton size="small" aria-label="close" color="inherit" onClick={onClose}>
+                <Close fontSize="small" />
+            </IconButton>
+        </>
+    );
+
+    function renderRoute() {
+        const route = ROUTES[navigateToRoute.routeKey];
+        const { path, exact } = route;
+        return (
+            <NavLink to={path} exact={exact} flashMessageLink>
+                {`To ${navigateToRoute.routeKey}`}
+            </NavLink>
+        );
+    }
 }
 
 function storeDisplayed(keyToAdd: SnackbarKey) {
