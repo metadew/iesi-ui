@@ -18,10 +18,7 @@ export const fetchEnvConfig = () => createAction<{}>({
     async process({ getState, setStateImmutable, api }) {
         const { dispatch } = getStore();
         try {
-            dispatch(triggerFlashMessage({
-                msg: 'Fetch ENV: start',
-                navigateToRoute: { routeKey: ROUTE_KEYS.R_REPORT },
-            }));
+            dispatch(triggerFlashMessage({ translationKey: 'Fetch ENV: start' }));
 
             /* for if they were stored in browser storage */
             overrideTranslationsIfAny(getTranslationLabelOverrides(getState()));
@@ -48,7 +45,11 @@ export const fetchEnvConfig = () => createAction<{}>({
                 },
                 notificationsToTrigger: [StateChangeNotification.ENV_CONFIG, ...i18nNotifications],
             });
-            dispatch(triggerFlashMessage({ msg: 'Fetch ENV: success', options: { variant: 'success' } }));
+            dispatch(triggerFlashMessage({
+                translationKey: 'Fetch ENV: success',
+                type: 'success',
+                navigateToRoute: { routeKey: ROUTE_KEYS.R_REPORT },
+            }));
         } catch (error) {
             setStateImmutable({
                 toState: (draftState) => {
@@ -56,7 +57,7 @@ export const fetchEnvConfig = () => createAction<{}>({
                 },
                 notificationsToTrigger: [StateChangeNotification.ENV_CONFIG],
             });
-            dispatch(triggerFlashMessage({ msg: 'Fetch ENV: error', options: { variant: 'error' } }));
+            dispatch(triggerFlashMessage({ translationKey: 'Fetch ENV: error', type: 'error' }));
         }
     },
 });
