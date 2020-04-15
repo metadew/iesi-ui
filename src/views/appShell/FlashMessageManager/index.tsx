@@ -26,7 +26,7 @@ function FlashMessageManager({
     React.useEffect(() => {
         flashMessages.forEach((flashMessage) => {
             const {
-                key, translationKey, options = {}, dismissed = false, navigateToRoute, translationPlaceholders,
+                key, translationKey, options, dismissed, navigateToRoute, translationPlaceholders,
             } = flashMessage;
 
             if (dismissed) {

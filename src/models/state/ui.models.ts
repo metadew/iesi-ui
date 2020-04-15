@@ -7,14 +7,15 @@ export interface IUiState {
 }
 
 export interface ITriggerFlashMessagePayload extends
-    Pick<IFlashMessage, 'translationKey' | 'translationPlaceholders' | 'navigateToRoute' | 'options'> {
+    Pick<IFlashMessage, 'translationKey' | 'translationPlaceholders' | 'navigateToRoute'> {
     type?: VariantType;
+    options?: OptionsObject;
 }
 
 export interface IFlashMessage {
     translationKey: string;
     translationPlaceholders?: ITranslatorPlaceholders;
-    options?: OptionsObject;
+    options: OptionsObject;
     dismissed: boolean;
     key: SnackbarKey;
     navigateToRoute?: {
