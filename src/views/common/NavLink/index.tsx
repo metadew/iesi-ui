@@ -2,7 +2,9 @@ import React from 'react';
 import { NavLink as RouterNavLink, NavLinkProps } from 'react-router-dom';
 import { makeStyles, Theme } from '@material-ui/core';
 
-type IPublicProps = NavLinkProps;
+interface IPublicProps extends NavLinkProps {
+    flashMessageLink?: boolean;
+}
 
 const ACTIVE_CLASS_NAME = 'active';
 
@@ -13,10 +15,13 @@ const useStyles = makeStyles((theme: Theme) => ({
             color: theme.palette.primary.main,
         },
     },
+    flashMessageLink: {
+        color: 'inherit',
+    },
 }));
 
 function NavLink(props: IPublicProps) {
-    const { to, children, exact } = props;
+    const { to, children, exact, flashMessageLink } = props;
     const classes = useStyles();
 
     return (
@@ -24,7 +29,7 @@ function NavLink(props: IPublicProps) {
             to={to}
             exact={exact}
             activeClassName={ACTIVE_CLASS_NAME}
-            className={classes.root}
+            className={flashMessageLink ? classes.flashMessageLink : classes.root}
         >
             {children}
         </RouterNavLink>

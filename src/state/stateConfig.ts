@@ -13,6 +13,17 @@ export const initialState: IState = {
         areTranslationsRefreshed: false,
         showTranslationKeys: false,
     },
+    ui: {
+        flashMessages: [],
+    },
+    auth: {
+        // Dummy auth
+        username: 'dummy-test-user',
+        permissions: {
+            edit: true,
+            execute: true,
+        },
+    },
 };
 
 export const stateStorageConfig: IStateStorageConfig<IState> = {

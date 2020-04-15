@@ -6,6 +6,7 @@ import {
     useMediaQuery,
     createMuiTheme,
 } from '@material-ui/core';
+import BrightnessIcon from '@material-ui/icons/Brightness4';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 import localStorage from '@snipsonian/browser/es/storage/localStorage';
 import {
@@ -63,7 +64,12 @@ function ThemeProvider(props: IThemeProvider) {
                         color="default"
                     />
                 )}
-                label="Toggle theme mode"
+                label={(
+                    <>
+                        <BrightnessIcon />
+                        <span>Toggle theme mode</span>
+                    </>
+                )}
             />
             {props.children}
         </MuiThemeProvider>
