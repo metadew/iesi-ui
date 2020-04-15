@@ -1,6 +1,6 @@
 import { createAction } from 'state';
 import { StateChangeNotification } from 'models/state.models';
-import { IAccessLevel } from 'models/router.models';
+import { IAccessLevel } from 'models/state/auth.models';
 
 export const updateUserPermission = ({ permission }: { permission: keyof IAccessLevel }) => createAction<{}>({
     type: 'UPDATE_USER_PERMISSION',

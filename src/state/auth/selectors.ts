@@ -1,5 +1,5 @@
 import { IState } from 'models/state.models';
-import { IAccessLevel } from 'models/router.models';
+import { IAccessLevel } from 'models/state/auth.models';
 
 export const getUserPermissions = (state: IState) => state.auth.permissions;
 

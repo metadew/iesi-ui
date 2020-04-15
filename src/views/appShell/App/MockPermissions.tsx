@@ -1,12 +1,12 @@
 import React from 'react';
 import { FormControlLabel, Switch, withStyles } from '@material-ui/core';
+import { red, green } from '@material-ui/core/colors';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
-import { getUserPermissions } from 'state/auth/selectors';
+import { IAccessLevel } from 'models/state/auth.models';
 import { getStore } from 'state';
+import { getUserPermissions } from 'state/auth/selectors';
 import { updateUserPermission } from 'state/auth/actions';
-import { IAccessLevel } from 'models/router.models';
-import { red, green } from '@material-ui/core/colors';
 
 const { dispatch } = getStore();
 

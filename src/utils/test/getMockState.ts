@@ -22,7 +22,17 @@ export default function getMockState({
             areTranslationsRefreshed,
             showTranslationKeys,
         },
-    } as IState;
+        ui: {
+            flashMessages: [],
+        },
+        auth: {
+            username: 'mocked-test-user',
+            permissions: {
+                edit: true,
+                execute: true,
+            },
+        },
+    };
 }
 
 function getDefaultEnvConfig(): ICustomAsyncEntity<IEnvConfig> {

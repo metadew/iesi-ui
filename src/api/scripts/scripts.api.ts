@@ -1,4 +1,5 @@
-import { IScriptBase, IScriptNamed, IScript, IFetchScriptByNamePayload, IFetchScriptByNameAndVerionPayload } from 'models/state/scripts.models';
+import { IScriptBase, IScriptNamed, IScript, IFetchScriptByNamePayload, IFetchScriptByNameAndVerionPayload }
+    from 'models/state/scripts.models';
 import { get } from '../requestWrapper';
 import API_URLS from '../apiUrls';
 
