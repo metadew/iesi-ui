@@ -1,4 +1,4 @@
-import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import { asyncEntityFetch } from 'snipsonian/observable-state/src/actionableStore/entities/asyncEntityUpdaters';
 import { StateChangeNotification } from 'models/state.models';
 import { overrideTranslationsIfAny } from 'views/translations';
 import { getTranslationLabelOverrides } from './selectors';
@@ -19,7 +19,7 @@ export const fetchEnvConfig = () => createAction<{}>({
 
             setStateImmutable({
                 toState: (draftState) => {
-                    draftState.envConfig.fetch.status = AsyncStatus.Busy;
+                    draftState.envConfig = asyncEntityFetch.triggerWithoutDataReset(draftState.envConfig);
                 },
                 notificationsToTrigger: [StateChangeNotification.ENV_CONFIG],
             });
@@ -33,8 +33,7 @@ export const fetchEnvConfig = () => createAction<{}>({
 
             setStateImmutable({
                 toState: (draftState) => {
-                    draftState.envConfig.fetch.status = AsyncStatus.Success;
-                    draftState.envConfig.data = envConfigData;
+                    draftState.envConfig = asyncEntityFetch.succeeded(draftState.envConfig, envConfigData);
 
                     draftState.i18n.areTranslationsRefreshed = true;
                 },
@@ -43,8 +42,7 @@ export const fetchEnvConfig = () => createAction<{}>({
         } catch (error) {
             setStateImmutable({
                 toState: (draftState) => {
-                    draftState.envConfig.fetch.status = AsyncStatus.Error;
-                    draftState.envConfig.fetch.error = error;
+                    draftState.envConfig = asyncEntityFetch.failed(draftState.envConfig, error);
                 },
                 notificationsToTrigger: [StateChangeNotification.ENV_CONFIG],
             });

@@ -2,7 +2,7 @@ import isSet from '@snipsonian/core/es/is/isSet';
 import { ITraceableApiErrorBase } from '@snipsonian/core/es/typings/apiErrors';
 import { AsyncOperation, AsyncStatus, IAsyncEntity } from './types';
 
-export function getAsyncEntityInitialState<Data = {}, Error = ITraceableApiErrorBase<{}>>({
+export function createAsyncEntityInitialState<Data = {}, Error = ITraceableApiErrorBase<{}>>({
     data,
     operations = [AsyncOperation.fetch],
 }: {

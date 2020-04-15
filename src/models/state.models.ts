@@ -4,7 +4,7 @@ import produce from 'immer';
 import { api } from 'api';
 import { TEnvConfigState } from './state/envConfig.models';
 import { II18nState } from './state/i18n.models';
-import { ICustomAsyncEntity as ICustomAsyncEntityOrig } from './state/types';
+import { ICustomAsyncEntity as ICustomAsyncEntityOrig } from './state/entities.models';
 
 export type ICustomAsyncEntity<Data> = ICustomAsyncEntityOrig<Data>;
 

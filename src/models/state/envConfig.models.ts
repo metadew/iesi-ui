@@ -3,7 +3,7 @@
  */
 
 import { ITranslationsPerLocale } from '@snipsonian/react/es/components/i18n/translations/types';
-import { ICustomAsyncEntity } from './types';
+import { ICustomAsyncEntity } from './entities.models';
 
 export type TEnvConfigState = ICustomAsyncEntity<IEnvConfig>;
 
