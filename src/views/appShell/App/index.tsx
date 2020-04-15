@@ -2,11 +2,8 @@ import React from 'react';
 import { Typography } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { SnackbarProvider } from 'notistack';
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-} from 'react-router-dom';
+import { BrowserRouter as Router, Switch } from 'react-router-dom';
+import ROUTE_KEYS from 'routeKeys';
 import configuredStore from 'state/setup/configuredStore';
 import initApp from 'state/initApp';
 import { StoreProvider } from 'views/observe';
@@ -17,7 +14,7 @@ import ShowUntilEnvConfigKnown from '../ShowUntilEnvConfigKnown';
 import './app.scss';
 import MainNav from '../MainNav';
 import FlashMessageManager from '../FlashMessageManager';
-import PermissionRoute from './PermissionRoute';
+import Route from '../../common/navigation/Route';
 import MockPermissions from './MockPermissions';
 
 function App() {
@@ -60,17 +57,13 @@ function DummyExample() {
                 <Switch>
                     {Object.keys(ROUTES).map((routeKey) => {
                         const route = ROUTES[routeKey];
-                        const { path, exact, component, requiredAccessLevels } = route;
-                        return requiredAccessLevels ? (
-                            <PermissionRoute
+                        return (
+                            <Route
                                 key={routeKey}
-                                path={path}
-                                component={component}
-                                exact={exact}
-                                requiredAccessLevels={requiredAccessLevels}
+                                routeKey={routeKey as ROUTE_KEYS}
+                                path={route.path}
+                                exact={route.exact}
                             />
-                        ) : (
-                            <Route key={routeKey} path={path} component={component} exact={exact} />
                         );
                     })}
                 </Switch>

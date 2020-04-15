@@ -1,27 +1,30 @@
 import React from 'react';
 import { Route, RouteProps, Redirect } from 'react-router-dom';
 import { StateChangeNotification } from 'models/state.models';
-import { IAccessLevel } from 'models/state/auth.models';
 import { hasRequiredAccessLevels } from 'state/auth/selectors';
 import { observe, IObserveProps } from 'views/observe';
+import ROUTE_KEYS from 'routeKeys';
+import ROUTES from 'views/routes';
 
-interface IPermissionRoute extends RouteProps {
-    requiredAccessLevels: Partial<IAccessLevel>;
+interface IPublicProps extends RouteProps {
+    routeKey: ROUTE_KEYS;
 }
 
 function PermissionRoute({
     state,
-    requiredAccessLevels,
+    routeKey,
     children,
-    component,
-    ...rest
-}: IPermissionRoute & IObserveProps) {
-    const Component = component;
+    path,
+}: IPublicProps & IObserveProps) {
+    const route = ROUTES[routeKey];
+    const { component: Component, requiredAccessLevels } = route;
+
     const allowedToRoute = hasRequiredAccessLevels(state, requiredAccessLevels);
 
     return (
         <Route
-            {...rest}
+            path={path}
+            exact={route.exact}
             render={(routeProps) =>
                 (allowedToRoute ? (
                     Component ? <Component {...routeProps} /> : children
@@ -38,7 +41,7 @@ function PermissionRoute({
     );
 }
 
-export default observe<IPermissionRoute>(
+export default observe<IPublicProps>(
     [StateChangeNotification.AUTH],
     PermissionRoute,
 );
