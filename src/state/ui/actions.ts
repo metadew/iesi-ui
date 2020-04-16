@@ -1,17 +1,24 @@
 import { createAction } from 'state';
 import { StateChangeNotification } from 'models/state.models';
-import { IFlashMessage } from 'models/state/ui.models';
+import { ITriggerFlashMessagePayload } from 'models/state/ui.models';
 import { SnackbarKey } from 'notistack';
 
-export const triggerFlashMessage = (payload: IFlashMessage) => createAction<IFlashMessage>({
+export const triggerFlashMessage = (payload: ITriggerFlashMessagePayload) => createAction<ITriggerFlashMessagePayload>({
     type: 'TRIGGER_FLASH_MESSAGE',
     payload,
     process({ setStateImmutable, action }) {
         setStateImmutable({
             toState: (draftState) => {
+                const options = action.payload.options || {};
                 draftState.ui.flashMessages.push({
-                    ...action.payload,
-                    key: action.payload.key || new Date().getMilliseconds(),
+                    translationKey: action.payload.translationKey,
+                    navigateToRoute: action.payload.navigateToRoute,
+                    options: {
+                        ...options,
+                        variant: action.payload.type || 'default',
+                    },
+                    dismissed: false,
+                    key: new Date().getMilliseconds(),
                 });
             },
             notificationsToTrigger: [StateChangeNotification.FLASH_MESSAGES],
