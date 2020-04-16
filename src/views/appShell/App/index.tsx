@@ -7,6 +7,7 @@ import ROUTE_KEYS from 'routeKeys';
 import configuredStore from 'state/setup/configuredStore';
 import initApp from 'state/initApp';
 import { StoreProvider } from 'views/observe';
+import ErrorBoundary from 'views/common/error/ErrorBoundary';
 import ROUTES from 'views/routes';
 import ThemeProvider from '../ThemeProvider';
 import I18nAware from '../I18nAware';
@@ -23,17 +24,19 @@ function App() {
             <StoreProvider value={configuredStore}>
                 <Router>
                     <I18nAware>
-                        <ShowUntilEnvConfigKnown>
-                            <ThemeProvider>
-                                <SnackbarProvider
-                                    maxSnack={3}
-                                    anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
-                                >
-                                    <FlashMessageManager />
-                                </SnackbarProvider>
-                                <DummyExample />
-                            </ThemeProvider>
-                        </ShowUntilEnvConfigKnown>
+                        <ErrorBoundary>
+                            <ShowUntilEnvConfigKnown>
+                                <ThemeProvider>
+                                    <SnackbarProvider
+                                        maxSnack={3}
+                                        anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+                                    >
+                                        <FlashMessageManager />
+                                    </SnackbarProvider>
+                                    <DummyExample />
+                                </ThemeProvider>
+                            </ShowUntilEnvConfigKnown>
+                        </ErrorBoundary>
                     </I18nAware>
                 </Router>
             </StoreProvider>
