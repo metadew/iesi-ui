@@ -12,6 +12,7 @@ export const triggerFlashMessage = (payload: ITriggerFlashMessagePayload) => cre
                 const options = action.payload.options || {};
                 draftState.ui.flashMessages.push({
                     translationKey: action.payload.translationKey,
+                    translationPlaceholders: action.payload.translationPlaceholders,
                     navigateToRoute: action.payload.navigateToRoute,
                     options: {
                         ...options,
@@ -32,12 +33,10 @@ export const closeFlashMessage = (payload: { key: SnackbarKey }) => createAction
     process({ setStateImmutable, action }) {
         setStateImmutable({
             toState: (draftState) => {
-                // eslint-disable-next-line no-param-reassign
-                draftState.ui.flashMessages = draftState.ui.flashMessages.map((flashMessage) => (
-                    (!action.payload.key || flashMessage.key === action.payload.key)
-                        ? { ...flashMessage, dismissed: true }
-                        : { ...flashMessage }
-                ));
+                const flashMessage = draftState.ui.flashMessages.find((item) => item.key === action.payload.key);
+                if (flashMessage) {
+                    flashMessage.dismissed = true;
+                }
             },
             notificationsToTrigger: [StateChangeNotification.FLASH_MESSAGES],
         });
@@ -50,9 +49,10 @@ export const removeFlashMessage = (payload: { key: SnackbarKey }) => createActio
     process({ setStateImmutable, action }) {
         setStateImmutable({
             toState: (draftState) => {
-                // eslint-disable-next-line no-param-reassign
-                draftState.ui.flashMessages = draftState.ui.flashMessages
-                    .filter((flashMessage) => flashMessage.key !== action.payload.key);
+                const index = draftState.ui.flashMessages.findIndex((item) => item.key === action.payload.key);
+                if (index !== -1) {
+                    draftState.ui.flashMessages.splice(index, 1);
+                }
             },
             notificationsToTrigger: [StateChangeNotification.FLASH_MESSAGES],
         });

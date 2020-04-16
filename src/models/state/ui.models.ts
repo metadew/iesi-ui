@@ -6,19 +6,23 @@ export interface IUiState {
     flashMessages: IFlashMessage[];
 }
 
-export interface ITriggerFlashMessagePayload extends
-    Pick<IFlashMessage, 'translationKey' | 'translationPlaceholders' | 'navigateToRoute'> {
+interface INavigateToRoutePayload {
+    routeKey: ROUTE_KEYS;
+}
+
+export interface ITriggerFlashMessagePayload {
+    translationKey: string;
+    translationPlaceholders?: ITranslatorPlaceholders;
     type?: VariantType;
     options?: OptionsObject;
+    navigateToRoute?: INavigateToRoutePayload;
 }
 
 export interface IFlashMessage {
     translationKey: string;
-    translationPlaceholders?: ITranslatorPlaceholders;
+    translationPlaceholders: ITranslatorPlaceholders;
     options: OptionsObject;
     dismissed: boolean;
     key: SnackbarKey;
-    navigateToRoute?: {
-        routeKey: ROUTE_KEYS;
-    };
+    navigateToRoute: INavigateToRoutePayload;
 }
