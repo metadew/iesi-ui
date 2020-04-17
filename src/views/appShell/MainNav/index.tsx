@@ -1,6 +1,6 @@
 import React from 'react';
 import { MAIN_NAV_ITEMS, IMenuItem } from 'config/menu.config';
-import NavLink from 'views/common/NavLink';
+import NavLink from 'views/common/navigation/NavLink';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification, IState } from 'models/state.models';
 import { hasRequiredAccessLevels } from 'state/auth/selectors';

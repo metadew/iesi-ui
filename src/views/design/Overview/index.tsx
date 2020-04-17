@@ -1,7 +1,7 @@
 import React from 'react';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import { Typography } from '@material-ui/core';
-import NavLink from 'views/common/NavLink';
+import NavLink from 'views/common/navigation/NavLink';
 import ScriptDetail from '../Detail';
 
 function Overview() {

@@ -6,7 +6,7 @@ import { getFlashMessages } from 'state/ui/selectors';
 import { removeFlashMessage } from 'state/ui/actions';
 import { IconButton } from '@material-ui/core';
 import { Close, Visibility } from '@material-ui/icons';
-import NavLink from 'views/common/NavLink';
+import NavLink from 'views/common/navigation/NavLink';
 import ROUTE_KEYS from 'routeKeys';
 import ROUTES from 'views/routes';
 import { getTranslator } from 'state/i18n/selectors';
