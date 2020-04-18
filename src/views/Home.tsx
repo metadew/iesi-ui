@@ -1,12 +1,10 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
-// import ROUTES from 'views/routes'; => dep cycle
+import { getRoutePath, ROUTE_KEYS } from 'views/routes';
 
-// Use the design route as "Homepage"
 function Home() {
     return (
-        // <Redirect to={ROUTES.R_DESIGN.path} />
-        <Redirect to="/design" />
+        <Redirect to={getRoutePath({ routeKey: ROUTE_KEYS.R_SCRIPTS })} />
     );
 }
 

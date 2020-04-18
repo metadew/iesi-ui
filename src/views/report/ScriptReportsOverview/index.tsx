@@ -1,11 +1,12 @@
 import React from 'react';
 import { Switch, Route, useRouteMatch } from 'react-router-dom';
 import { Typography } from '@material-ui/core';
+import { getRoutePath, ROUTE_KEYS } from 'views/routes';
 import NavLink from 'views/common/navigation/NavLink';
-import ScriptDetail from '../Detail';
+import ScriptReportDetail from '../ScriptReportDetail';
 
-function Overview() {
-    const { path, url } = useRouteMatch();
+function ScriptReportsOverview() {
+    const { url } = useRouteMatch();
 
     return (
         <div>
@@ -21,11 +22,11 @@ function Overview() {
             </nav>
             <div>
                 <Switch>
-                    <Route path={path} exact>
-                        <Typography variant="h2">Scripts list</Typography>
+                    <Route path={getRoutePath({ routeKey: ROUTE_KEYS.R_REPORT_DETAIL })}>
+                        <ScriptReportDetail />
                     </Route>
-                    <Route path={`${path}/:detailId`}>
-                        <ScriptDetail />
+                    <Route path={getRoutePath({ routeKey: ROUTE_KEYS.R_REPORTS })}>
+                        <Typography variant="h2">Executions list</Typography>
                     </Route>
                 </Switch>
             </div>
@@ -33,4 +34,4 @@ function Overview() {
     );
 }
 
-export default Overview;
+export default ScriptReportsOverview;

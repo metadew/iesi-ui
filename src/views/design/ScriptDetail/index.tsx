@@ -1,13 +1,13 @@
 import React from 'react';
-import { Typography } from '@material-ui/core';
 import { useParams } from 'react-router-dom';
+import { Typography } from '@material-ui/core';
 
 function ScriptDetail() {
-    const { detailId } = useParams();
+    const { scriptId } = useParams();
 
     return (
         <div>
-            <Typography variant="h2">{`Script detail: ${detailId}`}</Typography>
+            <Typography variant="h2">{`Script detail: ${scriptId}`}</Typography>
         </div>
     );
 }

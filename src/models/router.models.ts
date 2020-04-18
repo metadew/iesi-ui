@@ -1,12 +1,14 @@
 import { RouteProps } from 'react-router-dom';
 import { IAccessLevel } from './state/auth.models';
 
-export interface IRoutes {
-    [key: string]: IRoute;
+export interface IRoutesMap<RouteKey = string> {
+    [routeKey: string]: IRoute<RouteKey>;
 }
 
-export interface IRoute extends RouteProps {
+export interface IRoute<RouteKey = string> extends RouteProps {
+    routeKey: RouteKey;
     path: string;
     allowAnonymousAccess?: boolean; // default true // TODO default false once authentication mechanism
     requiredAccessLevels?: Partial<IAccessLevel>;
+    childRoutes?: IRoute<RouteKey>[];
 }
