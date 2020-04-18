@@ -1,5 +1,9 @@
 app_shell:
   header:
+    menu:
+      home: Home
+      reports: Reports
+      scripts: Scripts
     title: Iesi UI
 error:
   unexpected: An unexpected error occurred.

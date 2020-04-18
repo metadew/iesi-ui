@@ -1,51 +1,36 @@
-import ROUTES from 'views/routes';
-import ROUTE_KEYS from '../routeKeys';
+import { ROUTE_KEYS } from 'views/routes';
+
+const TRANSLATION_PREFIX = 'app_shell.header.menu';
 
 export interface IMenuItem {
-    id: string;
-    label: string;
-    path: string;
     routeKey: ROUTE_KEYS;
+    translationKey: string;
 }
 
 export const MAIN_NAV_ITEMS: IMenuItem[] = [
     toMenuItem({
-        id: 'home',
-        label: 'Home',
         routeKey: ROUTE_KEYS.R_HOME,
+        translationKeySuffix: 'home',
     }),
     toMenuItem({
-        id: 'design',
-        label: 'Design',
-        routeKey: ROUTE_KEYS.R_DESIGN,
+        routeKey: ROUTE_KEYS.R_SCRIPTS,
+        translationKeySuffix: 'scripts',
     }),
     toMenuItem({
-        id: 'report',
-        label: 'Report',
-        routeKey: ROUTE_KEYS.R_REPORT,
-    }),
-    toMenuItem({
-        id: 'private',
-        label: 'Edit (permissions)',
-        routeKey: ROUTE_KEYS.R_PRIVATE,
+        routeKey: ROUTE_KEYS.R_REPORTS,
+        translationKeySuffix: 'reports',
     }),
 ];
 
-interface IMenuItemConfig {
-    id: string;
-    label: string;
-    routeKey: ROUTE_KEYS;
-}
-
 function toMenuItem({
-    id,
-    label,
     routeKey,
-}: IMenuItemConfig): IMenuItem {
+    translationKeySuffix,
+}: {
+    routeKey: ROUTE_KEYS;
+    translationKeySuffix: string;
+}): IMenuItem {
     return {
-        id,
-        label,
-        path: ROUTES[routeKey].path,
         routeKey,
+        translationKey: `${TRANSLATION_PREFIX}.${translationKeySuffix}`,
     };
 }

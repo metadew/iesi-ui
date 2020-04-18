@@ -1,8 +1,7 @@
 import React from 'react';
-import NavLink from 'views/common/navigation/NavLink';
 import { Button } from '@material-ui/core';
-import ROUTES from 'views/routes';
-import ROUTE_KEYS from '../../../../routeKeys';
+import { getRoute, ROUTE_KEYS } from 'views/routes';
+import NavLink from 'views/common/navigation/NavLink';
 
 interface IComponentProps {
     children: JSX.Element[] | JSX.Element;
@@ -30,8 +29,9 @@ export default class ErrorBoundary extends React.Component<IComponentProps, ICom
 
     public render() {
         if (this.state.hasError) {
-            const route = ROUTES[ROUTE_KEYS.R_HOME];
-            const { path, exact } = route;
+            const { path, exact } = getRoute({ routeKey: ROUTE_KEYS.R_HOME });
+
+            // TODO render something nicer in case of error
             return (
                 <NavLink to={path} exact={exact}>
                     <Button onClick={this.resetErrorBoundary}>

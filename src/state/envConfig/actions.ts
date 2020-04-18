@@ -1,11 +1,11 @@
 import { asyncEntityFetch } from 'snipsonian/observable-state/src/actionableStore/entities/asyncEntityUpdaters';
 import { StateChangeNotification } from 'models/state.models';
 import { overrideTranslationsIfAny } from 'views/translations';
+import { ROUTE_KEYS } from 'views/routes';
 import { triggerFlashMessage } from 'state/ui/actions';
 import { getStore } from 'state/index';
 import { getTranslationLabelOverrides } from './selectors';
 import { createAction } from '../index';
-import ROUTE_KEYS from '../../routeKeys';
 
 // TODO reduce the boilerplate with an 'entities' mechanism?
 // (or is this the exception because we keep it out of the 'entities' state part?)
@@ -48,7 +48,7 @@ export const fetchEnvConfig = () => createAction<{}>({
             dispatch(triggerFlashMessage({
                 translationKey: 'Fetch ENV: success',
                 type: 'success',
-                navigateToRoute: { routeKey: ROUTE_KEYS.R_REPORT },
+                navigateToRoute: { routeKey: ROUTE_KEYS.R_REPORTS },
             }));
         } catch (error) {
             setStateImmutable({

@@ -1,10 +1,9 @@
 import React from 'react';
-import { Route, RouteProps, Redirect } from 'react-router-dom';
+import { Redirect, Route, RouteProps } from 'react-router-dom';
 import { StateChangeNotification } from 'models/state.models';
 import { hasRequiredAccessLevels } from 'state/auth/selectors';
-import { observe, IObserveProps } from 'views/observe';
-import ROUTE_KEYS from 'routeKeys';
-import ROUTES from 'views/routes';
+import { IObserveProps, observe } from 'views/observe';
+import { getRoute, getRoutePath, ROUTE_KEYS } from 'views/routes';
 
 interface IPublicProps extends RouteProps {
     routeKey: ROUTE_KEYS;
@@ -16,27 +15,30 @@ function PermissionRoute({
     children,
     path,
 }: IPublicProps & IObserveProps) {
-    const route = ROUTES[routeKey];
+    const route = getRoute({ routeKey });
     const { component: Component, requiredAccessLevels } = route;
 
-    const allowedToRoute = hasRequiredAccessLevels(state, requiredAccessLevels);
+    const isAllowedToRoute = hasRequiredAccessLevels(state, requiredAccessLevels);
 
     return (
         <Route
             path={path}
             exact={route.exact}
             render={(routeProps) =>
-                (allowedToRoute ? (
-                    Component ? <Component {...routeProps} /> : children
-                ) : (
-                    // Or show unauthorized page?
-                    <Redirect
-                        to={{
-                            pathname: '/',
-                            state: { from: routeProps.location },
-                        }}
-                    />
-                ))}
+                (isAllowedToRoute
+                    ? (
+                        Component ? <Component {...routeProps} /> : children
+                    )
+                    : (
+                        // TODO Or show unauthorized page?
+                        <Redirect
+                            to={{
+                                pathname: getRoutePath({ routeKey: ROUTE_KEYS.R_HOME }),
+                                state: { from: routeProps.location },
+                            }}
+                        />
+                    )
+                )}
         />
     );
 }

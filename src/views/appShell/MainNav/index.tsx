@@ -1,10 +1,11 @@
 import React from 'react';
-import { MAIN_NAV_ITEMS, IMenuItem } from 'config/menu.config';
-import NavLink from 'views/common/navigation/NavLink';
-import { observe, IObserveProps } from 'views/observe';
+import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { StateChangeNotification, IState } from 'models/state.models';
+import { MAIN_NAV_ITEMS, IMenuItem } from 'config/menu.config';
 import { hasRequiredAccessLevels } from 'state/auth/selectors';
-import ROUTES from 'views/routes';
+import { getRoute } from 'views/routes';
+import { observe, IObserveProps } from 'views/observe';
+import NavLink from 'views/common/navigation/NavLink';
 
 function MainNav({ state }: IObserveProps) {
     return (
@@ -23,19 +24,22 @@ function renderNavItem({
     state: IState;
     item: IMenuItem;
 }) {
-    const { requiredAccessLevels } = ROUTES[item.routeKey];
-    const allowedToRoute = hasRequiredAccessLevels(state, requiredAccessLevels);
+    const { routeKey, translationKey } = item;
+    const { path, exact, requiredAccessLevels } = getRoute({ routeKey });
+    const isAllowedToRoute = hasRequiredAccessLevels(state, requiredAccessLevels);
 
-    return allowedToRoute ? (
-        <li key={item.id}>
-            <NavLink
-                to={item.path}
-                exact={item.path === '/'}
-            >
-                {item.label}
-            </NavLink>
-        </li>
-    ) : null;
+    return isAllowedToRoute
+        ? (
+            <li key={`main-nav_${routeKey}`}>
+                <NavLink
+                    to={path}
+                    exact={exact}
+                >
+                    <Translate msg={translationKey} />
+                </NavLink>
+            </li>
+        )
+        : null;
 }
 
 export default observe(

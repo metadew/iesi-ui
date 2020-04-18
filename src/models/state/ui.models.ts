@@ -1,21 +1,9 @@
 import { OptionsObject, SnackbarKey, VariantType } from 'notistack';
-import ROUTE_KEYS from 'routeKeys';
 import { ITranslatorPlaceholders } from '@snipsonian/react/es/components/i18n/translator/types';
+import { ROUTE_KEYS } from 'views/routes';
 
 export interface IUiState {
     flashMessages: IFlashMessage[];
-}
-
-interface INavigateToRoutePayload {
-    routeKey: ROUTE_KEYS;
-}
-
-export interface ITriggerFlashMessagePayload {
-    translationKey: string;
-    translationPlaceholders?: ITranslatorPlaceholders;
-    type?: VariantType;
-    options?: OptionsObject;
-    navigateToRoute?: INavigateToRoutePayload;
 }
 
 export interface IFlashMessage {
@@ -24,5 +12,17 @@ export interface IFlashMessage {
     options: OptionsObject;
     dismissed: boolean;
     key: SnackbarKey;
-    navigateToRoute: INavigateToRoutePayload;
+    navigateToRoute: INavigateToRoute;
+}
+
+export interface INavigateToRoute {
+    routeKey: ROUTE_KEYS;
+}
+
+export interface ITriggerFlashMessagePayload {
+    translationKey: string;
+    translationPlaceholders?: ITranslatorPlaceholders;
+    type?: VariantType;
+    options?: OptionsObject;
+    navigateToRoute?: INavigateToRoute;
 }

@@ -3,13 +3,13 @@ import { useSnackbar, SnackbarKey } from 'notistack';
 import { IconButton } from '@material-ui/core';
 import { Close, Visibility } from '@material-ui/icons';
 import { StateChangeNotification } from 'models/state.models';
+import { INavigateToRoute } from 'models/state/ui.models';
 import { getFlashMessages } from 'state/ui/selectors';
 import { removeFlashMessage } from 'state/ui/actions';
 import { getTranslator } from 'state/i18n/selectors';
 import { observe, IObserveProps } from 'views/observe';
 import NavLink from 'views/common/navigation/NavLink';
-import ROUTES from 'views/routes';
-import ROUTE_KEYS from 'routeKeys';
+import { getRoute } from 'views/routes';
 
 /* implemented based on redux example: https://iamhosseindhv.com/notistack/demos#redux-/-mobx-example */
 
@@ -77,9 +77,7 @@ function getActions({
     navigateToRoute,
 }: {
     onClose: () => void;
-    navigateToRoute: {
-        routeKey: ROUTE_KEYS;
-    };
+    navigateToRoute: INavigateToRoute;
 }) {
     return (
         <>
@@ -93,8 +91,8 @@ function getActions({
     );
 
     function renderRoute() {
-        const route = ROUTES[navigateToRoute.routeKey];
-        const { path, exact } = route;
+        const { path, exact } = getRoute({ routeKey: navigateToRoute.routeKey });
+
         return (
             <NavLink to={path} exact={exact} flashMessageLink>
                 <IconButton size="small" aria-label="close" color="inherit" onClick={onClose}>
