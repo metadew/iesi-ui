@@ -1,15 +1,15 @@
 import React, { ReactElement } from 'react';
 import { useSnackbar, SnackbarKey } from 'notistack';
-import { observe, IObserveProps } from 'views/observe';
+import { IconButton } from '@material-ui/core';
+import { Close, Visibility } from '@material-ui/icons';
 import { StateChangeNotification } from 'models/state.models';
 import { getFlashMessages } from 'state/ui/selectors';
 import { removeFlashMessage } from 'state/ui/actions';
-import { IconButton } from '@material-ui/core';
-import { Close, Visibility } from '@material-ui/icons';
-import NavLink from 'views/common/navigation/NavLink';
-import ROUTE_KEYS from 'routeKeys';
-import ROUTES from 'views/routes';
 import { getTranslator } from 'state/i18n/selectors';
+import { observe, IObserveProps } from 'views/observe';
+import NavLink from 'views/common/navigation/NavLink';
+import ROUTES from 'views/routes';
+import ROUTE_KEYS from 'routeKeys';
 
 /* implemented based on redux example: https://iamhosseindhv.com/notistack/demos#redux-/-mobx-example */
 
