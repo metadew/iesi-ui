@@ -39,7 +39,7 @@ export function registerRoutes(routes: IRoute<ROUTE_KEYS>[]) {
 }
 
 function convertChildRoutes(parentRoute: IRoute<ROUTE_KEYS>): IRoutesMap<ROUTE_KEYS> {
-    if (!parentRoute.childRoutes || parentRoute.childRoutes.length === 0) {
+    if (!hasChildRoutes(parentRoute)) {
         return {};
     }
 
@@ -80,9 +80,13 @@ export function getRoutePath({ routeKey }: { routeKey: ROUTE_KEYS }): string {
     return getRoute({ routeKey }).path;
 }
 
+export function getRouteByPath({ path }: { path: string }): IRoute<ROUTE_KEYS> {
+    return Object.values(getRegisteredRoutes())
+        .find((route) => route.path === path);
+}
+
 export function getRouteKeyByPath({ path }: { path: string }): string {
-    return getAllRouteKeys()
-        .find((routeKey) => getRoute({ routeKey: routeKey as ROUTE_KEYS }).path === path);
+    return getRouteByPath({ path }).path;
 }
 
 export function getAllRouteKeys(): ROUTE_KEYS[] {
@@ -91,4 +95,8 @@ export function getAllRouteKeys(): ROUTE_KEYS[] {
 
 export function getParentRouteKeys(): ROUTE_KEYS[] {
     return parentRouteKeys;
+}
+
+export function hasChildRoutes(route: IRoute<ROUTE_KEYS>): boolean {
+    return route.childRoutes && route.childRoutes.length > 0;
 }

@@ -3,7 +3,9 @@ import { ROUTE_KEYS, registerRoutes } from './routes';
 import NotFound from './appShell/NotFound';
 import Home from './Home';
 import ScriptsOverview from './design/ScriptsOverview';
+import ScriptReportsTemplate from './report/ScriptReportsTemplate';
 import ScriptReportsOverview from './report/ScriptReportsOverview';
+import ScriptReportDetail from './report/ScriptReportDetail';
 
 const ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
@@ -21,10 +23,12 @@ const ROUTES: IRoute<ROUTE_KEYS>[] = [{
 }, {
     routeKey: ROUTE_KEYS.R_REPORTS,
     path: '/reports',
-    component: ScriptReportsOverview,
+    component: ScriptReportsTemplate,
+    MainChildComponent: ScriptReportsOverview,
     childRoutes: [{
         routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
         path: '/:reportId',
+        component: ScriptReportDetail,
     }],
 }, {
     routeKey: ROUTE_KEYS.R_NOT_FOUND,
