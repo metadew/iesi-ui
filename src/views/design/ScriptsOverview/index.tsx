@@ -1,22 +1,20 @@
 import React from 'react';
-import { Switch, Route, useRouteMatch } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import { Typography } from '@material-ui/core';
-import NavLink from 'views/common/navigation/NavLink';
+import RouteLink from 'views/common/navigation/RouteLink';
 import { getRoutePath, ROUTE_KEYS } from 'views/routes';
 import ScriptDetail from '../ScriptDetail';
 
 function ScriptsOverview() {
-    const { url } = useRouteMatch();
-
     return (
         <div>
             <nav>
                 <ul>
                     <li>
-                        <NavLink to={url} exact>Overview</NavLink>
+                        <RouteLink to={ROUTE_KEYS.R_SCRIPTS} exact>Overview</RouteLink>
                     </li>
                     <li>
-                        <NavLink to={`${url}/123`}>detail</NavLink>
+                        <RouteLink to={ROUTE_KEYS.R_SCRIPT_DETAIL} payload={{ scriptId: 'qid68ms' }}>detail</RouteLink>
                     </li>
                 </ul>
             </nav>

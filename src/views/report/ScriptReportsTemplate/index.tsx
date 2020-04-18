@@ -1,20 +1,21 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
-import NavLink from 'views/common/navigation/NavLink';
+import RouteLink from 'views/common/navigation/RouteLink';
 import renderChildComponentRoutes from 'views/common/navigation/renderChildComponentRoutes';
+import { ROUTE_KEYS } from 'views/routes';
 
 function ScriptReportsTemplate() {
-    const { url, path } = useRouteMatch();
+    const { path } = useRouteMatch();
 
     return (
         <div>
             <nav>
                 <ul>
                     <li>
-                        <NavLink to={url} exact>Overview</NavLink>
+                        <RouteLink to={ROUTE_KEYS.R_REPORTS} exact>Overview</RouteLink>
                     </li>
                     <li>
-                        <NavLink to={`${url}/123`}>detail</NavLink>
+                        <RouteLink to={ROUTE_KEYS.R_REPORT_DETAIL} payload={{ reportId: 2503 }}>detail</RouteLink>
                     </li>
                 </ul>
             </nav>

@@ -8,7 +8,7 @@ import { getFlashMessages } from 'state/ui/selectors';
 import { removeFlashMessage } from 'state/ui/actions';
 import { getTranslator } from 'state/i18n/selectors';
 import { observe, IObserveProps } from 'views/observe';
-import NavLink from 'views/common/navigation/NavLink';
+import RouteLink from 'views/common/navigation/RouteLink';
 import { getRoute } from 'views/routes';
 
 /* implemented based on redux example: https://iamhosseindhv.com/notistack/demos#redux-/-mobx-example */
@@ -91,14 +91,14 @@ function getActions({
     );
 
     function renderRoute() {
-        const { path, exact } = getRoute({ routeKey: navigateToRoute.routeKey });
+        const { exact } = getRoute({ routeKey: navigateToRoute.routeKey });
 
         return (
-            <NavLink to={path} exact={exact} flashMessageLink>
+            <RouteLink to={navigateToRoute.routeKey} exact={exact} flashMessageLink>
                 <IconButton size="small" aria-label="close" color="inherit" onClick={onClose}>
                     <Visibility fontSize="small" />
                 </IconButton>
-            </NavLink>
+            </RouteLink>
         );
     }
 }

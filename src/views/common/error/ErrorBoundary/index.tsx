@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@material-ui/core';
-import { getRoute, ROUTE_KEYS } from 'views/routes';
-import NavLink from 'views/common/navigation/NavLink';
+import { ROUTE_KEYS } from 'views/routes';
+import RouteLink from 'views/common/navigation/RouteLink';
 
 interface IComponentProps {
     children: JSX.Element[] | JSX.Element;
@@ -29,15 +29,13 @@ export default class ErrorBoundary extends React.Component<IComponentProps, ICom
 
     public render() {
         if (this.state.hasError) {
-            const { path, exact } = getRoute({ routeKey: ROUTE_KEYS.R_HOME });
-
-            // TODO render something nicer in case of error
+            // TODO render something nice in case of error
             return (
-                <NavLink to={path} exact={exact}>
+                <RouteLink to={ROUTE_KEYS.R_HOME} exact>
                     <Button onClick={this.resetErrorBoundary}>
                         To home
                     </Button>
-                </NavLink>
+                </RouteLink>
             );
         }
         return this.props.children;

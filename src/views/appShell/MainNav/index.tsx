@@ -5,7 +5,7 @@ import { MAIN_NAV_ITEMS, IMenuItem } from 'config/menu.config';
 import { hasRequiredAccessLevels } from 'state/auth/selectors';
 import { getRoute } from 'views/routes';
 import { observe, IObserveProps } from 'views/observe';
-import NavLink from 'views/common/navigation/NavLink';
+import RouteLink from 'views/common/navigation/RouteLink';
 
 function MainNav({ state }: IObserveProps) {
     return (
@@ -25,18 +25,18 @@ function renderNavItem({
     item: IMenuItem;
 }) {
     const { routeKey, translationKey } = item;
-    const { path, exact, requiredAccessLevels } = getRoute({ routeKey });
+    const { exact, requiredAccessLevels } = getRoute({ routeKey });
     const isAllowedToRoute = hasRequiredAccessLevels(state, requiredAccessLevels);
 
     return isAllowedToRoute
         ? (
             <li key={`main-nav_${routeKey}`}>
-                <NavLink
-                    to={path}
+                <RouteLink
+                    to={routeKey}
                     exact={exact}
                 >
                     <Translate msg={translationKey} />
-                </NavLink>
+                </RouteLink>
             </li>
         )
         : null;
