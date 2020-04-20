@@ -2,7 +2,11 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { getRouteByPath, getRoutePath, hasChildRoutes } from 'views/routes';
 
-export default function renderChildComponentRoutes({ path }: { path: string }) {
+interface IPublicProps {
+    path: string;
+}
+
+export default function ChildComponentRoutes({ path }: IPublicProps) {
     const route = getRouteByPath({ path });
 
     return (

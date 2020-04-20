@@ -4,7 +4,7 @@ import RouteLink from 'views/common/navigation/RouteLink';
 import ChildComponentRoutes from 'views/common/navigation/ChildComponentRoutes';
 import { ROUTE_KEYS } from 'views/routes';
 
-function ScriptReportsTemplate() {
+function ScriptsTemplate() {
     const { path } = useRouteMatch();
 
     return (
@@ -12,10 +12,10 @@ function ScriptReportsTemplate() {
             <nav>
                 <ul>
                     <li>
-                        <RouteLink to={ROUTE_KEYS.R_REPORTS} exact>Overview</RouteLink>
+                        <RouteLink to={ROUTE_KEYS.R_SCRIPTS} exact>Overview</RouteLink>
                     </li>
                     <li>
-                        <RouteLink to={ROUTE_KEYS.R_REPORT_DETAIL} payload={{ reportId: 2503 }}>detail</RouteLink>
+                        <RouteLink to={ROUTE_KEYS.R_SCRIPT_DETAIL} payload={{ scriptId: 'qid68ms' }}>detail</RouteLink>
                     </li>
                 </ul>
             </nav>
@@ -26,4 +26,4 @@ function ScriptReportsTemplate() {
     );
 }
 
-export default ScriptReportsTemplate;
+export default ScriptsTemplate;
