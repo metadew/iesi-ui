@@ -8,6 +8,7 @@ interface IPublicProps {
 
 export default function ChildComponentRoutes({ path }: IPublicProps) {
     const route = getRouteByPath({ path });
+    const RouteComponent = route.component as React.ElementType;
 
     return (
         <Switch>
@@ -25,9 +26,9 @@ export default function ChildComponentRoutes({ path }: IPublicProps) {
                     );
                 })
             )}
-            {route.MainChildComponent && (
+            {RouteComponent && (
                 <Route path={path}>
-                    <route.MainChildComponent />
+                    <RouteComponent />
                 </Route>
             )}
         </Switch>

@@ -10,13 +10,19 @@ function AppBody({ state }: IObserveProps) {
         <div>
             <Switch>
                 {getAllowedParentRouteKeys(state).map((routeKey) => {
-                    const { path, exact, component } = getRoute({ routeKey });
+                    const { path, exact, component, template } = getRoute({ routeKey });
+
+                    const parentComponent = template
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        ? template as React.ComponentType<any>
+                        : component;
+
                     return (
                         <Route
                             key={routeKey}
                             path={path}
                             exact={exact}
-                            component={component}
+                            component={parentComponent}
                         />
                     );
                 })}

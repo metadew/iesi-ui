@@ -17,8 +17,8 @@ const ROUTES: IRoute<ROUTE_KEYS>[] = [{
 }, {
     routeKey: ROUTE_KEYS.R_SCRIPTS,
     path: '/scripts',
-    component: ScriptsTemplate,
-    MainChildComponent: ScriptsOverview,
+    template: ScriptsTemplate,
+    component: ScriptsOverview,
     childRoutes: [{
         routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
         path: '/:scriptId',
@@ -27,8 +27,8 @@ const ROUTES: IRoute<ROUTE_KEYS>[] = [{
 }, {
     routeKey: ROUTE_KEYS.R_REPORTS,
     path: '/reports',
-    component: ScriptReportsTemplate,
-    MainChildComponent: ScriptReportsOverview,
+    template: ScriptReportsTemplate,
+    component: ScriptReportsOverview,
     childRoutes: [{
         routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
         path: '/:reportId',
