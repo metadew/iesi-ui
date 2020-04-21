@@ -4,6 +4,7 @@ import ThemeProvider from '../ThemeProvider';
 import FlashMessages from '../FlashMessages';
 import AppHeader from '../AppHeader';
 import AppBody from '../AppBody';
+import AppFooter from '../AppFooter';
 
 export default function AppTemplate() {
     return (
@@ -12,6 +13,7 @@ export default function AppTemplate() {
                 <FlashMessages />
                 <AppHeader />
                 <AppBody />
+                <AppFooter />
             </ThemeProvider>
         </ShowUntilEnvConfigKnown>
     );
