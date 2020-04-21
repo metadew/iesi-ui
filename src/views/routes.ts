@@ -1,5 +1,7 @@
 import isSet from '@snipsonian/core/es/is/isSet';
-import { IRoute, IRoutesMap } from 'models/router.models';
+import { History } from 'history';
+import { IRoute, IRoutesMap, INavigateToRoute, IRouteLocation } from 'models/router.models';
+import replacePathPlaceholders from 'utils/navigation/replacePathPlaceholders';
 
 export enum ROUTE_KEYS {
     R_HOME = 'R_HOME',
@@ -17,6 +19,7 @@ export enum ROUTE_KEYS {
 
 let registeredRoutes: IRoutesMap<ROUTE_KEYS> = {};
 const parentRouteKeys: ROUTE_KEYS[] = [];
+let browserHistory: History = null;
 
 export function registerRoutes(routes: IRoute<ROUTE_KEYS>[]) {
     const routesAsMap = routes.reduce(
@@ -99,4 +102,27 @@ export function getParentRouteKeys(): ROUTE_KEYS[] {
 
 export function hasChildRoutes(route: IRoute<ROUTE_KEYS>): boolean {
     return route.childRoutes && route.childRoutes.length > 0;
+}
+
+export function setBrowserHistory(history: History) {
+    if (browserHistory === null) {
+        /* history is mutable, so we only have to set it once */
+        browserHistory = history;
+    }
+}
+
+export function redirectTo({ routeKey, params }: INavigateToRoute) {
+    if (browserHistory) {
+        browserHistory.push(
+            replacePathPlaceholders({
+                path: getRoutePath({ routeKey }),
+                placeholders: params,
+            }),
+        );
+    }
+}
+
+export function notifyRouteObservers(routeLocation: IRouteLocation) {
+    // TODO
+    console.log('routeLocation', routeLocation);
 }

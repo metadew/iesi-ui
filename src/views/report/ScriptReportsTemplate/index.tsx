@@ -15,7 +15,7 @@ function ScriptReportsTemplate() {
                         <RouteLink to={ROUTE_KEYS.R_REPORTS} exact>Overview</RouteLink>
                     </li>
                     <li>
-                        <RouteLink to={ROUTE_KEYS.R_REPORT_DETAIL} payload={{ reportId: 2503 }}>detail</RouteLink>
+                        <RouteLink to={ROUTE_KEYS.R_REPORT_DETAIL} params={{ reportId: 2503 }}>detail</RouteLink>
                     </li>
                 </ul>
             </nav>
