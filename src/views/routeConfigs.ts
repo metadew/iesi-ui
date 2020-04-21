@@ -9,7 +9,7 @@ import ScriptReportsTemplate from './report/ScriptReportsTemplate';
 import ScriptReportsOverview from './report/ScriptReportsOverview';
 import ScriptReportDetail from './report/ScriptReportDetail';
 
-const ROUTES: IRoute<ROUTE_KEYS>[] = [{
+const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
     path: '/',
     exact: true,
@@ -40,4 +40,4 @@ const ROUTES: IRoute<ROUTE_KEYS>[] = [{
     component: NotFound,
 }];
 
-registerRoutes(ROUTES);
+registerRoutes(ALL_ROUTES);

@@ -1,4 +1,5 @@
 import isSet from '@snipsonian/core/es/is/isSet';
+import createObserverManager from '@snipsonian/core/es/patterns/createObserverManager';
 import { History } from 'history';
 import { IRoute, IRoutesMap, INavigateToRoute, IRouteLocation } from 'models/router.models';
 import replacePathPlaceholders from 'utils/navigation/replacePathPlaceholders';
@@ -20,9 +21,10 @@ export enum ROUTE_KEYS {
 let registeredRoutes: IRoutesMap<ROUTE_KEYS> = {};
 const parentRouteKeys: ROUTE_KEYS[] = [];
 let browserHistory: History = null;
+const routeObserverManager = createObserverManager();
 
 export function registerRoutes(routes: IRoute<ROUTE_KEYS>[]) {
-    const routesAsMap = routes.reduce(
+    registeredRoutes = routes.reduce(
         (accumulator, route) => {
             accumulator[route.routeKey] = route;
             parentRouteKeys.push(route.routeKey);
@@ -35,10 +37,10 @@ export function registerRoutes(routes: IRoute<ROUTE_KEYS>[]) {
         {} as IRoutesMap<ROUTE_KEYS>,
     );
 
-    registeredRoutes = {
-        ...registeredRoutes,
-        ...routesAsMap,
-    };
+    registerRouteObserver((routeLocation) => {
+        // TODO
+        console.log('routeLocation', routeLocation);
+    });
 }
 
 function convertChildRoutes(parentRoute: IRoute<ROUTE_KEYS>): IRoutesMap<ROUTE_KEYS> {
@@ -122,7 +124,13 @@ export function redirectTo({ routeKey, params }: INavigateToRoute) {
     }
 }
 
+export function registerRouteObserver(onRoute: (routeLocation: IRouteLocation) => void) {
+    routeObserverManager.registerObserver({
+        onNotify: onRoute,
+        onError: () => {},
+    });
+}
+
 export function notifyRouteObservers(routeLocation: IRouteLocation) {
-    // TODO
-    console.log('routeLocation', routeLocation);
+    routeObserverManager.notifyObservers(routeLocation);
 }
