@@ -15,7 +15,7 @@ function ScriptsTemplate() {
                         <RouteLink to={ROUTE_KEYS.R_SCRIPTS} exact>Overview</RouteLink>
                     </li>
                     <li>
-                        <RouteLink to={ROUTE_KEYS.R_SCRIPT_DETAIL} payload={{ scriptId: 'qid68ms' }}>detail</RouteLink>
+                        <RouteLink to={ROUTE_KEYS.R_SCRIPT_DETAIL} params={{ scriptId: 'qid68ms' }}>detail</RouteLink>
                     </li>
                 </ul>
             </nav>

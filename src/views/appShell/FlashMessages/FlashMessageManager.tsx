@@ -3,7 +3,7 @@ import { useSnackbar, SnackbarKey } from 'notistack';
 import { IconButton } from '@material-ui/core';
 import { Close, Visibility } from '@material-ui/icons';
 import { StateChangeNotification } from 'models/state.models';
-import { INavigateToRoute } from 'models/state/ui.models';
+import { INavigateToRoute } from 'models/router.models';
 import { getFlashMessages } from 'state/ui/selectors';
 import { removeFlashMessage } from 'state/ui/actions';
 import { getTranslator } from 'state/i18n/selectors';
