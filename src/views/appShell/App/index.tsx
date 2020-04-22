@@ -1,4 +1,5 @@
 import React from 'react';
+import { Box } from '@material-ui/core';
 import { BrowserRouter as Router } from 'react-router-dom';
 import configuredStore from 'state/setup/configuredStore';
 import initApp from 'state/initApp';
@@ -11,7 +12,7 @@ import AppTemplate from '../AppTemplate';
 
 function App() {
     return (
-        <div className="App">
+        <Box height="100%">
             <StoreProvider value={configuredStore}>
                 <Router>
                     <I18nAware>
@@ -21,7 +22,7 @@ function App() {
                     </I18nAware>
                 </Router>
             </StoreProvider>
-        </div>
+        </Box>
     );
 }
 

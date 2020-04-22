@@ -1,6 +1,8 @@
 import { ThemeOptions } from '@material-ui/core/styles';
+import mergeDeep from 'utils/object/mergeDeep';
 import iesiLightTheme from './themes/light.theme';
 import iesiDarkTheme from './themes/dark.theme';
+import iesiCommonTheme from './themes/common.theme';
 
 export const THEME_STORAGE_KEY = 'IESI_UI_THEME_MODE';
 
@@ -23,5 +25,5 @@ const themeMap: TTheme = {
 export const DEFAULT_THEME = THEMES.lightTheme;
 
 export function getThemeOptionsByName(theme: TThemeName): ThemeOptions {
-    return themeMap[theme];
+    return mergeDeep(iesiCommonTheme, themeMap[theme]);
 }
