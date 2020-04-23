@@ -9,10 +9,6 @@ export interface IMenuItem {
 
 export const MAIN_NAV_ITEMS: IMenuItem[] = [
     toMenuItem({
-        routeKey: ROUTE_KEYS.R_HOME,
-        translationKeySuffix: 'home',
-    }),
-    toMenuItem({
         routeKey: ROUTE_KEYS.R_SCRIPTS,
         translationKeySuffix: 'scripts',
     }),

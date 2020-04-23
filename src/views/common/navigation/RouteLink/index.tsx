@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import classnames from 'classnames';
 import { NavLink as RouterNavLink, NavLinkProps } from 'react-router-dom';
 import isSet from '@snipsonian/core/es/is/isSet';
 import { makeStyles, Theme } from '@material-ui/core';
@@ -11,12 +12,14 @@ interface IPublicProps extends Pick<NavLinkProps, 'exact'> {
     params?: IPathParams;
     flashMessageLink?: boolean;
     children: ReactNode;
+    className?: string;
 }
 
 const ACTIVE_CLASS_NAME = 'active';
 
 const useStyles = makeStyles((theme: Theme) => ({
-    root: {
+    routeLink: {
+        textDecoration: 'none',
         color: theme.palette.text.primary,
         '&.active': {
             color: theme.palette.primary.main,
@@ -28,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 function RouteLink(props: IPublicProps) {
-    const { to: routeKey, params, exact, flashMessageLink, children } = props;
+    const { to: routeKey, params, exact, flashMessageLink, children, className } = props;
     const classes = useStyles();
 
     const route = getRoute({ routeKey });
@@ -47,7 +50,7 @@ function RouteLink(props: IPublicProps) {
             to={urlTo}
             exact={shouldMatchExact}
             activeClassName={ACTIVE_CLASS_NAME}
-            className={flashMessageLink ? classes.flashMessageLink : classes.root}
+            className={classnames(flashMessageLink ? classes.flashMessageLink : classes.routeLink, className)}
         >
             {children}
         </RouterNavLink>

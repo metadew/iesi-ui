@@ -1,20 +1,22 @@
 import React, { ReactNode, useState, Dispatch, useEffect } from 'react';
 import {
     CssBaseline,
-    Switch,
-    FormControlLabel,
     useMediaQuery,
     createMuiTheme,
 } from '@material-ui/core';
-import BrightnessIcon from '@material-ui/icons/Brightness4';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 import localStorage from '@snipsonian/browser/es/storage/localStorage';
 import {
     DEFAULT_THEME, THEME_STORAGE_KEY, THEMES, TThemeName, getThemeOptionsByName,
 } from '../../../config/theme.config';
 
+interface IThemeProviderRenderProps {
+    toggleTheme: () => void;
+    currentTheme: TThemeName;
+}
+
 interface IThemeProvider {
-    children: ReactNode;
+    render: (renderProps: IThemeProviderRenderProps) => ReactNode;
 }
 
 function handleSwitchDarkMode({
@@ -55,23 +57,10 @@ function ThemeProvider(props: IThemeProvider) {
     return (
         <MuiThemeProvider theme={createMuiTheme(currentThemeOptions)}>
             <CssBaseline />
-            {/* TODO: move theme switch */}
-            <FormControlLabel
-                control={(
-                    <Switch
-                        checked={themeName === THEMES.darkTheme}
-                        onClick={() => handleSwitchDarkMode({ themeName, setThemeName })}
-                        color="default"
-                    />
-                )}
-                label={(
-                    <>
-                        <BrightnessIcon />
-                        <span>Toggle theme mode</span>
-                    </>
-                )}
-            />
-            {props.children}
+            {props.render({
+                toggleTheme: () => handleSwitchDarkMode({ themeName, setThemeName }),
+                currentTheme,
+            })}
         </MuiThemeProvider>
     );
 }
