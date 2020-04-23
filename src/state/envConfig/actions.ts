@@ -4,11 +4,9 @@ import { overrideTranslationsIfAny } from 'views/translations';
 import { ROUTE_KEYS } from 'views/routes';
 import { triggerFlashMessage } from 'state/ui/actions';
 import { getStore } from 'state/index';
+import { setIesiApiBaseUrl, setIesiApiTimeoutInSeconds } from 'api/requestWrapper';
 import { getTranslationLabelOverrides } from './selectors';
 import { createAction } from '../index';
-
-// TODO reduce the boilerplate with an 'entities' mechanism?
-// (or is this the exception because we keep it out of the 'entities' state part?)
 
 /* eslint-disable no-param-reassign */
 
@@ -36,6 +34,9 @@ export const fetchEnvConfig = () => createAction<{}>({
             const i18nNotifications = didOverride
                 ? [StateChangeNotification.I18N_TRANSLATIONS_REFRESHED]
                 : [];
+
+            setIesiApiBaseUrl(envConfigData.iesi_api_base_url);
+            setIesiApiTimeoutInSeconds(envConfigData.iesi_api_timeout_in_seconds);
 
             setStateImmutable({
                 toState: (draftState) => {

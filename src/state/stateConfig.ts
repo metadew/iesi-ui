@@ -5,6 +5,8 @@ import { IStateStorageConfig } from '@snipsonian/observable-state/es/store/state
 import { IState } from 'models/state.models';
 import { DEFAULT_LOCALE } from 'config/i18n.config';
 import { STATE_STORAGE_KEY } from 'config/state.config';
+import entitiesConfigManager from 'state/entities/entitiesConfigManager';
+import { IEntitiesState } from 'models/state/entities.models';
 
 export const initialState: IState = {
     envConfig: createAsyncEntityInitialState({ operations: [AsyncOperation.fetch] }),
@@ -24,6 +26,7 @@ export const initialState: IState = {
             execute: true,
         },
     },
+    entities: entitiesConfigManager.getEntitiesInititialState() as unknown as IEntitiesState,
 };
 
 export const stateStorageConfig: IStateStorageConfig<IState> = {

@@ -23,8 +23,8 @@ const parentRouteKeys: ROUTE_KEYS[] = [];
 let browserHistory: History = null;
 const routeObserverManager = createObserverManager();
 
-export function registerRoutes(routes: IRoute<ROUTE_KEYS>[]) {
-    registeredRoutes = routes.reduce(
+export function registerRoutes(allRoutes: IRoute<ROUTE_KEYS>[]) {
+    registeredRoutes = allRoutes.reduce(
         (accumulator, route) => {
             accumulator[route.routeKey] = route;
             parentRouteKeys.push(route.routeKey);
@@ -36,11 +36,6 @@ export function registerRoutes(routes: IRoute<ROUTE_KEYS>[]) {
         },
         {} as IRoutesMap<ROUTE_KEYS>,
     );
-
-    registerRouteObserver((routeLocation) => {
-        // TODO
-        console.log('routeLocation', routeLocation);
-    });
 }
 
 function convertChildRoutes(parentRoute: IRoute<ROUTE_KEYS>): IRoutesMap<ROUTE_KEYS> {

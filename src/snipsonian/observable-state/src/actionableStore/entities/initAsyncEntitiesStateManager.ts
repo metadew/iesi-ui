@@ -1,7 +1,8 @@
 import isSet from '@snipsonian/core/es/is/isSet';
 import { ITraceableApiErrorBase } from '@snipsonian/core/es/typings/apiErrors';
-import { IGetState } from '@snipsonian/observable-state/es/store/types';
-import { Action, Dispatch } from '@snipsonian/observable-state/es/actionableStore/types';
+import {
+    IActionableObservableStateStore,
+} from '@snipsonian/observable-state/es/actionableStore/types';
 import { DEFAULT_PARENT_NOTIFICATIONS_DELIMITER }
     from '@snipsonian/observable-state/es/observer/extendNotificationsToTrigger';
 import {
@@ -11,90 +12,39 @@ import {
     IAsyncEntity,
     IWithKeyIndex,
     IAsyncEntityApiConfig,
-    IAsyncEntityKeyConfig,
-    IAsyncEntityKeyConfigs,
-    IAsyncEntityKeyOperationConfig,
-    IAsyncEntityManager,
+    IAsyncEntitiesConfigManager,
+    IAsyncEntitiesStateManager,
     IAsyncEntityToFetch,
-    ITriggerAsyncEntityFetchProps, IEntitiesInitialState,
+    ITriggerAsyncEntityFetchProps,
 } from './types';
-import { createAsyncEntityInitialState } from './createAsyncEntityInitialState';
 import { IAsyncEntityActionCreators, initAsyncEntityActionCreators } from './asyncEntityActionCreators';
 
-export default function initAsyncEntityManager
+export default function initAsyncEntitiesStateManager
 <State, CustomConfig = {}, Error = ITraceableApiErrorBase<{}>,
     ActionType = string, StateChangeNotificationKey = string, ExtraProcessInput = {}>({
+    asyncEntitiesConfigManager,
     entitiesStateField = 'entities',
-    getState,
-    dispatch,
+    store,
     notificationDelimiter = DEFAULT_PARENT_NOTIFICATIONS_DELIMITER,
 }: {
-    entitiesStateField: string;
-    getState: IGetState<State>;
-    dispatch: Dispatch<Action>;
+    asyncEntitiesConfigManager: IAsyncEntitiesConfigManager<State, CustomConfig, Error>;
+    entitiesStateField?: string;
+    store: IActionableObservableStateStore<State, StateChangeNotificationKey>;
     notificationDelimiter?: string;
-}): IAsyncEntityManager<State, StateChangeNotificationKey, CustomConfig, Error> {
-    const configs: IAsyncEntityKeyConfigs<State, CustomConfig, Error> = {};
-    let entitiesInititialState: IEntitiesInitialState = null;
+}): IAsyncEntitiesStateManager<State, StateChangeNotificationKey, CustomConfig, Error> {
     // eslint-disable-next-line max-len
     let asyncEntityActionCreators: IAsyncEntityActionCreators<ActionType, State, ExtraProcessInput, StateChangeNotificationKey> = null;
 
-    const manager: IAsyncEntityManager<State, StateChangeNotificationKey, CustomConfig, Error> = {
-        register<Data, ApiInput, ApiResult, ApiResponse = ApiResult, ExtraInput extends object = {}>({
-            asyncEntityKey,
-            operationsConfig,
-            initialData,
-            customConfig,
-        }: {
-            asyncEntityKey: TEntityKey;
-            operationsConfig: IAsyncEntityKeyOperationConfig<State, ApiInput, ApiResult, ApiResponse, ExtraInput>;
-            initialData?: Data;
-            customConfig?: CustomConfig;
-        }): void {
-            const operations = Object.keys(operationsConfig)
-                .filter(isValidOperation) as AsyncOperation[];
-            const initialState = createAsyncEntityInitialState<Data, Error>({ operations, data: initialData });
-
-            configs[asyncEntityKey] = {
-                operations,
-                initialState,
-                ...customConfig,
-                ...operationsConfig,
-            };
-        },
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        getAsyncEntityConfig<Data = any>({
-            asyncEntityKey,
-        }: {
-            asyncEntityKey: TEntityKey;
-        }): IAsyncEntityKeyConfig<State, Data, {}, {}, {}, {}, Error> {
-            return configs[asyncEntityKey];
-        },
-
-        getAsyncEntityOperationConfig({
-            asyncEntityKey,
-            operation,
-        }: {
-            asyncEntityKey: TEntityKey;
-            operation: AsyncOperation;
-        }): IAsyncEntityApiConfig<State, {}, {}, {}> {
-            const config = manager.getAsyncEntityConfig({ asyncEntityKey });
-            if (!config) {
-                return null;
-            }
-            return config[operation] as IAsyncEntityApiConfig<State, {}, {}, {}>;
-        },
-
+    const stateManager: IAsyncEntitiesStateManager<State, StateChangeNotificationKey, CustomConfig, Error> = {
         triggerAsyncEntityFetch<ExtraInput extends object, ApiInput = {}, ApiResult = {}, ApiResponse = ApiResult>({
             asyncEntityToFetch,
-            extraInput,
+            extraInputSelector,
             notificationsToTrigger,
             nrOfParentNotificationLevelsToTrigger,
         }: ITriggerAsyncEntityFetchProps<State, ExtraInput, StateChangeNotificationKey>): boolean {
             const { asyncEntityKey, resetDataOnTrigger } = asyncEntityToFetch;
             const operation = AsyncOperation.fetch;
-            const operationConfig = (manager.getAsyncEntityOperationConfig({
+            const operationConfig = (asyncEntitiesConfigManager.getAsyncEntityOperationConfig({
                 asyncEntityKey,
                 operation,
             })) as unknown as IAsyncEntityApiConfig<State, ExtraInput, ApiInput, ApiResult, ApiResponse>;
@@ -102,12 +52,14 @@ export default function initAsyncEntityManager
                 return false;
             }
 
-            if (!shouldEntityBeFetched({ asyncEntityToFetch, state: getState(), extraInput })) {
+            const extraInput = extraInputSelector({ state: store.getState() });
+
+            if (!shouldEntityBeFetched({ asyncEntityToFetch, state: store.getState(), extraInput })) {
                 return false;
             }
 
             // eslint-disable-next-line max-len
-            dispatch(getAsyncEntityActionCreators().fetchAsyncEntityAction<ExtraInput, ApiInput, ApiResult, ApiResponse>({
+            store.dispatch(getAsyncEntityActionCreators().fetchAsyncEntityAction<ExtraInput, ApiInput, ApiResult, ApiResponse>({
                 asyncEntityKey,
                 extraInput,
                 api: operationConfig.api,
@@ -128,23 +80,7 @@ export default function initAsyncEntityManager
         }: {
             asyncEntityKey: TEntityKey;
         }): IAsyncEntity<Data, Error> {
-            return (getState() as IWithKeyIndex)[entitiesStateField][asyncEntityKey];
-        },
-
-        getEntitiesInititialState(): IEntitiesInitialState {
-            if (!entitiesInititialState) {
-                entitiesInititialState = Object.keys(configs)
-                    .reduce(
-                        (accumulator, asyncEntityKey) => {
-                            const asyncEntityKeyConfig = configs[asyncEntityKey];
-                            (accumulator as IWithKeyIndex)[asyncEntityKey] = asyncEntityKeyConfig.initialState;
-                            return accumulator;
-                        },
-                        {} as IEntitiesInitialState,
-                    );
-            }
-
-            return entitiesInititialState;
+            return (store.getState() as IWithKeyIndex)[entitiesStateField][asyncEntityKey];
         },
     };
 
@@ -163,7 +99,7 @@ export default function initAsyncEntityManager
             return false;
         }
 
-        const currentAsyncEntityFetchOperation = manager.getAsyncEntity({ asyncEntityKey }).fetch;
+        const currentAsyncEntityFetchOperation = stateManager.getAsyncEntity({ asyncEntityKey }).fetch;
 
         if (!currentAsyncEntityFetchOperation) {
             return false;
@@ -208,18 +144,12 @@ export default function initAsyncEntityManager
             // eslint-disable-next-line max-len
             asyncEntityActionCreators = initAsyncEntityActionCreators<State, ExtraProcessInput, ActionType, StateChangeNotificationKey>({
                 entitiesStateField,
-                entitiesInitialState: manager.getEntitiesInititialState(),
+                entitiesInitialState: asyncEntitiesConfigManager.getEntitiesInititialState(),
             });
         }
 
         return asyncEntityActionCreators;
     }
 
-    return manager;
-}
-
-const validOperations: string[] = Object.values(AsyncOperation);
-
-function isValidOperation(possibleOperation: string): boolean {
-    return validOperations.indexOf(possibleOperation) !== -1;
+    return stateManager;
 }

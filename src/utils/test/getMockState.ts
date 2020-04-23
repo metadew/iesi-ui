@@ -32,6 +32,15 @@ export default function getMockState({
                 execute: true,
             },
         },
+        entities: {
+            scripts: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+        },
     };
 }
 
