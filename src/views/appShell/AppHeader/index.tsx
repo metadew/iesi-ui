@@ -2,14 +2,12 @@ import React from 'react';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import {
     Typography,
-    withStyles,
-    WithStyles,
-    createStyles,
     AppBar,
     Toolbar,
     IconButton,
     Theme,
     Box,
+    makeStyles,
 } from '@material-ui/core';
 import { Brightness4 as BrightnessIcon } from '@material-ui/icons';
 import { grey } from '@material-ui/core/colors';
@@ -24,9 +22,9 @@ interface IPublicProps {
     currentTheme: TThemeName;
 }
 
-const styles = ({ spacing, palette }: Theme) => createStyles({
+const useStyles = makeStyles(({ palette, spacing }: Theme) => ({
     appBar: {
-        backgroundColor: palette.primary.light,
+        backgroundColor: grey[50],
         color: palette.primary.main,
         boxShadow: 'none',
         borderBottom: '1px solid',
@@ -34,7 +32,7 @@ const styles = ({ spacing, palette }: Theme) => createStyles({
     },
     title: {
         fontWeight: 700,
-        margin: spacing(1),
+        marginRight: spacing(1),
     },
     brandContainer: {
         flexGrow: 1,
@@ -47,15 +45,17 @@ const styles = ({ spacing, palette }: Theme) => createStyles({
         paddingRight: spacing(1),
         borderLeft: '1px solid',
         borderLeftColor: grey[200],
-        color: palette.primary.dark,
-
     },
-});
+    actionButton: {
+        color: palette.primary.dark,
+    },
+}));
 
 function AppHeader({
-    classes,
     toggleTheme,
-}: IPublicProps & WithStyles<typeof styles>) {
+}: IPublicProps) {
+    const classes = useStyles();
+
     return (
         <AppBar position="static" className={classes.appBar}>
             <Toolbar>
@@ -70,16 +70,16 @@ function AppHeader({
                     </RouteLink>
                 </div>
                 <div className={classes.action}>
-                    <IconButton aria-label="theme-toggle" onClick={toggleTheme}>
+                    <IconButton aria-label="theme-toggle" onClick={toggleTheme} className={classes.actionButton}>
                         <BrightnessIcon />
                     </IconButton>
                 </div>
                 <div className={classes.action}>
-                    <NavigationMenu />
+                    <NavigationMenu buttonClassName={classes.actionButton} />
                 </div>
             </Toolbar>
         </AppBar>
     );
 }
 
-export default withStyles(styles)(AppHeader);
+export default AppHeader;

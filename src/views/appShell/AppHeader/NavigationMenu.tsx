@@ -13,7 +13,11 @@ import RouteLink from 'views/common/navigation/RouteLink';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { IObserveProps, observe } from 'views/observe';
 
-function NavigationMenu({ state }: IObserveProps) {
+interface IPublicProps {
+    buttonClassName: string;
+}
+
+function NavigationMenu({ state, buttonClassName }: IPublicProps & IObserveProps) {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -26,7 +30,12 @@ function NavigationMenu({ state }: IObserveProps) {
 
     return (
         <div>
-            <IconButton aria-controls="toolbar-menu" aria-haspopup="true" onClick={handleClick}>
+            <IconButton
+                aria-controls="toolbar-menu"
+                aria-haspopup="true"
+                onClick={handleClick}
+                className={buttonClassName}
+            >
                 <MenuIcon />
             </IconButton>
             <Menu
@@ -61,7 +70,7 @@ function NavigationMenu({ state }: IObserveProps) {
     }
 }
 
-export default observe(
+export default observe<IPublicProps>(
     [StateChangeNotification.AUTH],
     NavigationMenu,
 );
