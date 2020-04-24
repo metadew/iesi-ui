@@ -72,7 +72,7 @@ export interface IAsyncEntityKey2ApiOperationConfigMap<State> {
 }
 
 /* eslint-disable max-len */
-export interface IAsyncEntityManager<State, StateChangeNotificationKey, CustomConfig = {}, Error = ITraceableApiErrorBase<{}>> {
+export interface IAsyncEntitiesConfigManager<State, CustomConfig = {}, Error = ITraceableApiErrorBase<{}>> {
     register<Data, ApiInput, ApiResult, ApiResponse = ApiResult, ExtraInput extends object = {}>(props: {
         asyncEntityKey: TEntityKey;
         operationsConfig: IAsyncEntityKeyOperationConfig<State, ApiInput, ApiResult, ApiResponse, ExtraInput>;
@@ -82,18 +82,23 @@ export interface IAsyncEntityManager<State, StateChangeNotificationKey, CustomCo
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getAsyncEntityConfig<Data = any>(props: { asyncEntityKey: TEntityKey }): IAsyncEntityKeyConfig<State, Data, {}, {}, {}, {}, Error>;
     getAsyncEntityOperationConfig(props: { asyncEntityKey: TEntityKey; operation: AsyncOperation }): IAsyncEntityApiConfig<State, {}, {}, {}>;
+    getEntitiesInititialState(): IEntitiesInitialState;
+}
+/* eslint-enable max-len */
+
+/* eslint-disable max-len */
+export interface IAsyncEntitiesStateManager<State, StateChangeNotificationKey, CustomConfig = {}, Error = ITraceableApiErrorBase<{}>> {
     /* triggerAsyncEntityFetch returns a if it was triggered (true) or not (false) */
     triggerAsyncEntityFetch<ExtraInput extends object, ApiResult = {}, ApiResponse = ApiResult>(props: ITriggerAsyncEntityFetchProps<State, ExtraInput, StateChangeNotificationKey>): boolean;
     // TODO triggerAsyncEntity... Create/Update/Remove
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getAsyncEntity<Data = any>(props: { asyncEntityKey: TEntityKey }): IAsyncEntity<Data, Error>;
-    getEntitiesInititialState(): IEntitiesInitialState;
 }
 /* eslint-enable max-len */
 
 export interface ITriggerAsyncEntityFetchProps<State, ExtraInput extends object, StateChangeNotificationKey> {
     asyncEntityToFetch: IAsyncEntityToFetch<State, ExtraInput>;
-    extraInput?: ExtraInput;
+    extraInputSelector?: (props: { state: State }) => ExtraInput;
     /**
      * If notificationsToTrigger not specified, by default a notification will be triggered (possibly extended with
      * parent notifications based on the nrOfParentNotificationLevelsToTrigger) of the following format:

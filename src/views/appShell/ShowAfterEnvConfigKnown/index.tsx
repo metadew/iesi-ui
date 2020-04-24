@@ -4,11 +4,17 @@ import ShowAfterDelay from '@snipsonian/react/es/components/waiting/ShowAfterDel
 import { observe, IObserveProps, IPublicPropsWithChildren } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAsyncEnvConfig } from 'state/envConfig/selectors';
+import routeListener from '../RouteListener';
 
-function ShowUntilEnvConfigKnown({ state, children }: IPublicPropsWithChildren & IObserveProps) {
+function ShowAfterEnvConfigKnown({ state, children }: IPublicPropsWithChildren & IObserveProps) {
     const envConfig = getAsyncEnvConfig(state).data;
 
     const waitingOnEnvConfig = !isSet(envConfig);
+
+    if (!waitingOnEnvConfig) {
+        /* start listening on route changes as soon as the envConfig (and the iesi api base url) is known */
+        routeListener();
+    }
 
     return (
         <ShowAfterDelay
@@ -32,5 +38,5 @@ function ShowDuringDelay() {
 
 export default observe<IPublicPropsWithChildren>(
     [StateChangeNotification.ENV_CONFIG],
-    ShowUntilEnvConfigKnown,
+    ShowAfterEnvConfigKnown,
 );

@@ -5,7 +5,7 @@ import { api } from 'api';
 import { TEnvConfigState } from './state/envConfig.models';
 import { II18nState } from './state/i18n.models';
 import { IUiState } from './state/ui.models';
-import { ICustomAsyncEntity as ICustomAsyncEntityOrig } from './state/entities.models';
+import { ICustomAsyncEntity as ICustomAsyncEntityOrig, IEntitiesState } from './state/entities.models';
 import { IAuthState } from './state/auth.models';
 
 export type ICustomAsyncEntity<Data> = ICustomAsyncEntityOrig<Data>;
@@ -15,6 +15,7 @@ export interface IState {
     i18n: II18nState;
     ui: IUiState;
     auth: IAuthState;
+    entities: IEntitiesState;
 }
 
 /**
@@ -33,6 +34,7 @@ export enum StateChangeNotification {
     I18N_TRANSLATIONS_TOGGLE = 'I18N.TRANSLATIONS.TOGGLE',
     FLASH_MESSAGES = 'FLASH_MESSAGES',
     AUTH = 'AUTH',
+    DESIGN_SCRIPTS_LIST = 'DESIGN.SCRIPTS.LIST',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

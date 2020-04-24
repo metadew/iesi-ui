@@ -1,4 +1,5 @@
 import { IRoute } from 'models/router.models';
+import { triggerFetchScripts } from 'state/entities/scripts/triggers';
 import { ROUTE_KEYS, registerRoutes } from './routes';
 import NotFound from './appShell/NotFound';
 import Home from './Home';
@@ -8,7 +9,7 @@ import ScriptReportsTemplate from './report/ScriptReportsTemplate';
 import ScriptReportsOverview from './report/ScriptReportsOverview';
 import ScriptReportDetail from './report/ScriptReportDetail';
 
-const ROUTES: IRoute<ROUTE_KEYS>[] = [{
+const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
     path: '/',
     exact: true,
@@ -21,6 +22,9 @@ const ROUTES: IRoute<ROUTE_KEYS>[] = [{
         routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
         path: '/:scriptId',
         component: ScriptDetail,
+    }],
+    executeOnRoute: [{
+        execute: triggerFetchScripts,
     }],
 }, {
     routeKey: ROUTE_KEYS.R_REPORTS,
@@ -38,4 +42,4 @@ const ROUTES: IRoute<ROUTE_KEYS>[] = [{
     component: NotFound,
 }];
 
-registerRoutes(ROUTES);
+registerRoutes(ALL_ROUTES);
