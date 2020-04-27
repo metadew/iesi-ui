@@ -1,15 +1,14 @@
 import React from 'react';
-import { WithStyles, createStyles, withStyles, Box } from '@material-ui/core';
+import { WithStyles, createStyles, withStyles, Box, Theme } from '@material-ui/core';
 import { Route, Switch } from 'react-router-dom';
 import { getRoute } from 'views/routes';
 import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAllowedParentRouteKeys } from 'state/auth/selectors';
-import { grey } from '@material-ui/core/colors';
 
-const styles = () => createStyles({
+const styles = ({ palette }: Theme) => createStyles({
     appBody: {
-        backgroundColor: grey[200],
+        backgroundColor: palette.background.paper,
     },
 });
 

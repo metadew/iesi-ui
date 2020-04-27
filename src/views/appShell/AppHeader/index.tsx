@@ -12,7 +12,6 @@ import {
     Box,
 } from '@material-ui/core';
 import { Brightness4 as BrightnessIcon } from '@material-ui/icons';
-import { grey } from '@material-ui/core/colors';
 import RouteLink from 'views/common/navigation/RouteLink';
 import { TThemeName } from 'config/theme.config';
 import { ROUTE_KEYS } from 'views/routes';
@@ -26,11 +25,11 @@ interface IPublicProps {
 
 const styles = ({ spacing, palette }: Theme) => createStyles({
     appBar: {
-        backgroundColor: palette.primary.light,
+        backgroundColor: palette.background.default,
         color: palette.primary.main,
         boxShadow: 'none',
         borderBottom: '1px solid',
-        borderBottomColor: grey[200],
+        borderBottomColor: palette.divider,
     },
     title: {
         fontWeight: 700,
@@ -46,9 +45,8 @@ const styles = ({ spacing, palette }: Theme) => createStyles({
         paddingLeft: spacing(1),
         paddingRight: spacing(1),
         borderLeft: '1px solid',
-        borderLeftColor: grey[200],
+        borderLeftColor: palette.divider,
         color: palette.primary.dark,
-
     },
 });
 
