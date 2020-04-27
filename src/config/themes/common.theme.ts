@@ -1,6 +1,11 @@
 import { ThemeOptions } from '@material-ui/core';
 
 const commonTheme: ThemeOptions = {
+    palette: {
+        primary: {
+            main: '#29ABE2',
+        },
+    },
     typography: {
         fontFamily: [
             'Open Sans',

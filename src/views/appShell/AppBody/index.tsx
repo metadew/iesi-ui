@@ -1,20 +1,14 @@
 import React from 'react';
-import { WithStyles, createStyles, withStyles, Box, Theme } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { Route, Switch } from 'react-router-dom';
 import { getRoute } from 'views/routes';
 import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAllowedParentRouteKeys } from 'state/auth/selectors';
 
-const styles = ({ palette }: Theme) => createStyles({
-    appBody: {
-        backgroundColor: palette.background.paper,
-    },
-});
-
-function AppBody({ state, classes }: IObserveProps & WithStyles<typeof styles>) {
+function AppBody({ state }: IObserveProps) {
     return (
-        <Box flex="1 1 auto" className={classes.appBody}>
+        <Box flex="1 1 auto">
             <Switch>
                 {getAllowedParentRouteKeys(state).map((routeKey) => {
                     const { path, exact, component, template } = getRoute({ routeKey });
@@ -40,5 +34,5 @@ function AppBody({ state, classes }: IObserveProps & WithStyles<typeof styles>) 
 
 export default observe(
     [StateChangeNotification.AUTH],
-    withStyles(styles)(AppBody),
+    AppBody,
 );

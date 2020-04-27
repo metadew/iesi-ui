@@ -4,7 +4,7 @@ import {
     Menu,
     MenuItem,
 } from '@material-ui/core';
-import { Menu as MenuIcon } from '@material-ui/icons';
+import { MenuRounded as MenuIcon } from '@material-ui/icons';
 import { StateChangeNotification } from 'models/state.models';
 import { IMenuItem, MAIN_NAV_ITEMS } from 'config/menu.config';
 import { getRoute } from 'views/routes';
@@ -26,8 +26,13 @@ function NavigationMenu({ state }: IObserveProps) {
 
     return (
         <div>
-            <IconButton aria-controls="toolbar-menu" aria-haspopup="true" onClick={handleClick}>
-                <MenuIcon />
+            <IconButton
+                aria-controls="toolbar-menu"
+                aria-haspopup="true"
+                onClick={handleClick}
+                style={{ fontSize: 'inherit' }}
+            >
+                <MenuIcon style={{ fontSize: 'inherit' }} />
             </IconButton>
             <Menu
                 id="toolbar-menu"
