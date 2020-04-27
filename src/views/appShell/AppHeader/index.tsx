@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, Ref } from 'react';
+import classNames from 'classnames';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import {
     Typography,
@@ -15,22 +16,38 @@ import { Brightness4 as BrightnessIcon } from '@material-ui/icons';
 import RouteLink from 'views/common/navigation/RouteLink';
 import { TThemeName } from 'config/theme.config';
 import { ROUTE_KEYS } from 'views/routes';
+import { useDocumentScrollThrottled } from 'utils/document/throttledEvents';
 import packageJson from '../../../../package.json';
 import NavigationMenu from './NavigationMenu';
 
 interface IPublicProps {
     toggleTheme: () => void;
     currentTheme: TThemeName;
+    forwardRef?: Ref<HTMLElement>;
 }
 
-const styles = ({ spacing, palette, typography }: Theme) =>
+const MINIMUM_SCROLL = 80;
+
+const styles = ({ spacing, palette, typography, shadows, transitions }: Theme) =>
     createStyles({
         appBar: {
+            top: 0,
+            left: 0,
             backgroundColor: palette.background.paper,
             color: palette.primary.main,
             boxShadow: 'none',
             borderBottom: '1px solid',
             borderBottomColor: palette.divider,
+            transitionProperty: 'transform',
+            transitionTimingFunction: transitions.easing.sharp,
+            transitionDuration: `${transitions.duration.leavingScreen}ms`,
+        },
+        appBarHidden: {
+            // Extra 10px for the box shadow
+            transform: 'translate3d(0, -100%, 0) translate3d(0, -10px, 0)',
+        },
+        appBarFixed: {
+            boxShadow: shadows[3],
         },
         title: {
             fontWeight: 700,
@@ -55,9 +72,29 @@ const styles = ({ spacing, palette, typography }: Theme) =>
 function AppHeader({
     classes,
     toggleTheme,
+    forwardRef,
 }: IPublicProps & WithStyles<typeof styles>) {
+    const [shouldHideHeader, setShouldHideHeader] = useState(false);
+    const [shouldShowShadow, setShouldShowShadow] = useState(false);
+
+    useDocumentScrollThrottled((callbackData) => {
+        const { previousScrollTop, currentScrollTop } = callbackData;
+        const isScrolledDown = previousScrollTop < currentScrollTop;
+        const isMinimumScrolled = currentScrollTop > MINIMUM_SCROLL;
+
+        setShouldShowShadow(currentScrollTop > 2);
+        setShouldHideHeader(isScrolledDown && isMinimumScrolled);
+    });
+
     return (
-        <AppBar position="static" className={classes.appBar}>
+        <AppBar
+            position="fixed"
+            className={classNames(classes.appBar, {
+                [classes.appBarHidden]: !!shouldHideHeader,
+                [classes.appBarFixed]: !!shouldShowShadow,
+            })}
+            ref={forwardRef}
+        >
             <Toolbar>
                 <div className={classes.brandContainer}>
                     <RouteLink to={ROUTE_KEYS.R_HOME} className={classes.brand}>

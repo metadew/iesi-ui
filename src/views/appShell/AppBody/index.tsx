@@ -6,9 +6,13 @@ import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAllowedParentRouteKeys } from 'state/auth/selectors';
 
-function AppBody({ state }: IObserveProps) {
+interface IPublicProps {
+    offsetTop: number;
+}
+
+function AppBody({ state, offsetTop }: IObserveProps & IPublicProps) {
     return (
-        <Box flex="1 1 auto">
+        <Box flex="1 1 auto" paddingTop={offsetTop > 0 ? `${offsetTop}px` : 0}>
             <Switch>
                 {getAllowedParentRouteKeys(state).map((routeKey) => {
                     const { path, exact, component, template } = getRoute({ routeKey });
@@ -32,7 +36,7 @@ function AppBody({ state }: IObserveProps) {
     );
 }
 
-export default observe(
+export default observe<IPublicProps>(
     [StateChangeNotification.AUTH],
     AppBody,
 );
