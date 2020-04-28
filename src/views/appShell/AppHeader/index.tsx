@@ -1,6 +1,6 @@
 import React, { useState, Ref } from 'react';
 import classNames from 'classnames';
-import Translate from '@snipsonian/react/es/components/i18n/Translate';
+import I18nContext from '@snipsonian/react/es/components/i18n/I18nContext';
 import {
     Typography,
     AppBar,
@@ -17,6 +17,7 @@ import { ROUTE_KEYS } from 'views/routes';
 import { useDocumentScrollThrottled } from 'utils/document/throttledEvents';
 import packageJson from '../../../../package.json';
 import NavigationMenu from './NavigationMenu';
+import { ReactComponent as IesiLogo } from './logo.svg';
 
 interface IPublicProps {
     toggleTheme: () => void;
@@ -47,8 +48,9 @@ const useStyles = makeStyles(({ palette, spacing, transitions, shadows, typograp
         boxShadow: shadows[3],
     },
     title: {
-        fontWeight: 700,
-        margin: spacing(1),
+        fontSize: 0,
+        margin: `0 ${spacing(1)}px`,
+        width: typography.pxToRem(70),
     },
     brandContainer: {
         flexGrow: 1,
@@ -100,9 +102,13 @@ function AppHeader({
                             flexDirection="row"
                             alignItems="baseline"
                         >
-                            <Typography variant="h4" className={classes.title}>
-                                <Translate msg="app_shell.header.title" raw />
-                            </Typography>
+                            <I18nContext.Consumer>
+                                {({ translator }) => (
+                                    <Typography variant="h1" className={classes.title}>
+                                        <IesiLogo title={translator('app_shell.header.title')} />
+                                    </Typography>
+                                )}
+                            </I18nContext.Consumer>
                             <span>{packageJson.version}</span>
                         </Box>
                     </RouteLink>
