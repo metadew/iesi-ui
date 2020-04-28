@@ -3,6 +3,7 @@ import { triggerFetchScripts } from 'state/entities/scripts/triggers';
 import { ROUTE_KEYS, registerRoutes } from './routes';
 import NotFound from './appShell/NotFound';
 import Home from './Home';
+import ScriptsTemplate from './design/ScriptsTemplate';
 import ScriptsOverview from './design/ScriptsOverview';
 import ScriptDetail from './design/ScriptDetail';
 import ScriptReportsTemplate from './report/ScriptReportsTemplate';
@@ -17,6 +18,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
 }, {
     routeKey: ROUTE_KEYS.R_SCRIPTS,
     path: '/scripts',
+    template: ScriptsTemplate,
     component: ScriptsOverview,
     childRoutes: [{
         routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,

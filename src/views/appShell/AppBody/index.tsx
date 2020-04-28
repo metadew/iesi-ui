@@ -12,7 +12,7 @@ interface IPublicProps {
 
 function AppBody({ state, offsetTop }: IObserveProps & IPublicProps) {
     return (
-        <Box flex="1 1 auto" paddingTop={offsetTop > 0 ? `${offsetTop}px` : 0}>
+        <Box display="flex" flexDirection="column" flex="1 1 auto" paddingTop={offsetTop > 0 ? `${offsetTop}px` : 0}>
             <Switch>
                 {getAllowedParentRouteKeys(state).map((routeKey) => {
                     const { path, exact, component, template } = getRoute({ routeKey });

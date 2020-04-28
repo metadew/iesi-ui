@@ -22,3 +22,9 @@ scripts:
         last_run_date: Last run date
         script_name: Script name
         version: Version
+  detail:
+    side:
+    main:
+      no_actions:
+        title: No actions yet
+        button: Add actions

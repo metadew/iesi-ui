@@ -7,7 +7,6 @@ import 'state/onRouteConfig';
 import initApp from 'state/initApp';
 import { StoreProvider } from 'views/observe';
 import ErrorBoundary from 'views/common/error/ErrorBoundary';
-import './app.scss';
 import I18nAware from '../I18nAware';
 import AppTemplate from '../AppTemplate';
 
