@@ -16,6 +16,9 @@ const commonTheme: ThemeOptions = {
         h1: {
             fontWeight: 700,
         },
+        h6: {
+            fontWeight: 700,
+        },
     },
 };
 

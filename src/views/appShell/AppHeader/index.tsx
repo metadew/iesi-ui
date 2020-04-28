@@ -3,14 +3,12 @@ import classNames from 'classnames';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import {
     Typography,
-    withStyles,
-    WithStyles,
-    createStyles,
     AppBar,
     Toolbar,
     IconButton,
     Theme,
     Box,
+    makeStyles,
 } from '@material-ui/core';
 import { Brightness4 as BrightnessIcon } from '@material-ui/icons';
 import RouteLink from 'views/common/navigation/RouteLink';
@@ -28,52 +26,51 @@ interface IPublicProps {
 
 const MINIMUM_SCROLL = 80;
 
-const styles = ({ spacing, palette, typography, shadows, transitions }: Theme) =>
-    createStyles({
-        appBar: {
-            top: 0,
-            left: 0,
-            backgroundColor: palette.background.paper,
-            color: palette.primary.main,
-            boxShadow: 'none',
-            borderBottom: '1px solid',
-            borderBottomColor: palette.divider,
-            transitionProperty: 'transform',
-            transitionTimingFunction: transitions.easing.sharp,
-            transitionDuration: `${transitions.duration.leavingScreen}ms`,
-        },
-        appBarHidden: {
-            // Extra 10px for the box shadow
-            transform: 'translate3d(0, -100%, 0) translate3d(0, -10px, 0)',
-        },
-        appBarFixed: {
-            boxShadow: shadows[3],
-        },
-        title: {
-            fontWeight: 700,
-            margin: spacing(1),
-        },
-        brandContainer: {
-            flexGrow: 1,
-        },
-        brand: {
-            display: 'inline-block',
-        },
-        action: {
-            paddingLeft: spacing(1),
-            paddingRight: spacing(1),
-            borderLeft: '1px solid',
-            borderLeftColor: palette.divider,
-            color: palette.primary.dark,
-            fontSize: typography.pxToRem(30),
-        },
-    });
+const useStyles = makeStyles(({ palette, spacing, transitions, shadows, typography }: Theme) => ({
+    appBar: {
+        top: 0,
+        left: 0,
+        backgroundColor: palette.background.paper,
+        color: palette.primary.main,
+        boxShadow: 'none',
+        borderBottom: '1px solid',
+        borderBottomColor: palette.divider,
+        transitionProperty: 'transform',
+        transitionTimingFunction: transitions.easing.sharp,
+        transitionDuration: `${transitions.duration.leavingScreen}ms`,
+    },
+    appBarHidden: {
+        // Extra 10px for the box shadow
+        transform: 'translate3d(0, -100%, 0) translate3d(0, -10px, 0)',
+    },
+    appBarFixed: {
+        boxShadow: shadows[3],
+    },
+    title: {
+        fontWeight: 700,
+        margin: spacing(1),
+    },
+    brandContainer: {
+        flexGrow: 1,
+    },
+    brand: {
+        display: 'inline-block',
+    },
+    action: {
+        paddingLeft: spacing(1),
+        paddingRight: spacing(1),
+        borderLeft: '1px solid',
+        borderLeftColor: palette.divider,
+        color: palette.primary.dark,
+        fontSize: typography.pxToRem(30),
+    },
+}));
 
 function AppHeader({
-    classes,
     toggleTheme,
     forwardRef,
-}: IPublicProps & WithStyles<typeof styles>) {
+}: IPublicProps) {
+    const classes = useStyles();
     const [shouldHideHeader, setShouldHideHeader] = useState(false);
     const [shouldShowShadow, setShouldShowShadow] = useState(false);
 
@@ -128,4 +125,4 @@ function AppHeader({
     );
 }
 
-export default withStyles(styles)(AppHeader);
+export default AppHeader;
