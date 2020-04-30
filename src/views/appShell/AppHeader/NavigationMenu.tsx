@@ -4,7 +4,7 @@ import {
     Menu,
     MenuItem,
 } from '@material-ui/core';
-import { Menu as MenuIcon } from '@material-ui/icons';
+import { MenuRounded as MenuIcon } from '@material-ui/icons';
 import { StateChangeNotification } from 'models/state.models';
 import { IMenuItem, MAIN_NAV_ITEMS } from 'config/menu.config';
 import { getRoute } from 'views/routes';
@@ -13,11 +13,7 @@ import RouteLink from 'views/common/navigation/RouteLink';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { IObserveProps, observe } from 'views/observe';
 
-interface IPublicProps {
-    buttonClassName: string;
-}
-
-function NavigationMenu({ state, buttonClassName }: IPublicProps & IObserveProps) {
+function NavigationMenu({ state }: IObserveProps) {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -34,9 +30,9 @@ function NavigationMenu({ state, buttonClassName }: IPublicProps & IObserveProps
                 aria-controls="toolbar-menu"
                 aria-haspopup="true"
                 onClick={handleClick}
-                className={buttonClassName}
+                style={{ fontSize: 'inherit' }}
             >
-                <MenuIcon />
+                <MenuIcon style={{ fontSize: 'inherit' }} />
             </IconButton>
             <Menu
                 id="toolbar-menu"
@@ -72,7 +68,7 @@ function NavigationMenu({ state, buttonClassName }: IPublicProps & IObserveProps
     }
 }
 
-export default observe<IPublicProps>(
+export default observe(
     [StateChangeNotification.AUTH],
     NavigationMenu,
 );

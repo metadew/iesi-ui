@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { Box } from '@material-ui/core';
 import ShowAfterEnvConfigKnown from '../ShowAfterEnvConfigKnown';
 import ThemeProvider from '../ThemeProvider';
@@ -7,6 +7,14 @@ import AppHeader from '../AppHeader';
 import AppBody from '../AppBody';
 
 export default function AppTemplate() {
+    const [height, setHeight] = useState(0);
+
+    const measuredRef = useCallback((node) => {
+        if (node !== null) {
+            setHeight(node.getBoundingClientRect().height);
+        }
+    }, []);
+
     return (
         <ShowAfterEnvConfigKnown>
             <ThemeProvider
@@ -19,8 +27,9 @@ export default function AppTemplate() {
                             <AppHeader
                                 toggleTheme={renderProps.toggleTheme}
                                 currentTheme={renderProps.currentTheme}
+                                forwardRef={measuredRef}
                             />
-                            <AppBody />
+                            <AppBody offsetTop={Math.round(height)} />
                         </Box>
                     </Box>
                 )}

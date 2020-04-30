@@ -1,13 +1,16 @@
 import { ThemeOptions } from '@material-ui/core';
-import { grey, lightBlue } from '@material-ui/core/colors';
+import { THEME_COLORS } from './colors';
 
 const darkTheme: ThemeOptions = {
     palette: {
-        primary: {
-            light: grey[50],
-            main: lightBlue[400],
-            dark: lightBlue[900],
-            contrastText: grey[50],
+        text: {
+            primary: THEME_COLORS.PRIMARY_LIGHT,
+        },
+        action: {
+            active: THEME_COLORS.PRIMARY_LIGHT,
+        },
+        background: {
+            default: THEME_COLORS.GREY_DARK,
         },
         type: 'dark',
     },
