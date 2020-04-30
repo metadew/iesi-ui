@@ -1,5 +1,5 @@
 import { getStore } from 'state/index';
-import { getRoute, registerRouteObserver } from 'views/routes';
+import { getRoute, registerRouteObserver } from '../views/routes';
 
 registerRouteObserver((routeLocation) => {
     const { executeOnRoute } = getRoute({ routeKey: routeLocation.routeKey });

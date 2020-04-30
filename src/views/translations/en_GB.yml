@@ -5,6 +5,26 @@ app_shell:
       reports: Reports
       scripts: Scripts
     title: iesi
+common:
+  list:
+    sort:
+      sort_by: Sort by
 error:
   unexpected: An unexpected error occurred.
   timeout: The server did not respond in a timely fashion. Please try again.
+scripts:
+  overview:
+    list:
+      labels:
+        last_run_date: Last run date
+        last_run_status: Last run status
+      sort:
+        last_run_date: Last run date
+        script_name: Script name
+        version: Version
+  detail:
+    side:
+    main:
+      no_actions:
+        title: No actions yet
+        button: Add actions

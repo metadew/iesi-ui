@@ -29,6 +29,10 @@
         -->
         <title>React App</title>
 
+        <!-- Outdated Browser Message -->
+        <link href="%PUBLIC_URL%/outdated.css" rel="stylesheet" />
+        <script src="%PUBLIC_URL%/outdated.js" type="text/javascript" async="false"></script>
+
         <!-- Webfonts -->
         <link
             rel="stylesheet"
@@ -43,6 +47,15 @@
         </style>
     </head>
     <body>
+        <div id="outdated-browser" class="outdated-browser" style="display: none;">
+            <div class="outdated-browser__inner">
+                <h1>You are using an outdated browser.</h1>
+                <p>Please install a more recent version of your browser.</p>
+                <a href="https://browsehappy.com/?locale=en" target="_blank" rel="noopener" class="Button Button--secondary">
+                    Upgrade your browser
+                </a>
+            </div>
+        </div>
         <noscript>You need to enable JavaScript to run this app.</noscript>
         <div id="root"></div>
         <!--
