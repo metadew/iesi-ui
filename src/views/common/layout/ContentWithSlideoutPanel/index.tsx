@@ -6,7 +6,7 @@ import { TTranslatorComponent } from 'models/i18n.models';
 
 const useStyles = makeStyles(({ palette }) => ({
     panel: {
-        background: palette.background.default,
+        background: palette.background.paper,
         transition: 'all .5s ease-out',
     },
     closed: {

@@ -11,7 +11,6 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
-import { grey } from '@material-ui/core/colors';
 import { Delete, Cloud } from '@material-ui/icons';
 import {
     ListColumns,
@@ -30,9 +29,9 @@ import { getIntialFiltersFromFilterActions } from 'utils/list/filters';
 const styles = ({ palette }: Theme) =>
     createStyles({
         header: {
-            backgroundColor: palette.background.default,
+            backgroundColor: palette.background.paper,
             borderBottom: '1px solid',
-            borderBottomColor: grey[200],
+            borderBottomColor: palette.grey[200],
         },
         scriptName: {
             fontWeight: 700,
@@ -103,6 +102,48 @@ type TProps = WithStyles<typeof styles>;
 
 const ScriptsOverview = withStyles(styles)(
     class extends React.Component<TProps, IComponentState> {
+        private mockedListItems = [
+            {
+                id: 1,
+                columns: {
+                    name: 'Script One',
+                    version: '0.8.2',
+                    description: 'lorem ipsum',
+                    lastRunDate: {
+                        value: '22 april 2020',
+                        sortValue: '2020-04-22',
+                    },
+                    lastRunStatus: 'Passed',
+                },
+            },
+            {
+                id: 2,
+                columns: {
+                    name: 'Script Two',
+                    version: '1.0',
+                    description: 'lorem ipsum',
+                    lastRunDate: {
+                        value: '21 april 2020',
+                        sortValue: '2020-04-21',
+                    },
+                    lastRunStatus: 'Failed',
+                },
+            },
+            {
+                id: 3,
+                columns: {
+                    name: 'Script Three',
+                    version: '2.0.1',
+                    description: 'lorem ipsum',
+                    lastRunDate: {
+                        value: '18 april 2020',
+                        sortValue: '2020-04-18',
+                    },
+                    lastRunStatus: 'Passed',
+                },
+            },
+        ];
+
         public constructor(props: TProps) {
             super(props);
 
@@ -203,47 +244,7 @@ const ScriptsOverview = withStyles(styles)(
                         columns={columns}
                         sortedColumn={sortedColumn}
                         filters={filters}
-                        listItems={[
-                            {
-                                id: 1,
-                                columns: {
-                                    name: 'Script One',
-                                    version: '0.8.2',
-                                    description: 'lorem ipsum',
-                                    lastRunDate: {
-                                        value: '22 april 2020',
-                                        sortValue: '2020-04-22',
-                                    },
-                                    lastRunStatus: 'Passed',
-                                },
-                            },
-                            {
-                                id: 2,
-                                columns: {
-                                    name: 'Script Two',
-                                    version: '1.0',
-                                    description: 'lorem ipsum',
-                                    lastRunDate: {
-                                        value: '21 april 2020',
-                                        sortValue: '2020-04-21',
-                                    },
-                                    lastRunStatus: 'Failed',
-                                },
-                            },
-                            {
-                                id: 3,
-                                columns: {
-                                    name: 'Script Three',
-                                    version: '2.0.1',
-                                    description: 'lorem ipsum',
-                                    lastRunDate: {
-                                        value: '18 april 2020',
-                                        sortValue: '2020-04-18',
-                                    },
-                                    lastRunStatus: 'Passed',
-                                },
-                            },
-                        ]}
+                        listItems={this.mockedListItems}
                     />
                 </Box>
             );
