@@ -47,6 +47,10 @@ const useStyles = makeStyles(({ palette, spacing, transitions, shadows, typograp
     appBarFixed: {
         boxShadow: shadows[3],
     },
+    toolBar: {
+        paddingLeft: spacing(6),
+        paddingRight: spacing(6),
+    },
     title: {
         fontSize: 0,
         margin: `0 ${spacing(1)}px`,

@@ -7,6 +7,9 @@ app_shell:
     title: iesi
 common:
   list:
+    filter:
+      search: Search
+      toggle: Filter
     sort:
       sort_by: Sort by
 error:
@@ -15,6 +18,10 @@ error:
 scripts:
   overview:
     list:
+      filter:
+        last_run_date: Last run date
+        last_run_status: Last run status
+        script_name: Script name
       labels:
         last_run_date: Last run date
         last_run_status: Last run status

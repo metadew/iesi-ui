@@ -15,7 +15,7 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 
 interface IPublicProps<ColumnNames> {
     sortActions: SortActions<ColumnNames>;
-    setSortedColumn: (sortedColumn: ISortedColumn<ColumnNames>) => void;
+    onSort: (sortedColumn: ISortedColumn<ColumnNames>) => void;
     sortedColumn: ISortedColumn<TObjectWithProps>;
 }
 
@@ -39,9 +39,9 @@ const useStyles = makeStyles(({ palette, spacing }: Theme) => ({
     },
 }));
 
-function Sort<ColumnNames>({
+export default function GenericSort<ColumnNames>({
     sortActions,
-    setSortedColumn,
+    onSort,
     sortedColumn,
 }: IPublicProps<ColumnNames>) {
     const classes = useStyles();
@@ -51,8 +51,7 @@ function Sort<ColumnNames>({
             <Typography className={classes.label}><Translate msg="common.list.sort.sort_by" /></Typography>
             <ButtonGroup
                 variant="contained"
-                color="secondary"
-                aria-label="contained secondary button group"
+                aria-label="contained button group"
                 className={classes.buttonGroup}
             >
                 {Object.keys(sortActions).map((untypedColumnName) => {
@@ -64,11 +63,10 @@ function Sort<ColumnNames>({
                         <Button
                             key={untypedColumnName}
                             variant="contained"
-                            color="secondary"
                             className={classnames(classes.button, { [classes.active]: isActive })}
                             disableElevation
                             endIcon={<ImportExport />}
-                            onClick={() => setSortedColumn({
+                            onClick={() => onSort({
                                 name: columnName,
                                 sortOrder: getSortOrder(columnName),
                                 sortType: sortAction.sortType,
@@ -94,5 +92,3 @@ function Sort<ColumnNames>({
             ? SortOrder.Descending : SortOrder.Ascending;
     }
 }
-
-export default Sort;

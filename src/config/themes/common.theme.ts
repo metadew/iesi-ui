@@ -34,7 +34,7 @@ const commonTheme: ThemeOptions = {
             fontWeight: 700,
         },
         button: {
-            fontSize: '1.25rem',
+            // fontSize: '1.25rem',
             fontWeight: 700,
         },
     },

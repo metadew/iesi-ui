@@ -1,4 +1,4 @@
-import React, { ReactText } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -11,18 +11,21 @@ import {
     IColumn,
     IListAction,
     ISortedColumn,
-    IListItemValueWithSortValue,
+    ListFilters,
 } from 'models/list.models';
 import { TableCell, Typography, IconButton, Theme } from '@material-ui/core';
 import { grey } from '@material-ui/core/colors';
 import sortListItems from 'utils/list/sortListItems';
-import isObject from '@snipsonian/core/es/is/isObject';
+import { filterListItems } from 'utils/list/filters';
+import { getListItemValueFromColumn } from 'utils/list/list';
+import { TObjectWithProps } from 'models/core.models';
 
 interface IPublicProps<ColumnNames> {
     columns: ListColumns<ColumnNames>;
     listItems: IListItem<ColumnNames>[];
     listActions?: IListAction[];
     sortedColumn?: ISortedColumn<ColumnNames>;
+    filters?: ListFilters<Partial<ColumnNames>>;
 }
 
 const useStyles = makeStyles(({ palette }: Theme) => ({
@@ -47,6 +50,7 @@ export default function GenericList<ColumnNames>({
     columns,
     listActions,
     sortedColumn,
+    filters,
 }: IPublicProps<ColumnNames>) {
     const classes = useStyles();
 
@@ -54,23 +58,21 @@ export default function GenericList<ColumnNames>({
         ? sortListItems(listItems, sortedColumn as ISortedColumn<{}>)
         : listItems;
 
+    const filteredItems = filters
+        ? filterListItems(items, filters as TObjectWithProps)
+        : items;
+
     return (
         <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="simple table">
                 <TableBody>
-                    {items.map((item: IListItem<ColumnNames>) => (
+                    {filteredItems.map((item: IListItem<ColumnNames>) => (
                         <TableRow key={item.id}>
                             {Object.keys(columns).map((untypedColumnName) => {
                                 const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
                                 const column = columns[columnName] as IColumn<ColumnNames>;
 
-                                let value: ReactText = '';
-                                if (isObject(item.columns[columnName])) {
-                                    const columnData = item.columns[columnName] as IListItemValueWithSortValue;
-                                    value = columnData.value;
-                                } else {
-                                    value = item.columns[columnName] as ReactText;
-                                }
+                                const value = getListItemValueFromColumn(item, columnName);
 
                                 const className = typeof column.className === 'function'
                                     ? column.className(value)
