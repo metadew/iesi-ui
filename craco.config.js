@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { ESLINT_MODES, addBeforeLoader, loaderByName } = require('@craco/craco');
 const path = require('path');
+// eslint-disable-next-line import/no-extraneous-dependencies
 const StyleLintPlugin = require('stylelint-webpack-plugin');
 
 const appSrc = path.resolve(__dirname, 'src');

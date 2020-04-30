@@ -88,16 +88,17 @@ export interface IAsyncEntitiesConfigManager<State, CustomConfig = {}, Error = I
 
 /* eslint-disable max-len */
 export interface IAsyncEntitiesStateManager<State, StateChangeNotificationKey, CustomConfig = {}, Error = ITraceableApiErrorBase<{}>> {
-    /* triggerAsyncEntityFetch returns a if it was triggered (true) or not (false) */
+    /* triggerAsyncEntity... returns a if it was triggered (true) or not (false) */
+    triggerAsyncEntityCreate<ExtraInput extends object, ApiResult = {}, ApiResponse = ApiResult>(props: ITriggerAsyncEntityCreateProps<State, ExtraInput, StateChangeNotificationKey>): boolean;
+    triggerAsyncEntityUpdate<ExtraInput extends object, ApiResult = {}, ApiResponse = ApiResult>(props: ITriggerAsyncEntityUpdateProps<State, ExtraInput, StateChangeNotificationKey>): boolean;
+    triggerAsyncEntityRemove<ExtraInput extends object, ApiResult = {}, ApiResponse = ApiResult>(props: ITriggerAsyncEntityRemoveProps<State, ExtraInput, StateChangeNotificationKey>): boolean;
     triggerAsyncEntityFetch<ExtraInput extends object, ApiResult = {}, ApiResponse = ApiResult>(props: ITriggerAsyncEntityFetchProps<State, ExtraInput, StateChangeNotificationKey>): boolean;
-    // TODO triggerAsyncEntity... Create/Update/Remove
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getAsyncEntity<Data = any>(props: { asyncEntityKey: TEntityKey }): IAsyncEntity<Data, Error>;
 }
 /* eslint-enable max-len */
 
-export interface ITriggerAsyncEntityFetchProps<State, ExtraInput extends object, StateChangeNotificationKey> {
-    asyncEntityToFetch: IAsyncEntityToFetch<State, ExtraInput>;
+export interface ITriggerAsyncEntityOperationBaseProps<State, ExtraInput extends object, StateChangeNotificationKey> {
     extraInputSelector?: (props: { state: State }) => ExtraInput;
     /**
      * If notificationsToTrigger not specified, by default a notification will be triggered (possibly extended with
@@ -109,8 +110,35 @@ export interface ITriggerAsyncEntityFetchProps<State, ExtraInput extends object,
     nrOfParentNotificationLevelsToTrigger?: TNrOfParentNotificationLevelsToTrigger;
 }
 
-export interface IAsyncEntityToFetch<State, ExtraInput extends object> {
+export interface ITriggerAsyncEntityCreateProps<State, ExtraInput extends object, StateChangeNotificationKey>
+    extends ITriggerAsyncEntityOperationBaseProps<State, ExtraInput, StateChangeNotificationKey>{
+    asyncEntityToCreate: IAsyncEntityToUpdate;
+}
+
+export interface ITriggerAsyncEntityUpdateProps<State, ExtraInput extends object, StateChangeNotificationKey>
+    extends ITriggerAsyncEntityOperationBaseProps<State, ExtraInput, StateChangeNotificationKey>{
+    asyncEntityToUpdate: IAsyncEntityToUpdate;
+}
+
+export interface ITriggerAsyncEntityRemoveProps<State, ExtraInput extends object, StateChangeNotificationKey>
+    extends ITriggerAsyncEntityOperationBaseProps<State, ExtraInput, StateChangeNotificationKey>{
+    asyncEntityToRemove: IAsyncEntityToOperationBase;
+}
+
+export interface ITriggerAsyncEntityFetchProps<State, ExtraInput extends object, StateChangeNotificationKey>
+    extends ITriggerAsyncEntityOperationBaseProps<State, ExtraInput, StateChangeNotificationKey>{
+    asyncEntityToFetch: IAsyncEntityToFetch<State, ExtraInput>;
+}
+
+export interface IAsyncEntityToOperationBase {
     asyncEntityKey: TEntityKey;
+}
+
+export interface IAsyncEntityToUpdate extends IAsyncEntityToOperationBase {
+    updateDataOnSuccess?: boolean; // default false
+}
+
+export interface IAsyncEntityToFetch<State, ExtraInput extends object> extends IAsyncEntityToOperationBase {
     shouldFetch?: (props: { state: State; extraInput?: ExtraInput }) => boolean; // default true
     /* refreshMode indicates what should happen if the entity data is already available */
     refreshMode?: TRefreshMode<State, ExtraInput>; // default 'always'
