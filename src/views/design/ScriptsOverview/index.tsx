@@ -30,7 +30,7 @@ import { getIntialFiltersFromFilterActions } from 'utils/list/filters';
 const styles = ({ palette }: Theme) =>
     createStyles({
         header: {
-            backgroundColor: grey[50],
+            backgroundColor: palette.background.default,
             borderBottom: '1px solid',
             borderBottomColor: grey[200],
         },

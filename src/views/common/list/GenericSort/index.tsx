@@ -51,8 +51,7 @@ export default function GenericSort<ColumnNames>({
             <Typography className={classes.label}><Translate msg="common.list.sort.sort_by" /></Typography>
             <ButtonGroup
                 variant="contained"
-                color="secondary"
-                aria-label="contained secondary button group"
+                aria-label="contained button group"
                 className={classes.buttonGroup}
             >
                 {Object.keys(sortActions).map((untypedColumnName) => {
@@ -64,7 +63,6 @@ export default function GenericSort<ColumnNames>({
                         <Button
                             key={untypedColumnName}
                             variant="contained"
-                            color="secondary"
                             className={classnames(classes.button, { [classes.active]: isActive })}
                             disableElevation
                             endIcon={<ImportExport />}

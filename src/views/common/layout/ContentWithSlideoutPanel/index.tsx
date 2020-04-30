@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import classnames from 'classnames';
 import { makeStyles, Box, Button } from '@material-ui/core';
-import { grey } from '@material-ui/core/colors';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import { TTranslatorComponent } from 'models/i18n.models';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(({ palette }) => ({
     panel: {
-        background: grey[50],
+        background: palette.background.default,
         transition: 'all .5s ease-out',
     },
     closed: {
@@ -71,7 +70,6 @@ export default function ContentWithSlideoutPanel({
                     <Button
                         className={classes.toggleButton}
                         onClick={togglePanel}
-                        color="secondary"
                         variant="contained"
                         disableElevation
                     >
