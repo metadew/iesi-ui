@@ -38,7 +38,8 @@
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.1",
     "stylelint-webpack-plugin": "^1.2.3",
-    "typescript": "^3.7.5"
+    "typescript": "^3.7.5",
+    "use-debounce": "3.4.2"
   },
   "devDependencies": {
     "@kunstmaan/eslint-typescript-config": "^2.0.1",

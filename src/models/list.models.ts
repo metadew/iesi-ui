@@ -1,4 +1,33 @@
-import { ReactText, ReactElement, ReactNode } from 'react';
+import { ReactText, ReactNode } from 'react';
+import { TTranslatorComponent } from './i18n.models';
+
+export interface IColumn<ColumnNames> {
+    label?: TTranslatorComponent;
+    align?: 'left' | 'center' | 'right';
+    className?: string | ((value: ReactText) => string);
+}
+
+export type ListColumns<ColumnNames> = {
+    [key in keyof ColumnNames]: IColumn<ColumnNames>
+};
+
+export interface IListAction {
+    icon: ReactNode;
+    onClick: (id: ReactText) => void;
+}
+
+export interface IListItemValueWithSortValue {
+    value: ReactText;
+    sortValue: ReactText;
+}
+
+
+export interface IListItem<ColumnNames> {
+    id: ReactText;
+    columns: {
+        [key in keyof ColumnNames]: ReactText | IListItemValueWithSortValue
+    };
+}
 
 export enum SortOrder {
     Ascending = 'ascending',
@@ -18,10 +47,7 @@ export interface ISortedColumn<ColumnNames> {
 }
 
 export interface ISortAction<ColumnNames> {
-    label: ReactElement<{
-        msg: string;
-        placeholders?: { [key: string]: ReactText };
-    }>;
+    label: TTranslatorComponent;
     sortType: SortType;
 }
 
@@ -29,33 +55,25 @@ export type SortActions<ColumnNames> = {
     [key in keyof ColumnNames]: ISortAction<ColumnNames>
 };
 
-export type ListColumns<ColumnNames> = {
-    [key in keyof ColumnNames]: IColumn<ColumnNames>
+export enum FilterType {
+    Search = 'search',
+}
+
+export interface IFilter<ColumnNames> {
+    name: keyof ColumnNames;
+    value: ReactText;
+    filterType: FilterType;
+}
+
+export type ListFilters<ColumnNames> = {
+    [key in keyof ColumnNames]: IFilter<ColumnNames>
 };
 
-export interface IListItemValueWithSortValue {
-    value: ReactText;
-    sortValue: ReactText;
+export interface IFilterConfigItem {
+    label: TTranslatorComponent;
+    filterType: FilterType;
 }
 
-
-export interface IListItem<ColumnNames> {
-    id: ReactText;
-    columns: {
-        [key in keyof ColumnNames]: ReactText | IListItemValueWithSortValue
-    };
-}
-
-export interface IColumn<ColumnNames> {
-    label?: ReactElement<{
-        msg: string;
-        placeholders?: { [key: string]: ReactText };
-    }>;
-    align?: 'left' | 'center' | 'right';
-    className?: string | ((value: ReactText) => string);
-}
-
-export interface IListAction {
-    icon: ReactNode;
-    onClick: (id: ReactText) => void;
-}
+export type FilterConfig<ColumnNames> = {
+    [key in keyof ColumnNames]: IFilterConfigItem;
+};

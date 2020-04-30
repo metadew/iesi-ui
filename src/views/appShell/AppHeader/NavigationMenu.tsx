@@ -44,6 +44,8 @@ function NavigationMenu({ state, buttonClassName }: IPublicProps & IObserveProps
                 keepMounted
                 open={!!anchorEl}
                 onClose={handleClose}
+                disableAutoFocus
+                disableAutoFocusItem
             >
                 {MAIN_NAV_ITEMS.map(renderNavItem)}
             </Menu>

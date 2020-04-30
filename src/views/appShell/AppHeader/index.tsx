@@ -30,6 +30,10 @@ const useStyles = makeStyles(({ palette, spacing }: Theme) => ({
         borderBottom: '1px solid',
         borderBottomColor: grey[200],
     },
+    toolBar: {
+        paddingLeft: spacing(6),
+        paddingRight: spacing(6),
+    },
     title: {
         fontWeight: 700,
         marginRight: spacing(1),
@@ -58,7 +62,7 @@ function AppHeader({
 
     return (
         <AppBar position="static" className={classes.appBar}>
-            <Toolbar>
+            <Toolbar className={classes.toolBar}>
                 <div className={classes.brandContainer}>
                     <RouteLink to={ROUTE_KEYS.R_HOME} className={classes.brand}>
                         <Box display="flex" flexDirection="row" alignItems="baseline">
