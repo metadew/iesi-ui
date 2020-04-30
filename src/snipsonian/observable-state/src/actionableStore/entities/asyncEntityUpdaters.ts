@@ -9,6 +9,7 @@ interface IAsyncEntityUpdater {
     trigger<Data, Error>(entity: IAsyncEntity<Data, Error>, initialData: Data): IAsyncEntity<Data, Error>;
     triggerWithoutDataReset<Data, Error>(entity: IAsyncEntity<Data, Error>): IAsyncEntity<Data, Error>;
     succeeded<Data, Error>(entity: IAsyncEntity<Data, Error>, data: Data): IAsyncEntity<Data, Error>;
+    succeededWithoutDataSet<Data, Error>(entity: IAsyncEntity<Data, Error>): IAsyncEntity<Data, Error>;
     failed<Data, Error>(entity: IAsyncEntity<Data, Error>, error: Error): IAsyncEntity<Data, Error>;
     cancel<Data, Error>(entity: IAsyncEntity<Data, Error>): IAsyncEntity<Data, Error>;
     reset<Data, Error>(entity: IAsyncEntity<Data, Error>, initialData: Data): IAsyncEntity<Data, Error>;
@@ -53,6 +54,17 @@ function initAsyncEntityUpdaters(operation: AsyncOperation): IAsyncEntityUpdater
             return {
                 ...entity,
                 data,
+                [operation]: {
+                    status: AsyncStatus.Success,
+                    error: null,
+                },
+            };
+        },
+        succeededWithoutDataSet<Data, Error = ITraceableApiErrorBase<{}>>(
+            entity: IAsyncEntity<Data, Error>,
+        ): IAsyncEntity<Data, Error> {
+            return {
+                ...entity,
                 [operation]: {
                     status: AsyncStatus.Success,
                     error: null,

@@ -15,6 +15,9 @@ import {
     IAsyncEntitiesConfigManager,
     IAsyncEntitiesStateManager,
     IAsyncEntityToFetch,
+    ITriggerAsyncEntityCreateProps,
+    ITriggerAsyncEntityUpdateProps,
+    ITriggerAsyncEntityRemoveProps,
     ITriggerAsyncEntityFetchProps,
 } from './types';
 import { IAsyncEntityActionCreators, initAsyncEntityActionCreators } from './asyncEntityActionCreators';
@@ -36,6 +39,107 @@ export default function initAsyncEntitiesStateManager
     let asyncEntityActionCreators: IAsyncEntityActionCreators<ActionType, State, ExtraProcessInput, StateChangeNotificationKey> = null;
 
     const stateManager: IAsyncEntitiesStateManager<State, StateChangeNotificationKey, CustomConfig, Error> = {
+        triggerAsyncEntityCreate<ExtraInput extends object, ApiInput = {}, ApiResult = {}, ApiResponse = ApiResult>({
+            asyncEntityToCreate,
+            extraInputSelector,
+            notificationsToTrigger,
+            nrOfParentNotificationLevelsToTrigger,
+        }: ITriggerAsyncEntityCreateProps<State, ExtraInput, StateChangeNotificationKey>): boolean {
+            const { asyncEntityKey, updateDataOnSuccess } = asyncEntityToCreate;
+            const operation = AsyncOperation.create;
+            const operationConfig = (asyncEntitiesConfigManager.getAsyncEntityOperationConfig({
+                asyncEntityKey,
+                operation,
+            })) as unknown as IAsyncEntityApiConfig<State, ExtraInput, ApiInput, ApiResult, ApiResponse>;
+            if (!operationConfig) {
+                return false;
+            }
+
+            const extraInput = extraInputSelector({ state: store.getState() });
+
+            // eslint-disable-next-line max-len
+            store.dispatch(getAsyncEntityActionCreators().createAsyncEntityAction<ExtraInput, ApiInput, ApiResult, ApiResponse>({
+                asyncEntityKey,
+                extraInput,
+                api: operationConfig.api,
+                apiInputSelector: operationConfig.apiInputSelector,
+                mapApiResponse: operationConfig.mapApiResponse,
+                notificationsToTrigger: notificationsToTrigger
+                    || getDefaultNotificationsToTrigger({ asyncEntityKey, operation }),
+                nrOfParentNotificationLevelsToTrigger,
+                updateDataOnSuccess,
+            }));
+
+            return true;
+        },
+
+        triggerAsyncEntityUpdate<ExtraInput extends object, ApiInput = {}, ApiResult = {}, ApiResponse = ApiResult>({
+            asyncEntityToUpdate,
+            extraInputSelector,
+            notificationsToTrigger,
+            nrOfParentNotificationLevelsToTrigger,
+        }: ITriggerAsyncEntityUpdateProps<State, ExtraInput, StateChangeNotificationKey>): boolean {
+            const { asyncEntityKey, updateDataOnSuccess } = asyncEntityToUpdate;
+            const operation = AsyncOperation.update;
+            const operationConfig = (asyncEntitiesConfigManager.getAsyncEntityOperationConfig({
+                asyncEntityKey,
+                operation,
+            })) as unknown as IAsyncEntityApiConfig<State, ExtraInput, ApiInput, ApiResult, ApiResponse>;
+            if (!operationConfig) {
+                return false;
+            }
+
+            const extraInput = extraInputSelector({ state: store.getState() });
+
+            // eslint-disable-next-line max-len
+            store.dispatch(getAsyncEntityActionCreators().updateAsyncEntityAction<ExtraInput, ApiInput, ApiResult, ApiResponse>({
+                asyncEntityKey,
+                extraInput,
+                api: operationConfig.api,
+                apiInputSelector: operationConfig.apiInputSelector,
+                mapApiResponse: operationConfig.mapApiResponse,
+                notificationsToTrigger: notificationsToTrigger
+                    || getDefaultNotificationsToTrigger({ asyncEntityKey, operation }),
+                nrOfParentNotificationLevelsToTrigger,
+                updateDataOnSuccess,
+            }));
+
+            return true;
+        },
+
+        triggerAsyncEntityRemove<ExtraInput extends object, ApiInput = {}, ApiResult = {}, ApiResponse = ApiResult>({
+            asyncEntityToRemove,
+            extraInputSelector,
+            notificationsToTrigger,
+            nrOfParentNotificationLevelsToTrigger,
+        }: ITriggerAsyncEntityRemoveProps<State, ExtraInput, StateChangeNotificationKey>): boolean {
+            const { asyncEntityKey } = asyncEntityToRemove;
+            const operation = AsyncOperation.remove;
+            const operationConfig = (asyncEntitiesConfigManager.getAsyncEntityOperationConfig({
+                asyncEntityKey,
+                operation,
+            })) as unknown as IAsyncEntityApiConfig<State, ExtraInput, ApiInput, ApiResult, ApiResponse>;
+            if (!operationConfig) {
+                return false;
+            }
+
+            const extraInput = extraInputSelector({ state: store.getState() });
+
+            // eslint-disable-next-line max-len
+            store.dispatch(getAsyncEntityActionCreators().removeAsyncEntityAction<ExtraInput, ApiInput, ApiResult, ApiResponse>({
+                asyncEntityKey,
+                extraInput,
+                api: operationConfig.api,
+                apiInputSelector: operationConfig.apiInputSelector,
+                mapApiResponse: operationConfig.mapApiResponse,
+                notificationsToTrigger: notificationsToTrigger
+                    || getDefaultNotificationsToTrigger({ asyncEntityKey, operation }),
+                nrOfParentNotificationLevelsToTrigger,
+            }));
+
+            return true;
+        },
+
         triggerAsyncEntityFetch<ExtraInput extends object, ApiInput = {}, ApiResult = {}, ApiResponse = ApiResult>({
             asyncEntityToFetch,
             extraInputSelector,

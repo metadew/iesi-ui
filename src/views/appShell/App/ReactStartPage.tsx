@@ -4,7 +4,7 @@ import ArrowBack from '@material-ui/icons/ArrowBackIos';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SaveIcon from '@material-ui/icons/Save';
 import logo, { ReactComponent as SvgLogo } from './logo.svg';
-import './app.scss';
+// import './app.scss';
 
 function ReactStartPage() {
     return (
