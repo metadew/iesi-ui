@@ -8,9 +8,9 @@ describe('App component:', () => {
     it('renders properly', () => {
         setMockState();
 
-        const { getByText } = render(<App />);
+        const { getByTitle } = render(<App />);
 
-        const linkElement = getByText(/app_shell.header.title/i);
+        const linkElement = getByTitle(/app_shell.header.title/i);
         expect(linkElement).toBeInTheDocument();
     });
 });
