@@ -249,21 +249,25 @@ const ScriptsOverview = withStyles(styles)(
             const columns: ListColumns<IColumnNames> = {
                 name: {
                     className: classes.scriptName,
+                    fixedWidth: '25%',
                 },
                 version: {
                     className: classes.scriptVersion,
+                    fixedWidth: '15%',
                 },
                 description: {
                     className: classes.scriptDescription,
                     tooltip: (value) => value,
-                    fixedWidth: '20%',
+                    fixedWidth: '350',
                 },
                 lastRunDate: {
                     label: (
                         <Translate msg="scripts.overview.list.labels.last_run_date" />
                     ),
+                    fixedWidth: '15%',
                 },
                 lastRunStatus: {
+                    fixedWidth: '15%',
                     label: (
                         <Translate msg="scripts.overview.list.labels.last_run_status" />
                     ),
