@@ -9,11 +9,10 @@ const SIDE_PANEL_WIDTH = 350;
 const useStyles = makeStyles(({ palette }) => ({
     panel: {
         background: palette.background.paper,
-        transition: 'all .5s ease-out',
     },
     container: {
         width: `calc(100% + ${SIDE_PANEL_WIDTH}px)`,
-        transition: 'all .5s ease-out',
+        transition: 'transform .2s',
     },
     closed: {
         transform: `translateX(-${SIDE_PANEL_WIDTH}px)`,
