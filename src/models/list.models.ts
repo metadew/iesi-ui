@@ -1,5 +1,6 @@
 import { ReactText, ReactNode } from 'react';
 import { TTranslatorComponent } from './i18n.models';
+import { TObjectWithProps } from './core.models';
 
 export interface IColumn<ColumnNames> {
     label?: TTranslatorComponent;
@@ -57,11 +58,12 @@ export type SortActions<ColumnNames> = {
 
 export enum FilterType {
     Search = 'search',
+    Select = 'select',
 }
 
-export interface IFilter<ColumnNames> {
+export interface IFilter<ColumnNames = TObjectWithProps> {
     name: keyof ColumnNames;
-    value: ReactText;
+    values: ReactText[];
     filterType: FilterType;
 }
 

@@ -12,3 +12,19 @@ export function getListItemValueFromColumn<ColumnNames>(item: IListItem<ColumnNa
     }
     return value;
 }
+
+export function getUniqueValuesFromListItems<ColumnNames>(
+    items: IListItem<ColumnNames>[],
+    columnName: keyof ColumnNames,
+): ReactText[] {
+    return items.reduce(
+        (acc, item) => {
+            const value = getListItemValueFromColumn(item, columnName);
+            if (!acc.includes(value)) {
+                acc.push(value);
+            }
+            return acc;
+        },
+        [],
+    );
+}

@@ -20,11 +20,10 @@ import {
     FilterType,
     ListFilters,
     FilterConfig,
-    IFilter,
 } from 'models/list.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
-import { getIntialFiltersFromFilterActions } from 'utils/list/filters';
+import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 
 const styles = ({ palette }: Theme) =>
     createStyles({
@@ -66,11 +65,11 @@ interface IColumnNames {
 const filterConfig: FilterConfig<Partial<IColumnNames>> = {
     lastRunDate: {
         label: <Translate msg="scripts.overview.list.filter.last_run_date" />,
-        filterType: FilterType.Search,
+        filterType: FilterType.Select,
     },
     lastRunStatus: {
         label: <Translate msg="scripts.overview.list.filter.last_run_status" />,
-        filterType: FilterType.Search,
+        filterType: FilterType.Select,
     },
     name: {
         label: <Translate msg="scripts.overview.list.filter.script_name" />,
@@ -149,7 +148,7 @@ const ScriptsOverview = withStyles(styles)(
 
             this.state = {
                 sortedColumn: null,
-                filters: getIntialFiltersFromFilterActions(filterConfig),
+                filters: getIntialFiltersFromFilterConfig(filterConfig),
             };
 
             this.renderPanel = this.renderPanel.bind(this);
@@ -193,13 +192,18 @@ const ScriptsOverview = withStyles(styles)(
 
         private renderPanel() {
             return (
-                <GenericFilter filterConfig={filterConfig} onFilter={this.onFilter} />
+                <GenericFilter
+                    filterConfig={filterConfig}
+                    onFilterChange={this.onFilter}
+                    listItems={this.mockedListItems}
+                />
             );
         }
 
         private renderContent() {
             const { classes } = this.props;
             const { sortedColumn, filters } = this.state;
+            console.log(filters);
             const columns: ListColumns<IColumnNames> = {
                 name: {
                     className: classes.scriptName,
@@ -254,14 +258,8 @@ const ScriptsOverview = withStyles(styles)(
             this.setState({ sortedColumn });
         }
 
-        private onFilter(filter: IFilter<Partial<IColumnNames>>) {
-            const { filters } = this.state;
-            const newFilters = { ...filters };
-            newFilters[filter.name] = {
-                ...newFilters[filter.name],
-                value: filter.value,
-            };
-            this.setState({ filters: newFilters });
+        private onFilter(listFilters: ListFilters<Partial<IColumnNames>>) {
+            this.setState({ filters: listFilters });
         }
     },
 );

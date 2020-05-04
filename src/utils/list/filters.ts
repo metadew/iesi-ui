@@ -7,16 +7,17 @@ import {
     FilterType,
 } from 'models/list.models';
 import { TObjectWithProps } from 'models/core.models';
+import { ReactText } from 'react';
 import { getListItemValueFromColumn } from './list';
 
-export function getIntialFiltersFromFilterActions<ColumnNames>(
-    filterActions: FilterConfig<ColumnNames>,
+export function getIntialFiltersFromFilterConfig<ColumnNames>(
+    filterConfig: FilterConfig<ColumnNames>,
 ): ListFilters<ColumnNames> {
-    return Object.keys(filterActions).reduce((acc, untypedColumnName) => {
+    return Object.keys(filterConfig).reduce((acc, untypedColumnName) => {
         const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
-        const filterAction = filterActions[columnName] as IFilterConfigItem;
+        const filterAction = filterConfig[columnName] as IFilterConfigItem;
         acc[columnName] = {
-            value: '',
+            values: [],
             name: columnName,
             filterType: filterAction.filterType,
         };
@@ -34,27 +35,21 @@ export function filterListItems<LI extends IListItem<TObjectWithProps>>(
         for (let i = 0; i < columnNames.length; i++) {
             const columnName = columnNames[i];
             const filter = filters[columnName];
-            if (filter.value && filter.name === columnName) {
-                if (filter.filterType === FilterType.Search) {
-                    if (!searchFilter({ item, filter, columnName })) {
+            if (filter.values && filter.values.length > 0 && filter.name === columnName) {
+                if (
+                    filter.filterType === FilterType.Search
+                    || filter.filterType === FilterType.Select
+                ) {
+                    if (!stringMatchFilter({ item, filter, columnName })) {
                         return false;
                     }
-                }
-                const itemValue = getListItemValueFromColumn(item, columnName);
-                if (
-                    !itemValue
-                        .toString()
-                        .toLowerCase()
-                        .includes(filter.value.toString().toLowerCase())
-                ) {
-                    return false;
                 }
             }
         }
         return true;
     });
 
-    function searchFilter({
+    function stringMatchFilter({
         item,
         filter,
         columnName,
@@ -64,9 +59,19 @@ export function filterListItems<LI extends IListItem<TObjectWithProps>>(
         columnName: string;
     }) {
         const itemValue = getListItemValueFromColumn(item, columnName);
-        return itemValue
-            .toString()
-            .toLowerCase()
-            .includes(filter.value.toString().toLowerCase());
+        let match = false;
+        filter.values.forEach((value) => {
+            if (reactTextIncludesValue(itemValue, value)) {
+                match = true;
+            }
+        });
+        return match;
     }
+}
+
+export function reactTextIncludesValue(reactText: ReactText, value: ReactText) {
+    return reactText
+        .toString()
+        .toLowerCase()
+        .includes(value.toString().toLowerCase());
 }

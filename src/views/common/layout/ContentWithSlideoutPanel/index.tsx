@@ -14,7 +14,7 @@ const useStyles = makeStyles(({ palette }) => ({
         transform: 'translateX(-100%)',
     },
     open: {
-        width: 300,
+        width: 350,
         transform: 'translateX(0)',
     },
     inner: {
@@ -63,7 +63,15 @@ export default function ContentWithSlideoutPanel({
     return (
         <Box display="flex" flex="1 1 auto">
             <Box position="relative" className={panelClasses}>
-                <Box width={300} padding={3} height="100%" className={panelInnerClasses}>
+                <Box
+                    width={350}
+                    paddingLeft={5}
+                    paddingRight={5}
+                    paddingTop={3}
+                    paddingBottom={3}
+                    height="100%"
+                    className={panelInnerClasses}
+                >
                     {panel}
                 </Box>
                 <Box position="absolute" top="0" right="0" className={classes.toggle}>
