@@ -1,29 +1,26 @@
+import { IParameter } from './iesiGeneric.models';
+
 export interface IScriptBase {
     name: string;
     description: string;
 }
 
-export interface IScriptNamed extends IScriptBase {
+export interface IScriptWithVersions extends IScriptBase {
     versions: number[];
 }
 
 export interface IScript extends IScriptBase {
     version: IScriptVersion;
-    parameters: IScriptParameter[];
+    parameters: IParameter[];
     actions: IScriptAction[];
 }
 
-interface IScriptVersion {
+export interface IScriptVersion {
     number: number;
     description: string;
 }
 
-interface IScriptParameter {
-    name: string;
-    value: string;
-}
-
-interface IScriptAction {
+export interface IScriptAction {
     retries: number;
     iteration: string;
     condition: string;
@@ -34,13 +31,13 @@ interface IScriptAction {
     errorExpected: boolean;
     errorStop: boolean;
     type: string;
-    parameters: IScriptParameter[];
+    parameters: IParameter[];
 }
 
-export interface IFetchScriptByNamePayload {
+export interface IScriptByNamePayload {
     name: string;
 }
 
-export interface IFetchScriptByNameAndVerionPayload extends IFetchScriptByNamePayload {
+export interface IScriptByNameAndVersionPayload extends IScriptByNamePayload {
     version: number;
 }

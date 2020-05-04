@@ -1,6 +1,6 @@
 export interface IExecutionRequest {
     executionRequestId: string;
-    requestTimestamp: Date;
+    requestTimestamp: Date; // format 2020-05-04T10:01:13.923Z
     name: string;
     description: string;
     scope: string;
@@ -10,7 +10,7 @@ export interface IExecutionRequest {
     scriptExecutionRequests: IScriptExecutionRequest[];
 }
 
-type TExecutionRequestStatus = 'NEW';
+type TExecutionRequestStatus = 'NEW'; // TODO
 
 interface IScriptExecutionRequest {
     scriptExecutionRequestId: string;
@@ -26,6 +26,6 @@ interface IScriptExecutionRequest {
     scriptVersion: number;
 }
 
-export interface IFetchExecutionRequestByIdPayload {
+export interface IExecutionRequestByIdPayload {
     id: string;
 }
