@@ -4,27 +4,22 @@ import { makeStyles, Box, Button } from '@material-ui/core';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import { TTranslatorComponent } from 'models/i18n.models';
 
+const SIDE_PANEL_WIDTH = 350;
+
 const useStyles = makeStyles(({ palette }) => ({
     panel: {
         background: palette.background.paper,
         transition: 'all .5s ease-out',
     },
-    closed: {
-        width: 0,
-        transform: 'translateX(-100%)',
-    },
-    open: {
-        width: 350,
-        transform: 'translateX(0)',
-    },
-    inner: {
+    container: {
+        width: `calc(100% + ${SIDE_PANEL_WIDTH}px)`,
         transition: 'all .5s ease-out',
     },
-    innerClosed: {
-        display: 'none',
+    closed: {
+        transform: `translateX(-${SIDE_PANEL_WIDTH}px)`,
     },
-    innerOpen: {
-        display: 'block',
+    open: {
+        transform: 'translateX(0)',
     },
     toggle: {
         transform: 'rotate(-90deg)',
@@ -50,27 +45,22 @@ export default function ContentWithSlideoutPanel({
     const [isOpen, setIsOpen] = useState(false);
     const classes = useStyles();
 
-    const panelClasses = classnames(classes.panel, {
+    const containerClasses = classnames(classes.container, {
         [classes.closed]: !isOpen,
         [classes.open]: isOpen,
     });
 
-    const panelInnerClasses = classnames(classes.inner, {
-        [classes.innerClosed]: !isOpen,
-        [classes.innerOpen]: isOpen,
-    });
 
     return (
-        <Box display="flex" flex="1 1 auto">
-            <Box position="relative" className={panelClasses}>
+        <Box display="flex" flex="1 1 auto" className={containerClasses}>
+            <Box position="relative" className={classes.panel}>
                 <Box
-                    width={350}
+                    width={SIDE_PANEL_WIDTH}
                     paddingLeft={5}
                     paddingRight={5}
                     paddingTop={3}
                     paddingBottom={3}
                     height="100%"
-                    className={panelInnerClasses}
                 >
                     {panel}
                 </Box>
