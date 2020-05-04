@@ -19,6 +19,8 @@ error:
   timeout: The server did not respond in a timely fashion. Please try again.
 scripts:
   overview:
+    header:
+      amount: 'You have {amount} scripts'
     list:
       filter:
         last_run_date: Last run date

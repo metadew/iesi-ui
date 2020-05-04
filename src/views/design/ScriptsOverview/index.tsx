@@ -170,7 +170,10 @@ const ScriptsOverview = withStyles(styles)(
                     >
                         <AppTemplateContainer>
                             <Typography variant="h6">
-                                You have 50 scripts
+                                <Translate
+                                    msg="scripts.overview.header.amount"
+                                    placeholders={{ amount: this.mockedListItems.length }}
+                                />
                             </Typography>
                             <GenericSort
                                 sortActions={sortActions}
@@ -203,7 +206,6 @@ const ScriptsOverview = withStyles(styles)(
         private renderContent() {
             const { classes } = this.props;
             const { sortedColumn, filters } = this.state;
-            console.log(filters);
             const columns: ListColumns<IColumnNames> = {
                 name: {
                     className: classes.scriptName,
