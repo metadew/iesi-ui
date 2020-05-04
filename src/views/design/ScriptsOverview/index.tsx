@@ -142,6 +142,45 @@ const ScriptsOverview = withStyles(styles)(
                     lastRunStatus: 'Passed',
                 },
             },
+            {
+                id: 4,
+                columns: {
+                    name: 'Script Four',
+                    version: '0.8.2',
+                    description: 'lorem ipsum aoihaf oiad ijdizj. azodh izi haf oiad ijdizj. azo azazdoijazd iizaidi',
+                    lastRunDate: {
+                        value: '22 april 2020',
+                        sortValue: '2020-04-22',
+                    },
+                    lastRunStatus: 'Passed',
+                },
+            },
+            {
+                id: 5,
+                columns: {
+                    name: 'Script Five',
+                    version: '5.0',
+                    description: 'lorem ipsum',
+                    lastRunDate: {
+                        value: '23 februari 2020',
+                        sortValue: '2020-02-23',
+                    },
+                    lastRunStatus: 'Failed',
+                },
+            },
+            {
+                id: 6,
+                columns: {
+                    name: 'Script Six',
+                    version: '2.0.1',
+                    description: 'lorem ipsum',
+                    lastRunDate: {
+                        value: '18 april 2020',
+                        sortValue: '2020-04-18',
+                    },
+                    lastRunStatus: 'Failed',
+                },
+            },
         ];
 
         public constructor(props: TProps) {
@@ -254,6 +293,7 @@ const ScriptsOverview = withStyles(styles)(
                         sortedColumn={sortedColumn}
                         filters={filters}
                         listItems={this.mockedListItems}
+                        enablePagination
                     />
                 </Box>
             );
