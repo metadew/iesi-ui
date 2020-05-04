@@ -30,6 +30,11 @@ const commonTheme: ThemeOptions = {
             fontSize: '1.25rem',
             fontWeight: 700,
         },
+        h4: {
+            fontSize: '1.25rem',
+            fontWeight: 400,
+            color: THEME_COLORS.PRIMARY,
+        },
         h6: {
             fontWeight: 700,
         },
