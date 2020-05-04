@@ -108,7 +108,7 @@ const ScriptsOverview = withStyles(styles)(
                 columns: {
                     name: 'Script One',
                     version: '0.8.2',
-                    description: 'lorem ipsum',
+                    description: 'lorem ipsum aoihaf oiad ijdizj. azodh izi haf oiad ijdizj. azo azazdoijazd iizaidi',
                     lastRunDate: {
                         value: '22 april 2020',
                         sortValue: '2020-04-22',
@@ -216,6 +216,8 @@ const ScriptsOverview = withStyles(styles)(
                 },
                 description: {
                     className: classes.scriptDescription,
+                    tooltip: (value) => value,
+                    fixedWidth: '20%',
                 },
                 lastRunDate: {
                     label: (
@@ -232,6 +234,7 @@ const ScriptsOverview = withStyles(styles)(
                         }
                         return classes.scriptFailed;
                     },
+                    tooltip: (value) => value,
                 },
             };
 

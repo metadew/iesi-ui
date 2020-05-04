@@ -13,12 +13,15 @@ import {
     ISortedColumn,
     ListFilters,
 } from 'models/list.models';
-import { TableCell, Typography, IconButton, Theme } from '@material-ui/core';
+import { TableCell, Typography, IconButton, Theme, Box, Tooltip, Icon } from '@material-ui/core';
+import { Info } from '@material-ui/icons';
 import { grey } from '@material-ui/core/colors';
 import sortListItems from 'utils/list/sortListItems';
 import { filterListItems } from 'utils/list/filters';
 import { getListItemValueFromColumn } from 'utils/list/list';
 import { TObjectWithProps } from 'models/core.models';
+
+const SHORTEN_VALUE_FROM_CHARACTERS = 40;
 
 interface IPublicProps<ColumnNames> {
     columns: ListColumns<ColumnNames>;
@@ -72,23 +75,41 @@ export default function GenericList<ColumnNames>({
                                 const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
                                 const column = columns[columnName] as IColumn<ColumnNames>;
 
-                                const value = getListItemValueFromColumn(item, columnName);
+                                const value = getListItemValueFromColumn(item, columnName).toString();
+                                const shortenedValue = value.length > SHORTEN_VALUE_FROM_CHARACTERS
+                                    ? `${value.substr(0, SHORTEN_VALUE_FROM_CHARACTERS)}...`
+                                    : value;
 
                                 const className = typeof column.className === 'function'
                                     ? column.className(value)
                                     : column.className;
 
+                                const tooltip = typeof column.tooltip === 'function'
+                                    ? column.tooltip(value)
+                                    : column.tooltip;
+
                                 return (
-                                    <TableCell key={columnName as string}>
+                                    <TableCell style={{ width: column.fixedWidth }} key={columnName as string}>
                                         <Typography
                                             display="block"
                                             className={classes.label}
                                         >
                                             {column.label}
                                         </Typography>
-                                        <Typography className={className}>
-                                            {value}
-                                        </Typography>
+                                        <Box display="flex" alignItems="center">
+                                            <Typography className={className}>
+                                                {shortenedValue}
+                                            </Typography>
+                                            {tooltip && (
+                                                <Box marginLeft={1}>
+                                                    <Tooltip title={tooltip}>
+                                                        <Icon aria-label="info">
+                                                            <Info />
+                                                        </Icon>
+                                                    </Tooltip>
+                                                </Box>
+                                            )}
+                                        </Box>
                                     </TableCell>
                                 );
                             })}

@@ -10,7 +10,7 @@ export function getListItemValueFromColumn<ColumnNames>(item: IListItem<ColumnNa
     } else {
         value = item.columns[columnName] as ReactText;
     }
-    return value;
+    return value || '';
 }
 
 export function getUniqueValuesFromListItems<ColumnNames>(
