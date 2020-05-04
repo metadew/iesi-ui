@@ -11,7 +11,7 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
-import { Delete, Cloud } from '@material-ui/icons';
+import { Edit } from '@material-ui/icons';
 import {
     ListColumns,
     ISortedColumn,
@@ -24,6 +24,7 @@ import {
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
+import { redirectTo, ROUTE_KEYS } from 'views/routes';
 
 const styles = ({ palette }: Theme) =>
     createStyles({
@@ -239,12 +240,11 @@ const ScriptsOverview = withStyles(styles)(
                     <GenericList
                         listActions={[
                             {
-                                icon: <Cloud />,
-                                onClick: (id) => console.log(id),
-                            },
-                            {
-                                icon: <Delete />,
-                                onClick: (id) => console.log(id),
+                                icon: <Edit />,
+                                onClick: (id) => redirectTo({
+                                    routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                    params: { scriptId: id },
+                                }),
                             },
                         ]}
                         columns={columns}

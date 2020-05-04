@@ -20,7 +20,7 @@ import { getUniqueValuesFromListItems } from 'utils/list/list';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { reactTextIncludesValue } from 'utils/list/filters';
 
-const SHOW_FILTER_WHEN_MORE_THAN_X_OPTIONS = 1;
+const SHOW_FILTER_WHEN_MORE_THAN_X_OPTIONS = 5;
 
 interface IPublicProps {
     columnName: string;
