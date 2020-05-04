@@ -21,10 +21,10 @@ const useStyles = makeStyles(({ palette }) => ({
         transition: 'all .5s ease-out',
     },
     innerClosed: {
-        opacity: 0,
+        display: 'none',
     },
     innerOpen: {
-        opacity: 1,
+        display: 'block',
     },
     toggle: {
         transform: 'rotate(-90deg)',
