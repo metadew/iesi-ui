@@ -35,15 +35,13 @@ const styles = ({ palette }: Theme) =>
         },
         scriptName: {
             fontWeight: 700,
-            color: palette.primary.main,
+            color: palette.text.primary,
         },
         scriptVersion: {
             fontWeight: 700,
-            color: palette.primary.dark,
         },
         scriptDescription: {
             fontWeight: 700,
-            color: palette.primary.dark,
         },
         scriptSuccess: {
             fontWeight: 700,
