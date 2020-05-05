@@ -49,8 +49,8 @@ interface IPublicProps<ColumnNames> {
 const useStyles = makeStyles(({ palette, spacing, shape }: Theme) => ({
     table: {
         // Padding for box shadows of tableRows
-        paddingTop: spacing(2),
-        paddingBottom: spacing(2),
+        paddingTop: spacing(2.2),
+        paddingBottom: spacing(2.2),
         paddingLeft: spacing(5),
         paddingRight: spacing(5),
         minWidth: 650,
