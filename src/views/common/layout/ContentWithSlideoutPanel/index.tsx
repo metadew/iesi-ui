@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import classnames from 'classnames';
 import { makeStyles, Box, Button } from '@material-ui/core';
-import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import { TTranslatorComponent } from 'models/i18n.models';
 
 const SIDE_PANEL_WIDTH = 350;
@@ -77,9 +76,7 @@ export default function ContentWithSlideoutPanel({
                 </Box>
             </Box>
             <Box flex="1 1 auto">
-                <AppTemplateContainer>
-                    {content}
-                </AppTemplateContainer>
+                {content}
             </Box>
         </Box>
     );
