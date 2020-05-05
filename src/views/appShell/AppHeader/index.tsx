@@ -62,6 +62,9 @@ const useStyles = makeStyles(({ palette, spacing, transitions, shadows, typograp
     brand: {
         display: 'inline-block',
     },
+    versionNumber: {
+        color: palette.text.primary,
+    },
     versionLabel: {
         fontSize: '.8rem',
         color: palette.grey[500],
@@ -120,7 +123,7 @@ function AppHeader({
                             </I18nContext.Consumer>
                             <div>
                                 <div className={classes.versionLabel}>Version</div>
-                                <span>{packageJson.version}</span>
+                                <span className={classes.versionNumber}>{packageJson.version}</span>
                             </div>
                         </Box>
                     </RouteLink>
