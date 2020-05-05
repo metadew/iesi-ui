@@ -35,7 +35,7 @@ const styles = ({ palette }: Theme) =>
         },
         scriptName: {
             fontWeight: 700,
-            color: palette.text.primary,
+            color: palette.primary.main,
         },
         scriptVersion: {
             fontWeight: 700,
@@ -280,7 +280,7 @@ const ScriptsOverview = withStyles(styles)(
             };
 
             return (
-                <Box marginTop={3}>
+                <Box marginBottom={3}>
                     <GenericList
                         listActions={[
                             {

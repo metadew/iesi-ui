@@ -21,9 +21,11 @@ import {
     Box,
     Tooltip,
     Icon,
-    TableFooter,
-    TablePagination,
 } from '@material-ui/core';
+import {
+    Pagination,
+    PaginationItem,
+} from '@material-ui/lab';
 import {
     Info,
 } from '@material-ui/icons';
@@ -31,9 +33,10 @@ import sortListItems from 'utils/list/sortListItems';
 import { filterListItems } from 'utils/list/filters';
 import { getListItemValueFromColumn } from 'utils/list/list';
 import { TObjectWithProps } from 'models/core.models';
-import TablePaginationActions from './TablePaginationActions';
+import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 
 const SHORTEN_VALUE_FROM_CHARACTERS = 40;
+const ROWS_PER_PAGE = 5;
 
 interface IPublicProps<ColumnNames> {
     columns: ListColumns<ColumnNames>;
@@ -46,7 +49,11 @@ interface IPublicProps<ColumnNames> {
 
 const useStyles = makeStyles(({ palette, spacing, shape }: Theme) => ({
     table: {
-        padding: '22px', // For box shadows of tableRows
+        // Padding for box shadows of tableRows
+        paddingTop: spacing(2.2),
+        paddingBottom: spacing(2.2),
+        paddingLeft: spacing(5),
+        paddingRight: spacing(5),
         minWidth: 650,
         tableLayout: 'auto',
         borderCollapse: 'separate',
@@ -79,11 +86,9 @@ const useStyles = makeStyles(({ palette, spacing, shape }: Theme) => ({
     actionIcon: {
         color: palette.primary.dark,
     },
-    tablePagination: {
-        border: 'none',
-    },
-    tablePaginationSpacer: {
-        display: 'none',
+    paginationSelected: {
+        backgroundColor: `${palette.primary.main} !important`,
+        color: palette.background.paper,
     },
 }));
 
@@ -96,7 +101,6 @@ export default function GenericList<ColumnNames>({
     enablePagination,
 }: IPublicProps<ColumnNames>) {
     const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const classes = useStyles();
 
     const items = sortedColumn
@@ -107,108 +111,99 @@ export default function GenericList<ColumnNames>({
         ? filterListItems(items, filters as TObjectWithProps)
         : items;
 
-    const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
-        setPage(newPage);
+    const handleChangePage = (event: React.ChangeEvent<unknown> | null, newPage: number) => {
+        setPage(newPage - 1);
     };
 
-    const handleChangeRowsPerPage = (
-        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    ) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
-
-    const itemsToDisplay = enablePagination && rowsPerPage > 0
-        ? filteredItems.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+    const itemsToDisplay = enablePagination
+        ? filteredItems.slice(page * ROWS_PER_PAGE, page * ROWS_PER_PAGE + ROWS_PER_PAGE)
         : filteredItems;
 
     return (
-        <TableContainer elevation={0} component={Paper}>
-            <Table className={classes.table} aria-label="simple table">
-                <TableBody>
-                    {itemsToDisplay.map((item: IListItem<ColumnNames>) => (
-                        <TableRow className={classes.tableRow} key={item.id}>
-                            {Object.keys(columns).map((untypedColumnName) => {
-                                const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
-                                const column = columns[columnName] as IColumn<ColumnNames>;
+        <>
+            <TableContainer elevation={0} component={Paper}>
+                <Table className={classes.table} aria-label="simple table">
+                    <TableBody>
+                        {itemsToDisplay.map((item: IListItem<ColumnNames>) => (
+                            <TableRow className={classes.tableRow} key={item.id}>
+                                {Object.keys(columns).map((untypedColumnName) => {
+                                    const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
+                                    const column = columns[columnName] as IColumn<ColumnNames>;
 
-                                const value = getListItemValueFromColumn(item, columnName).toString();
-                                const shortenedValue = value.length > SHORTEN_VALUE_FROM_CHARACTERS
-                                    ? `${value.substr(0, SHORTEN_VALUE_FROM_CHARACTERS)}...`
-                                    : value;
+                                    const value = getListItemValueFromColumn(item, columnName).toString();
+                                    const shortenedValue = value.length > SHORTEN_VALUE_FROM_CHARACTERS
+                                        ? `${value.substr(0, SHORTEN_VALUE_FROM_CHARACTERS)}...`
+                                        : value;
 
-                                const className = typeof column.className === 'function'
-                                    ? column.className(value)
-                                    : column.className;
+                                    const className = typeof column.className === 'function'
+                                        ? column.className(value)
+                                        : column.className;
 
-                                const tooltip = typeof column.tooltip === 'function'
-                                    ? column.tooltip(value)
-                                    : column.tooltip;
+                                    const tooltip = typeof column.tooltip === 'function'
+                                        ? column.tooltip(value)
+                                        : column.tooltip;
 
-                                return (
-                                    <TableCell style={{ width: column.fixedWidth }} key={columnName as string}>
-                                        <Typography
-                                            display="block"
-                                            className={classes.label}
-                                        >
-                                            {column.label}
-                                        </Typography>
-                                        <Box display="flex" alignItems="center">
-                                            <Typography className={className}>
-                                                {shortenedValue}
+                                    return (
+                                        <TableCell style={{ width: column.fixedWidth }} key={columnName as string}>
+                                            <Typography
+                                                display="block"
+                                                className={classes.label}
+                                            >
+                                                {column.label}
                                             </Typography>
-                                            {tooltip && (
-                                                <Box marginLeft={1}>
-                                                    <Tooltip title={tooltip}>
-                                                        <Icon aria-label="info">
-                                                            <Info />
-                                                        </Icon>
-                                                    </Tooltip>
-                                                </Box>
-                                            )}
-                                        </Box>
-                                    </TableCell>
-                                );
-                            })}
-                            {listActions.map((action, index) => (
-                                <TableCell // eslint-disable-next-line react/no-array-index-key
-                                    key={index}
-                                    align="right"
-                                    className={classes.action}
-                                >
-                                    <IconButton
-                                        onClick={() => action.onClick(item.id)}
-                                        className={classes.actionIcon}
+                                            <Box display="flex" alignItems="center">
+                                                <Typography className={className}>
+                                                    {shortenedValue}
+                                                </Typography>
+                                                {tooltip && (
+                                                    <Box marginLeft={1}>
+                                                        <Tooltip title={tooltip}>
+                                                            <Icon aria-label="info">
+                                                                <Info />
+                                                            </Icon>
+                                                        </Tooltip>
+                                                    </Box>
+                                                )}
+                                            </Box>
+                                        </TableCell>
+                                    );
+                                })}
+                                {listActions.map((action, index) => (
+                                    <TableCell // eslint-disable-next-line react/no-array-index-key
+                                        key={index}
+                                        align="right"
+                                        className={classes.action}
                                     >
-                                        {action.icon}
-                                    </IconButton>
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    ))}
-                </TableBody>
-                {enablePagination && (
-                    <TableFooter>
-                        <TableRow>
-                            <TablePagination
-                                className={classes.tablePagination}
-                                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                                count={filteredItems.length}
-                                rowsPerPage={rowsPerPage}
-                                page={page}
-                                classes={{ spacer: classes.tablePaginationSpacer }}
-                                SelectProps={{
-                                    inputProps: { 'aria-label': 'rows per page' },
-                                    native: true,
-                                }}
-                                onChangePage={handleChangePage}
-                                onChangeRowsPerPage={handleChangeRowsPerPage}
-                                ActionsComponent={TablePaginationActions}
+                                        <IconButton
+                                            onClick={() => action.onClick(item.id)}
+                                            className={classes.actionIcon}
+                                        >
+                                            {action.icon}
+                                        </IconButton>
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            {enablePagination && (
+                <AppTemplateContainer>
+                    <Pagination
+                        count={Math.ceil(filteredItems.length / ROWS_PER_PAGE)}
+                        shape="rounded"
+                        onChange={handleChangePage}
+                        showFirstButton
+                        showLastButton
+                        renderItem={(props) => (
+                            <PaginationItem
+                                {...props}
+                                classes={{ selected: classes.paginationSelected }}
                             />
-                        </TableRow>
-                    </TableFooter>
-                )}
-            </Table>
-        </TableContainer>
+                        )}
+                    />
+                </AppTemplateContainer>
+            )}
+        </>
     );
 }
