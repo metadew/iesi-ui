@@ -71,6 +71,7 @@ export default function GenericSort<ColumnNames>({
                                 sortOrder: getSortOrder(columnName),
                                 sortType: sortAction.sortType,
                             })}
+                            size="small"
                         >
                             {sortAction.label}
                         </Button>

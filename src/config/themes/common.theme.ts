@@ -59,7 +59,7 @@ const commonTheme: ThemeOptions = {
                 },
             },
             containedSizeSmall: {
-                fontSize: '1rem',
+                fontSize: '.875rem',
             },
             containedSizeLarge: {
                 fontSize: '1.5rem',
