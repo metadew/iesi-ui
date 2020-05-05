@@ -20,6 +20,12 @@ import {
 import {
     Info,
 } from '@material-ui/icons';
+import {
+    DraggableProvidedDragHandleProps,
+    DraggableProvidedDraggableProps,
+} from 'react-beautiful-dnd';
+import { formatNumberWithTwoDigits } from 'utils/number/format';
+import isSet from '@snipsonian/core/es/is/isSet';
 
 const SHORTEN_VALUE_FROM_CHARACTERS = 40;
 
@@ -27,6 +33,10 @@ interface IPublicProps<ColumnNames> {
     item: IListItem<ColumnNames>;
     columns: ListColumns<ColumnNames>;
     listActions?: IListAction[];
+    draggableProps?: DraggableProvidedDraggableProps & DraggableProvidedDragHandleProps & {
+        ref(element?: HTMLElement | null): unknown;
+    };
+    indexToShow?: number;
 }
 
 const useStyles = makeStyles(({ palette, shape }: Theme) => ({
@@ -45,16 +55,28 @@ const useStyles = makeStyles(({ palette, shape }: Theme) => ({
     actionIcon: {
         color: palette.primary.dark,
     },
+    index: {
+        width: 50,
+        fontWeight: 700,
+        textAlign: 'center',
+    },
 }));
 
 export default function GenericTableRow<ColumnNames>({
     item,
     columns,
     listActions,
+    draggableProps,
+    indexToShow,
 }: IPublicProps<ColumnNames>) {
     const classes = useStyles();
     return (
-        <TableRow className={classes.tableRow}>
+        <TableRow className={classes.tableRow} {...draggableProps}>
+            {isSet(indexToShow) && (
+                <TableCell>
+                    <Typography className={classes.index}>{formatNumberWithTwoDigits(indexToShow)}</Typography>
+                </TableCell>
+            )}
             {Object.keys(columns).map((untypedColumnName) => {
                 const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
                 const column = columns[columnName] as IColumn<ColumnNames>;

@@ -26,7 +26,8 @@ import { filterListItems } from 'utils/list/filters';
 import { TObjectWithProps } from 'models/core.models';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import GenericTableRow from './GenericTableRow';
+import GenericTableRow from '../GenericTableRow';
+import { useListStyles } from '../common';
 
 const ROWS_PER_PAGE = 5;
 
@@ -39,30 +40,7 @@ interface IPublicProps<ColumnNames> {
     enablePagination?: boolean;
 }
 
-const useStyles = makeStyles(({ palette, spacing, shape }: Theme) => ({
-    table: {
-        // Padding for box shadows of tableRows
-        paddingTop: spacing(2.2),
-        paddingBottom: spacing(2.2),
-        paddingLeft: spacing(5),
-        paddingRight: spacing(5),
-        minWidth: 650,
-        tableLayout: 'auto',
-        borderCollapse: 'separate',
-        borderSpacing: `0 ${spacing(1)}px`,
-        background: palette.background.default,
-        '& .MuiTableCell-root': {
-            borderBottomWidth: 0,
-            '&:first-child': {
-                borderTopLeftRadius: shape.borderRadius,
-                borderBottomLeftRadius: shape.borderRadius,
-            },
-            '&:last-child': {
-                borderTopRightRadius: shape.borderRadius,
-                borderBottomRightRadius: shape.borderRadius,
-            },
-        },
-    },
+const useStyles = makeStyles(({ palette }: Theme) => ({
     paginationSelected: {
         backgroundColor: `${palette.primary.main} !important`,
         color: palette.background.paper,
@@ -79,6 +57,7 @@ export default function GenericList<ColumnNames>({
 }: IPublicProps<ColumnNames>) {
     const [page, setPage] = React.useState(1);
     const classes = useStyles();
+    const listClasses = useListStyles();
 
     const items = sortedColumn
         ? sortListItems(listItems, sortedColumn as ISortedColumn<{}>)
@@ -100,7 +79,7 @@ export default function GenericList<ColumnNames>({
     return (
         <>
             <TableContainer elevation={0} component={Paper}>
-                <Table className={classes.table} aria-label="simple table">
+                <Table className={listClasses.table} aria-label="simple table">
                     <TableBody>
                         {itemsToDisplay.length === 0 && (
                             <TableRow>

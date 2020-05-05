@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import { useParams } from 'react-router-dom';
 import { Box, makeStyles, Theme, Typography, Button } from '@material-ui/core';
@@ -8,7 +8,7 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import GoBack from 'views/common/navigation/GoBack';
 import { ROUTE_KEYS } from 'views/routes';
 import { ListColumns, IListItem } from 'models/list.models';
-import GenericList from 'views/common/list/GenericList';
+import GenericDraggableList from 'views/common/list/GenericDraggableList';
 
 const useStyles = makeStyles(({ palette }: Theme) => ({
     aside: {
@@ -65,6 +65,7 @@ const mockedListItems: IListItem<IColumnNames>[] = [{
 }];
 
 function ScriptDetail() {
+    const [listItems, setListItems] = useState(mockedListItems);
     const { scriptId } = useParams();
     const classes = useStyles();
 
@@ -104,8 +105,8 @@ function ScriptDetail() {
                         </Box>
                     </AppTemplateContainer>
                 ) : (
-                    <GenericList
-                        listItems={mockedListItems}
+                    <GenericDraggableList
+                        listItems={listItems}
                         columns={columns}
                         listActions={[
                             {
@@ -113,6 +114,7 @@ function ScriptDetail() {
                                 onClick: (id) => console.log(id),
                             },
                         ]}
+                        onOrder={setListItems}
                     />
                 )}
             </Box>
