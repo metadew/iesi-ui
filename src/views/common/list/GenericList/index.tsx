@@ -46,17 +46,30 @@ interface IPublicProps<ColumnNames> {
     enablePagination?: boolean;
 }
 
-const useStyles = makeStyles(({ palette }: Theme) => ({
+const useStyles = makeStyles(({ palette, spacing, shape }: Theme) => ({
     table: {
+        padding: '22px', // For box shadows of tableRows
         minWidth: 650,
         tableLayout: 'auto',
         borderCollapse: 'separate',
-        borderSpacing: '0 15px',
+        borderSpacing: `0 ${spacing(1)}px`,
         background: palette.background.default,
+        '& .MuiTableCell-root': {
+            borderBottomWidth: 0,
+            '&:first-child': {
+                borderTopLeftRadius: shape.borderRadius,
+                borderBottomLeftRadius: shape.borderRadius,
+            },
+            '&:last-child': {
+                borderTopRightRadius: shape.borderRadius,
+                borderBottomRightRadius: shape.borderRadius,
+            },
+        },
     },
     tableRow: {
         background: palette.background.paper,
-        boxShadow: `5px 5px 10px ${palette.grey[300]}`,
+        boxShadow: '0 2px 22px rgba(0, 0, 0, .10)',
+        borderRadius: shape.borderRadius,
     },
     label: {
         fontSize: '.8rem',
