@@ -48,6 +48,13 @@ const useStyles = makeStyles(({ palette }: Theme) => ({
     table: {
         minWidth: 650,
         tableLayout: 'auto',
+        borderCollapse: 'separate',
+        borderSpacing: '0 15px',
+        background: palette.background.default,
+    },
+    tableRow: {
+        background: palette.background.paper,
+        boxShadow: `5px 5px 10px ${palette.grey[300]}`,
     },
     label: {
         fontSize: '.8rem',
@@ -58,6 +65,12 @@ const useStyles = makeStyles(({ palette }: Theme) => ({
     },
     actionIcon: {
         color: palette.primary.dark,
+    },
+    tablePagination: {
+        border: 'none',
+    },
+    tablePaginationSpacer: {
+        display: 'none',
     },
 }));
 
@@ -97,11 +110,11 @@ export default function GenericList<ColumnNames>({
         : filteredItems;
 
     return (
-        <TableContainer component={Paper}>
+        <TableContainer elevation={0} component={Paper}>
             <Table className={classes.table} aria-label="simple table">
                 <TableBody>
                     {itemsToDisplay.map((item: IListItem<ColumnNames>) => (
-                        <TableRow key={item.id}>
+                        <TableRow className={classes.tableRow} key={item.id}>
                             {Object.keys(columns).map((untypedColumnName) => {
                                 const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
                                 const column = columns[columnName] as IColumn<ColumnNames>;
@@ -165,11 +178,12 @@ export default function GenericList<ColumnNames>({
                     <TableFooter>
                         <TableRow>
                             <TablePagination
+                                className={classes.tablePagination}
                                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                                colSpan={3}
                                 count={filteredItems.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
+                                classes={{ spacer: classes.tablePaginationSpacer }}
                                 SelectProps={{
                                     inputProps: { 'aria-label': 'rows per page' },
                                     native: true,
