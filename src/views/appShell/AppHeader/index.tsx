@@ -62,6 +62,10 @@ const useStyles = makeStyles(({ palette, spacing, transitions, shadows, typograp
     brand: {
         display: 'inline-block',
     },
+    versionLabel: {
+        fontSize: '.8rem',
+        color: palette.grey[500],
+    },
     action: {
         paddingLeft: spacing(1),
         paddingRight: spacing(1),
@@ -104,7 +108,7 @@ function AppHeader({
                         <Box
                             display="flex"
                             flexDirection="row"
-                            alignItems="baseline"
+                            alignItems="end"
                         >
                             <I18nContext.Consumer>
                                 {({ translator }) => (
@@ -113,7 +117,10 @@ function AppHeader({
                                     </Typography>
                                 )}
                             </I18nContext.Consumer>
-                            <span>{packageJson.version}</span>
+                            <div>
+                                <div className={classes.versionLabel}>Version</div>
+                                <span>{packageJson.version}</span>
+                            </div>
                         </Box>
                     </RouteLink>
                 </div>

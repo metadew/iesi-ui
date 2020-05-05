@@ -3,20 +3,30 @@ import {
     IconButton,
     Menu,
     MenuItem,
+    makeStyles,
 } from '@material-ui/core';
 import { MenuRounded as MenuIcon } from '@material-ui/icons';
 import { StateChangeNotification } from 'models/state.models';
 import { IMenuItem, MAIN_NAV_ITEMS } from 'config/menu.config';
-import { getRoute } from 'views/routes';
+import { getRoute, redirectTo, ROUTE_KEYS } from 'views/routes';
 import { hasRequiredAccessLevels } from 'state/auth/selectors';
-import RouteLink from 'views/common/navigation/RouteLink';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { IObserveProps, observe } from 'views/observe';
+import { useLocation } from 'react-router-dom';
+import getRouteMatchByPath from 'utils/navigation/getRouteMatchByPath';
+
+const useStyles = makeStyles(({ palette }) => ({
+    selected: {
+        color: palette.primary.main,
+    },
+}));
 
 function NavigationMenu({ state }: IObserveProps) {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const location = useLocation();
+    const classes = useStyles();
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
 
@@ -24,12 +34,17 @@ function NavigationMenu({ state }: IObserveProps) {
         setAnchorEl(null);
     };
 
+    const handleNavigation = (routeKey: ROUTE_KEYS) => {
+        redirectTo({ routeKey });
+        handleClose();
+    };
+
     return (
         <div>
             <IconButton
                 aria-controls="toolbar-menu"
                 aria-haspopup="true"
-                onClick={handleClick}
+                onClick={handleOpen}
                 style={{ fontSize: 'inherit' }}
             >
                 <MenuIcon style={{ fontSize: 'inherit' }} />
@@ -50,18 +65,19 @@ function NavigationMenu({ state }: IObserveProps) {
 
     function renderNavItem(item: IMenuItem) {
         const { routeKey, translationKey } = item;
-        const { exact, requiredAccessLevels } = getRoute({ routeKey });
+        const { requiredAccessLevels } = getRoute({ routeKey });
+        const { route: currentRoute } = getRouteMatchByPath(location.pathname);
+
         const isAllowedToRoute = hasRequiredAccessLevels(state, requiredAccessLevels);
 
         return isAllowedToRoute
             ? (
-                <MenuItem key={`main-nav_${routeKey}`}>
-                    <RouteLink
-                        to={routeKey}
-                        exact={exact}
-                    >
-                        <Translate msg={translationKey} />
-                    </RouteLink>
+                <MenuItem
+                    className={currentRoute.routeKey === routeKey ? classes.selected : ''}
+                    onClick={() => handleNavigation(routeKey)}
+                    key={`main-nav_${routeKey}`}
+                >
+                    <Translate msg={translationKey} />
                 </MenuItem>
             )
             : null;
