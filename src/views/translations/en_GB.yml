@@ -14,6 +14,7 @@ common:
       search: Search
       select_search: Filter options
       toggle: Filter
+    no_results: No results
     sort:
       sort_by: Sort by
 error:

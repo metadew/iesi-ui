@@ -34,6 +34,7 @@ import { filterListItems } from 'utils/list/filters';
 import { getListItemValueFromColumn } from 'utils/list/list';
 import { TObjectWithProps } from 'models/core.models';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
+import Translate from '@snipsonian/react/es/components/i18n/Translate';
 
 const SHORTEN_VALUE_FROM_CHARACTERS = 40;
 const ROWS_PER_PAGE = 5;
@@ -100,7 +101,7 @@ export default function GenericList<ColumnNames>({
     filters,
     enablePagination,
 }: IPublicProps<ColumnNames>) {
-    const [page, setPage] = React.useState(0);
+    const [page, setPage] = React.useState(1);
     const classes = useStyles();
 
     const items = sortedColumn
@@ -111,19 +112,29 @@ export default function GenericList<ColumnNames>({
         ? filterListItems(items, filters as TObjectWithProps)
         : items;
 
-    const handleChangePage = (event: React.ChangeEvent<unknown> | null, newPage: number) => {
-        setPage(newPage - 1);
-    };
-
+    const startIndexToShowBasedOnPage = (page - 1) * ROWS_PER_PAGE;
     const itemsToDisplay = enablePagination
-        ? filteredItems.slice(page * ROWS_PER_PAGE, page * ROWS_PER_PAGE + ROWS_PER_PAGE)
+        ? filteredItems.slice(startIndexToShowBasedOnPage, startIndexToShowBasedOnPage + ROWS_PER_PAGE)
         : filteredItems;
+
+    if (isPageHigherThanAmountOfFilteredItems() && page !== 1) {
+        setPage(1);
+    }
 
     return (
         <>
             <TableContainer elevation={0} component={Paper}>
                 <Table className={classes.table} aria-label="simple table">
                     <TableBody>
+                        {itemsToDisplay.length === 0 && (
+                            <TableRow>
+                                <TableCell>
+                                    <Typography>
+                                        <Translate msg="common.list.no_results" />
+                                    </Typography>
+                                </TableCell>
+                            </TableRow>
+                        )}
                         {itemsToDisplay.map((item: IListItem<ColumnNames>) => (
                             <TableRow className={classes.tableRow} key={item.id}>
                                 {Object.keys(columns).map((untypedColumnName) => {
@@ -193,6 +204,7 @@ export default function GenericList<ColumnNames>({
                         count={Math.ceil(filteredItems.length / ROWS_PER_PAGE)}
                         shape="rounded"
                         onChange={handleChangePage}
+                        page={page}
                         showFirstButton
                         showLastButton
                         renderItem={(props) => (
@@ -206,4 +218,12 @@ export default function GenericList<ColumnNames>({
             )}
         </>
     );
+
+    function handleChangePage(event: React.ChangeEvent<unknown> | null, newPage: number) {
+        setPage(newPage);
+    }
+
+    function isPageHigherThanAmountOfFilteredItems() {
+        return startIndexToShowBasedOnPage > filteredItems.length;
+    }
 }
