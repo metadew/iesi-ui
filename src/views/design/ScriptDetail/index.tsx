@@ -5,6 +5,8 @@ import { Box, makeStyles, Theme, Typography, Button } from '@material-ui/core';
 import { AddRounded as AddIcon } from '@material-ui/icons';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
+import GoBack from 'views/common/navigation/GoBack';
+import { ROUTE_KEYS } from 'views/routes';
 
 const useStyles = makeStyles(({ palette }: Theme) => ({
     aside: {
@@ -28,7 +30,8 @@ function ScriptDetail() {
 
     return (
         <Box display="flex" flex="1 1 auto">
-            <Box className={classes.aside}>
+            <Box className={classes.aside} paddingTop={2}>
+                <GoBack to={ROUTE_KEYS.R_SCRIPTS} />
                 <AppTemplateContainer>
                     <Typography variant="body1">{`Script detail: ${scriptId}`}</Typography>
                 </AppTemplateContainer>

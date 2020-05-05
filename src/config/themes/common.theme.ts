@@ -1,5 +1,6 @@
 import { ThemeOptions } from '@material-ui/core';
 import { THEME_COLORS } from 'config/themes/colors';
+import { darken } from '@material-ui/core/styles/colorManipulator';
 
 const commonTheme: ThemeOptions = {
     palette: {
@@ -12,6 +13,7 @@ const commonTheme: ThemeOptions = {
             contrastText: THEME_COLORS.WHITE,
         },
     },
+    spacing: 10,
     typography: {
         fontFamily: [
             'Open Sans',
@@ -39,8 +41,35 @@ const commonTheme: ThemeOptions = {
             fontWeight: 700,
         },
         button: {
-            // fontSize: '1.25rem',
             fontWeight: 700,
+            textTransform: 'none',
+            fontSize: '1.25rem',
+        },
+    },
+    overrides: {
+        MuiButton: {
+            root: {
+                padding: '.475em .912em',
+            },
+            contained: {
+                color: THEME_COLORS.PRIMARY_DARK,
+                backgroundColor: THEME_COLORS.GREY,
+                '&:hover': {
+                    backgroundColor: darken(THEME_COLORS.GREY, 0.1),
+                },
+            },
+            containedSizeSmall: {
+                fontSize: '1rem',
+            },
+            containedSizeLarge: {
+                fontSize: '1.5rem',
+            },
+            iconSizeMedium: {
+                fontSize: '1.2em',
+                '& > *:first-child': {
+                    fontSize: '1em',
+                },
+            },
         },
     },
 };

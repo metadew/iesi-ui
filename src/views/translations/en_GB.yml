@@ -6,6 +6,8 @@ app_shell:
       scripts: Scripts
     title: iesi
 common:
+  navigation:
+    go_back: Back
   list:
     filter:
       header: Narrow results

@@ -7,6 +7,7 @@ export const THEME_COLORS = {
 
     BLACK: '#000000',
     GREY_LIGHT: '#F8F8F8',
+    GREY: '#EDEDED',
     GREY_DARK: '#333333',
     WHITE: '#FFFFFF',
 };

@@ -19,10 +19,12 @@ const ACTIVE_CLASS_NAME = 'active';
 
 const useStyles = makeStyles((theme: Theme) => ({
     routeLink: {
-        textDecoration: 'none',
-        color: theme.palette.text.primary,
-        '&.active': {
-            color: theme.palette.primary.main,
+        '&:not(.MuiButton-root)': { // Don't add link styling if it's a Mui Button
+            textDecoration: 'none',
+            color: theme.palette.text.primary,
+            '&.active': {
+                color: theme.palette.primary.main,
+            },
         },
     },
     flashMessageLink: {
