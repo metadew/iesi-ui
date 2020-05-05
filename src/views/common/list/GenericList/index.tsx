@@ -33,6 +33,7 @@ import sortListItems from 'utils/list/sortListItems';
 import { filterListItems } from 'utils/list/filters';
 import { getListItemValueFromColumn } from 'utils/list/list';
 import { TObjectWithProps } from 'models/core.models';
+import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 
 const SHORTEN_VALUE_FROM_CHARACTERS = 40;
 const ROWS_PER_PAGE = 5;
@@ -187,7 +188,7 @@ export default function GenericList<ColumnNames>({
                 </Table>
             </TableContainer>
             {enablePagination && (
-                <Box marginTop={1} paddingLeft={5} paddingRight={5}>
+                <AppTemplateContainer>
                     <Pagination
                         count={Math.ceil(filteredItems.length / ROWS_PER_PAGE)}
                         shape="rounded"
@@ -201,7 +202,7 @@ export default function GenericList<ColumnNames>({
                             />
                         )}
                     />
-                </Box>
+                </AppTemplateContainer>
             )}
         </>
     );
