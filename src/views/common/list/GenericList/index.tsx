@@ -51,8 +51,8 @@ const useStyles = makeStyles(({ palette, spacing, shape }: Theme) => ({
         // Padding for box shadows of tableRows
         paddingTop: spacing(2),
         paddingBottom: spacing(2),
-        paddingLeft: spacing(4),
-        paddingRight: spacing(4),
+        paddingLeft: spacing(5),
+        paddingRight: spacing(5),
         minWidth: 650,
         tableLayout: 'auto',
         borderCollapse: 'separate',
@@ -187,7 +187,7 @@ export default function GenericList<ColumnNames>({
                 </Table>
             </TableContainer>
             {enablePagination && (
-                <Box marginTop={1} paddingLeft={4} paddingRight={4}>
+                <Box marginTop={1} paddingLeft={5} paddingRight={5}>
                     <Pagination
                         count={Math.ceil(filteredItems.length / ROWS_PER_PAGE)}
                         shape="rounded"

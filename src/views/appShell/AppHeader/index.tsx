@@ -109,6 +109,7 @@ function AppHeader({
                             display="flex"
                             flexDirection="row"
                             alignItems="end"
+                            paddingLeft={1}
                         >
                             <I18nContext.Consumer>
                                 {({ translator }) => (

@@ -56,8 +56,8 @@ export default function ContentWithSlideoutPanel({
             <Box position="relative" className={classes.panel}>
                 <Box
                     width={SIDE_PANEL_WIDTH}
-                    paddingLeft={4}
-                    paddingRight={4}
+                    paddingLeft={5}
+                    paddingRight={5}
                     paddingTop={3}
                     paddingBottom={3}
                     height="100%"
