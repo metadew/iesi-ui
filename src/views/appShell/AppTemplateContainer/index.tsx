@@ -7,7 +7,7 @@ interface IPublicProps {
 
 function AppTemplateContainer({ children }: IPublicProps) {
     return (
-        <Box marginLeft={6} marginRight={6}>
+        <Box marginLeft={4} marginRight={4}>
             {children}
         </Box>
     );

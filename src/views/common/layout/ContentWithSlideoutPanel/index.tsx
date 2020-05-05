@@ -27,6 +27,8 @@ const useStyles = makeStyles(({ palette }) => ({
     toggleButton: {
         minWidth: 80,
         fontWeight: 700,
+        fontSize: '.8rem',
+        textTransform: 'uppercase',
     },
 }));
 
@@ -55,8 +57,8 @@ export default function ContentWithSlideoutPanel({
             <Box position="relative" className={classes.panel}>
                 <Box
                     width={SIDE_PANEL_WIDTH}
-                    paddingLeft={5}
-                    paddingRight={5}
+                    paddingLeft={4}
+                    paddingRight={4}
                     paddingTop={3}
                     paddingBottom={3}
                     height="100%"
