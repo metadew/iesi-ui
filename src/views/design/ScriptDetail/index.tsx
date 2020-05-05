@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
 import { useParams } from 'react-router-dom';
 import { Box, makeStyles, Theme, Typography, Button } from '@material-ui/core';
-import { AddRounded as AddIcon } from '@material-ui/icons';
+import { AddRounded as AddIcon, Edit as EditIcon } from '@material-ui/icons';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import GoBack from 'views/common/navigation/GoBack';
 import { ROUTE_KEYS } from 'views/routes';
+import { ListColumns, IListItem } from 'models/list.models';
+import GenericDraggableList from 'views/common/list/GenericDraggableList';
 
 const useStyles = makeStyles(({ palette }: Theme) => ({
     aside: {
@@ -22,11 +24,61 @@ const useStyles = makeStyles(({ palette }: Theme) => ({
     contentCenter: {
         justifyContent: 'center',
     },
+    actionName: {
+        fontWeight: 700,
+        color: palette.primary.main,
+    },
+    actionDescription: {
+        fontWeight: 700,
+    },
 }));
 
+interface IColumnNames {
+    name: string;
+    description: string;
+}
+
+const mockedListItems: IListItem<IColumnNames>[] = [{
+    id: 1,
+    columns: {
+        name: 'Fetch',
+        description: 'This action fetches the data',
+    },
+}, {
+    id: 2,
+    columns: {
+        name: 'Sort',
+        description: 'This action sorts the data',
+    },
+}, {
+    id: 3,
+    columns: {
+        name: 'Filter',
+        description: 'This action filters the data',
+    },
+}, {
+    id: 4,
+    columns: {
+        name: 'Display',
+        description: 'This action displays the data',
+    },
+}];
+
 function ScriptDetail() {
+    const [listItems, setListItems] = useState(mockedListItems);
     const { scriptId } = useParams();
     const classes = useStyles();
+
+    const columns: ListColumns<IColumnNames> = {
+        name: {
+            fixedWidth: '30%',
+            className: classes.actionName,
+        },
+        description: {
+            fixedWidth: '70%',
+            className: classes.actionDescription,
+        },
+    };
 
     return (
         <Box display="flex" flex="1 1 auto">
@@ -37,20 +89,34 @@ function ScriptDetail() {
                 </AppTemplateContainer>
             </Box>
             <Box display="flex" flexDirection="column" className={classNames(classes.content, classes.contentCenter)}>
-                <AppTemplateContainer>
-                    <Box textAlign="center">
-                        <Typography variant="h2" paragraph>
-                            <Translate msg="scripts.detail.main.no_actions.title" />
-                        </Typography>
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            startIcon={<AddIcon />}
-                        >
-                            <Translate msg="scripts.detail.main.no_actions.button" />
-                        </Button>
-                    </Box>
-                </AppTemplateContainer>
+                {mockedListItems.length === 0 ? (
+                    <AppTemplateContainer>
+                        <Box textAlign="center">
+                            <Typography variant="h2" paragraph>
+                                <Translate msg="scripts.detail.main.no_actions.title" />
+                            </Typography>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                startIcon={<AddIcon />}
+                            >
+                                <Translate msg="scripts.detail.main.no_actions.button" />
+                            </Button>
+                        </Box>
+                    </AppTemplateContainer>
+                ) : (
+                    <GenericDraggableList
+                        listItems={listItems}
+                        columns={columns}
+                        listActions={[
+                            {
+                                icon: <EditIcon />,
+                                onClick: (id) => console.log(id),
+                            },
+                        ]}
+                        onOrder={setListItems}
+                    />
+                )}
             </Box>
         </Box>
     );
