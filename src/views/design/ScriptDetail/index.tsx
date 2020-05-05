@@ -1,37 +1,14 @@
 import React, { useState } from 'react';
-import classNames from 'classnames';
 import { useParams } from 'react-router-dom';
-import { Box, makeStyles, Theme, Typography, Button } from '@material-ui/core';
+import { Box, Typography, Button } from '@material-ui/core';
 import { AddRounded as AddIcon, Edit as EditIcon } from '@material-ui/icons';
-import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import GoBack from 'views/common/navigation/GoBack';
+import TextInput from 'views/common/input/TextInput';
+import DescriptionList from 'views/common/list/DescriptionList';
 import { ROUTE_KEYS } from 'views/routes';
 import { ListColumns, IListItem } from 'models/list.models';
 import GenericDraggableList from 'views/common/list/GenericDraggableList';
-
-const useStyles = makeStyles(({ palette }: Theme) => ({
-    aside: {
-        width: '33%',
-        maxWidth: '485px',
-        background: palette.background.paper,
-        flex: '1 1 auto',
-    },
-    content: {
-        width: '66%',
-        flex: '1 1 auto',
-    },
-    contentCenter: {
-        justifyContent: 'center',
-    },
-    actionName: {
-        fontWeight: 700,
-        color: palette.primary.main,
-    },
-    actionDescription: {
-        fontWeight: 700,
-    },
-}));
+import ContentWithSidePanel from '../../common/layout/ContentWithSidePanel/index';
 
 interface IColumnNames {
     name: string;
@@ -64,62 +41,98 @@ const mockedListItems: IListItem<IColumnNames>[] = [{
     },
 }];
 
-function ScriptDetail() {
+export default function ScriptDetail() {
     const [listItems, setListItems] = useState(mockedListItems);
     const { scriptId } = useParams();
-    const classes = useStyles();
 
     const columns: ListColumns<IColumnNames> = {
         name: {
             fixedWidth: '30%',
-            className: classes.actionName,
         },
         description: {
             fixedWidth: '70%',
-            className: classes.actionDescription,
         },
     };
 
-    return (
-        <Box display="flex" flex="1 1 auto">
-            <Box className={classes.aside} paddingTop={2}>
-                <GoBack to={ROUTE_KEYS.R_SCRIPTS} />
-                <AppTemplateContainer>
-                    <Typography variant="body1">{`Script detail: ${scriptId}`}</Typography>
-                </AppTemplateContainer>
-            </Box>
-            <Box display="flex" flexDirection="column" className={classNames(classes.content, classes.contentCenter)}>
-                {mockedListItems.length === 0 ? (
-                    <AppTemplateContainer>
-                        <Box textAlign="center">
-                            <Typography variant="h2" paragraph>
-                                <Translate msg="scripts.detail.main.no_actions.title" />
-                            </Typography>
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                startIcon={<AddIcon />}
-                            >
-                                <Translate msg="scripts.detail.main.no_actions.button" />
-                            </Button>
-                        </Box>
-                    </AppTemplateContainer>
-                ) : (
-                    <GenericDraggableList
-                        listItems={listItems}
-                        columns={columns}
-                        listActions={[
-                            {
-                                icon: <EditIcon />,
-                                onClick: (id) => console.log(id),
-                            },
-                        ]}
-                        onOrder={setListItems}
+    const ScriptDetailPanel = () => (
+        <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
+            <Box flex="1 1 auto">
+                <form noValidate autoComplete="off">
+                    <TextInput
+                        id="script-name"
+                        label="Scriptname"
+                        required
+                        error
+                        helperText="Scriptname is a required field"
                     />
-                )}
+                    <TextInput
+                        id="script-name"
+                        label="Scriptname"
+                        multiline
+                        rows={8}
+                        value={`Script detail: ${scriptId}`}
+                    />
+                </form>
+            </Box>
+            <Box>
+                <DescriptionList
+                    items={[
+                        { label: 'Version', value: '01' },
+                        { label: 'Last run date', value: '10-10-2018' },
+                        { label: 'Last run status', value: 'Passed' },
+                    ]}
+                />
             </Box>
         </Box>
     );
-}
 
-export default ScriptDetail;
+    const ScriptDetailContent = () => {
+        const hasActions = listItems.length > 0;
+
+        if (!hasActions) {
+            return (
+                <Box
+                    display="flex"
+                    flexDirection="column"
+                    flex="1 1 auto"
+                    justifyContent="center"
+                >
+                    <Box textAlign="center">
+                        <Typography variant="h2" paragraph>
+                            <Translate msg="scripts.detail.main.no_actions.title" />
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            startIcon={<AddIcon />}
+                        >
+                            <Translate msg="scripts.detail.main.no_actions.button" />
+                        </Button>
+                    </Box>
+                </Box>
+            );
+        }
+
+        return (
+            <GenericDraggableList
+                listItems={listItems}
+                columns={columns}
+                listActions={[
+                    {
+                        icon: <EditIcon />,
+                        onClick: (id) => console.log(id),
+                    },
+                ]}
+                onOrder={setListItems}
+            />
+        );
+    };
+
+    return (
+        <ContentWithSidePanel
+            panel={<ScriptDetailPanel />}
+            content={<ScriptDetailContent />}
+            goBackTo={ROUTE_KEYS.R_SCRIPTS}
+        />
+    );
+}

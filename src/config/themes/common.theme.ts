@@ -1,6 +1,7 @@
 import { ThemeOptions } from '@material-ui/core';
 import { THEME_COLORS } from 'config/themes/colors';
-import { darken } from '@material-ui/core/styles/colorManipulator';
+
+const DEFAULT_SPACING = 10;
 
 const commonTheme: ThemeOptions = {
     palette: {
@@ -12,8 +13,11 @@ const commonTheme: ThemeOptions = {
             main: THEME_COLORS.SECONDARY,
             contrastText: THEME_COLORS.WHITE,
         },
+        error: {
+            main: THEME_COLORS.ERROR,
+        },
     },
-    spacing: 10,
+    spacing: DEFAULT_SPACING,
     typography: {
         fontFamily: [
             'Open Sans',
@@ -47,16 +51,10 @@ const commonTheme: ThemeOptions = {
         },
     },
     overrides: {
+        // Buttons
         MuiButton: {
             root: {
                 padding: '.475em .912em',
-            },
-            contained: {
-                color: THEME_COLORS.PRIMARY_DARK,
-                backgroundColor: THEME_COLORS.GREY,
-                '&:hover': {
-                    backgroundColor: darken(THEME_COLORS.GREY, 0.1),
-                },
             },
             containedSizeSmall: {
                 fontSize: '.875rem',
@@ -69,6 +67,28 @@ const commonTheme: ThemeOptions = {
                 '& > *:first-child': {
                     fontSize: '1em',
                 },
+            },
+        },
+        // Input labels
+        MuiFormLabel: {
+            root: {
+                fontWeight: 'bold',
+            },
+        },
+        // Inputs
+        MuiFormControl: {
+            marginNormal: {
+                marginTop: `${DEFAULT_SPACING * 2}px`,
+                marginBottom: `${DEFAULT_SPACING * 1}px`,
+            },
+            marginDense: {
+                marginTop: `${DEFAULT_SPACING * 1}px`,
+                marginBottom: `${DEFAULT_SPACING * 0.5}px`,
+            },
+        },
+        MuiFilledInput: {
+            root: {
+                borderRadius: '4px',
             },
         },
     },

@@ -25,7 +25,7 @@ function GoBack(props: IPublicProps) {
             color="default"
             startIcon={<ChevronLeftRounded />}
             disableElevation
-            component={RouteLink}
+            component={RouteLink} // Todo: fix ForwardRef warning
             to={props.to}
             className={classes.goBackButton}
         >
