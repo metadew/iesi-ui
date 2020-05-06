@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, MutableRefObject } from 'react';
 import classnames from 'classnames';
 import { NavLink as RouterNavLink, NavLinkProps } from 'react-router-dom';
 import isSet from '@snipsonian/core/es/is/isSet';
@@ -7,12 +7,13 @@ import { IPathParams } from 'models/router.models';
 import { getRoute, ROUTE_KEYS } from 'views/routes';
 import replacePathPlaceholders from 'utils/navigation/replacePathPlaceholders';
 
-interface IPublicProps extends Pick<NavLinkProps, 'exact'> {
+export interface IPublicProps extends Pick<NavLinkProps, 'exact'> {
     to: ROUTE_KEYS;
     params?: IPathParams;
     flashMessageLink?: boolean;
     children: ReactNode;
     className?: string;
+    innerRef?: ((instance: HTMLAnchorElement) => void) | MutableRefObject<HTMLAnchorElement>;
 }
 
 const ACTIVE_CLASS_NAME = 'active';
@@ -53,6 +54,7 @@ function RouteLink(props: IPublicProps) {
             exact={shouldMatchExact}
             activeClassName={ACTIVE_CLASS_NAME}
             className={classnames(flashMessageLink ? classes.flashMessageLink : classes.routeLink, className)}
+            ref={props.innerRef}
         >
             {children}
         </RouterNavLink>
