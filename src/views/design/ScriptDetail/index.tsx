@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Typography, Button } from '@material-ui/core';
+import { Box, Typography, Button, makeStyles } from '@material-ui/core';
 import { AddRounded as AddIcon, Edit as EditIcon } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import TextInput from 'views/common/input/TextInput';
@@ -14,6 +14,18 @@ interface IColumnNames {
     name: string;
     description: string;
 }
+
+
+const useStyles = makeStyles(({ palette }) => ({
+    scriptName: {
+        fontWeight: 700,
+        color: palette.primary.main,
+    },
+    scriptDescription: {
+        fontWeight: 700,
+    },
+}));
+
 
 const mockedListItems: IListItem<IColumnNames>[] = [{
     id: 1,
@@ -44,13 +56,16 @@ const mockedListItems: IListItem<IColumnNames>[] = [{
 export default function ScriptDetail() {
     const [listItems, setListItems] = useState(mockedListItems);
     const { scriptId } = useParams();
+    const classes = useStyles();
 
     const columns: ListColumns<IColumnNames> = {
         name: {
             fixedWidth: '30%',
+            className: classes.scriptName,
         },
         description: {
             fixedWidth: '70%',
+            className: classes.scriptDescription,
         },
     };
 
