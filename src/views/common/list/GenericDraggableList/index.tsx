@@ -51,7 +51,7 @@ export default function GenericDraggableList<ColumnNames>({
                                 )}
                                 {listItems.map((item: IListItem<ColumnNames>, index: number) => (
                                     <Draggable key={item.id} draggableId={item.id.toString()} index={index}>
-                                        {(draggableProvided) => (
+                                        {(draggableProvided, snapshot) => (
                                             <GenericTableRow
                                                 draggableProps={{
                                                     ref: draggableProvided.innerRef,
@@ -63,6 +63,7 @@ export default function GenericDraggableList<ColumnNames>({
                                                 listActions={listActions}
                                                 columns={columns}
                                                 indexToShow={index}
+                                                isDragging={snapshot.isDragging}
                                             />
                                         )}
                                     </Draggable>

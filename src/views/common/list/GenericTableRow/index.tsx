@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import { getListItemValueFromColumn } from 'utils/list/list';
 import {
     TableCell,
@@ -34,6 +35,7 @@ interface IPublicProps<ColumnNames> {
         ref(element?: HTMLElement | null): unknown;
     };
     indexToShow?: number;
+    isDragging?: boolean;
 }
 
 const useStyles = makeStyles(({ palette, shape, typography }: Theme) => ({
@@ -41,6 +43,9 @@ const useStyles = makeStyles(({ palette, shape, typography }: Theme) => ({
         background: palette.background.paper,
         boxShadow: '0 2px 22px rgba(0, 0, 0, .10)',
         borderRadius: shape.borderRadius,
+    },
+    tableRowIsDragging: {
+        borderSpacing: 0,
     },
     label: {
         fontSize: '.8rem',
@@ -65,10 +70,16 @@ export default function GenericTableRow<ColumnNames>({
     listActions,
     draggableProps,
     indexToShow,
+    isDragging,
 }: IPublicProps<ColumnNames>) {
     const classes = useStyles();
     return (
-        <TableRow className={classes.tableRow} {...draggableProps}>
+        <TableRow
+            className={classNames(classes.tableRow, {
+                [classes.tableRowIsDragging]: !!isDragging,
+            })}
+            {...draggableProps}
+        >
             {isSet(draggableProps) && (
                 <TableCell className="drag-handle">
                     <DragHandlerIcon fontSize="inherit" />
@@ -88,7 +99,7 @@ export default function GenericTableRow<ColumnNames>({
                     ? `${value.substr(0, SHORTEN_VALUE_FROM_CHARACTERS)}...`
                     : value;
 
-                const className = typeof column.className === 'function'
+                const cellClassName = typeof column.className === 'function'
                     ? column.className(value)
                     : column.className;
 
@@ -105,7 +116,7 @@ export default function GenericTableRow<ColumnNames>({
                             {column.label}
                         </Typography>
                         <Box display="flex" alignItems="center">
-                            <Typography variant="body2" className={className}>
+                            <Typography variant="body2" className={cellClassName}>
                                 {shortenedValue}
                                 {tooltip && (
                                     <Tooltip title={tooltip} iconSize="small" />
