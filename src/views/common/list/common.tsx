@@ -1,7 +1,16 @@
-import { makeStyles, lighten } from '@material-ui/core';
+import { makeStyles, lighten, darken } from '@material-ui/core';
 import { THEME_COLORS } from 'config/themes/colors';
 
-export const useListStyles = makeStyles(({ palette, spacing, shape, typography }) => ({
+export const useListStyles = makeStyles(({ palette, spacing, shape, transitions, typography }) => ({
+    tableContainer: {
+        background: palette.background.default,
+        transitionProperty: 'background-color',
+        transitionTimingFunction: transitions.easing.sharp,
+        transitionDuration: `${transitions.duration.leavingScreen}ms`,
+    },
+    tableContainerIsDragging: {
+        background: darken(palette.background.default, 0.05),
+    },
     table: {
         // Padding for box shadows of tableRows
         paddingTop: spacing(2.2),
@@ -12,7 +21,6 @@ export const useListStyles = makeStyles(({ palette, spacing, shape, typography }
         tableLayout: 'auto',
         borderCollapse: 'separate',
         borderSpacing: `0 ${spacing(1)}px`,
-        background: palette.background.default,
         '& .MuiTableCell-root': {
             position: 'relative',
             padding: `${spacing(1.1)}px ${spacing(3)}px`,

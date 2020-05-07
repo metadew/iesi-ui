@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -36,8 +37,15 @@ export default function GenericDraggableList<ColumnNames>({
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="droppable">
-                {(droppableProvided) => (
-                    <TableContainer ref={droppableProvided.innerRef} elevation={0} component={Paper}>
+                {(droppableProvided, droppableSnapshot) => (
+                    <TableContainer
+                        ref={droppableProvided.innerRef}
+                        elevation={0}
+                        component={Paper}
+                        className={classNames(listClasses.tableContainer, {
+                            [listClasses.tableContainerIsDragging]: !!droppableSnapshot.draggingFromThisWith,
+                        })}
+                    >
                         <Table className={listClasses.table} aria-label="draggable table">
                             <TableBody>
                                 {listItems.length === 0 && (
@@ -51,7 +59,7 @@ export default function GenericDraggableList<ColumnNames>({
                                 )}
                                 {listItems.map((item: IListItem<ColumnNames>, index: number) => (
                                     <Draggable key={item.id} draggableId={item.id.toString()} index={index}>
-                                        {(draggableProvided, snapshot) => (
+                                        {(draggableProvided, draggableSnapshot) => (
                                             <GenericTableRow
                                                 draggableProps={{
                                                     ref: draggableProvided.innerRef,
@@ -63,7 +71,7 @@ export default function GenericDraggableList<ColumnNames>({
                                                 listActions={listActions}
                                                 columns={columns}
                                                 indexToShow={index}
-                                                isDragging={snapshot.isDragging}
+                                                isDragging={draggableSnapshot.isDragging}
                                             />
                                         )}
                                     </Draggable>
