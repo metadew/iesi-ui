@@ -276,7 +276,6 @@ const ScriptsOverview = withStyles(styles)(
                         }
                         return classes.scriptFailed;
                     },
-                    tooltip: (value) => value,
                 },
             };
 

@@ -6,8 +6,6 @@ import {
     IconButton,
     Theme,
     Box,
-    Tooltip,
-    Icon,
     makeStyles,
     TableRow,
 } from '@material-ui/core';
@@ -18,14 +16,12 @@ import {
     IListAction,
 } from 'models/list.models';
 import {
-    Info,
-} from '@material-ui/icons';
-import {
     DraggableProvidedDragHandleProps,
     DraggableProvidedDraggableProps,
 } from 'react-beautiful-dnd';
 import { formatNumberWithTwoDigits } from 'utils/number/format';
 import isSet from '@snipsonian/core/es/is/isSet';
+import Tooltip from 'views/common/Tooltip';
 
 const SHORTEN_VALUE_FROM_CHARACTERS = 40;
 
@@ -39,7 +35,7 @@ interface IPublicProps<ColumnNames> {
     indexToShow?: number;
 }
 
-const useStyles = makeStyles(({ palette, shape, spacing, typography }: Theme) => ({
+const useStyles = makeStyles(({ palette, shape, typography }: Theme) => ({
     tableRow: {
         background: palette.background.paper,
         boxShadow: '0 2px 22px rgba(0, 0, 0, .10)',
@@ -59,13 +55,6 @@ const useStyles = makeStyles(({ palette, shape, spacing, typography }: Theme) =>
         width: 50,
         fontWeight: typography.fontWeightBold,
         textAlign: 'center',
-    },
-    tooltipIcon: {
-        position: 'relative',
-        top: '-2px',
-        marginLeft: spacing(0.5),
-        verticalAlign: 'middle',
-        lineHeight: 0,
     },
 }));
 
@@ -113,11 +102,7 @@ export default function GenericTableRow<ColumnNames>({
                             <Typography variant="body2" className={className}>
                                 {shortenedValue}
                                 {tooltip && (
-                                    <Tooltip title={tooltip}>
-                                        <Icon aria-label="info" className={classes.tooltipIcon}>
-                                            <Info fontSize="small" />
-                                        </Icon>
-                                    </Tooltip>
+                                    <Tooltip title={tooltip} iconSize="small" />
                                 )}
                             </Typography>
                         </Box>

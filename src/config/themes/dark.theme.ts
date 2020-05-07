@@ -25,6 +25,11 @@ const darkTheme: ThemeOptions = {
                 },
             },
         },
+        MuiTooltip: {
+            tooltip: {
+                backgroundColor: THEME_COLORS.GREY_DARK,
+            },
+        },
     },
 };
 
