@@ -1,7 +1,7 @@
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, lighten } from '@material-ui/core';
 import { THEME_COLORS } from 'config/themes/colors';
 
-export const useListStyles = makeStyles(({ palette, spacing, shape }) => ({
+export const useListStyles = makeStyles(({ palette, spacing, shape, typography }) => ({
     table: {
         // Padding for box shadows of tableRows
         paddingTop: spacing(2.2),
@@ -33,6 +33,19 @@ export const useListStyles = makeStyles(({ palette, spacing, shape }) => ({
             '&:last-child': {
                 borderTopRightRadius: shape.borderRadius,
                 borderBottomRightRadius: shape.borderRadius,
+                '&:after': {
+                    display: 'none',
+                },
+            },
+            '&.drag-handle': {
+                padding: `${spacing(1)}px ${spacing(0.6)}px`,
+                backgroundColor:
+                    palette.type === 'light'
+                        ? palette.background.default
+                        : lighten(THEME_COLORS.GREY_DARK, 0.025),
+                color: THEME_COLORS.GREY,
+                fontSize: typography.pxToRem(34),
+                lineHeight: 0,
                 '&:after': {
                     display: 'none',
                 },

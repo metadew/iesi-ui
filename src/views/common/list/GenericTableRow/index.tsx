@@ -22,6 +22,7 @@ import {
 import { formatNumberWithTwoDigits } from 'utils/number/format';
 import isSet from '@snipsonian/core/es/is/isSet';
 import Tooltip from 'views/common/Tooltip';
+import DragHandlerIcon from 'views/common/icons/DragHandler';
 
 const SHORTEN_VALUE_FROM_CHARACTERS = 40;
 
@@ -68,6 +69,11 @@ export default function GenericTableRow<ColumnNames>({
     const classes = useStyles();
     return (
         <TableRow className={classes.tableRow} {...draggableProps}>
+            {isSet(draggableProps) && (
+                <TableCell className="drag-handle">
+                    <DragHandlerIcon fontSize="inherit" />
+                </TableCell>
+            )}
             {isSet(indexToShow) && (
                 <TableCell>
                     <Typography className={classes.index}>{formatNumberWithTwoDigits(indexToShow)}</Typography>
