@@ -1,6 +1,7 @@
-import { ThemeOptions } from '@material-ui/core';
+import { createMuiTheme, ThemeOptions } from '@material-ui/core';
 import { THEME_COLORS } from 'config/themes/colors';
 
+const MUI_DEFAULT_THEME = createMuiTheme(); // https://material-ui.com/customization/default-theme
 const DEFAULT_SPACING = 10;
 
 const commonTheme: ThemeOptions = {
@@ -26,28 +27,28 @@ const commonTheme: ThemeOptions = {
             'sans-serif',
         ].join(','),
         h1: {
-            fontWeight: 700,
+            fontWeight: MUI_DEFAULT_THEME.typography.fontWeightBold,
         },
         h2: {
-            fontSize: '1.5625rem',
-            fontWeight: 700,
+            fontSize: MUI_DEFAULT_THEME.typography.pxToRem(25),
+            fontWeight: MUI_DEFAULT_THEME.typography.fontWeightBold,
         },
         h3: {
-            fontSize: '1.25rem',
-            fontWeight: 700,
+            fontSize: MUI_DEFAULT_THEME.typography.pxToRem(20),
+            fontWeight: MUI_DEFAULT_THEME.typography.fontWeightBold,
         },
         h4: {
-            fontSize: '1.25rem',
-            fontWeight: 400,
+            fontSize: MUI_DEFAULT_THEME.typography.pxToRem(20),
+            fontWeight: MUI_DEFAULT_THEME.typography.fontWeightRegular,
             color: THEME_COLORS.PRIMARY,
         },
         h6: {
-            fontWeight: 700,
+            fontWeight: MUI_DEFAULT_THEME.typography.fontWeightBold,
         },
         button: {
-            fontWeight: 700,
+            fontWeight: MUI_DEFAULT_THEME.typography.fontWeightBold,
+            fontSize: MUI_DEFAULT_THEME.typography.pxToRem(20),
             textTransform: 'none',
-            fontSize: '1.25rem',
         },
     },
     overrides: {
@@ -57,10 +58,10 @@ const commonTheme: ThemeOptions = {
                 padding: '.475em .912em',
             },
             containedSizeSmall: {
-                fontSize: '.875rem',
+                fontSize: MUI_DEFAULT_THEME.typography.pxToRem(14),
             },
             containedSizeLarge: {
-                fontSize: '1.5rem',
+                fontSize: MUI_DEFAULT_THEME.typography.pxToRem(24),
             },
             iconSizeMedium: {
                 fontSize: '1.2em',
@@ -72,7 +73,7 @@ const commonTheme: ThemeOptions = {
         // Input labels
         MuiFormLabel: {
             root: {
-                fontWeight: 'bold',
+                fontWeight: MUI_DEFAULT_THEME.typography.fontWeightBold,
             },
         },
         // Inputs
@@ -88,7 +89,7 @@ const commonTheme: ThemeOptions = {
         },
         MuiFilledInput: {
             root: {
-                borderRadius: '4px',
+                borderRadius: MUI_DEFAULT_THEME.shape.borderRadius,
             },
         },
     },
