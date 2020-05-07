@@ -78,7 +78,7 @@ export default function GenericList<ColumnNames>({
 
     return (
         <>
-            <TableContainer elevation={0} component={Paper}>
+            <TableContainer elevation={0} component={Paper} className={listClasses.tableContainer}>
                 <Table className={listClasses.table} aria-label="simple table">
                     <TableBody>
                         {itemsToDisplay.length === 0 && (

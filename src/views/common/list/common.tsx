@@ -3,8 +3,8 @@ import { THEME_COLORS } from 'config/themes/colors';
 
 export const useListStyles = makeStyles(({ palette, spacing, shape, transitions, typography }) => ({
     tableContainer: {
-        background: palette.background.default,
-        transitionProperty: 'background-color',
+        background: 'transparent',
+        transitionProperty: 'background',
         transitionTimingFunction: transitions.easing.sharp,
         transitionDuration: `${transitions.duration.leavingScreen}ms`,
     },
