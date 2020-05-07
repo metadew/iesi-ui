@@ -26,7 +26,7 @@ import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
 
-const styles = ({ palette }: Theme) =>
+const styles = ({ palette, typography }: Theme) =>
     createStyles({
         header: {
             backgroundColor: palette.background.paper,
@@ -34,21 +34,22 @@ const styles = ({ palette }: Theme) =>
             borderBottomColor: palette.grey[200],
         },
         scriptName: {
-            fontWeight: 700,
+            fontWeight: typography.fontWeightBold,
             color: palette.primary.main,
         },
         scriptVersion: {
-            fontWeight: 700,
+            fontWeight: typography.fontWeightBold,
         },
         scriptDescription: {
-            fontWeight: 700,
+            fontWeight: typography.fontWeightBold,
+            fontSize: typography.pxToRem(12),
         },
         scriptSuccess: {
-            fontWeight: 700,
+            fontWeight: typography.fontWeightBold,
             color: palette.success.main,
         },
         scriptFailed: {
-            fontWeight: 700,
+            fontWeight: typography.fontWeightBold,
             color: palette.error.main,
         },
     });
@@ -251,7 +252,7 @@ const ScriptsOverview = withStyles(styles)(
                 },
                 version: {
                     className: classes.scriptVersion,
-                    fixedWidth: '15%',
+                    fixedWidth: '13%',
                 },
                 description: {
                     className: classes.scriptDescription,
@@ -262,10 +263,10 @@ const ScriptsOverview = withStyles(styles)(
                     label: (
                         <Translate msg="scripts.overview.list.labels.last_run_date" />
                     ),
-                    fixedWidth: '20%',
+                    fixedWidth: '17%',
                 },
                 lastRunStatus: {
-                    fixedWidth: '15%',
+                    fixedWidth: '20%',
                     label: (
                         <Translate msg="scripts.overview.list.labels.last_run_status" />
                     ),

@@ -16,13 +16,13 @@ interface IColumnNames {
 }
 
 
-const useStyles = makeStyles(({ palette }) => ({
+const useStyles = makeStyles(({ palette, typography }) => ({
     scriptName: {
-        fontWeight: 700,
+        fontWeight: typography.fontWeightBold,
         color: palette.primary.main,
     },
     scriptDescription: {
-        fontWeight: 700,
+        fontWeight: typography.fontWeightBold,
     },
 }));
 

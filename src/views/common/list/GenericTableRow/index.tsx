@@ -39,7 +39,7 @@ interface IPublicProps<ColumnNames> {
     indexToShow?: number;
 }
 
-const useStyles = makeStyles(({ palette, shape }: Theme) => ({
+const useStyles = makeStyles(({ palette, shape, spacing, typography }: Theme) => ({
     tableRow: {
         background: palette.background.paper,
         boxShadow: '0 2px 22px rgba(0, 0, 0, .10)',
@@ -57,8 +57,15 @@ const useStyles = makeStyles(({ palette, shape }: Theme) => ({
     },
     index: {
         width: 50,
-        fontWeight: 700,
+        fontWeight: typography.fontWeightBold,
         textAlign: 'center',
+    },
+    tooltipIcon: {
+        position: 'relative',
+        top: '-2px',
+        marginLeft: spacing(0.5),
+        verticalAlign: 'middle',
+        lineHeight: 0,
     },
 }));
 
@@ -103,18 +110,16 @@ export default function GenericTableRow<ColumnNames>({
                             {column.label}
                         </Typography>
                         <Box display="flex" alignItems="center">
-                            <Typography className={className}>
+                            <Typography variant="body2" className={className}>
                                 {shortenedValue}
-                            </Typography>
-                            {tooltip && (
-                                <Box marginLeft={1}>
+                                {tooltip && (
                                     <Tooltip title={tooltip}>
-                                        <Icon aria-label="info">
-                                            <Info />
+                                        <Icon aria-label="info" className={classes.tooltipIcon}>
+                                            <Info fontSize="small" />
                                         </Icon>
                                     </Tooltip>
-                                </Box>
-                            )}
+                                )}
+                            </Typography>
                         </Box>
                     </TableCell>
                 );
