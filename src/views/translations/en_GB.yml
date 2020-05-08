@@ -50,6 +50,10 @@ scripts:
     delete_script_dialog:
       text: Are you sure you want to delete this script?
       title: Delete script
+    side:
+      labels:
+        add_new:
+          button: Add
     main:
       add_action:
         header: Choose the actions you like to add

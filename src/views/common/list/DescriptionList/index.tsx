@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { makeStyles } from '@material-ui/core';
 import { THEME_COLORS } from 'config/themes/colors';
 
 interface IDescriptionListItem {
     label: string;
-    value: string;
+    value: string | ReactNode;
 }
 
 interface IPublicProps {

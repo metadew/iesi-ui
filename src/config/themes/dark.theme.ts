@@ -1,6 +1,7 @@
-import { ThemeOptions, darken } from '@material-ui/core';
+import { ThemeOptions, darken, fade } from '@material-ui/core';
 import { THEME_COLORS } from './colors';
 
+/* Keep in sync light.theme.ts !! */
 const darkTheme: ThemeOptions = {
     palette: {
         text: {
@@ -23,6 +24,9 @@ const darkTheme: ThemeOptions = {
                 '&:hover': {
                     backgroundColor: darken(THEME_COLORS.GREY_DARK, 0.05),
                 },
+            },
+            outlined: {
+                borderColor: fade(THEME_COLORS.PRIMARY_LIGHT, 0.5),
             },
         },
         MuiTooltip: {

@@ -15,6 +15,11 @@ import GenericDraggableList from 'views/common/list/GenericDraggableList';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel/index';
 import { THEME_COLORS } from 'config/themes/colors';
+import OrderedToDoList from 'views/common/list/OrderedToDoList';
+import ButtonWithContent from 'views/common/input/ButtonWithContent';
+import TextInputWithButton from 'views/common/input/TextInputWithButton';
+import OrderedList from 'views/common/list/OrderedList';
+
 import DetailActions from './DetailActions';
 import AddAction from './AddAction';
 
@@ -102,13 +107,43 @@ export default function ScriptDetail() {
                         helperText="Scriptname is a required field"
                     />
                     <TextInput
-                        id="script-name"
-                        label="Scriptname"
+                        id="script-description"
+                        label="Description"
                         multiline
                         rows={8}
                         value={`Script detail: ${scriptId}`}
                     />
                 </form>
+                <OrderedToDoList title="labels" />
+
+                <DescriptionList
+                    items={[
+                        {
+                            label: 'Labels',
+                            value: (
+                                <OrderedList
+                                    items={[
+                                        'item 1',
+                                        <div>item 2</div>,
+                                    ]}
+                                />
+                            ),
+                        },
+                    ]}
+                />
+                <ButtonWithContent buttonText="Add labels">
+                    <TextInputWithButton
+                        inputProps={{
+                            id: 'new-label',
+                            placeholder: 'Label',
+                            'aria-label': 'New label',
+                        }}
+                        buttonText={<Translate msg="scripts.detail.side.labels.add_new.button" />}
+                        onSubmit={(value) => {
+                            console.log('add label', value);
+                        }}
+                    />
+                </ButtonWithContent>
             </Box>
             <Box>
                 <DescriptionList
