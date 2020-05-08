@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Typography, Button, makeStyles, IconButton } from '@material-ui/core';
+import { Box, Typography, Button, makeStyles } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
     Edit as EditIcon,
-    Save as SaveIcon,
-    PlayArrow as PlayIcon,
-    Delete as DeleteIcon,
 } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import TextInput from 'views/common/input/TextInput';
@@ -15,6 +12,7 @@ import { ROUTE_KEYS } from 'views/routes';
 import { ListColumns, IListItem } from 'models/list.models';
 import GenericDraggableList from 'views/common/list/GenericDraggableList';
 import ContentWithSidePanel from '../../common/layout/ContentWithSidePanel/index';
+import DetailActions from './DetailActions';
 
 interface IColumnNames {
     name: string;
@@ -22,23 +20,13 @@ interface IColumnNames {
 }
 
 
-const useStyles = makeStyles(({ palette, typography, overrides, shape, spacing }) => ({
+const useStyles = makeStyles(({ palette, typography }) => ({
     scriptName: {
         fontWeight: typography.fontWeightBold,
         color: palette.primary.main,
     },
     scriptDescription: {
         fontWeight: typography.fontWeightBold,
-    },
-    addButton: overrides.MuiButton.contained,
-    actions: {
-        borderRadius: shape.borderRadius,
-        backgroundColor: palette.grey[200],
-    },
-    action: {
-        '&:not(:first-child)': {
-            marginLeft: spacing(1),
-        },
     },
 }));
 
@@ -146,36 +134,12 @@ export default function ScriptDetail() {
 
         return (
             <Box>
-                <Box
-                    paddingLeft={5}
-                    paddingRight={5}
-                    marginBottom={2}
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                >
-                    <IconButton className={classes.addButton} onClick={() => console.log('add')}>
-                        <AddIcon fontSize="large" />
-                    </IconButton>
-                    <Box className={classes.actions} padding={0.8}>
-                        <Button
-                            className={classes.action}
-                            size="small"
-                            variant="contained"
-                            color="primary"
-                            startIcon={<SaveIcon />}
-                            onClick={() => console.log('save')}
-                        >
-                            <Translate msg="common.action.save" />
-                        </Button>
-                        <IconButton className={classes.action} size="small" onClick={() => console.log('del')}>
-                            <DeleteIcon fontSize="small" />
-                        </IconButton>
-                        <IconButton className={classes.action} size="small" onClick={() => console.log('play')}>
-                            <PlayIcon fontSize="small" />
-                        </IconButton>
-                    </Box>
-                </Box>
+                <DetailActions
+                    onSave={() => console.log('save')}
+                    onDelete={() => console.log('delete')}
+                    onAdd={() => console.log('add')}
+                    onPlay={() => console.log('play')}
+                />
                 <GenericDraggableList
                     listItems={listItems}
                     columns={columns}
