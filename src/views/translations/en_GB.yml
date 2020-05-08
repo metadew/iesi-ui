@@ -6,6 +6,8 @@ app_shell:
       scripts: Scripts
     title: iesi
 common:
+  action:
+    save: Save
   navigation:
     go_back: Back
   list:

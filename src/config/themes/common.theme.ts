@@ -70,6 +70,11 @@ const commonTheme: ThemeOptions = {
                 },
             },
         },
+        MuiIconButton: {
+            sizeSmall: {
+                padding: DEFAULT_SPACING,
+            },
+        },
         // Input labels
         MuiFormLabel: {
             root: {
