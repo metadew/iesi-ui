@@ -12,7 +12,8 @@ import DescriptionList from 'views/common/list/DescriptionList';
 import { ROUTE_KEYS } from 'views/routes';
 import { ListColumns, IListItem } from 'models/list.models';
 import GenericDraggableList from 'views/common/list/GenericDraggableList';
-import ContentWithSidePanel from '../../common/layout/ContentWithSidePanel/index';
+import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel/index';
+import { THEME_COLORS } from 'config/themes/colors';
 import DetailActions from './DetailActions';
 import AddAction from './AddAction';
 
@@ -22,13 +23,24 @@ interface IColumnNames {
 }
 
 
-const useStyles = makeStyles(({ palette, typography }) => ({
+const useStyles = makeStyles(({ palette, spacing, typography }) => ({
     scriptName: {
         fontWeight: typography.fontWeightBold,
         color: palette.primary.main,
     },
     scriptDescription: {
         fontWeight: typography.fontWeightBold,
+    },
+    scriptNav: {
+        padding: `${spacing(0.5)}px ${spacing(1)}px`,
+        backgroundColor: THEME_COLORS.GREY_LIGHT,
+        '& .MuiIconButton-root': {
+            padding: spacing(0.8),
+            margin: `${spacing(0.2)}px ${spacing(0.5)}px`,
+        },
+    },
+    addActionButton: {
+        backgroundColor: THEME_COLORS.GREY_LIGHT,
     },
 }));
 
@@ -136,25 +148,30 @@ export default function ScriptDetail() {
         }
 
         return (
-            <Box>
-                <DetailActions
-                    onSave={() => console.log('save')}
-                    onDelete={() => console.log('delete')}
-                    onAdd={() => setIsAddOpen(true)}
-                    onPlay={() => console.log('play')}
-                />
-                <GenericDraggableList
-                    listItems={listItems}
-                    columns={columns}
-                    listActions={[
-                        {
-                            icon: <EditIcon />,
-                            onClick: (id) => console.log(id),
-                        },
-                    ]}
-                    onOrder={setListItems}
-                />
-            </Box>
+            <>
+                <Box>
+                    <DetailActions
+                        onSave={() => console.log('save')}
+                        onDelete={() => console.log('delete')}
+                        onAdd={() => setIsAddOpen(true)}
+                        onPlay={() => console.log('play')}
+                        onViewReport={() => console.log('view report')}
+                    />
+                </Box>
+                <Box marginY={1}>
+                    <GenericDraggableList
+                        listItems={listItems}
+                        columns={columns}
+                        listActions={[
+                            {
+                                icon: <EditIcon />,
+                                onClick: (id) => console.log(id),
+                            },
+                        ]}
+                        onOrder={setListItems}
+                    />
+                </Box>
+            </>
         );
     };
 

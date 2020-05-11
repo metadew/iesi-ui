@@ -1,30 +1,34 @@
 import React from 'react';
-import { Button, IconButton, Box, makeStyles } from '@material-ui/core';
+import { Button, IconButton, Box, makeStyles, Paper } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
     Save as SaveIcon,
-    PlayArrow as PlayIcon,
     Delete as DeleteIcon,
+    InsertChart as ReportIcon,
+    PlayArrowRounded as PlayIcon,
 } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
+import { THEME_COLORS } from 'config/themes/colors';
 
 interface IPublicProps {
     onPlay: () => void;
     onDelete: () => void;
     onAdd: () => void;
     onSave: () => void;
+    onViewReport: () => void;
 }
 
-const useStyles = makeStyles(({ palette, overrides, shape, spacing }) => ({
-    addButton: overrides.MuiButton.contained,
+const useStyles = makeStyles(({ spacing }) => ({
     actions: {
-        borderRadius: shape.borderRadius,
-        backgroundColor: palette.grey[200],
-    },
-    action: {
-        '&:not(:first-child)': {
-            marginLeft: spacing(1),
+        padding: `${spacing(0.5)}px ${spacing(1)}px`,
+        backgroundColor: THEME_COLORS.GREY_LIGHT,
+        '& .MuiIconButton-root': {
+            padding: spacing(0.8),
+            margin: `${spacing(0.2)}px ${spacing(0.5)}px`,
         },
+    },
+    addButton: {
+        backgroundColor: THEME_COLORS.GREY_LIGHT,
     },
 }));
 
@@ -33,37 +37,39 @@ export default function DetailActions({
     onDelete,
     onAdd,
     onSave,
+    onViewReport,
 }: IPublicProps) {
     const classes = useStyles();
     return (
-        <Box
-            paddingLeft={5}
-            paddingRight={5}
-            marginBottom={2}
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-        >
-            <IconButton className={classes.addButton} onClick={onAdd}>
-                <AddIcon fontSize="large" />
-            </IconButton>
-            <Box className={classes.actions} padding={0.8}>
-                <Button
-                    className={classes.action}
-                    size="small"
-                    variant="contained"
-                    color="primary"
-                    startIcon={<SaveIcon />}
-                    onClick={onSave}
-                >
-                    <Translate msg="common.action.save" />
-                </Button>
-                <IconButton className={classes.action} size="small" onClick={onDelete}>
-                    <DeleteIcon fontSize="small" />
+        <Box display="flex" alignItems="center" justifyContent="space-between" marginX={2.2}>
+            <Box flex="0 0 auto">
+                <IconButton aria-label="add action" className={classes.addButton} onClick={onAdd}>
+                    <AddIcon />
                 </IconButton>
-                <IconButton className={classes.action} size="small" onClick={onPlay}>
-                    <PlayIcon fontSize="small" />
-                </IconButton>
+            </Box>
+            <Box flex="0 0 auto">
+                <Paper elevation={0} className={classes.actions}>
+                    <Box display="inline" marginRight={1}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            startIcon={<SaveIcon />}
+                            onClick={onSave}
+                        >
+                            <Translate msg="Save" />
+                        </Button>
+                    </Box>
+                    <IconButton aria-label="delete script" onClick={onDelete}>
+                        <DeleteIcon />
+                    </IconButton>
+                    <IconButton aria-label="view reports" onClick={onViewReport}>
+                        <ReportIcon />
+                    </IconButton>
+                    <IconButton aria-label="execute script" onClick={onPlay}>
+                        <PlayIcon />
+                    </IconButton>
+                </Paper>
             </Box>
         </Box>
     );
