@@ -280,7 +280,7 @@ const ScriptsOverview = withStyles(styles)(
             };
 
             return (
-                <Box marginBottom={3}>
+                <Box marginBottom={3} marginX={5}>
                     <GenericList
                         listActions={[
                             {
