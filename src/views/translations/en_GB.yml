@@ -39,8 +39,12 @@ scripts:
         script_name: Script name
         version: Version
   detail:
+    add_action:
+      add_button: 'Add {amount} actions'
     side:
     main:
+      add_action:
+        header: Choose the actions you like to add
       no_actions:
         title: No actions yet
         button: Add actions

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactText } from 'react';
 import classNames from 'classnames';
 import { getListItemValueFromColumn } from 'utils/list/list';
 import {
@@ -9,6 +9,7 @@ import {
     Box,
     makeStyles,
     TableRow,
+    Checkbox,
 } from '@material-ui/core';
 import {
     IListItem,
@@ -36,11 +37,19 @@ interface IPublicProps<ColumnNames> {
     };
     indexToShow?: number;
     isDragging?: boolean;
+    disableElevation?: boolean;
+    selectable?: {
+        onSelect: (id: ReactText) => void;
+        selected: boolean;
+    };
+    className?: string;
 }
 
 const useStyles = makeStyles(({ palette, shape, typography }: Theme) => ({
     tableRow: {
         background: palette.background.paper,
+    },
+    tableRowElevated: {
         boxShadow: '0 2px 22px rgba(0, 0, 0, .10)',
         borderRadius: shape.borderRadius,
     },
@@ -71,11 +80,15 @@ export default function GenericTableRow<ColumnNames>({
     draggableProps,
     indexToShow,
     isDragging,
+    disableElevation,
+    selectable,
+    className,
 }: IPublicProps<ColumnNames>) {
     const classes = useStyles();
     return (
         <TableRow
-            className={classNames(classes.tableRow, {
+            className={classNames(classes.tableRow, className, {
+                [classes.tableRowElevated]: !disableElevation,
                 [classes.tableRowIsDragging]: !!isDragging,
             })}
             {...draggableProps}
@@ -140,6 +153,17 @@ export default function GenericTableRow<ColumnNames>({
                     </IconButton>
                 </TableCell>
             ))}
+            {selectable && (
+                <TableCell
+                    align="right"
+                    className={classes.action}
+                >
+                    <Checkbox
+                        checked={selectable.selected}
+                        onClick={() => selectable.onSelect(item.id)}
+                    />
+                </TableCell>
+            )}
         </TableRow>
     );
 }
