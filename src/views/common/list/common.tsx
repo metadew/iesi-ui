@@ -13,7 +13,7 @@ export const useListStyles = makeStyles(({ palette, spacing, shape, transitions,
     },
     table: {
         // Padding for box shadows of tableRows
-        padding: spacing(2.2),
+        padding: `${spacing(1.2)}px ${spacing(2.2)}px`,
         minWidth: 650,
         tableLayout: 'auto',
         borderCollapse: 'separate',

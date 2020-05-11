@@ -155,17 +155,19 @@ export default function ScriptDetail() {
                         onViewReport={() => console.log('view report')}
                     />
                 </Box>
-                <GenericDraggableList
-                    listItems={listItems}
-                    columns={columns}
-                    listActions={[
-                        {
-                            icon: <EditIcon />,
-                            onClick: (id) => console.log(id),
-                        },
-                    ]}
-                    onOrder={setListItems}
-                />
+                <Box marginY={1}>
+                    <GenericDraggableList
+                        listItems={listItems}
+                        columns={columns}
+                        listActions={[
+                            {
+                                icon: <EditIcon />,
+                                onClick: (id) => console.log(id),
+                            },
+                        ]}
+                        onOrder={setListItems}
+                    />
+                </Box>
             </>
         );
     };
