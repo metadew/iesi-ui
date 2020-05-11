@@ -1,3 +1,4 @@
+import { ReactText } from 'react';
 import { IParameter } from './iesiGeneric.models';
 
 export interface IScriptBase {
@@ -40,4 +41,11 @@ export interface IScriptByNamePayload {
 
 export interface IScriptByNameAndVersionPayload extends IScriptByNamePayload {
     version: number;
+}
+
+// TODO remove this, for development only
+export interface IDummyScriptAction {
+    id: ReactText;
+    name: string;
+    description: string;
 }

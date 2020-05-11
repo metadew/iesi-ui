@@ -5,6 +5,7 @@ import {
     AddRounded as AddIcon,
     Edit as EditIcon,
 } from '@material-ui/icons';
+import { IDummyScriptAction } from 'models/state/scripts.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import TextInput from 'views/common/input/TextInput';
 import DescriptionList from 'views/common/list/DescriptionList';
@@ -13,6 +14,7 @@ import { ListColumns, IListItem } from 'models/list.models';
 import GenericDraggableList from 'views/common/list/GenericDraggableList';
 import ContentWithSidePanel from '../../common/layout/ContentWithSidePanel/index';
 import DetailActions from './DetailActions';
+import AddAction from './AddAction';
 
 interface IColumnNames {
     name: string;
@@ -58,6 +60,7 @@ const mockedListItems: IListItem<IColumnNames>[] = [{
 }];
 
 export default function ScriptDetail() {
+    const [isAddOpen, setIsAddOpen] = useState(false);
     const [listItems, setListItems] = useState(mockedListItems);
     const { scriptId } = useParams();
     const classes = useStyles();
@@ -137,7 +140,7 @@ export default function ScriptDetail() {
                 <DetailActions
                     onSave={() => console.log('save')}
                     onDelete={() => console.log('delete')}
-                    onAdd={() => console.log('add')}
+                    onAdd={() => setIsAddOpen(true)}
                     onPlay={() => console.log('play')}
                 />
                 <GenericDraggableList
@@ -155,11 +158,36 @@ export default function ScriptDetail() {
         );
     };
 
+    const AddScriptContent = () => (
+        <AddAction
+            onClose={onCloseAddAction}
+            onAdd={onAddActions}
+        />
+    );
+
     return (
         <ContentWithSidePanel
             panel={<ScriptDetailPanel />}
             content={<ScriptDetailContent />}
             goBackTo={ROUTE_KEYS.R_SCRIPTS}
+            contentOverlay={<AddScriptContent />}
+            contentOverlayOpen={isAddOpen}
         />
     );
+
+    function onCloseAddAction() {
+        setIsAddOpen(false);
+    }
+
+    function onAddActions(actions: IDummyScriptAction[]) {
+        const newListItems: IListItem<IColumnNames>[] = actions.map((action) => ({
+            id: action.id,
+            columns: {
+                name: action.name,
+                description: action.description,
+            },
+        }));
+        setListItems([...listItems, ...newListItems]);
+        onCloseAddAction();
+    }
 }
