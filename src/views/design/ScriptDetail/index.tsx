@@ -12,6 +12,7 @@ import DescriptionList from 'views/common/list/DescriptionList';
 import { ROUTE_KEYS } from 'views/routes';
 import { ListColumns, IListItem } from 'models/list.models';
 import GenericDraggableList from 'views/common/list/GenericDraggableList';
+import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel/index';
 import { THEME_COLORS } from 'config/themes/colors';
 import DetailActions from './DetailActions';
@@ -73,6 +74,7 @@ const mockedListItems: IListItem<IColumnNames>[] = [{
 
 export default function ScriptDetail() {
     const [isAddOpen, setIsAddOpen] = useState(false);
+    const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
     const [listItems, setListItems] = useState(mockedListItems);
     const { scriptId } = useParams();
     const classes = useStyles();
@@ -152,7 +154,7 @@ export default function ScriptDetail() {
                 <Box>
                     <DetailActions
                         onSave={() => console.log('save')}
-                        onDelete={() => console.log('delete')}
+                        onDelete={() => setIsConfirmDeleteOpen(true)}
                         onAdd={() => setIsAddOpen(true)}
                         onPlay={() => console.log('play')}
                         onViewReport={() => console.log('view report')}
@@ -183,13 +185,22 @@ export default function ScriptDetail() {
     );
 
     return (
-        <ContentWithSidePanel
-            panel={<ScriptDetailPanel />}
-            content={<ScriptDetailContent />}
-            goBackTo={ROUTE_KEYS.R_SCRIPTS}
-            contentOverlay={<AddScriptContent />}
-            contentOverlayOpen={isAddOpen}
-        />
+        <>
+            <ContentWithSidePanel
+                panel={<ScriptDetailPanel />}
+                content={<ScriptDetailContent />}
+                goBackTo={ROUTE_KEYS.R_SCRIPTS}
+                contentOverlay={<AddScriptContent />}
+                contentOverlayOpen={isAddOpen}
+            />
+            <ConfirmationDialog
+                title={<Translate msg="scripts.detail.delete_script_dialog.title" />}
+                text={<Translate msg="scripts.detail.delete_script_dialog.text" />}
+                open={isConfirmDeleteOpen}
+                onClose={() => setIsConfirmDeleteOpen(false)}
+                onConfirm={() => setIsConfirmDeleteOpen(false)} // TODO: actually delete script
+            />
+        </>
     );
 
     function onCloseAddAction() {
