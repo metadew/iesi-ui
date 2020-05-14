@@ -45,7 +45,7 @@ interface IPublicProps<ColumnNames> {
     className?: string;
 }
 
-const useStyles = makeStyles(({ palette, shape, typography }: Theme) => ({
+const useStyles = makeStyles(({ palette, shape, typography, spacing }: Theme) => ({
     tableRow: {
         background: palette.background.paper,
     },
@@ -62,6 +62,8 @@ const useStyles = makeStyles(({ palette, shape, typography }: Theme) => ({
     },
     action: {
         width: 50,
+        paddingLeft: `${spacing(1.1)}px !important`,
+        paddingRight: `${spacing(1.1)}px !important`,
     },
     actionIcon: {
         color: palette.primary.dark,

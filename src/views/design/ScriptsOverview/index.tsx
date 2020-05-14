@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactText } from 'react';
 import {
     Typography,
     Box,
@@ -11,7 +11,7 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
-import { Edit } from '@material-ui/icons';
+import { Edit, Delete } from '@material-ui/icons';
 import {
     ListColumns,
     ISortedColumn,
@@ -25,6 +25,7 @@ import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPan
 import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -95,6 +96,7 @@ const sortActions: SortActions<Partial<IColumnNames>> = {
 interface IComponentState {
     sortedColumn: ISortedColumn<IColumnNames>;
     filters: ListFilters<Partial<IColumnNames>>;
+    idOfScriptToDelete: ReactText;
 }
 
 type TProps = WithStyles<typeof styles>;
@@ -188,47 +190,60 @@ const ScriptsOverview = withStyles(styles)(
             this.state = {
                 sortedColumn: null,
                 filters: getIntialFiltersFromFilterConfig(filterConfig),
+                idOfScriptToDelete: null,
             };
 
             this.renderPanel = this.renderPanel.bind(this);
             this.renderContent = this.renderContent.bind(this);
             this.onSort = this.onSort.bind(this);
             this.onFilter = this.onFilter.bind(this);
+
+            this.clearScriptToDelete = this.clearScriptToDelete.bind(this);
+            this.setScriptToDelete = this.setScriptToDelete.bind(this);
         }
 
         public render() {
             const { classes } = this.props;
-            const { sortedColumn } = this.state;
+            const { sortedColumn, idOfScriptToDelete } = this.state;
 
             return (
-                <Box height="100%" display="flex" flexDirection="column">
-                    <Box
-                        paddingTop={3}
-                        paddingBottom={3}
-                        className={classes.header}
-                    >
-                        <AppTemplateContainer>
-                            <Typography variant="h6">
-                                <Translate
-                                    msg="scripts.overview.header.amount"
-                                    placeholders={{ amount: this.mockedListItems.length }}
+                <>
+                    <Box height="100%" display="flex" flexDirection="column">
+                        <Box
+                            paddingTop={3}
+                            paddingBottom={3}
+                            className={classes.header}
+                        >
+                            <AppTemplateContainer>
+                                <Typography variant="h6">
+                                    <Translate
+                                        msg="scripts.overview.header.amount"
+                                        placeholders={{ amount: this.mockedListItems.length }}
+                                    />
+                                </Typography>
+                                <GenericSort
+                                    sortActions={sortActions}
+                                    onSort={this.onSort}
+                                    sortedColumn={sortedColumn as ISortedColumn<{}>}
                                 />
-                            </Typography>
-                            <GenericSort
-                                sortActions={sortActions}
-                                onSort={this.onSort}
-                                sortedColumn={sortedColumn as ISortedColumn<{}>}
-                            />
-                        </AppTemplateContainer>
+                            </AppTemplateContainer>
+                        </Box>
+                        <ContentWithSlideoutPanel
+                            toggleLabel={
+                                <Translate msg="common.list.filter.toggle" />
+                            }
+                            panel={this.renderPanel()}
+                            content={this.renderContent()}
+                        />
                     </Box>
-                    <ContentWithSlideoutPanel
-                        toggleLabel={
-                            <Translate msg="common.list.filter.toggle" />
-                        }
-                        panel={this.renderPanel()}
-                        content={this.renderContent()}
+                    <ConfirmationDialog
+                        title={<Translate msg="scripts.overview.delete_script_dialog.title" />}
+                        text={<Translate msg="scripts.overview.delete_script_dialog.text" />}
+                        open={!!idOfScriptToDelete}
+                        onClose={this.clearScriptToDelete}
+                        onConfirm={this.clearScriptToDelete} // TODO: actually delete script
                     />
-                </Box>
+                </>
             );
         }
 
@@ -289,6 +304,9 @@ const ScriptsOverview = withStyles(styles)(
                                     routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
                                     params: { scriptId: id },
                                 }),
+                            }, {
+                                icon: <Delete />,
+                                onClick: this.setScriptToDelete,
                             },
                         ]}
                         columns={columns}
@@ -307,6 +325,14 @@ const ScriptsOverview = withStyles(styles)(
 
         private onFilter(listFilters: ListFilters<Partial<IColumnNames>>) {
             this.setState({ filters: listFilters });
+        }
+
+        private clearScriptToDelete() {
+            this.setState({ idOfScriptToDelete: null });
+        }
+
+        private setScriptToDelete(id: ReactText) {
+            this.setState({ idOfScriptToDelete: id });
         }
     },
 );
