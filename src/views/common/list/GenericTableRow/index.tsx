@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { ReactText } from 'react';
+import classNames from 'classnames';
 import { getListItemValueFromColumn } from 'utils/list/list';
 import {
     TableCell,
@@ -6,10 +7,9 @@ import {
     IconButton,
     Theme,
     Box,
-    Tooltip,
-    Icon,
     makeStyles,
     TableRow,
+    Checkbox,
 } from '@material-ui/core';
 import {
     IListItem,
@@ -18,14 +18,13 @@ import {
     IListAction,
 } from 'models/list.models';
 import {
-    Info,
-} from '@material-ui/icons';
-import {
     DraggableProvidedDragHandleProps,
     DraggableProvidedDraggableProps,
 } from 'react-beautiful-dnd';
 import { formatNumberWithTwoDigits } from 'utils/number/format';
 import isSet from '@snipsonian/core/es/is/isSet';
+import Tooltip from 'views/common/Tooltip';
+import DragHandlerIcon from 'views/common/icons/DragHandler';
 
 const SHORTEN_VALUE_FROM_CHARACTERS = 40;
 
@@ -37,13 +36,25 @@ interface IPublicProps<ColumnNames> {
         ref(element?: HTMLElement | null): unknown;
     };
     indexToShow?: number;
+    isDragging?: boolean;
+    disableElevation?: boolean;
+    selectable?: {
+        onSelect: (id: ReactText) => void;
+        selected: boolean;
+    };
+    className?: string;
 }
 
-const useStyles = makeStyles(({ palette, shape }: Theme) => ({
+const useStyles = makeStyles(({ palette, shape, typography, spacing }: Theme) => ({
     tableRow: {
         background: palette.background.paper,
+    },
+    tableRowElevated: {
         boxShadow: '0 2px 22px rgba(0, 0, 0, .10)',
         borderRadius: shape.borderRadius,
+    },
+    tableRowIsDragging: {
+        borderSpacing: 0,
     },
     label: {
         fontSize: '.8rem',
@@ -51,13 +62,15 @@ const useStyles = makeStyles(({ palette, shape }: Theme) => ({
     },
     action: {
         width: 50,
+        paddingLeft: `${spacing(1.1)}px !important`,
+        paddingRight: `${spacing(1.1)}px !important`,
     },
     actionIcon: {
         color: palette.primary.dark,
     },
     index: {
         width: 50,
-        fontWeight: 700,
+        fontWeight: typography.fontWeightBold,
         textAlign: 'center',
     },
 }));
@@ -68,10 +81,25 @@ export default function GenericTableRow<ColumnNames>({
     listActions,
     draggableProps,
     indexToShow,
+    isDragging,
+    disableElevation,
+    selectable,
+    className,
 }: IPublicProps<ColumnNames>) {
     const classes = useStyles();
     return (
-        <TableRow className={classes.tableRow} {...draggableProps}>
+        <TableRow
+            className={classNames(classes.tableRow, className, {
+                [classes.tableRowElevated]: !disableElevation,
+                [classes.tableRowIsDragging]: !!isDragging,
+            })}
+            {...draggableProps}
+        >
+            {isSet(draggableProps) && (
+                <TableCell className="drag-handle">
+                    <DragHandlerIcon fontSize="inherit" />
+                </TableCell>
+            )}
             {isSet(indexToShow) && (
                 <TableCell>
                     <Typography className={classes.index}>{formatNumberWithTwoDigits(indexToShow)}</Typography>
@@ -86,7 +114,7 @@ export default function GenericTableRow<ColumnNames>({
                     ? `${value.substr(0, SHORTEN_VALUE_FROM_CHARACTERS)}...`
                     : value;
 
-                const className = typeof column.className === 'function'
+                const cellClassName = typeof column.className === 'function'
                     ? column.className(value)
                     : column.className;
 
@@ -103,18 +131,12 @@ export default function GenericTableRow<ColumnNames>({
                             {column.label}
                         </Typography>
                         <Box display="flex" alignItems="center">
-                            <Typography className={className}>
+                            <Typography variant="body2" className={cellClassName}>
                                 {shortenedValue}
+                                {tooltip && (
+                                    <Tooltip title={tooltip} iconSize="small" />
+                                )}
                             </Typography>
-                            {tooltip && (
-                                <Box marginLeft={1}>
-                                    <Tooltip title={tooltip}>
-                                        <Icon aria-label="info">
-                                            <Info />
-                                        </Icon>
-                                    </Tooltip>
-                                </Box>
-                            )}
                         </Box>
                     </TableCell>
                 );
@@ -133,6 +155,17 @@ export default function GenericTableRow<ColumnNames>({
                     </IconButton>
                 </TableCell>
             ))}
+            {selectable && (
+                <TableCell
+                    align="right"
+                    className={classes.action}
+                >
+                    <Checkbox
+                        checked={selectable.selected}
+                        onClick={() => selectable.onSelect(item.id)}
+                    />
+                </TableCell>
+            )}
         </TableRow>
     );
 }

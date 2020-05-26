@@ -3,7 +3,7 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { Button, makeStyles } from '@material-ui/core';
 import { ChevronLeftRounded } from '@material-ui/icons';
 import { ROUTE_KEYS } from 'views/routes';
-import RouteLink from '../RouteLink/index';
+import RouteLink, { IPublicProps as IRouteLinkProps } from '../RouteLink';
 
 interface IPublicProps {
     to: ROUTE_KEYS;
@@ -16,6 +16,11 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
+// https://material-ui.com/guides/composition/#caveat-with-refs
+const RouteLinkRef = React.forwardRef<HTMLAnchorElement, IRouteLinkProps>((props, ref) => (
+    <RouteLink innerRef={ref} {...props} />
+));
+
 function GoBack(props: IPublicProps) {
     const classes = useStyles();
 
@@ -25,7 +30,7 @@ function GoBack(props: IPublicProps) {
             color="default"
             startIcon={<ChevronLeftRounded />}
             disableElevation
-            component={RouteLink}
+            component={RouteLinkRef}
             to={props.to}
             className={classes.goBackButton}
         >

@@ -19,19 +19,19 @@ interface IPublicProps<ColumnNames> {
     sortedColumn: ISortedColumn<TObjectWithProps>;
 }
 
-const useStyles = makeStyles(({ palette, spacing }: Theme) => ({
+const useStyles = makeStyles(({ palette, spacing, typography }: Theme) => ({
     sort: {
         marginTop: spacing(1),
     },
     label: {
-        fontWeight: 700,
+        fontWeight: typography.fontWeightBold,
         color: palette.primary.main,
     },
     buttonGroup: {
         marginLeft: spacing(2),
     },
     button: {
-        fontWeight: 700,
+        fontWeight: typography.fontWeightBold,
         textTransform: 'none',
     },
     active: {

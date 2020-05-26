@@ -6,6 +6,11 @@ app_shell:
       scripts: Scripts
     title: iesi
 common:
+  action:
+    save: Save
+  confirmation:
+    yes: Yes, I am sure
+    no: No, take me back
   navigation:
     go_back: Back
   list:
@@ -22,6 +27,9 @@ error:
   timeout: The server did not respond in a timely fashion. Please try again.
 scripts:
   overview:
+    delete_script_dialog:
+      text: Are you sure you want to delete this script?
+      title: Delete script
     header:
       amount: 'You have {amount} scripts'
     list:
@@ -37,8 +45,14 @@ scripts:
         script_name: Script name
         version: Version
   detail:
-    side:
+    add_action:
+      add_button: 'Add {amount} actions'
+    delete_script_dialog:
+      text: Are you sure you want to delete this script?
+      title: Delete script
     main:
+      add_action:
+        header: Choose the actions you like to add
       no_actions:
         title: No actions yet
         button: Add actions

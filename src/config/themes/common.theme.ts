@@ -1,6 +1,8 @@
-import { ThemeOptions } from '@material-ui/core';
+import { createMuiTheme, ThemeOptions } from '@material-ui/core';
 import { THEME_COLORS } from 'config/themes/colors';
-import { darken } from '@material-ui/core/styles/colorManipulator';
+
+const MUI_DEFAULT_THEME = createMuiTheme(); // https://material-ui.com/customization/default-theme
+const DEFAULT_SPACING = 10;
 
 const commonTheme: ThemeOptions = {
     palette: {
@@ -12,8 +14,11 @@ const commonTheme: ThemeOptions = {
             main: THEME_COLORS.SECONDARY,
             contrastText: THEME_COLORS.WHITE,
         },
+        error: {
+            main: THEME_COLORS.ERROR,
+        },
     },
-    spacing: 10,
+    spacing: DEFAULT_SPACING,
     typography: {
         fontFamily: [
             'Open Sans',
@@ -22,53 +27,74 @@ const commonTheme: ThemeOptions = {
             'sans-serif',
         ].join(','),
         h1: {
-            fontWeight: 700,
+            fontWeight: MUI_DEFAULT_THEME.typography.fontWeightBold,
         },
         h2: {
-            fontSize: '1.5625rem',
-            fontWeight: 700,
+            fontSize: MUI_DEFAULT_THEME.typography.pxToRem(25),
+            fontWeight: MUI_DEFAULT_THEME.typography.fontWeightBold,
         },
         h3: {
-            fontSize: '1.25rem',
-            fontWeight: 700,
+            fontSize: MUI_DEFAULT_THEME.typography.pxToRem(20),
+            fontWeight: MUI_DEFAULT_THEME.typography.fontWeightBold,
         },
         h4: {
-            fontSize: '1.25rem',
-            fontWeight: 400,
+            fontSize: MUI_DEFAULT_THEME.typography.pxToRem(20),
+            fontWeight: MUI_DEFAULT_THEME.typography.fontWeightRegular,
             color: THEME_COLORS.PRIMARY,
         },
         h6: {
-            fontWeight: 700,
+            fontWeight: MUI_DEFAULT_THEME.typography.fontWeightBold,
         },
         button: {
-            fontWeight: 700,
+            fontWeight: MUI_DEFAULT_THEME.typography.fontWeightBold,
+            fontSize: MUI_DEFAULT_THEME.typography.pxToRem(20),
             textTransform: 'none',
-            fontSize: '1.25rem',
         },
     },
     overrides: {
+        // Buttons
         MuiButton: {
             root: {
                 padding: '.475em .912em',
             },
-            contained: {
-                color: THEME_COLORS.PRIMARY_DARK,
-                backgroundColor: THEME_COLORS.GREY,
-                '&:hover': {
-                    backgroundColor: darken(THEME_COLORS.GREY, 0.1),
-                },
-            },
             containedSizeSmall: {
-                fontSize: '.875rem',
+                fontSize: MUI_DEFAULT_THEME.typography.pxToRem(14),
             },
             containedSizeLarge: {
-                fontSize: '1.5rem',
+                fontSize: MUI_DEFAULT_THEME.typography.pxToRem(24),
             },
             iconSizeMedium: {
                 fontSize: '1.2em',
                 '& > *:first-child': {
                     fontSize: '1em',
                 },
+            },
+        },
+        MuiIconButton: {
+            sizeSmall: {
+                padding: DEFAULT_SPACING,
+            },
+        },
+        // Input labels
+        MuiFormLabel: {
+            root: {
+                fontWeight: MUI_DEFAULT_THEME.typography.fontWeightBold,
+            },
+        },
+        // Inputs
+        MuiFormControl: {
+            marginNormal: {
+                marginTop: `${DEFAULT_SPACING * 2}px`,
+                marginBottom: `${DEFAULT_SPACING * 1}px`,
+            },
+            marginDense: {
+                marginTop: `${DEFAULT_SPACING * 1}px`,
+                marginBottom: `${DEFAULT_SPACING * 0.5}px`,
+            },
+        },
+        MuiFilledInput: {
+            root: {
+                borderRadius: MUI_DEFAULT_THEME.shape.borderRadius,
             },
         },
     },

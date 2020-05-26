@@ -5,7 +5,7 @@ import { TTranslatorComponent } from 'models/i18n.models';
 
 const SIDE_PANEL_WIDTH = 350;
 
-const useStyles = makeStyles(({ palette }) => ({
+const useStyles = makeStyles(({ palette, typography }) => ({
     panel: {
         background: palette.background.paper,
     },
@@ -25,7 +25,7 @@ const useStyles = makeStyles(({ palette }) => ({
     },
     toggleButton: {
         minWidth: 80,
-        fontWeight: 700,
+        fontWeight: typography.fontWeightBold,
         fontSize: '.8rem',
         textTransform: 'uppercase',
     },

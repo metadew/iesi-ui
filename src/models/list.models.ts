@@ -6,7 +6,7 @@ export interface IColumn<ColumnNames> {
     label?: TTranslatorComponent;
     align?: 'left' | 'center' | 'right';
     className?: string | ((value: ReactText) => string);
-    tooltip?: string | ((value: ReactText) => ReactText);
+    tooltip?: string | ((value: ReactText) => ReactText | ReactNode);
     fixedWidth?: ReactText;
 }
 

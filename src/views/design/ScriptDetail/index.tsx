@@ -1,42 +1,50 @@
 import React, { useState } from 'react';
-import classNames from 'classnames';
 import { useParams } from 'react-router-dom';
-import { Box, makeStyles, Theme, Typography, Button } from '@material-ui/core';
-import { AddRounded as AddIcon, Edit as EditIcon } from '@material-ui/icons';
-import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
+import { Box, Typography, Button, makeStyles } from '@material-ui/core';
+import {
+    AddRounded as AddIcon,
+    Edit as EditIcon,
+} from '@material-ui/icons';
+import { IDummyScriptAction } from 'models/state/scripts.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import GoBack from 'views/common/navigation/GoBack';
+import TextInput from 'views/common/input/TextInput';
+import DescriptionList from 'views/common/list/DescriptionList';
 import { ROUTE_KEYS } from 'views/routes';
 import { ListColumns, IListItem } from 'models/list.models';
 import GenericDraggableList from 'views/common/list/GenericDraggableList';
-
-const useStyles = makeStyles(({ palette }: Theme) => ({
-    aside: {
-        width: '33%',
-        maxWidth: '485px',
-        background: palette.background.paper,
-        flex: '1 1 auto',
-    },
-    content: {
-        width: '66%',
-        flex: '1 1 auto',
-    },
-    contentCenter: {
-        justifyContent: 'center',
-    },
-    actionName: {
-        fontWeight: 700,
-        color: palette.primary.main,
-    },
-    actionDescription: {
-        fontWeight: 700,
-    },
-}));
+import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
+import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel/index';
+import { THEME_COLORS } from 'config/themes/colors';
+import DetailActions from './DetailActions';
+import AddAction from './AddAction';
 
 interface IColumnNames {
     name: string;
     description: string;
 }
+
+
+const useStyles = makeStyles(({ palette, spacing, typography }) => ({
+    scriptName: {
+        fontWeight: typography.fontWeightBold,
+        color: palette.primary.main,
+    },
+    scriptDescription: {
+        fontWeight: typography.fontWeightBold,
+    },
+    scriptNav: {
+        padding: `${spacing(0.5)}px ${spacing(1)}px`,
+        backgroundColor: THEME_COLORS.GREY_LIGHT,
+        '& .MuiIconButton-root': {
+            padding: spacing(0.8),
+            margin: `${spacing(0.2)}px ${spacing(0.5)}px`,
+        },
+    },
+    addActionButton: {
+        backgroundColor: THEME_COLORS.GREY_LIGHT,
+    },
+}));
+
 
 const mockedListItems: IListItem<IColumnNames>[] = [{
     id: 1,
@@ -64,7 +72,9 @@ const mockedListItems: IListItem<IColumnNames>[] = [{
     },
 }];
 
-function ScriptDetail() {
+export default function ScriptDetail() {
+    const [isAddOpen, setIsAddOpen] = useState(false);
+    const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
     const [listItems, setListItems] = useState(mockedListItems);
     const { scriptId } = useParams();
     const classes = useStyles();
@@ -72,39 +82,85 @@ function ScriptDetail() {
     const columns: ListColumns<IColumnNames> = {
         name: {
             fixedWidth: '30%',
-            className: classes.actionName,
+            className: classes.scriptName,
         },
         description: {
             fixedWidth: '70%',
-            className: classes.actionDescription,
+            className: classes.scriptDescription,
         },
     };
 
-    return (
-        <Box display="flex" flex="1 1 auto">
-            <Box className={classes.aside} paddingTop={2}>
-                <GoBack to={ROUTE_KEYS.R_SCRIPTS} />
-                <AppTemplateContainer>
-                    <Typography variant="body1">{`Script detail: ${scriptId}`}</Typography>
-                </AppTemplateContainer>
+    const ScriptDetailPanel = () => (
+        <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
+            <Box flex="1 1 auto">
+                <form noValidate autoComplete="off">
+                    <TextInput
+                        id="script-name"
+                        label="Scriptname"
+                        required
+                        error
+                        helperText="Scriptname is a required field"
+                    />
+                    <TextInput
+                        id="script-name"
+                        label="Scriptname"
+                        multiline
+                        rows={8}
+                        value={`Script detail: ${scriptId}`}
+                    />
+                </form>
             </Box>
-            <Box display="flex" flexDirection="column" className={classNames(classes.content, classes.contentCenter)}>
-                {mockedListItems.length === 0 ? (
-                    <AppTemplateContainer>
-                        <Box textAlign="center">
-                            <Typography variant="h2" paragraph>
-                                <Translate msg="scripts.detail.main.no_actions.title" />
-                            </Typography>
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                startIcon={<AddIcon />}
-                            >
-                                <Translate msg="scripts.detail.main.no_actions.button" />
-                            </Button>
-                        </Box>
-                    </AppTemplateContainer>
-                ) : (
+            <Box>
+                <DescriptionList
+                    items={[
+                        { label: 'Version', value: '01' },
+                        { label: 'Last run date', value: '10-10-2018' },
+                        { label: 'Last run status', value: 'Passed' },
+                    ]}
+                />
+            </Box>
+        </Box>
+    );
+
+    const ScriptDetailContent = () => {
+        const hasActions = listItems.length > 0;
+
+        if (!hasActions) {
+            return (
+                <Box
+                    display="flex"
+                    flexDirection="column"
+                    flex="1 1 auto"
+                    justifyContent="center"
+                >
+                    <Box textAlign="center">
+                        <Typography variant="h2" paragraph>
+                            <Translate msg="scripts.detail.main.no_actions.title" />
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            startIcon={<AddIcon />}
+                        >
+                            <Translate msg="scripts.detail.main.no_actions.button" />
+                        </Button>
+                    </Box>
+                </Box>
+            );
+        }
+
+        return (
+            <>
+                <Box>
+                    <DetailActions
+                        onSave={() => console.log('save')}
+                        onDelete={() => setIsConfirmDeleteOpen(true)}
+                        onAdd={() => setIsAddOpen(true)}
+                        onPlay={() => console.log('play')}
+                        onViewReport={() => console.log('view report')}
+                    />
+                </Box>
+                <Box marginY={1}>
                     <GenericDraggableList
                         listItems={listItems}
                         columns={columns}
@@ -116,10 +172,50 @@ function ScriptDetail() {
                         ]}
                         onOrder={setListItems}
                     />
-                )}
-            </Box>
-        </Box>
-    );
-}
+                </Box>
+            </>
+        );
+    };
 
-export default ScriptDetail;
+    const AddScriptContent = () => (
+        <AddAction
+            onClose={onCloseAddAction}
+            onAdd={onAddActions}
+        />
+    );
+
+    return (
+        <>
+            <ContentWithSidePanel
+                panel={<ScriptDetailPanel />}
+                content={<ScriptDetailContent />}
+                goBackTo={ROUTE_KEYS.R_SCRIPTS}
+                contentOverlay={<AddScriptContent />}
+                contentOverlayOpen={isAddOpen}
+            />
+            <ConfirmationDialog
+                title={<Translate msg="scripts.detail.delete_script_dialog.title" />}
+                text={<Translate msg="scripts.detail.delete_script_dialog.text" />}
+                open={isConfirmDeleteOpen}
+                onClose={() => setIsConfirmDeleteOpen(false)}
+                onConfirm={() => setIsConfirmDeleteOpen(false)} // TODO: actually delete script
+            />
+        </>
+    );
+
+    function onCloseAddAction() {
+        setIsAddOpen(false);
+    }
+
+    function onAddActions(actions: IDummyScriptAction[]) {
+        const newListItems: IListItem<IColumnNames>[] = actions.map((action) => ({
+            id: action.id,
+            columns: {
+                name: action.name,
+                description: action.description,
+            },
+        }));
+        setListItems([...listItems, ...newListItems]);
+        onCloseAddAction();
+    }
+}
