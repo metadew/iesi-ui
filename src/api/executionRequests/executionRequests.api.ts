@@ -1,6 +1,6 @@
 import { IExecutionRequest, IExecutionRequestByIdPayload } from 'models/state/executionRequests.models';
 import { IListResponse } from 'models/state/iesiGeneric.models';
-import { get } from '../requestWrapper';
+import { get, post } from '../requestWrapper';
 import API_URLS from '../apiUrls';
 
 export function fetchExecutionRequests() {
@@ -17,5 +17,12 @@ export function fetchExecutionRequest({ id }: IExecutionRequestByIdPayload) {
         pathParams: {
             id,
         },
+    });
+}
+
+export function createExecutionRequest(executionRequest: Omit<IExecutionRequest, 'executionRequestId'>) {
+    return post<IExecutionRequest>({
+        url: API_URLS.EXECUTION_REQUESTS,
+        body: executionRequest,
     });
 }
