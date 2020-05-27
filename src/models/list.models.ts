@@ -25,11 +25,12 @@ export interface IListItemValueWithSortValue {
 }
 
 
-export interface IListItem<ColumnNames> {
+export interface IListItem<ColumnNames, Data = TObjectWithProps> {
     id: ReactText;
     columns: {
         [key in keyof ColumnNames]: ReactText | IListItemValueWithSortValue
     };
+    data?: Data;
 }
 
 export enum SortOrder {

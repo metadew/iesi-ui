@@ -1,12 +1,13 @@
 import React, { useState, ReactText } from 'react';
-import { Box, makeStyles, IconButton, Typography, Input, Button } from '@material-ui/core';
+import classnames from 'classnames';
+import { Box, makeStyles, IconButton, Typography, Input, Button, ButtonGroup } from '@material-ui/core';
 import { Search, Close } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
 import GenericSelectableList from 'views/common/list/GenericSelectableList';
-import { FilterType, SortOrder, SortType } from 'models/list.models';
+import { FilterType, SortOrder, SortType, IListItem } from 'models/list.models';
 import { IDummyScriptAction } from 'models/state/scripts.models';
 
 interface IPublicProps {
@@ -36,13 +37,35 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
         fontWeight: typography.fontWeightBold,
         fontSize: typography.pxToRem(12),
     },
+    categories: {
+        marginBottom: spacing(2),
+    },
+    categoryButton: {
+        fontWeight: typography.fontWeightBold,
+        textTransform: 'none',
+    },
+    categoryActive: {
+        color: palette.primary.main,
+    },
 }));
 
-const MOCKED_LIST_ITEMS = [{
+interface IColumnNames {
+    name: string;
+    description: string;
+}
+
+interface IListData {
+    category: string;
+}
+
+const MOCKED_LIST_ITEMS: IListItem<IColumnNames, IListData>[] = [{
     id: 1232321,
     columns: {
         name: 'Action One',
         description: 'Set a parameter as runtime variable',
+    },
+    data: {
+        category: 'Category 1',
     },
 }, {
     id: 2123123,
@@ -50,17 +73,26 @@ const MOCKED_LIST_ITEMS = [{
         name: 'Action Two',
         description: 'Set a parameter as runtime variable',
     },
+    data: {
+        category: 'Category 1',
+    },
 }, {
     id: 3123123,
     columns: {
         name: 'Action Three',
         description: 'Set a parameter as runtime variable',
     },
+    data: {
+        category: 'Category 2',
+    },
 }, {
     id: 4124124,
     columns: {
         name: 'Action Four',
         description: 'Set a parameter as runtime variable',
+    },
+    data: {
+        category: 'Category 2',
     },
 }];
 
@@ -69,12 +101,16 @@ function AddAction({
     onClose,
     onAdd,
 }: IObserveProps & IPublicProps) {
+    const [selectedCategory, setSelectedCategory] = useState('Category 1');
     const [selectedIds, setSelectedIds] = useState([]);
     const [isSearchActive, setIsSearchActive] = useState(false);
     const [searchFilter, setSearchFilter] = useState('');
     const classes = useStyles();
 
     const translator = getTranslator(state);
+    const categories = getCategoriesFromListItems();
+
+    const categorizedListItems = MOCKED_LIST_ITEMS.filter((item) => item.data.category === selectedCategory);
 
     return (
         <Box className={classes.dialog}>
@@ -109,15 +145,44 @@ function AddAction({
                 </IconButton>
             </Box>
             <Box padding={2}>
+                <Box display="flex" justifyContent="center">
+                    <ButtonGroup
+                        variant="contained"
+                        aria-label="contained button group"
+                        className={classes.categories}
+                    >
+                        {categories.map((category) => (
+                            <Button
+                                key={category}
+                                variant="contained"
+                                disableElevation
+                                size="small"
+                                className={
+                                    classnames(classes.categoryButton, {
+                                        [classes.categoryActive]: category === selectedCategory,
+                                    })
+                                }
+                                onClick={() => {
+                                    if (category !== selectedCategory) {
+                                        setSelectedCategory(category);
+                                        setSelectedIds([]);
+                                    }
+                                }}
+                            >
+                                {category}
+                            </Button>
+                        ))}
+                    </ButtonGroup>
+                </Box>
                 <GenericSelectableList
                     onChange={onSelectionChange}
                     columns={{
                         name: {
-                            fixedWidth: '25%',
+                            fixedWidth: '30%',
                             className: classes.scriptName,
                         },
                         description: {
-                            fixedWidth: '75%',
+                            fixedWidth: '70%',
                             className: classes.scriptDescription,
                         },
                     }}
@@ -133,7 +198,9 @@ function AddAction({
                         sortOrder: SortOrder.Descending,
                         sortType: SortType.String,
                     }}
-                    listItems={MOCKED_LIST_ITEMS}
+                    listItems={categorizedListItems}
+                    selectedIds={selectedIds}
+                    setSelectedIds={setSelectedIds}
                 />
                 <Box marginTop={3} textAlign="right">
                     <Button
@@ -163,8 +230,21 @@ function AddAction({
                 id: item.id,
                 name: item.columns.name,
                 description: item.columns.description,
-            }));
+            } as IDummyScriptAction));
         onAdd(actionsToAdd);
+    }
+
+    function getCategoriesFromListItems() {
+        return MOCKED_LIST_ITEMS.reduce(
+            (acc, listItem) => {
+                const { category } = listItem.data;
+                if (!acc.includes(category)) {
+                    acc.push(category);
+                }
+                return acc;
+            },
+            [] as string[],
+        );
     }
 }
 

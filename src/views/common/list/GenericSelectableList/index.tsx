@@ -1,4 +1,4 @@
-import React, { useState, ReactText } from 'react';
+import React, { ReactText } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -28,6 +28,8 @@ interface IPublicProps<ColumnNames> {
     sortedColumn?: ISortedColumn<ColumnNames>;
     filters?: ListFilters<TObjectWithProps>;
     onChange: (selectedIds: ReactText[]) => void;
+    selectedIds: ReactText[];
+    setSelectedIds: (selectedIds: ReactText[]) => void;
 }
 
 const useStyles = makeStyles(({ spacing, shape, palette }) => ({
@@ -73,8 +75,9 @@ export default function GenericSelectableList<ColumnNames>({
     sortedColumn,
     filters,
     onChange,
+    selectedIds,
+    setSelectedIds,
 }: IPublicProps<ColumnNames>) {
-    const [selectedIds, setSelectedIds] = useState([]);
     const classes = useStyles();
 
     const items = sortedColumn
