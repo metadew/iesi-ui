@@ -1,3 +1,5 @@
+import { ILabel } from './iesiGeneric.models';
+
 export interface IExecutionRequest {
     executionRequestId: string;
     requestTimestamp: Date; // format 2020-05-04T10:01:13.923Z
@@ -8,6 +10,7 @@ export interface IExecutionRequest {
     email: string;
     executionRequestStatus: TExecutionRequestStatus;
     scriptExecutionRequests: IScriptExecutionRequest[];
+    executionRequestLabels: ILabel[];
 }
 
 type TExecutionRequestStatus = 'NEW'; // TODO
@@ -15,11 +18,9 @@ type TExecutionRequestStatus = 'NEW'; // TODO
 interface IScriptExecutionRequest {
     scriptExecutionRequestId: string;
     executionRequestId: string;
-    actionSelect: number[];
-    exit: boolean;
-    impersonation: string;
     environment: string;
-    impersonations: { [additionalProp: string]: string };
+    exit: boolean;
+    impersonations: { name: string }[];
     parameters: { [additionalProp: string]: string };
     scriptExecutionRequestStatus: TExecutionRequestStatus;
     scriptName: string;

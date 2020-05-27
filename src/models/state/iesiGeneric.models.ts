@@ -6,3 +6,8 @@ export interface IParameter {
     name: string;
     value: string;
 }
+
+export interface ILabel {
+    name: string;
+    value: string;
+}

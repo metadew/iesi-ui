@@ -1,5 +1,5 @@
 import { ReactText } from 'react';
-import { IParameter } from './iesiGeneric.models';
+import { ILabel, IParameter } from './iesiGeneric.models';
 
 export interface IFetchScriptsOptions {
     expandResponseWith?: IExpandScriptsResponseWith;
@@ -16,7 +16,7 @@ export interface IScriptBase {
     version: IScriptVersion;
     parameters: IParameter[];
     actions: IScriptAction[];
-    labels: IScriptLabel[];
+    labels: ILabel[];
 }
 
 export interface IScript extends IScriptBase {
@@ -41,11 +41,6 @@ export interface IScriptAction {
     errorStop: boolean;
     retries: number;
     parameters: IParameter[];
-}
-
-export interface IScriptLabel {
-    name: string;
-    value: string;
 }
 
 export interface IScriptExecutionSummary {
