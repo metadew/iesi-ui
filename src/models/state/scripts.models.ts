@@ -1,19 +1,27 @@
 import { ReactText } from 'react';
-import { IParameter } from './iesiGeneric.models';
+import { ILabel, IParameter } from './iesiGeneric.models';
+
+export interface IFetchScriptsOptions {
+    expandResponseWith?: IExpandScriptsResponseWith;
+}
+
+export interface IExpandScriptsResponseWith {
+    execution?: boolean; // default true
+    scheduling?: boolean; // default true
+}
 
 export interface IScriptBase {
     name: string;
     description: string;
-}
-
-export interface IScriptWithVersions extends IScriptBase {
-    versions: number[];
-}
-
-export interface IScript extends IScriptBase {
     version: IScriptVersion;
     parameters: IParameter[];
     actions: IScriptAction[];
+    labels: ILabel[];
+}
+
+export interface IScript extends IScriptBase {
+    execution?: IScriptExecutionSummary;
+    scheduling?: IScriptSchedule[];
 }
 
 export interface IScriptVersion {
@@ -22,17 +30,35 @@ export interface IScriptVersion {
 }
 
 export interface IScriptAction {
-    retries: number;
-    iteration: string;
-    condition: string;
     number: number;
     name: string;
+    type: string;
     description: string;
     component: string;
+    condition: string;
+    iteration: string;
     errorExpected: boolean;
     errorStop: boolean;
-    type: string;
+    retries: number;
     parameters: IParameter[];
+}
+
+export interface IScriptExecutionSummary {
+    total: number;
+    mostRecent: IScriptExecution[];
+}
+
+export interface IScriptExecution {
+    startTimestamp: string;
+    endTimestamp: string;
+    runStatus: string;
+    runId: string;
+    environment: string;
+}
+
+export interface IScriptSchedule {
+    environment: string;
+    frequency: number;
 }
 
 export interface IScriptByNamePayload {

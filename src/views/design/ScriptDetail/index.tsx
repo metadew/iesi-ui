@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Typography, Button, makeStyles } from '@material-ui/core';
 import {
@@ -15,6 +15,11 @@ import GenericDraggableList from 'views/common/list/GenericDraggableList';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel/index';
 import { THEME_COLORS } from 'config/themes/colors';
+import ButtonWithContent from 'views/common/input/ButtonWithContent';
+import TextInputWithButton from 'views/common/input/TextInputWithButton';
+import OrderedList from 'views/common/list/OrderedList';
+import useOutsideClick from 'utils/hooks/useOutsideClick';
+
 import DetailActions from './DetailActions';
 import AddAction from './AddAction';
 import EditAction from './EditAction';
@@ -73,11 +78,37 @@ const mockedListItems: IListItem<IColumnNames>[] = [{
     },
 }];
 
+const mockedLabels = [
+    {
+        id: 'label-1',
+        value: 'Label 1',
+    }, {
+        id: 'label-2',
+        value: 'Label 2',
+    },
+];
+
+const mockedSchedules = [
+    {
+        id: 'schedule-1',
+        value: 'Production every day',
+    }, {
+        id: 'schedule-2',
+        value: 'Staging every hour',
+    },
+];
+
 export default function ScriptDetail() {
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [editAction, setEditAction] = useState<{ action: IDummyScriptAction; index: number }>(null);
     const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
+    const labelsButtonWithContentRef = useRef(null);
+    const schedulesButtonWithContentRef = useRef(null);
     const [listItems, setListItems] = useState(mockedListItems);
+    const [labels, setLabels] = useState(mockedLabels);
+    const [schedules, setSchedules] = useState(mockedSchedules);
+    const [isAddLabelFormOpen, setIsAddLabelFormOpen] = useState(false);
+    const [isAddScheduleFormOpen, setIsScheduleLabelFormOpen] = useState(false);
     const { scriptId } = useParams();
     const classes = useStyles();
 
@@ -92,6 +123,24 @@ export default function ScriptDetail() {
         },
     };
 
+    useOutsideClick({
+        ref: labelsButtonWithContentRef,
+        callback: () => {
+            if (isAddLabelFormOpen) {
+                setIsAddLabelFormOpen(false);
+            }
+        },
+    });
+
+    useOutsideClick({
+        ref: schedulesButtonWithContentRef,
+        callback: () => {
+            if (isAddScheduleFormOpen) {
+                setIsScheduleLabelFormOpen(false);
+            }
+        },
+    });
+
     const ScriptDetailPanel = () => (
         <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
             <Box flex="1 1 auto">
@@ -104,13 +153,98 @@ export default function ScriptDetail() {
                         helperText="Scriptname is a required field"
                     />
                     <TextInput
-                        id="script-name-multi"
-                        label="Scriptname"
+                        id="script-description"
+                        label="Description"
                         multiline
                         rows={8}
                         value={`Script detail: ${scriptId}`}
                     />
                 </form>
+                <DescriptionList
+                    noLineAfterListItem
+                    items={[
+                        {
+                            label: <Translate msg="scripts.detail.side.labels.title" />,
+                            value: (
+                                <>
+                                    {labels.length > 0 ? (
+                                        <OrderedList
+                                            items={labels.map((label) => ({
+                                                content: label.value,
+                                                onDelete: () => setLabels(labels.filter((l) => l.id !== label.id)),
+                                            }))}
+                                        />
+                                    ) : (
+                                        <Translate msg="scripts.detail.side.labels.empty" />
+                                    )}
+                                    <ButtonWithContent
+                                        buttonText={<Translate msg="scripts.detail.side.labels.add_button" />}
+                                        isOpen={isAddLabelFormOpen}
+                                        onOpenIntent={() => setIsAddLabelFormOpen(true)}
+                                        onCloseIntent={() => setIsAddLabelFormOpen(false)}
+                                        forwardRef={labelsButtonWithContentRef}
+                                    >
+                                        <TextInputWithButton
+                                            inputProps={{
+                                                id: 'new-label',
+                                                placeholder: 'Label TODO',
+                                                'aria-label': 'new label',
+                                            }}
+                                            buttonText={<Translate msg="scripts.detail.side.labels.add_new.button" />}
+                                            onSubmit={(value) => {
+                                                if (value) {
+                                                    setLabels([...labels, { id: JSON.stringify(value), value }]);
+                                                }
+                                                setIsAddLabelFormOpen(false);
+                                            }}
+                                        />
+                                    </ButtonWithContent>
+                                </>
+                            ),
+                        },
+                        {
+                            label: <Translate msg="scripts.detail.side.schedules.title" />,
+                            value: (
+                                <>
+                                    {schedules.length > 0 ? (
+                                        <OrderedList
+                                            items={schedules.map((schedule) => ({
+                                                content: schedule.value,
+                                                onDelete: () => setLabels(labels.filter((l) => l.id !== schedule.id)),
+                                            }))}
+                                        />
+                                    ) : (
+                                        <Translate msg="No schedules" />
+                                    )}
+                                    <ButtonWithContent
+                                        buttonText={<Translate msg="scripts.detail.side.schedules.add_button" />}
+                                        isOpen={isAddScheduleFormOpen}
+                                        onOpenIntent={() => setIsScheduleLabelFormOpen(true)}
+                                        onCloseIntent={() => setIsScheduleLabelFormOpen(false)}
+                                        forwardRef={schedulesButtonWithContentRef}
+                                    >
+                                        <TextInputWithButton
+                                            inputProps={{
+                                                id: 'new-schedule',
+                                                placeholder: 'DEV TO DO',
+                                                'aria-label': 'New schedule',
+                                            }}
+                                            buttonText={
+                                                <Translate msg="scripts.detail.side.schedules.add_new.button" />
+                                            }
+                                            onSubmit={(value) => {
+                                                if (value) {
+                                                    setSchedules([...schedules, { id: JSON.stringify(value), value }]);
+                                                }
+                                                setIsScheduleLabelFormOpen(false);
+                                            }}
+                                        />
+                                    </ButtonWithContent>
+                                </>
+                            ),
+                        },
+                    ]}
+                />
             </Box>
             <Box>
                 <DescriptionList

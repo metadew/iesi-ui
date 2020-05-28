@@ -69,6 +69,9 @@ const commonTheme: ThemeOptions = {
                     fontSize: '1em',
                 },
             },
+            outlinedSizeSmall: {
+                fontSize: MUI_DEFAULT_THEME.typography.pxToRem(14),
+            },
         },
         MuiIconButton: {
             sizeSmall: {
