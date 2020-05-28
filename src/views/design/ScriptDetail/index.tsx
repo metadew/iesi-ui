@@ -17,6 +17,7 @@ import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel/index
 import { THEME_COLORS } from 'config/themes/colors';
 import DetailActions from './DetailActions';
 import AddAction from './AddAction';
+import EditAction from './EditAction';
 
 interface IColumnNames {
     name: string;
@@ -74,6 +75,7 @@ const mockedListItems: IListItem<IColumnNames>[] = [{
 
 export default function ScriptDetail() {
     const [isAddOpen, setIsAddOpen] = useState(false);
+    const [editAction, setEditAction] = useState<{ action: IDummyScriptAction; index: number }>(null);
     const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
     const [listItems, setListItems] = useState(mockedListItems);
     const { scriptId } = useParams();
@@ -102,7 +104,7 @@ export default function ScriptDetail() {
                         helperText="Scriptname is a required field"
                     />
                     <TextInput
-                        id="script-name"
+                        id="script-name-multi"
                         label="Scriptname"
                         multiline
                         rows={8}
@@ -167,7 +169,17 @@ export default function ScriptDetail() {
                         listActions={[
                             {
                                 icon: <EditIcon />,
-                                onClick: (id) => console.log(id),
+                                onClick: (id, index) => {
+                                    const action = listItems.find((item) => item.id === id);
+                                    setEditAction({
+                                        action: {
+                                            id,
+                                            description: action.columns.description.toString(),
+                                            name: action.columns.name.toString(),
+                                        },
+                                        index,
+                                    });
+                                },
                             },
                         ]}
                         onOrder={setListItems}
@@ -184,14 +196,22 @@ export default function ScriptDetail() {
         />
     );
 
+    const EditActionContent = () => (
+        <EditAction
+            onClose={onCloseEditAction}
+            action={editAction.action}
+            index={editAction.index}
+        />
+    );
+
     return (
         <>
             <ContentWithSidePanel
                 panel={<ScriptDetailPanel />}
                 content={<ScriptDetailContent />}
                 goBackTo={ROUTE_KEYS.R_SCRIPTS}
-                contentOverlay={<AddScriptContent />}
-                contentOverlayOpen={isAddOpen}
+                contentOverlay={editAction ? <EditActionContent /> : <AddScriptContent />}
+                contentOverlayOpen={!!editAction || isAddOpen}
             />
             <ConfirmationDialog
                 title={<Translate msg="scripts.detail.delete_script_dialog.title" />}
@@ -205,6 +225,10 @@ export default function ScriptDetail() {
 
     function onCloseAddAction() {
         setIsAddOpen(false);
+    }
+
+    function onCloseEditAction() {
+        setEditAction(null);
     }
 
     function onAddActions(actions: IDummyScriptAction[]) {

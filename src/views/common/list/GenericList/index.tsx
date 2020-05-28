@@ -90,8 +90,9 @@ export default function GenericList<ColumnNames>({
                                 </TableCell>
                             </TableRow>
                         )}
-                        {itemsToDisplay.map((item: IListItem<ColumnNames>) => (
+                        {itemsToDisplay.map((item: IListItem<ColumnNames>, index) => (
                             <GenericTableRow
+                                index={index}
                                 key={item.id}
                                 item={item}
                                 listActions={listActions}

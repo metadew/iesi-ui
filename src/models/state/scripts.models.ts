@@ -49,3 +49,11 @@ export interface IDummyScriptAction {
     name: string;
     description: string;
 }
+
+// TODO remove this, for development only
+export interface IDummyScriptActionParameter {
+    id: ReactText;
+    name: string;
+    description: string;
+    value: string;
+}
