@@ -52,8 +52,15 @@ scripts:
       title: Delete script
     side:
       labels:
+        add_button: Add labels
         add_new:
           button: Add
+        title: Labels
+      schedules:
+        add_button: Add environment schedules
+        add_new:
+          button: Add
+        title: Environment schedules
     main:
       add_action:
         header: Choose the actions you like to add

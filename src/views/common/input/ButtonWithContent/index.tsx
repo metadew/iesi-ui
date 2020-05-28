@@ -1,11 +1,15 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode } from 'react';
 import classNames from 'classnames';
 import { Box, Button, makeStyles } from '@material-ui/core';
 import { THEME_COLORS } from 'config/themes/colors';
 
 interface IPublicProps {
-    buttonText: string;
+    buttonText: string | ReactNode;
     children: ReactNode;
+    isOpen: boolean;
+    onOpenIntent: () => void;
+    onCloseIntent: () => void;
+    forwardRef?: React.RefObject<HTMLDivElement>;
 }
 
 const useStyles = makeStyles(({ palette, shape }) => ({
@@ -13,6 +17,7 @@ const useStyles = makeStyles(({ palette, shape }) => ({
         position: 'relative',
         zIndex: 1,
         '&.is-open': {
+            zIndex: 2,
         },
     },
     button: {
@@ -33,6 +38,7 @@ const useStyles = makeStyles(({ palette, shape }) => ({
         right: '0',
         zIndex: 2,
         display: 'none',
+        backgroundColor: palette.background.paper,
         border: '1px solid',
         borderColor: THEME_COLORS.GREY,
         borderRadius: shape.borderRadius,
@@ -45,21 +51,21 @@ const useStyles = makeStyles(({ palette, shape }) => ({
 
 export default function ButtonWithContent(props: IPublicProps) {
     const classes = useStyles();
-    const { buttonText, children } = props;
-    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const { buttonText, children, isOpen, onOpenIntent, onCloseIntent, forwardRef } = props;
 
     return (
         <Box
             className={classNames(classes.root, {
                 'is-open': !!isOpen,
             })}
+            {...{ ref: forwardRef }}
         >
             <Button
                 className={classes.button}
                 color="default"
                 variant="outlined"
                 size="small"
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={isOpen ? onCloseIntent : onOpenIntent}
             >
                 {buttonText}
             </Button>
