@@ -224,7 +224,7 @@ export default function ScriptDetail() {
                                         <TextInputWithButton
                                             inputProps={{
                                                 id: 'new-schedule',
-                                                placeholder: 'scripts.detail.side.schedules.add_new.placeholder',
+                                                placeholder: 'DEV TO DO',
                                                 'aria-label': 'New schedule',
                                             }}
                                             buttonText={
