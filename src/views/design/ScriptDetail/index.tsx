@@ -22,6 +22,7 @@ import useOutsideClick from 'utils/hooks/useOutsideClick';
 
 import DetailActions from './DetailActions';
 import AddAction from './AddAction';
+import EditAction from './EditAction';
 
 interface IColumnNames {
     name: string;
@@ -99,6 +100,7 @@ const mockedSchedules = [
 
 export default function ScriptDetail() {
     const [isAddOpen, setIsAddOpen] = useState(false);
+    const [editAction, setEditAction] = useState<{ action: IDummyScriptAction; index: number }>(null);
     const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
     const labelsButtonWithContentRef = useRef(null);
     const schedulesButtonWithContentRef = useRef(null);
@@ -185,7 +187,7 @@ export default function ScriptDetail() {
                                         <TextInputWithButton
                                             inputProps={{
                                                 id: 'new-label',
-                                                placeholder: 'scripts.detail.side.labels.add_new.placeholder',
+                                                placeholder: 'Label TODO',
                                                 'aria-label': 'new label',
                                             }}
                                             buttonText={<Translate msg="scripts.detail.side.labels.add_new.button" />}
@@ -301,7 +303,17 @@ export default function ScriptDetail() {
                         listActions={[
                             {
                                 icon: <EditIcon />,
-                                onClick: (id) => console.log(id),
+                                onClick: (id, index) => {
+                                    const action = listItems.find((item) => item.id === id);
+                                    setEditAction({
+                                        action: {
+                                            id,
+                                            description: action.columns.description.toString(),
+                                            name: action.columns.name.toString(),
+                                        },
+                                        index,
+                                    });
+                                },
                             },
                         ]}
                         onOrder={setListItems}
@@ -318,14 +330,22 @@ export default function ScriptDetail() {
         />
     );
 
+    const EditActionContent = () => (
+        <EditAction
+            onClose={onCloseEditAction}
+            action={editAction.action}
+            index={editAction.index}
+        />
+    );
+
     return (
         <>
             <ContentWithSidePanel
                 panel={<ScriptDetailPanel />}
                 content={<ScriptDetailContent />}
                 goBackTo={ROUTE_KEYS.R_SCRIPTS}
-                contentOverlay={<AddScriptContent />}
-                contentOverlayOpen={isAddOpen}
+                contentOverlay={editAction ? <EditActionContent /> : <AddScriptContent />}
+                contentOverlayOpen={!!editAction || isAddOpen}
             />
             <ConfirmationDialog
                 title={<Translate msg="scripts.detail.delete_script_dialog.title" />}
@@ -339,6 +359,10 @@ export default function ScriptDetail() {
 
     function onCloseAddAction() {
         setIsAddOpen(false);
+    }
+
+    function onCloseEditAction() {
+        setEditAction(null);
     }
 
     function onAddActions(actions: IDummyScriptAction[]) {

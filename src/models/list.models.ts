@@ -16,7 +16,7 @@ export type ListColumns<ColumnNames> = {
 
 export interface IListAction {
     icon: ReactNode;
-    onClick: (id: ReactText) => void;
+    onClick: (id: ReactText, index: number) => void;
 }
 
 export interface IListItemValueWithSortValue {

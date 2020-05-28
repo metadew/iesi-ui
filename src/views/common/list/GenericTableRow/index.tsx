@@ -29,13 +29,14 @@ import DragHandlerIcon from 'views/common/icons/DragHandler';
 const SHORTEN_VALUE_FROM_CHARACTERS = 40;
 
 interface IPublicProps<ColumnNames> {
+    index: number;
     item: IListItem<ColumnNames>;
     columns: ListColumns<ColumnNames>;
     listActions?: IListAction[];
     draggableProps?: DraggableProvidedDraggableProps & DraggableProvidedDragHandleProps & {
         ref(element?: HTMLElement | null): unknown;
     };
-    indexToShow?: number;
+    showIndex?: boolean;
     isDragging?: boolean;
     disableElevation?: boolean;
     selectable?: {
@@ -80,11 +81,12 @@ export default function GenericTableRow<ColumnNames>({
     columns,
     listActions,
     draggableProps,
-    indexToShow,
+    showIndex,
     isDragging,
     disableElevation,
     selectable,
     className,
+    index: rowIndex,
 }: IPublicProps<ColumnNames>) {
     const classes = useStyles();
     return (
@@ -100,9 +102,9 @@ export default function GenericTableRow<ColumnNames>({
                     <DragHandlerIcon fontSize="inherit" />
                 </TableCell>
             )}
-            {isSet(indexToShow) && (
+            {isSet(showIndex) && (
                 <TableCell>
-                    <Typography className={classes.index}>{formatNumberWithTwoDigits(indexToShow)}</Typography>
+                    <Typography className={classes.index}>{formatNumberWithTwoDigits(rowIndex)}</Typography>
                 </TableCell>
             )}
             {Object.keys(columns).map((untypedColumnName) => {
@@ -141,14 +143,14 @@ export default function GenericTableRow<ColumnNames>({
                     </TableCell>
                 );
             })}
-            {listActions && listActions.map((action, index) => (
+            {listActions && listActions.map((action, listActionIndex) => (
                 <TableCell // eslint-disable-next-line react/no-array-index-key
-                    key={index}
+                    key={listActionIndex}
                     align="right"
                     className={classes.action}
                 >
                     <IconButton
-                        onClick={() => action.onClick(item.id)}
+                        onClick={() => action.onClick(item.id, rowIndex)}
                         className={classes.actionIcon}
                     >
                         {action.icon}

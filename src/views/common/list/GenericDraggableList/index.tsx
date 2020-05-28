@@ -70,7 +70,8 @@ export default function GenericDraggableList<ColumnNames>({
                                                 item={item}
                                                 listActions={listActions}
                                                 columns={columns}
-                                                indexToShow={index}
+                                                showIndex
+                                                index={index}
                                                 isDragging={draggableSnapshot.isDragging}
                                             />
                                         )}

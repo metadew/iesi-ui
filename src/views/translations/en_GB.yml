@@ -50,6 +50,12 @@ scripts:
     delete_script_dialog:
       text: Are you sure you want to delete this script?
       title: Delete script
+    edit_action:
+      parameter:
+        value: Value
+      footer:
+        continue_on_fail: Continue if action fails
+        expected_to_fail: Action expected to fail
     side:
       labels:
         add_button: Add labels

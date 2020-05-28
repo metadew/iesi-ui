@@ -101,8 +101,9 @@ export default function GenericSelectableList<ColumnNames>({
                             </TableCell>
                         </TableRow>
                     )}
-                    {filteredItems.map((item: IListItem<ColumnNames>) => (
+                    {filteredItems.map((item: IListItem<ColumnNames>, index) => (
                         <GenericTableRow
+                            index={index}
                             key={item.id}
                             item={item}
                             columns={columns}
@@ -113,8 +114,9 @@ export default function GenericSelectableList<ColumnNames>({
                             }}
                         />
                     ))}
-                    {getFilteredOutButSelectedItems().map((item: IListItem<ColumnNames>) => (
+                    {getFilteredOutButSelectedItems().map((item: IListItem<ColumnNames>, index) => (
                         <GenericTableRow
+                            index={index}
                             className={classes.filteredOutButSelected}
                             key={item.id}
                             item={item}
