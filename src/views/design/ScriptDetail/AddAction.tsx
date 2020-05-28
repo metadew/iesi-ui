@@ -7,8 +7,9 @@ import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
 import GenericSelectableList from 'views/common/list/GenericSelectableList';
-import { FilterType, SortOrder, SortType, IListItem } from 'models/list.models';
+import { FilterType, SortOrder, SortType } from 'models/list.models';
 import { IDummyScriptAction } from 'models/state/scripts.models';
+import { MOCKED_ACTIONS_LIST_ITEMS } from './mock';
 
 interface IPublicProps {
     onClose: () => void;
@@ -58,50 +59,12 @@ interface IListData {
     category: string;
 }
 
-const MOCKED_LIST_ITEMS: IListItem<IColumnNames, IListData>[] = [{
-    id: 1232321,
-    columns: {
-        name: 'Action One',
-        description: 'Set a parameter as runtime variable',
-    },
-    data: {
-        category: 'Category 1',
-    },
-}, {
-    id: 2123123,
-    columns: {
-        name: 'Action Two',
-        description: 'Set a parameter as runtime variable',
-    },
-    data: {
-        category: 'Category 1',
-    },
-}, {
-    id: 3123123,
-    columns: {
-        name: 'Action Three',
-        description: 'Set a parameter as runtime variable',
-    },
-    data: {
-        category: 'Category 2',
-    },
-}, {
-    id: 4124124,
-    columns: {
-        name: 'Action Four',
-        description: 'Set a parameter as runtime variable',
-    },
-    data: {
-        category: 'Category 2',
-    },
-}];
-
 function AddAction({
     state,
     onClose,
     onAdd,
 }: IObserveProps & IPublicProps) {
-    const [selectedCategory, setSelectedCategory] = useState('Category 1');
+    const [selectedCategory, setSelectedCategory] = useState('Parameters');
     const [selectedIds, setSelectedIds] = useState([]);
     const [isSearchActive, setIsSearchActive] = useState(false);
     const [searchFilter, setSearchFilter] = useState('');
@@ -110,7 +73,7 @@ function AddAction({
     const translator = getTranslator(state);
     const categories = getCategoriesFromListItems();
 
-    const categorizedListItems = MOCKED_LIST_ITEMS.filter((item) => item.data.category === selectedCategory);
+    const categorizedListItems = MOCKED_ACTIONS_LIST_ITEMS.filter((item) => item.data.category === selectedCategory);
 
     return (
         <Box className={classes.dialog}>
@@ -224,7 +187,7 @@ function AddAction({
     }
 
     function onAddItems() {
-        const actionsToAdd = MOCKED_LIST_ITEMS
+        const actionsToAdd = MOCKED_ACTIONS_LIST_ITEMS
             .filter((item) => selectedIds.includes(item.id))
             .map((item) => ({
                 id: item.id,
@@ -235,7 +198,7 @@ function AddAction({
     }
 
     function getCategoriesFromListItems() {
-        return MOCKED_LIST_ITEMS.reduce(
+        return MOCKED_ACTIONS_LIST_ITEMS.reduce(
             (acc, listItem) => {
                 const { category } = listItem.data;
                 if (!acc.includes(category)) {

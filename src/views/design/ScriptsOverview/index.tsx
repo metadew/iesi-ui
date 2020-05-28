@@ -26,6 +26,7 @@ import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
+import { MOCKED_LIST_ITEMS } from './mock';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -103,86 +104,7 @@ type TProps = WithStyles<typeof styles>;
 
 const ScriptsOverview = withStyles(styles)(
     class extends React.Component<TProps, IComponentState> {
-        private mockedListItems = [
-            {
-                id: 1,
-                columns: {
-                    name: 'Script One',
-                    version: '0.8.2',
-                    description: 'lorem ipsum aoihaf oiad ijdizj. azodh izi haf oiad ijdizj. azo azazdoijazd iizaidi',
-                    lastRunDate: {
-                        value: '22 april 2020',
-                        sortValue: '2020-04-22',
-                    },
-                    lastRunStatus: 'Passed',
-                },
-            },
-            {
-                id: 2,
-                columns: {
-                    name: 'Script Two',
-                    version: '1.0',
-                    description: 'lorem ipsum',
-                    lastRunDate: {
-                        value: '21 april 2020',
-                        sortValue: '2020-04-21',
-                    },
-                    lastRunStatus: 'Failed',
-                },
-            },
-            {
-                id: 3,
-                columns: {
-                    name: 'Script Three',
-                    version: '2.0.1',
-                    description: 'lorem ipsum',
-                    lastRunDate: {
-                        value: '18 april 2020',
-                        sortValue: '2020-04-18',
-                    },
-                    lastRunStatus: 'Passed',
-                },
-            },
-            {
-                id: 4,
-                columns: {
-                    name: 'Script Four',
-                    version: '0.8.2',
-                    description: 'lorem ipsum aoihaf oiad ijdizj. azodh izi haf oiad ijdizj. azo azazdoijazd iizaidi',
-                    lastRunDate: {
-                        value: '22 april 2020',
-                        sortValue: '2020-04-22',
-                    },
-                    lastRunStatus: 'Passed',
-                },
-            },
-            {
-                id: 5,
-                columns: {
-                    name: 'Script Five',
-                    version: '5.0',
-                    description: 'lorem ipsum',
-                    lastRunDate: {
-                        value: '23 februari 2020',
-                        sortValue: '2020-02-23',
-                    },
-                    lastRunStatus: 'Failed',
-                },
-            },
-            {
-                id: 6,
-                columns: {
-                    name: 'Script Six',
-                    version: '2.0.1',
-                    description: 'lorem ipsum',
-                    lastRunDate: {
-                        value: '18 april 2020',
-                        sortValue: '2020-04-18',
-                    },
-                    lastRunStatus: 'Failed',
-                },
-            },
-        ];
+        private mockedListItems = MOCKED_LIST_ITEMS;
 
         public constructor(props: TProps) {
             super(props);
