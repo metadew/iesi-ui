@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, IconButton, Box, makeStyles, Paper } from '@material-ui/core';
+import { Button, IconButton, Box, makeStyles, Paper, darken } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
     Save as SaveIcon,
@@ -18,17 +18,21 @@ interface IPublicProps {
     onViewReport: () => void;
 }
 
-const useStyles = makeStyles(({ spacing }) => ({
+const useStyles = makeStyles(({ palette, spacing }) => ({
     actions: {
         padding: `${spacing(0.5)}px ${spacing(1)}px`,
-        backgroundColor: THEME_COLORS.GREY_LIGHT,
+        backgroundColor: palette.type === 'light'
+            ? THEME_COLORS.GREY_LIGHT
+            : darken(THEME_COLORS.GREY_DARK, 0.2),
         '& .MuiIconButton-root': {
             padding: spacing(0.8),
             margin: `${spacing(0.2)}px ${spacing(0.5)}px`,
         },
     },
     addButton: {
-        backgroundColor: THEME_COLORS.GREY_LIGHT,
+        backgroundColor: palette.type === 'light'
+            ? THEME_COLORS.GREY_LIGHT
+            : darken(THEME_COLORS.GREY_DARK, 0.2),
     },
 }));
 
@@ -43,7 +47,13 @@ export default function DetailActions({
     return (
         <Box display="flex" alignItems="center" justifyContent="space-between" marginX={2.2}>
             <Box flex="0 0 auto">
-                <IconButton aria-label="add action" className={classes.addButton} onClick={onAdd}>
+                <IconButton
+                    aria-label="add action"
+                    className={classes.addButton}
+                    onClick={onAdd}
+                    // variant="contained"
+                    color="default"
+                >
                     <AddIcon />
                 </IconButton>
             </Box>
