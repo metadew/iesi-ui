@@ -60,11 +60,16 @@ scripts:
       labels:
         add_button: Add labels
         add_new:
+          placeholder: Label
           button: Add
         title: Labels
       schedules:
         add_button: Add environment schedules
         add_new:
+          environment:
+            placeholder: Environment
+          frequency:
+            placeholder: 99
           button: Add
         title: Environment schedules
     main:
