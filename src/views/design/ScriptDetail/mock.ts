@@ -1,3 +1,6 @@
+import { IScriptSchedule } from 'models/state/scripts.models';
+import { ILabel } from 'models/state/iesiGeneric.models';
+
 export const MOCKED_ACTIONS_LIST_ITEMS = [{
     id: 1232321,
     columns: {
@@ -53,3 +56,24 @@ export const MOCKED_ACTIONS_LIST_ITEMS = [{
         category: 'Database',
     },
 }];
+
+export const MOCKED_SCRIPT_LABELS: ILabel[] = [
+    {
+        name: 'label-1',
+        value: 'Label 1',
+    }, {
+        name: 'label-2',
+        value: 'Label 2',
+    },
+];
+
+export const MOCKED_SCRIPT_SCHEDULES: IScriptSchedule[] = [
+    {
+        environment: 'staging',
+        frequency: 10,
+    },
+    {
+        environment: 'production',
+        frequency: 60,
+    },
+];
