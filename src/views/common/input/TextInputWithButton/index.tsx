@@ -57,7 +57,6 @@ export default function TextInputWithButton(props: IPublicProps) {
                 display="flex"
                 justifyItems="stretch"
                 className={classes.root}
-                flexWrap="wrap"
             >
                 <Box flex="1 1 auto">
                     <FilledInput
