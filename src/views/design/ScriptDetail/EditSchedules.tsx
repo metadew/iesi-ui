@@ -1,5 +1,5 @@
 import React, { useState, useRef, ChangeEvent } from 'react';
-import { FormControl, InputLabel, MenuItem, Select, Button, Box } from '@material-ui/core';
+import { FormControl, InputLabel, MenuItem, Select, Button, Box, Typography, makeStyles } from '@material-ui/core';
 import { IScriptSchedule } from 'models/state/scripts.models';
 import OrderedList from 'views/common/list/OrderedList';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -18,11 +18,19 @@ const SCHEDULE_FREQUENCIES: IFrequency = {
     days: 1440,
 };
 
+const useStyles = makeStyles(({ typography }) => ({
+    frequencyGroup: {},
+    frequencyLabel: {
+        fontWeight: typography.fontWeightBold,
+    },
+}));
+
 export default function EditSchedules({
     schedules: initialSchedules,
 }: {
     schedules: IScriptSchedule[];
 }) {
+    const classes = useStyles();
     const [schedules, setSchedules] = useState(initialSchedules);
     const [isAddScheduleFormOpen, setIsScheduleLabelFormOpen] = useState(false);
     const [isSelectOpen, setIsSelectOpen] = useState(false);
@@ -96,13 +104,14 @@ export default function EditSchedules({
                     onCloseIntent={() => setIsScheduleLabelFormOpen(false)}
                     forwardRef={schedulesButtonWithContentRef}
                 >
-                    <FormControl variant="filled" fullWidth required size="small">
+                    <FormControl variant="filled" fullWidth required size="small" margin="dense">
                         <InputLabel id="new-schedule-choose-env-label">
                             <Translate msg="scripts.detail.side.schedules.add_new.environment.placeholder" />
                         </InputLabel>
                         <Select
                             labelId="new-schedule-choose-env-label"
                             id="new-schedule-choose-env"
+                            disableUnderline
                             value={newSchedulingEnv}
                             onChange={handleChangeNewSchedulingEnv}
                             onOpen={() => setIsSelectOpen(true)}
@@ -118,31 +127,36 @@ export default function EditSchedules({
                             ))}
                         </Select>
                     </FormControl>
-                    <TextInputWithSelect
-                        inputProps={{
-                            id: 'new-schedule-choose-frequency-number',
-                            placeholder: 'Amount TODO',
-                            'aria-label': 'new schedule frequency',
-                            type: 'number',
-                            inputProps: {
-                                min: 0,
-                            },
-                            value: newSchedulingFrequencyAmount,
-                            onChange: handleChangeNewSchedulingFrequencyAmount,
-                        }}
-                        selectProps={{
-                            id: 'new-schedule-choose-frequency-factor',
-                            onOpen: () => setIsSelectOpen(true),
-                            onClose: () => setIsSelectOpen(false),
-                            onChange: handleChangeNewSchedulingFrequencyFactor,
-                            value: newSchedulingFrequencyFactor,
-                        }}
-                        selectOptions={Object.keys(SCHEDULE_FREQUENCIES).map((key) => ({
-                            value: SCHEDULE_FREQUENCIES[key],
-                            displayValue: key,
-                        }))}
-                    />
-                    <Box textAlign="right">
+                    <Box display="flex" alignItems="center">
+                        <Typography variant="body2" className={classes.frequencyLabel}>
+                            <Translate msg="Script runs every" />
+                        </Typography>
+                        <TextInputWithSelect
+                            inputProps={{
+                                id: 'new-schedule-choose-frequency-number',
+                                placeholder: 'Amount TODO',
+                                'aria-label': 'new schedule frequency',
+                                type: 'number',
+                                inputProps: {
+                                    min: 0,
+                                },
+                                value: newSchedulingFrequencyAmount,
+                                onChange: handleChangeNewSchedulingFrequencyAmount,
+                            }}
+                            selectProps={{
+                                id: 'new-schedule-choose-frequency-factor',
+                                onOpen: () => setIsSelectOpen(true),
+                                onClose: () => setIsSelectOpen(false),
+                                onChange: handleChangeNewSchedulingFrequencyFactor,
+                                value: newSchedulingFrequencyFactor,
+                            }}
+                            selectOptions={Object.keys(SCHEDULE_FREQUENCIES).map((key) => ({
+                                value: SCHEDULE_FREQUENCIES[key],
+                                displayValue: key,
+                            }))}
+                        />
+                    </Box>
+                    <Box textAlign="right" marginTop={1}>
                         <Button
                             variant="contained"
                             color="secondary"

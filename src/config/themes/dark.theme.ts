@@ -34,6 +34,17 @@ const darkTheme: ThemeOptions = {
                 backgroundColor: THEME_COLORS.GREY_DARK,
             },
         },
+        MuiFilledInput: {
+            root: {
+                backgroundColor: 'rgba(255, 255, 255, 0.09)',
+                '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.13)',
+                },
+                '&.Mui-focused': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.09)',
+                },
+            },
+        },
     },
 };
 
