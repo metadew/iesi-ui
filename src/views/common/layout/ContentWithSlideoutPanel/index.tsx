@@ -75,7 +75,7 @@ export default function ContentWithSlideoutPanel({
                     </Button>
                 </Box>
             </Box>
-            <Box flex="1 1 auto">
+            <Box flex="1 1 auto" position="relative">
                 {content}
             </Box>
         </Box>

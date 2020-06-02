@@ -217,35 +217,39 @@ const ScriptsOverview = withStyles(styles)(
             };
 
             return (
-                <Box marginBottom={3} marginX={2.8}>
-                    <GenericList
-                        listActions={[
-                            {
-                                icon: <PlayArrowRounded />,
-                                // eslint-disable-next-line no-alert
-                                onClick: (id) => alert(`execute: ${id}`),
-                            }, {
-                                icon: <Edit />,
-                                onClick: (id) => redirectTo({
-                                    routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                    params: { scriptId: id },
-                                }),
-                            }, {
-                                icon: <InsertChart />,
-                                // eslint-disable-next-line no-alert
-                                onClick: (id) => alert(`report: ${id}`),
-                            }, {
-                                icon: <Delete />,
-                                onClick: this.setScriptToDelete,
-                            },
-                        ]}
-                        columns={columns}
-                        sortedColumn={sortedColumn}
-                        filters={filters}
-                        listItems={this.mockedListItems}
-                        enablePagination
-                    />
-                </Box>
+                <>
+                    <Box marginBottom={3} marginX={2.8}>
+                        <GenericList
+                            listActions={[
+                                {
+                                    icon: <PlayArrowRounded />,
+                                    // eslint-disable-next-line no-alert
+                                    onClick: (id) => alert(`execute: ${id}`),
+                                }, {
+                                    icon: <Edit />,
+                                    onClick: (id) => redirectTo({
+                                        routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                        params: { scriptId: id },
+                                    }),
+                                }, {
+                                    icon: <InsertChart />,
+                                    // eslint-disable-next-line no-alert
+                                    onClick: (id) => alert(`report: ${id}`),
+                                }, {
+                                    icon: <Delete />,
+                                    onClick: this.setScriptToDelete,
+                                },
+                            ]}
+                            columns={columns}
+                            sortedColumn={sortedColumn}
+                            filters={filters}
+                            listItems={this.mockedListItems}
+                            enablePagination
+                        />
+                    </Box>
+                    {/* TODO: Add Loader when really fetching data */}
+                    {/* <Loader showImmediately show /> */}
+                </>
             );
         }
 

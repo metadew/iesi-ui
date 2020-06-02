@@ -4,6 +4,7 @@ import ShowAfterDelay from '@snipsonian/react/es/components/waiting/ShowAfterDel
 import { observe, IObserveProps, IPublicPropsWithChildren } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAsyncEnvConfig } from 'state/envConfig/selectors';
+import Loader from 'views/common/waiting/Loader';
 import routeListener from '../RouteListener';
 
 function ShowAfterEnvConfigKnown({ state, children }: IPublicPropsWithChildren & IObserveProps) {
@@ -31,7 +32,7 @@ function ShowAfterEnvConfigKnown({ state, children }: IPublicPropsWithChildren &
 function ShowDuringDelay() {
     return (
         <div className="ShowUntilEnvConfigKnown">
-            Loading while fetching env config ...
+            <Loader showImmediately useFullScreen show />
         </div>
     );
 }
