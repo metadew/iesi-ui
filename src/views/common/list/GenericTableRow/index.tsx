@@ -67,7 +67,10 @@ const useStyles = makeStyles(({ palette, shape, typography, spacing }: Theme) =>
         paddingRight: `${spacing(1.1)}px !important`,
     },
     actionIcon: {
-        color: palette.primary.dark,
+        padding: spacing(0.5),
+        '& .MuiSvgIcon-root': {
+            fontSize: typography.pxToRem(20),
+        },
     },
     index: {
         width: 50,

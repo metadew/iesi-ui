@@ -20,7 +20,7 @@ export const useListStyles = makeStyles(({ palette, spacing, shape, transitions,
         borderSpacing: `0 ${spacing(1)}px`,
         '& .MuiTableCell-root': {
             position: 'relative',
-            padding: `${spacing(1.1)}px ${spacing(3)}px`,
+            padding: `${spacing(1.5)}px ${spacing(3)}px`,
             borderBottomWidth: 0,
             '&:after': {
                 content: '" "',

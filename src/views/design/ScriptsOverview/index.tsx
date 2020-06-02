@@ -11,7 +11,7 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
-import { Edit, Delete } from '@material-ui/icons';
+import { Edit, Delete, PlayArrowRounded, InsertChart } from '@material-ui/icons';
 import {
     ListColumns,
     ISortedColumn,
@@ -221,11 +221,19 @@ const ScriptsOverview = withStyles(styles)(
                     <GenericList
                         listActions={[
                             {
+                                icon: <PlayArrowRounded />,
+                                // eslint-disable-next-line no-alert
+                                onClick: (id) => alert(`execute: ${id}`),
+                            }, {
                                 icon: <Edit />,
                                 onClick: (id) => redirectTo({
                                     routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
                                     params: { scriptId: id },
                                 }),
+                            }, {
+                                icon: <InsertChart />,
+                                // eslint-disable-next-line no-alert
+                                onClick: (id) => alert(`report: ${id}`),
                             }, {
                                 icon: <Delete />,
                                 onClick: this.setScriptToDelete,
