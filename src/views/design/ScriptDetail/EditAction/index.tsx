@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import classnames from 'classnames';
+import { THEME_COLORS } from 'config/themes/colors';
 import {
     Box,
     makeStyles,
@@ -46,6 +48,18 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
         fontSize: '.8rem',
         fontWeight: typography.fontWeightBold,
     },
+    tableCell: {
+        position: 'relative',
+        '&:after': {
+            content: '" "',
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            right: 0,
+            width: '1px',
+            backgroundColor: THEME_COLORS.GREY,
+        },
+    },
 }));
 
 function EditAction({ onClose, action, index }: IPublicProps) {
@@ -71,13 +85,16 @@ function EditAction({ onClose, action, index }: IPublicProps) {
                 alignItems="center"
                 padding={1}
             >
-                <Box paddingX={3} paddingY={1.1} boxSizing="content-box" width={50} className={classes.index}>
+                {/* eslint-disable-next-line max-len */}
+                <Box paddingX={3} paddingY={1.1} boxSizing="content-box" width={50} className={classnames(classes.tableCell, classes.index)}>
                     {formatNumberWithTwoDigits(index)}
                 </Box>
-                <Box paddingX={3} paddingY={1.1} className={classes.actionName} width="30%">
+                {/* eslint-disable-next-line max-len */}
+                <Box paddingX={3} paddingY={1.1} className={classnames(classes.tableCell, classes.actionName)} width="30%">
                     {action.name}
                 </Box>
-                <Box paddingX={3} paddingY={1.1} className={classes.actionDescription} width="70%">
+                {/* eslint-disable-next-line max-len */}
+                <Box paddingX={3} paddingY={1.1} className={classnames(classes.actionDescription)} width="70%">
                     {action.description}
                 </Box>
                 <IconButton className={classes.headerAction} onClick={onClose}>
