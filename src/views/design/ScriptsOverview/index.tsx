@@ -26,6 +26,11 @@ import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
+import { observe, IObserveProps } from 'views/observe';
+import { StateChangeNotification } from 'models/state.models';
+import { getAsyncScripts } from 'state/entities/scripts/selectors';
+import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import Loader from 'views/common/waiting/Loader';
 import { MOCKED_LIST_ITEMS } from './mock';
 
 const styles = ({ palette, typography }: Theme) =>
@@ -103,10 +108,10 @@ interface IComponentState {
 type TProps = WithStyles<typeof styles>;
 
 const ScriptsOverview = withStyles(styles)(
-    class extends React.Component<TProps, IComponentState> {
+    class extends React.Component<TProps & IObserveProps, IComponentState> {
         private mockedListItems = MOCKED_LIST_ITEMS;
 
-        public constructor(props: TProps) {
+        public constructor(props: TProps & IObserveProps) {
             super(props);
 
             this.state = {
@@ -216,6 +221,10 @@ const ScriptsOverview = withStyles(styles)(
                 },
             };
 
+            const scripts = getAsyncScripts(this.props.state);
+            const isFetching = scripts.fetch.status === AsyncStatus.Busy;
+            // TODO: actually use data from API call
+
             return (
                 <>
                     <Box marginBottom={3} marginX={2.8}>
@@ -247,8 +256,7 @@ const ScriptsOverview = withStyles(styles)(
                             enablePagination
                         />
                     </Box>
-                    {/* TODO: Add Loader when really fetching data */}
-                    {/* <Loader showImmediately show /> */}
+                    <Loader showImmediately show={isFetching} />
                 </>
             );
         }
@@ -271,4 +279,4 @@ const ScriptsOverview = withStyles(styles)(
     },
 );
 
-export default ScriptsOverview;
+export default observe<TProps>([StateChangeNotification.DESIGN_SCRIPTS_LIST], ScriptsOverview);
