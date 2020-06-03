@@ -64,7 +64,7 @@ export default function ContentWithSlideoutPanel({
                 >
                     {panel}
                 </Box>
-                <Box position="absolute" top="0" right="0" className={classes.toggle}>
+                <Box position="absolute" top="0" right="0" className={classes.toggle} zIndex={1}>
                     <Button
                         className={classes.toggleButton}
                         onClick={togglePanel}
