@@ -38,6 +38,11 @@ scripts:
     header:
       amount: 'You have {amount} scripts'
     list:
+      actions:
+        delete: Delete
+        edit: Edit
+        execute: Run script
+        report: Reporting
       filter:
         last_run_date: Last run date
         last_run_status: Last run status
@@ -80,6 +85,10 @@ scripts:
     main:
       add_action:
         header: Choose the actions you like to add
+      list:
+        item:
+          actions:
+            edit: Edit
       no_actions:
         title: No actions yet
         button: Add actions

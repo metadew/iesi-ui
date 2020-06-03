@@ -1,4 +1,5 @@
-import React, { ReactText } from 'react';
+import React, { ReactText, useState } from 'react';
+import { THEME_COLORS } from 'config/themes/colors';
 import classNames from 'classnames';
 import { getListItemValueFromColumn } from 'utils/list/list';
 import {
@@ -10,7 +11,12 @@ import {
     makeStyles,
     TableRow,
     Checkbox,
+    Menu,
+    MenuItem,
+    ListItemIcon,
+    darken,
 } from '@material-ui/core';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import {
     IListItem,
     ListColumns,
@@ -46,9 +52,10 @@ interface IPublicProps<ColumnNames> {
     className?: string;
 }
 
-const useStyles = makeStyles(({ palette, shape, typography, spacing }: Theme) => ({
+const useStyles = makeStyles(({ breakpoints, palette, shape, typography, spacing }: Theme) => ({
     tableRow: {
         background: palette.background.paper,
+        height: '100%',
     },
     tableRowElevated: {
         boxShadow: '0 2px 22px rgba(0, 0, 0, .10)',
@@ -57,19 +64,66 @@ const useStyles = makeStyles(({ palette, shape, typography, spacing }: Theme) =>
     tableRowIsDragging: {
         borderSpacing: 0,
     },
+    tableCell: {
+        height: '100%',
+    },
+    hideOnCompactView: {
+        [breakpoints.down('sm')]: {
+            display: 'none',
+        },
+    },
     label: {
         fontSize: '.8rem',
         color: palette.grey[500],
     },
-    action: {
-        width: 50,
-        paddingLeft: `${spacing(1.1)}px !important`,
-        paddingRight: `${spacing(1.1)}px !important`,
+    actionsCell: {
+        position: 'relative',
+        '&.MuiTableCell-root': {
+            paddingLeft: `${spacing(1.1)}px !important`,
+            paddingRight: `${spacing(1.1)}px !important`,
+            '&:before': {
+                content: 'normal !important',
+            },
+        },
+    },
+    actionsCellCompact: {
+        [breakpoints.up('md')]: {
+            display: 'none',
+        },
+    },
+    actionsWrapper: {
+        display: 'inline-flex',
+        height: '100%',
+        alignItems: 'stretch',
+    },
+    actionsItem: {
+        display: 'flex',
+        alignItems: 'center',
+        flex: '0 0 auto',
+        padding: spacing(0.5),
+        '& + &': {
+            borderLeft: '1px solid',
+            borderLeftColor: THEME_COLORS.GREY,
+        },
     },
     actionIcon: {
-        padding: spacing(0.5),
+        padding: spacing(1),
         '& .MuiSvgIcon-root': {
             fontSize: typography.pxToRem(20),
+        },
+    },
+    actionsMenu: {
+        backgroundColor: palette.type === 'light'
+            ? THEME_COLORS.GREY_LIGHT
+            : darken(THEME_COLORS.GREY_DARK, 0.2),
+    },
+    actionsMenuItem: {
+        fontWeight: typography.fontWeightBold,
+        '& .MuiSvgIcon-root': {
+            fontSize: typography.pxToRem(20),
+        },
+        '& .MuiListItemIcon-root': {
+            minWidth: '36px',
         },
     },
     index: {
@@ -92,6 +146,17 @@ export default function GenericTableRow<ColumnNames>({
     index: rowIndex,
 }: IPublicProps<ColumnNames>) {
     const classes = useStyles();
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
     return (
         <TableRow
             className={classNames(classes.tableRow, className, {
@@ -101,12 +166,12 @@ export default function GenericTableRow<ColumnNames>({
             {...draggableProps}
         >
             {isSet(draggableProps) && (
-                <TableCell className="drag-handle">
+                <TableCell className={classNames(classes.tableCell, 'drag-handle')}>
                     <DragHandlerIcon fontSize="inherit" />
                 </TableCell>
             )}
             {isSet(showIndex) && (
-                <TableCell>
+                <TableCell className={classes.tableCell}>
                     <Typography className={classes.index}>{formatNumberWithTwoDigits(rowIndex)}</Typography>
                 </TableCell>
             )}
@@ -128,13 +193,21 @@ export default function GenericTableRow<ColumnNames>({
                     : column.tooltip;
 
                 return (
-                    <TableCell style={{ width: column.fixedWidth }} key={columnName as string}>
-                        <Typography
-                            display="block"
-                            className={classes.label}
-                        >
-                            {column.label}
-                        </Typography>
+                    <TableCell
+                        className={classNames(classes.tableCell, {
+                            [classes.hideOnCompactView]: !!column.hideOnCompactView,
+                        })}
+                        style={{ width: column.fixedWidth }}
+                        key={columnName as string}
+                    >
+                        {column.label && (
+                            <Typography
+                                display="block"
+                                className={classes.label}
+                            >
+                                {column.label}
+                            </Typography>
+                        )}
                         <Box display="flex" alignItems="center">
                             <Typography variant="body2" className={cellClassName}>
                                 {shortenedValue}
@@ -146,24 +219,74 @@ export default function GenericTableRow<ColumnNames>({
                     </TableCell>
                 );
             })}
-            {listActions && listActions.map((action, listActionIndex) => (
-                <TableCell // eslint-disable-next-line react/no-array-index-key
-                    key={listActionIndex}
-                    align="right"
-                    className={classes.action}
-                >
-                    <IconButton
-                        onClick={() => action.onClick(item.id, rowIndex)}
-                        className={classes.actionIcon}
+            {listActions && (
+                <>
+                    <TableCell
+                        align="right"
+                        className={classNames(classes.tableCell, classes.actionsCell, {
+                            [classes.hideOnCompactView]: listActions.length > 1,
+                        })}
                     >
-                        {action.icon}
-                    </IconButton>
-                </TableCell>
-            ))}
+                        <div className={classes.actionsWrapper}>
+                            {listActions.map((action, listActionIndex) => (
+                                // eslint-disable-next-line react/no-array-index-key
+                                <div key={listActionIndex} className={classes.actionsItem}>
+                                    <IconButton
+                                        onClick={() => action.onClick(item.id, rowIndex)}
+                                        className={classes.actionIcon}
+                                    >
+                                        {action.icon}
+                                    </IconButton>
+                                </div>
+                            ))}
+                        </div>
+                    </TableCell>
+                    {listActions.length > 1 && (
+                        <TableCell
+                            align="right"
+                            className={classNames(classes.tableCell, classes.actionsCell, classes.actionsCellCompact)}
+                        >
+                            <IconButton
+                                aria-label="more"
+                                aria-controls={`actions-menu-${rowIndex}`}
+                                aria-haspopup="true"
+                                onClick={handleClick}
+                            >
+                                <MoreVertIcon />
+                            </IconButton>
+                            <Menu
+                                id={`actions-menu-${rowIndex}`}
+                                anchorEl={anchorEl}
+                                keepMounted
+                                open={open}
+                                onClose={handleClose}
+                                PaperProps={{
+                                    className: classes.actionsMenu,
+                                }}
+                            >
+                                {listActions.map((action, listActionIndex) => (
+                                    <MenuItem
+                                        // eslint-disable-next-line react/no-array-index-key
+                                        key={listActionIndex}
+                                        onClick={() => action.onClick(item.id, rowIndex)}
+                                        dense
+                                        className={classes.actionsMenuItem}
+                                    >
+                                        <ListItemIcon>
+                                            {action.icon}
+                                        </ListItemIcon>
+                                        <Typography variant="inherit" noWrap>{action.label}</Typography>
+                                    </MenuItem>
+                                ))}
+                            </Menu>
+                        </TableCell>
+                    )}
+                </>
+            )}
             {selectable && (
                 <TableCell
                     align="right"
-                    className={classes.action}
+                    className={classNames(classes.tableCell, classes.actionsCell)}
                 >
                     <Checkbox
                         checked={selectable.selected}

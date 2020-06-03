@@ -206,6 +206,7 @@ const ScriptsOverview = withStyles(styles)(
                         <Translate msg="scripts.overview.list.labels.last_run_date" />
                     ),
                     fixedWidth: '17%',
+                    hideOnCompactView: true,
                 },
                 lastRunStatus: {
                     fixedWidth: '20%',
@@ -218,6 +219,7 @@ const ScriptsOverview = withStyles(styles)(
                         }
                         return classes.scriptFailed;
                     },
+                    hideOnCompactView: true,
                 },
             };
 
@@ -232,20 +234,24 @@ const ScriptsOverview = withStyles(styles)(
                             listActions={[
                                 {
                                     icon: <PlayArrowRounded />,
+                                    label: <Translate msg="scripts.overview.list.actions.execute" />,
                                     // eslint-disable-next-line no-alert
                                     onClick: (id) => alert(`execute: ${id}`),
                                 }, {
                                     icon: <Edit />,
+                                    label: <Translate msg="scripts.overview.list.actions.edit" />,
                                     onClick: (id) => redirectTo({
                                         routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
                                         params: { scriptId: id },
                                     }),
                                 }, {
                                     icon: <InsertChart />,
+                                    label: <Translate msg="scripts.overview.list.actions.report" />,
                                     // eslint-disable-next-line no-alert
                                     onClick: (id) => alert(`report: ${id}`),
                                 }, {
                                     icon: <Delete />,
+                                    label: <Translate msg="scripts.overview.list.actions.delete" />,
                                     onClick: this.setScriptToDelete,
                                 },
                             ]}

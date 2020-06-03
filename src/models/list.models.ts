@@ -1,4 +1,4 @@
-import { ReactText, ReactNode } from 'react';
+import { ReactElement, ReactText, ReactNode } from 'react';
 import { TTranslatorComponent } from './i18n.models';
 import { TObjectWithProps } from './core.models';
 
@@ -8,6 +8,7 @@ export interface IColumn<ColumnNames> {
     className?: string | ((value: ReactText) => string);
     tooltip?: string | ((value: ReactText) => ReactText | ReactNode);
     fixedWidth?: ReactText;
+    hideOnCompactView?: boolean;
 }
 
 export type ListColumns<ColumnNames> = {
@@ -15,7 +16,8 @@ export type ListColumns<ColumnNames> = {
 };
 
 export interface IListAction {
-    icon: ReactNode;
+    icon: ReactElement;
+    label: TTranslatorComponent;
     onClick: (id: ReactText, index: number) => void;
 }
 

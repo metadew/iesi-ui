@@ -187,6 +187,7 @@ export default function ScriptDetail() {
                         listActions={[
                             {
                                 icon: <EditIcon />,
+                                label: <Translate msg="scripts.detail.main.list.item.actions.edit" />,
                                 onClick: (id, index) => {
                                     const action = listItems.find((item) => item.id === id);
                                     setEditAction({
