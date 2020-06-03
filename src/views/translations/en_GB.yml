@@ -15,9 +15,14 @@ common:
     go_back: Back
   list:
     filter:
+      chip_label:
+        from: 'From: '
+        to: 'To: '
+      from: Start date
       header: Narrow results
       search: Search
       select_search: Filter options
+      to: End date
       toggle: Filter
     no_results: No results
     sort:
