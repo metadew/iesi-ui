@@ -3,11 +3,10 @@ import {
     makeStyles,
     Box,
     Button,
-    InputBase,
-    fade,
     FormControl,
     FormHelperText,
     InputBaseProps,
+    FilledInput,
 } from '@material-ui/core';
 
 interface IPublicProps {
@@ -17,16 +16,13 @@ interface IPublicProps {
     onSubmit: (value: string) => void;
 }
 
-const useStyles = makeStyles(({ palette, shape, spacing, typography }) => ({
+const useStyles = makeStyles(({ shape, spacing, typography }) => ({
     root: {
     },
     textInput: {
         display: 'flex',
         alignItems: 'center',
         height: '100%',
-        backgroundColor: palette.type === 'light'
-            ? fade(palette.common.black, 0.09)
-            : fade(palette.common.white, 0.09),
         borderRadius: shape.borderRadius,
         borderTopRightRadius: 0,
         borderBottomRightRadius: 0,
@@ -61,13 +57,13 @@ export default function TextInputWithButton(props: IPublicProps) {
                 display="flex"
                 justifyItems="stretch"
                 className={classes.root}
-                flexWrap="wrap"
             >
                 <Box flex="1 1 auto">
-                    <InputBase
+                    <FilledInput
                         autoComplete="off"
                         className={classes.textInput}
                         fullWidth
+                        disableUnderline
                         {...inputProps}
                         onChange={handleInputChange}
                     />

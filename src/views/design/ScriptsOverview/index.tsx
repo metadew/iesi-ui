@@ -11,7 +11,7 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
-import { Edit, Delete } from '@material-ui/icons';
+import { Edit, Delete, PlayArrowRounded, InsertChart } from '@material-ui/icons';
 import {
     ListColumns,
     ISortedColumn,
@@ -26,6 +26,11 @@ import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
+import { observe, IObserveProps } from 'views/observe';
+import { StateChangeNotification } from 'models/state.models';
+import { getAsyncScripts } from 'state/entities/scripts/selectors';
+import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import Loader from 'views/common/waiting/Loader';
 import { MOCKED_LIST_ITEMS } from './mock';
 
 const styles = ({ palette, typography }: Theme) =>
@@ -103,10 +108,10 @@ interface IComponentState {
 type TProps = WithStyles<typeof styles>;
 
 const ScriptsOverview = withStyles(styles)(
-    class extends React.Component<TProps, IComponentState> {
+    class extends React.Component<TProps & IObserveProps, IComponentState> {
         private mockedListItems = MOCKED_LIST_ITEMS;
 
-        public constructor(props: TProps) {
+        public constructor(props: TProps & IObserveProps) {
             super(props);
 
             this.state = {
@@ -216,28 +221,43 @@ const ScriptsOverview = withStyles(styles)(
                 },
             };
 
+            const scripts = getAsyncScripts(this.props.state);
+            const isFetching = scripts.fetch.status === AsyncStatus.Busy;
+            // TODO: actually use data from API call
+
             return (
-                <Box marginBottom={3} marginX={2.8}>
-                    <GenericList
-                        listActions={[
-                            {
-                                icon: <Edit />,
-                                onClick: (id) => redirectTo({
-                                    routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                    params: { scriptId: id },
-                                }),
-                            }, {
-                                icon: <Delete />,
-                                onClick: this.setScriptToDelete,
-                            },
-                        ]}
-                        columns={columns}
-                        sortedColumn={sortedColumn}
-                        filters={filters}
-                        listItems={this.mockedListItems}
-                        enablePagination
-                    />
-                </Box>
+                <>
+                    <Box marginBottom={3} marginX={2.8}>
+                        <GenericList
+                            listActions={[
+                                {
+                                    icon: <PlayArrowRounded />,
+                                    // eslint-disable-next-line no-alert
+                                    onClick: (id) => alert(`execute: ${id}`),
+                                }, {
+                                    icon: <Edit />,
+                                    onClick: (id) => redirectTo({
+                                        routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                        params: { scriptId: id },
+                                    }),
+                                }, {
+                                    icon: <InsertChart />,
+                                    // eslint-disable-next-line no-alert
+                                    onClick: (id) => alert(`report: ${id}`),
+                                }, {
+                                    icon: <Delete />,
+                                    onClick: this.setScriptToDelete,
+                                },
+                            ]}
+                            columns={columns}
+                            sortedColumn={sortedColumn}
+                            filters={filters}
+                            listItems={this.mockedListItems}
+                            enablePagination
+                        />
+                    </Box>
+                    <Loader showImmediately show={isFetching} />
+                </>
             );
         }
 
@@ -259,4 +279,4 @@ const ScriptsOverview = withStyles(styles)(
     },
 );
 
-export default ScriptsOverview;
+export default observe<TProps>([StateChangeNotification.DESIGN_SCRIPTS_LIST], ScriptsOverview);

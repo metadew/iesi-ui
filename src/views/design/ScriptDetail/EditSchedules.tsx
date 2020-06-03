@@ -1,10 +1,19 @@
-import React, { useState, useRef, ChangeEvent } from 'react';
-import { FormControl, InputLabel, MenuItem, Select, Button, Box } from '@material-ui/core';
+import React, { useState, ChangeEvent } from 'react';
+import {
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    Button,
+    Box,
+    Typography,
+    makeStyles,
+    ClickAwayListener,
+} from '@material-ui/core';
 import { IScriptSchedule } from 'models/state/scripts.models';
 import OrderedList from 'views/common/list/OrderedList';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import ButtonWithContent from 'views/common/input/ButtonWithContent';
-import useOutsideClick from 'utils/hooks/useOutsideClick';
 import TextInputWithSelect from 'views/common/input/TextInputWithSelect';
 import { MOCKED_ENVS } from './mock';
 
@@ -18,15 +27,22 @@ const SCHEDULE_FREQUENCIES: IFrequency = {
     days: 1440,
 };
 
+const useStyles = makeStyles(({ typography }) => ({
+    frequencyGroup: {},
+    frequencyLabel: {
+        fontWeight: typography.fontWeightBold,
+    },
+}));
+
 export default function EditSchedules({
     schedules: initialSchedules,
 }: {
     schedules: IScriptSchedule[];
 }) {
+    const classes = useStyles();
     const [schedules, setSchedules] = useState(initialSchedules);
     const [isAddScheduleFormOpen, setIsScheduleLabelFormOpen] = useState(false);
     const [isSelectOpen, setIsSelectOpen] = useState(false);
-    const schedulesButtonWithContentRef = useRef(null);
 
     const [newSchedulingEnv, setNewSchedulingEnv] = useState('');
     const [newSchedulingFrequencyFactor, setNewSchedulingFrequencyFactor] = useState<number>(
@@ -34,14 +50,11 @@ export default function EditSchedules({
     );
     const [newSchedulingFrequencyAmount, setNewSchedulingFrequencyAmount] = useState<string>('');
 
-    useOutsideClick({
-        ref: schedulesButtonWithContentRef,
-        callback: () => {
-            if (isAddScheduleFormOpen && !isSelectOpen) {
-                setIsScheduleLabelFormOpen(false);
-            }
-        },
-    });
+    const handleClickAway = () => {
+        if (isAddScheduleFormOpen && !isSelectOpen) {
+            setIsScheduleLabelFormOpen(false);
+        }
+    };
 
     const handleChangeNewSchedulingEnv = (event: ChangeEvent<{ value: unknown }>) => {
         setNewSchedulingEnv(event.target.value as string);
@@ -87,72 +100,82 @@ export default function EditSchedules({
                 <Translate msg="No schedules" />
             )}
             {(MOCKED_ENVS && MOCKED_ENVS.length > 0) && (
-                <ButtonWithContent
-                    buttonText={
-                        <Translate msg="scripts.detail.side.schedules.add_button" />
-                    }
-                    isOpen={isAddScheduleFormOpen}
-                    onOpenIntent={() => setIsScheduleLabelFormOpen(true)}
-                    onCloseIntent={() => setIsScheduleLabelFormOpen(false)}
-                    forwardRef={schedulesButtonWithContentRef}
-                >
-                    <FormControl variant="filled" fullWidth required size="small">
-                        <InputLabel id="new-schedule-choose-env-label">
-                            <Translate msg="scripts.detail.side.schedules.add_new.environment.placeholder" />
-                        </InputLabel>
-                        <Select
-                            labelId="new-schedule-choose-env-label"
-                            id="new-schedule-choose-env"
-                            value={newSchedulingEnv}
-                            onChange={handleChangeNewSchedulingEnv}
-                            onOpen={() => setIsSelectOpen(true)}
-                            onClose={() => setIsSelectOpen(false)}
+                <ClickAwayListener onClickAway={handleClickAway}>
+                    <div>
+                        <ButtonWithContent
+                            buttonText={
+                                <Translate msg="scripts.detail.side.schedules.add_button" />
+                            }
+                            isOpen={isAddScheduleFormOpen}
+                            onOpenIntent={() => setIsScheduleLabelFormOpen(true)}
+                            onCloseIntent={() => setIsScheduleLabelFormOpen(false)}
+                            // forwardRef={schedulesButtonWithContentRef}
                         >
-                            {MOCKED_ENVS.map((env) => (
-                                <MenuItem
-                                    key={JSON.stringify(env.name)}
-                                    value={env.name}
+                            <FormControl variant="filled" fullWidth required size="small" margin="dense">
+                                <InputLabel id="new-schedule-choose-env-label">
+                                    <Translate msg="scripts.detail.side.schedules.add_new.environment.placeholder" />
+                                </InputLabel>
+                                <Select
+                                    labelId="new-schedule-choose-env-label"
+                                    id="new-schedule-choose-env"
+                                    disableUnderline
+                                    value={newSchedulingEnv}
+                                    onChange={handleChangeNewSchedulingEnv}
+                                    onOpen={() => setIsSelectOpen(true)}
+                                    onClose={() => setIsSelectOpen(false)}
                                 >
-                                    {env.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    <TextInputWithSelect
-                        inputProps={{
-                            id: 'new-schedule-choose-frequency-number',
-                            placeholder: 'Amount TODO',
-                            'aria-label': 'new schedule frequency',
-                            type: 'number',
-                            inputProps: {
-                                min: 0,
-                            },
-                            value: newSchedulingFrequencyAmount,
-                            onChange: handleChangeNewSchedulingFrequencyAmount,
-                        }}
-                        selectProps={{
-                            id: 'new-schedule-choose-frequency-factor',
-                            onOpen: () => setIsSelectOpen(true),
-                            onClose: () => setIsSelectOpen(false),
-                            onChange: handleChangeNewSchedulingFrequencyFactor,
-                            value: newSchedulingFrequencyFactor,
-                        }}
-                        selectOptions={Object.keys(SCHEDULE_FREQUENCIES).map((key) => ({
-                            value: SCHEDULE_FREQUENCIES[key],
-                            displayValue: key,
-                        }))}
-                    />
-                    <Box textAlign="right">
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            disableElevation
-                            onClick={handleSubmit}
-                        >
-                            <Translate msg="add" />
-                        </Button>
-                    </Box>
-                </ButtonWithContent>
+                                    {MOCKED_ENVS.map((env) => (
+                                        <MenuItem
+                                            key={JSON.stringify(env.name)}
+                                            value={env.name}
+                                        >
+                                            {env.name}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <Box display="flex" alignItems="center">
+                                <Typography variant="body2" className={classes.frequencyLabel}>
+                                    <Translate msg="Script runs every" />
+                                </Typography>
+                                <TextInputWithSelect
+                                    inputProps={{
+                                        id: 'new-schedule-choose-frequency-number',
+                                        placeholder: 'Amount TODO',
+                                        'aria-label': 'new schedule frequency',
+                                        type: 'number',
+                                        inputProps: {
+                                            min: 0,
+                                        },
+                                        value: newSchedulingFrequencyAmount,
+                                        onChange: handleChangeNewSchedulingFrequencyAmount,
+                                    }}
+                                    selectProps={{
+                                        id: 'new-schedule-choose-frequency-factor',
+                                        onOpen: () => setIsSelectOpen(true),
+                                        onClose: () => setIsSelectOpen(false),
+                                        onChange: handleChangeNewSchedulingFrequencyFactor,
+                                        value: newSchedulingFrequencyFactor,
+                                    }}
+                                    selectOptions={Object.keys(SCHEDULE_FREQUENCIES).map((key) => ({
+                                        value: SCHEDULE_FREQUENCIES[key],
+                                        displayValue: key,
+                                    }))}
+                                />
+                            </Box>
+                            <Box textAlign="right" marginTop={1}>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    disableElevation
+                                    onClick={handleSubmit}
+                                >
+                                    <Translate msg="add" />
+                                </Button>
+                            </Box>
+                        </ButtonWithContent>
+                    </div>
+                </ClickAwayListener>
             )}
         </>
     );

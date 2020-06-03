@@ -9,7 +9,6 @@ interface IPublicProps {
     isOpen: boolean;
     onOpenIntent: () => void;
     onCloseIntent: () => void;
-    forwardRef?: React.RefObject<HTMLDivElement>;
 }
 
 const useStyles = makeStyles(({ palette, shape }) => ({
@@ -51,14 +50,13 @@ const useStyles = makeStyles(({ palette, shape }) => ({
 
 export default function ButtonWithContent(props: IPublicProps) {
     const classes = useStyles();
-    const { buttonText, children, isOpen, onOpenIntent, onCloseIntent, forwardRef } = props;
+    const { buttonText, children, isOpen, onOpenIntent, onCloseIntent } = props;
 
     return (
         <Box
             className={classNames(classes.root, {
                 'is-open': !!isOpen,
             })}
-            {...{ ref: forwardRef }}
         >
             <Button
                 className={classes.button}

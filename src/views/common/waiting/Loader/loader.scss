@@ -1,0 +1,65 @@
+/* ==========================================================================
+   Loader
+   ========================================================================== */
+
+/* Imports
+   ========================================================================== */
+@import '../../../assets/scss/imports';
+
+
+/* General
+   ========================================================================== */
+.Loader {
+    min-height: 1px;
+
+    &:after {
+        content: '';
+
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: $zindex-loader;
+
+        background: rgba(#334155, .9);
+    }
+
+    &.Loader--full-screen {
+        &:after {
+            position: fixed;
+        }
+
+        > .content {
+            position: fixed;
+        }
+    }
+
+    &.Loader--transparent-background {
+        &:after {
+            background: transparent;
+        }
+    }
+
+    &.Loader--fixed {
+        &:after {
+            position: fixed;
+        }
+
+        > .content {
+            position: fixed;
+            top: 50%;
+        }
+    }
+
+    > .content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        z-index: #{$zindex-loader + 1};
+
+        transform: translate3d(-50%, -50%, 0);
+
+        text-align: center;
+    }
+}
