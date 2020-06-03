@@ -62,6 +62,7 @@ export type SortActions<ColumnNames> = {
 export enum FilterType {
     Search = 'search',
     Select = 'select',
+    FromTo = 'from-to',
 }
 
 export interface IFilter<ColumnNames = TObjectWithProps> {

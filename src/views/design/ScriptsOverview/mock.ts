@@ -7,7 +7,7 @@ export const MOCKED_LIST_ITEMS = [
             description: 'Converts the data in the database',
             lastRunDate: {
                 value: '22 april 2020',
-                sortValue: '2020-04-22',
+                sortValue: new Date('2020-04-22').toISOString(),
             },
             lastRunStatus: 'Passed',
         },
@@ -20,7 +20,7 @@ export const MOCKED_LIST_ITEMS = [
             description: 'Creates a copy of the selected database',
             lastRunDate: {
                 value: '21 april 2020',
-                sortValue: '2020-04-21',
+                sortValue: new Date('2020-04-21').toISOString(),
             },
             lastRunStatus: 'Failed',
         },
@@ -33,7 +33,7 @@ export const MOCKED_LIST_ITEMS = [
             description: 'Find and replay video by URL',
             lastRunDate: {
                 value: '18 april 2020',
-                sortValue: '2020-04-18',
+                sortValue: new Date('2020-04-18').toISOString(),
             },
             lastRunStatus: 'Passed',
         },
@@ -46,7 +46,7 @@ export const MOCKED_LIST_ITEMS = [
             description: 'Uploads all files from the selected folder',
             lastRunDate: {
                 value: '22 april 2020',
-                sortValue: '2020-04-22',
+                sortValue: new Date('2020-04-22').toISOString(),
             },
             lastRunStatus: 'Passed',
         },
@@ -59,7 +59,7 @@ export const MOCKED_LIST_ITEMS = [
             description: 'Moves all files from one destination to another',
             lastRunDate: {
                 value: '23 februari 2020',
-                sortValue: '2020-02-23',
+                sortValue: new Date('2020-02-23').toISOString(),
             },
             lastRunStatus: 'Failed',
         },
@@ -72,7 +72,7 @@ export const MOCKED_LIST_ITEMS = [
             description: 'Converts video file to MP4 format',
             lastRunDate: {
                 value: '18 april 2020',
-                sortValue: '2020-04-18',
+                sortValue: new Date('2020-04-18').toISOString(),
             },
             lastRunStatus: 'Failed',
         },
@@ -85,7 +85,7 @@ export const MOCKED_LIST_ITEMS = [
             description: 'Converts audio file to MP3 format',
             lastRunDate: {
                 value: '18 april 2020',
-                sortValue: '2020-04-18',
+                sortValue: new Date('2020-04-18').toISOString(),
             },
             lastRunStatus: 'Failed',
         },
@@ -98,7 +98,7 @@ export const MOCKED_LIST_ITEMS = [
             description: 'Converts audio file to WAV format',
             lastRunDate: {
                 value: '18 mei 2020',
-                sortValue: '2020-05-18',
+                sortValue: new Date('2020-05-18').toISOString(),
             },
             lastRunStatus: 'Passed',
         },
@@ -111,7 +111,7 @@ export const MOCKED_LIST_ITEMS = [
             description: 'Create a backup of all files in the selected folder',
             lastRunDate: {
                 value: '19 mei 2020',
-                sortValue: '2020-05-19',
+                sortValue: new Date('2020-05-19').toISOString(),
             },
             lastRunStatus: 'Passed',
         },
@@ -124,7 +124,7 @@ export const MOCKED_LIST_ITEMS = [
             description: 'Create a backup of selected file',
             lastRunDate: {
                 value: '19 mei 2020',
-                sortValue: '2020-05-19',
+                sortValue: new Date('2020-05-19').toISOString(),
             },
             lastRunStatus: 'Passed',
         },
@@ -137,7 +137,7 @@ export const MOCKED_LIST_ITEMS = [
             description: 'Create email templates for selected user ids',
             lastRunDate: {
                 value: '27 mei 2020',
-                sortValue: '2020-05-27',
+                sortValue: new Date('2020-05-27').toISOString(),
             },
             lastRunStatus: 'Passed',
         },
@@ -150,7 +150,7 @@ export const MOCKED_LIST_ITEMS = [
             description: 'Marks all emails as read for the given user id',
             lastRunDate: {
                 value: '27 mei 2020',
-                sortValue: '2020-05-27',
+                sortValue: new Date('2020-05-27').toISOString(),
             },
             lastRunStatus: 'Failed',
         },

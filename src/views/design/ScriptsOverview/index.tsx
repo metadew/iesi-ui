@@ -67,7 +67,7 @@ interface IColumnNames {
 const filterConfig: FilterConfig<Partial<IColumnNames>> = {
     lastRunDate: {
         label: <Translate msg="scripts.overview.list.filter.last_run_date" />,
-        filterType: FilterType.Select,
+        filterType: FilterType.FromTo,
     },
     lastRunStatus: {
         label: <Translate msg="scripts.overview.list.filter.last_run_status" />,

@@ -8,7 +8,9 @@ import {
 } from 'models/list.models';
 import { TObjectWithProps } from 'models/core.models';
 import { ReactText } from 'react';
-import { getListItemValueFromColumn } from './list';
+import { parseISO } from 'date-fns/esm';
+import { isDateBeforeOrEqual, isDateAfterOrEqual } from 'utils/core/date/compare';
+import { getListItemSortValueFromColumn } from './list';
 
 export function getIntialFiltersFromFilterConfig<ColumnNames>(
     filterConfig: FilterConfig<ColumnNames>,
@@ -44,6 +46,14 @@ export function filterListItems<LI extends IListItem<TObjectWithProps>>(
                         return false;
                     }
                 }
+
+                if (
+                    filter.filterType === FilterType.FromTo
+                ) {
+                    if (!fromToFilter({ item, filter, columnName })) {
+                        return false;
+                    }
+                }
             }
         }
         return true;
@@ -58,7 +68,7 @@ export function filterListItems<LI extends IListItem<TObjectWithProps>>(
         filter: IFilter<TObjectWithProps>;
         columnName: string;
     }) {
-        const itemValue = getListItemValueFromColumn(item, columnName);
+        const itemValue = getListItemSortValueFromColumn(item, columnName);
         let match = false;
         filter.values.forEach((value) => {
             if (reactTextIncludesValue(itemValue, value)) {
@@ -66,6 +76,34 @@ export function filterListItems<LI extends IListItem<TObjectWithProps>>(
             }
         });
         return match;
+    }
+
+    function fromToFilter({
+        item,
+        filter,
+        columnName,
+    }: {
+        item: LI;
+        filter: IFilter<TObjectWithProps>;
+        columnName: string;
+    }) {
+        const itemValue = getListItemSortValueFromColumn(item, columnName);
+        const itemDate = parseISO(itemValue as string);
+        const startDate = filter.values[0] ? parseISO(filter.values[0] as string) : null;
+        const endDate = filter.values[1] ? parseISO(filter.values[1] as string) : null;
+
+
+        if (startDate && endDate) {
+            return isDateAfterOrEqual(itemDate, startDate) && isDateBeforeOrEqual(itemDate, endDate);
+        }
+        if (startDate) {
+            return isDateAfterOrEqual(itemDate, startDate);
+        }
+        if (endDate) {
+            return isDateBeforeOrEqual(itemDate, endDate);
+        }
+
+        return true;
     }
 }
 

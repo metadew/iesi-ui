@@ -1,4 +1,5 @@
 import React, { useState, ReactText } from 'react';
+import { TTranslatorComponent } from 'models/i18n.models';
 import {
     Box,
     ExpansionPanel,
@@ -19,8 +20,11 @@ import {
 } from 'models/list.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
+import { parseISO, format as formatDate } from 'date-fns/esm';
+import isValidDate from 'utils/core/date/isValidDate';
 import Search from './Search';
 import Select from './Select';
+import FromTo from './FromTo';
 
 interface IPublicProps<ColumnNames> {
     filterConfig: FilterConfig<ColumnNames>;
@@ -56,6 +60,7 @@ const useStyles = makeStyles(({ spacing }) => ({
 interface ISingleFilterValue {
     value: ReactText;
     columnName: string;
+    chipLabel: TTranslatorComponent;
 }
 
 function GenericFilter<ColumnNames>({
@@ -73,15 +78,30 @@ function GenericFilter<ColumnNames>({
                     <Translate msg="common.list.filter.header" />
                 </Typography>
                 <Box>
-                    {getAllFilterValuesFromFilters().map((item) => (
-                        <Chip
-                            key={`${item.value}${item.columnName}`}
-                            label={item.value}
-                            onDelete={() => clearFilter(item)}
-                            variant="outlined"
-                            className={classes.chip}
-                        />
-                    ))}
+                    {getAllFilterValuesFromFilters().map((item, index) => {
+                        const itemValue = item.value ? item.value.toString() : '';
+                        const itemValueParsedAsDate = parseISO(itemValue);
+                        const valueIsDate = isValidDate(itemValueParsedAsDate);
+                        const formattedValue = valueIsDate
+                            ? formatDate(itemValueParsedAsDate, 'dd/MM/yyyy')
+                            : item.value;
+
+                        return (
+                            <Chip
+                                // eslint-disable-next-line react/no-array-index-key
+                                key={`${itemValue}${index}`}
+                                label={(
+                                    <>
+                                        <span>{item.chipLabel}</span>
+                                        <span>{formattedValue}</span>
+                                    </>
+                                )}
+                                onDelete={() => clearFilter(item)}
+                                variant="outlined"
+                                className={classes.chip}
+                            />
+                        );
+                    })}
                 </Box>
             </Box>
             {Object.keys(filterConfig).map((untypedColumnName) => {
@@ -114,7 +134,13 @@ function GenericFilter<ColumnNames>({
                                     filter={filters[columnName] as IFilter}
                                 />
                             )}
-
+                            {configItem.filterType === FilterType.FromTo && (
+                                <FromTo
+                                    onFilter={onFilter}
+                                    columnName={columnName as string}
+                                    filter={filters[columnName] as IFilter}
+                                />
+                            )}
                         </ExpansionPanelDetails>
                     </ExpansionPanel>
                 );
@@ -160,12 +186,22 @@ function GenericFilter<ColumnNames>({
         return Object.keys(filters).reduce(
             (acc, columnName) => {
                 const filter = filters[columnName as keyof ColumnNames];
-                filter.values.forEach((value) => {
+                filter.values.forEach((value, index) => {
                     if (value) {
+                        let chipLabel = null;
+
+                        if (filter.filterType === FilterType.FromTo) {
+                            chipLabel = index === 0
+                                ? <Translate msg="common.list.filter.chip_label.from" />
+                                : <Translate msg="common.list.filter.chip_label.to" />;
+                        }
+
                         const singleFilter: ISingleFilterValue = {
                             columnName,
                             value,
+                            chipLabel,
                         };
+
                         acc.push(singleFilter);
                     }
                 });
