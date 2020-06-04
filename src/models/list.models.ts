@@ -9,6 +9,7 @@ export interface IColumn<ColumnNames> {
     tooltip?: string | ((value: ReactText) => ReactText | ReactNode);
     fixedWidth?: ReactText;
     hideOnCompactView?: boolean;
+    icon?: ReactElement;
 }
 
 export type ListColumns<ColumnNames> = {

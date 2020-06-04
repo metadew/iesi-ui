@@ -73,8 +73,13 @@ const useStyles = makeStyles(({ breakpoints, palette, shape, typography, spacing
         },
     },
     label: {
-        fontSize: '.8rem',
+        fontSize: typography.pxToRem(12),
         color: palette.grey[500],
+    },
+    cellIcon: {
+        '& > .MuiSvgIcon-root': {
+            fontSize: typography.pxToRem(21),
+        },
     },
     actionsCell: {
         position: 'relative',
@@ -202,21 +207,32 @@ export default function GenericTableRow<ColumnNames>({
                         style={{ width: column.fixedWidth }}
                         key={columnName as string}
                     >
-                        {column.label && (
-                            <Typography
-                                display="block"
-                                className={classes.label}
-                            >
-                                {column.label}
-                            </Typography>
-                        )}
                         <Box display="flex" alignItems="center">
-                            <Typography variant="body2" className={cellClassName}>
-                                {shortenedValue}
-                                {tooltip && (
-                                    <Tooltip title={tooltip} iconSize="small" />
+                            {column.icon && (
+                                <Box flex="0 0 auto" paddingRight={0.5}>
+                                    <Typography color="primary" className={classes.cellIcon}>
+                                        {column.icon}
+                                    </Typography>
+                                </Box>
+                            )}
+                            <Box flex="1 1 auto">
+                                {column.label && (
+                                    <Typography
+                                        display="block"
+                                        className={classes.label}
+                                    >
+                                        {column.label}
+                                    </Typography>
                                 )}
-                            </Typography>
+                                <Box display="flex" alignItems="center">
+                                    <Typography variant="body2" className={cellClassName}>
+                                        {shortenedValue}
+                                        {tooltip && (
+                                            <Tooltip title={tooltip} iconSize="small" />
+                                        )}
+                                    </Typography>
+                                </Box>
+                            </Box>
                         </Box>
                     </TableCell>
                 );

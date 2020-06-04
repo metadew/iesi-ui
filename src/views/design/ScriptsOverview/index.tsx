@@ -12,7 +12,7 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
-import { Edit, Delete, PlayArrowRounded, InsertChart, AddRounded } from '@material-ui/icons';
+import { Edit, Delete, PlayArrowRounded, InsertChart, AddRounded, WatchLater } from '@material-ui/icons';
 import {
     ListColumns,
     ISortedColumn,
@@ -210,7 +210,7 @@ const ScriptsOverview = withStyles(styles)(
                 },
                 version: {
                     className: classes.scriptVersion,
-                    fixedWidth: '13%',
+                    fixedWidth: '11%',
                 },
                 description: {
                     className: classes.scriptDescription,
@@ -221,11 +221,12 @@ const ScriptsOverview = withStyles(styles)(
                     label: (
                         <Translate msg="scripts.overview.list.labels.last_run_date" />
                     ),
-                    fixedWidth: '17%',
+                    fixedWidth: '20%',
                     hideOnCompactView: true,
+                    icon: <WatchLater />,
                 },
                 lastRunStatus: {
-                    fixedWidth: '20%',
+                    fixedWidth: '18%',
                     label: (
                         <Translate msg="scripts.overview.list.labels.last_run_status" />
                     ),
