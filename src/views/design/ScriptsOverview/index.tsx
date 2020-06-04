@@ -60,7 +60,7 @@ const styles = ({ palette, typography }: Theme) =>
         },
         scriptSuccess: {
             fontWeight: typography.fontWeightBold,
-            color: palette.success.main,
+            color: palette.secondary.main,
         },
         scriptFailed: {
             fontWeight: typography.fontWeightBold,
