@@ -57,7 +57,7 @@ export const useListStyles = makeStyles(({ breakpoints, palette, spacing, shape,
                 },
             },
             [breakpoints.up('md')]: {
-                padding: `${spacing(1.5)}px ${spacing(3)}px`,
+                padding: `${spacing(1.5)}px ${spacing(2)}px`,
             },
         },
     },

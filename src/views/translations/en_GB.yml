@@ -49,8 +49,10 @@ scripts:
         last_run_status: Last run status
         script_name: Script name
       labels:
+        labels: Labels
         last_run_date: Last run date
         last_run_status: Last run status
+        scheduling: Schedules
       sort:
         last_run_date: Last run date
         script_name: Script name

@@ -52,6 +52,12 @@ const styles = ({ palette, typography }: Theme) =>
             fontWeight: typography.fontWeightBold,
             fontSize: typography.pxToRem(12),
         },
+        scriptSchedules: {
+            fontWeight: typography.fontWeightBold,
+        },
+        scriptLabels: {
+            fontWeight: typography.fontWeightBold,
+        },
         scriptSuccess: {
             fontWeight: typography.fontWeightBold,
             color: palette.success.main,
@@ -65,9 +71,11 @@ const styles = ({ palette, typography }: Theme) =>
 interface IColumnNames {
     name: string;
     version: string;
+    scheduling: number;
     description: string;
     lastRunDate: string;
     lastRunStatus: string;
+    labels: number;
 }
 
 const filterConfig: FilterConfig<Partial<IColumnNames>> = {
@@ -206,27 +214,34 @@ const ScriptsOverview = withStyles(styles)(
             const columns: ListColumns<IColumnNames> = {
                 name: {
                     className: classes.scriptName,
-                    fixedWidth: '20%',
+                    fixedWidth: '16%',
                 },
                 version: {
                     className: classes.scriptVersion,
-                    fixedWidth: '11%',
+                    fixedWidth: '7%',
                 },
                 description: {
                     className: classes.scriptDescription,
                     tooltip: (value) => value,
-                    fixedWidth: '30%',
+                    fixedWidth: '26%',
+                },
+                scheduling: {
+                    label: (
+                        <Translate msg="scripts.overview.list.labels.scheduling" />
+                    ),
+                    className: classes.scriptSchedules,
+                    fixedWidth: '9%',
                 },
                 lastRunDate: {
                     label: (
                         <Translate msg="scripts.overview.list.labels.last_run_date" />
                     ),
-                    fixedWidth: '20%',
+                    fixedWidth: '17%',
                     hideOnCompactView: true,
                     icon: <WatchLater />,
                 },
                 lastRunStatus: {
-                    fixedWidth: '18%',
+                    fixedWidth: '17%',
                     label: (
                         <Translate msg="scripts.overview.list.labels.last_run_status" />
                     ),
@@ -237,6 +252,13 @@ const ScriptsOverview = withStyles(styles)(
                         return classes.scriptFailed;
                     },
                     hideOnCompactView: true,
+                },
+                labels: {
+                    label: (
+                        <Translate msg="scripts.overview.list.labels.labels" />
+                    ),
+                    className: classes.scriptLabels,
+                    fixedWidth: '8%',
                 },
             };
 

@@ -24,7 +24,8 @@ export interface IListAction {
 
 export interface IListItemValueWithSortValue {
     value: ReactText;
-    sortValue: ReactText;
+    sortValue?: ReactText;
+    tooltip?: ReactText | ReactNode;
 }
 
 

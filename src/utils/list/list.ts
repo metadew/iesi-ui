@@ -1,6 +1,6 @@
 import { IListItem, IListItemValueWithSortValue } from 'models/list.models';
 import isObject from '@snipsonian/core/es/is/isObject';
-import { ReactText } from 'react';
+import { ReactText, ReactNode } from 'react';
 
 export function getListItemValueFromColumn<ColumnNames>(
     item: IListItem<ColumnNames>,
@@ -28,6 +28,18 @@ export function getListItemSortValueFromColumn<ColumnNames>(
         value = item.columns[columnName] as ReactText;
     }
     return value || '';
+}
+
+export function getListItemTooltipFromColumn<ColumnNames>(
+    item: IListItem<ColumnNames>,
+    columnName: keyof ColumnNames,
+) {
+    let tooltip: string | ReactNode = null;
+    if (isObject(item.columns[columnName])) {
+        const columnData = item.columns[columnName] as IListItemValueWithSortValue;
+        tooltip = columnData.tooltip;
+    }
+    return tooltip || '';
 }
 
 export function getUniqueValuesFromListItems<ColumnNames>(
