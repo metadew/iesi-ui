@@ -20,11 +20,18 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     path: '/scripts',
     template: ScriptsTemplate,
     component: ScriptsOverview,
-    childRoutes: [{
-        routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-        path: '/:scriptId',
-        component: ScriptDetail,
-    }],
+    childRoutes: [
+        {
+            routeKey: ROUTE_KEYS.R_SCRIPT_NEW,
+            path: '/new',
+            component: ScriptDetail,
+        },
+        {
+            routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+            path: '/:scriptId',
+            component: ScriptDetail,
+        },
+    ],
     executeOnRoute: [{
         execute: triggerFetchScripts,
     }],

@@ -10,6 +10,7 @@ export enum ROUTE_KEYS {
     /* design */
     R_SCRIPTS = 'R_SCRIPTS',
     R_SCRIPT_DETAIL = 'R_SCRIPT_DETAIL',
+    R_SCRIPT_NEW = 'R_SCRIPT_NEW',
 
     /* reporting */
     R_REPORTS = 'R_REPORTS',

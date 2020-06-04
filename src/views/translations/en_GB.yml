@@ -37,6 +37,7 @@ scripts:
       title: Delete script
     header:
       amount: 'You have {amount} scripts'
+      add_button: Create new script
     list:
       actions:
         delete: Delete

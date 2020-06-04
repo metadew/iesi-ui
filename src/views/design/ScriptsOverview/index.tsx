@@ -6,12 +6,13 @@ import {
     createStyles,
     withStyles,
     WithStyles,
+    Button,
 } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
-import { Edit, Delete, PlayArrowRounded, InsertChart } from '@material-ui/icons';
+import { Edit, Delete, PlayArrowRounded, InsertChart, AddRounded } from '@material-ui/icons';
 import {
     ListColumns,
     ISortedColumn,
@@ -148,11 +149,26 @@ const ScriptsOverview = withStyles(styles)(
                                         placeholders={{ amount: this.mockedListItems.length }}
                                     />
                                 </Typography>
-                                <GenericSort
-                                    sortActions={sortActions}
-                                    onSort={this.onSort}
-                                    sortedColumn={sortedColumn as ISortedColumn<{}>}
-                                />
+                                <Box display="flex" alignItems="flex-end">
+                                    <Box flex="1 0 auto">
+                                        <GenericSort
+                                            sortActions={sortActions}
+                                            onSort={this.onSort}
+                                            sortedColumn={sortedColumn as ISortedColumn<{}>}
+                                        />
+                                    </Box>
+                                    <Box flex="0 0 auto">
+                                        <Button
+                                            variant="contained"
+                                            color="secondary"
+                                            size="small"
+                                            startIcon={<AddRounded />}
+                                            onClick={() => redirectTo({ routeKey: ROUTE_KEYS.R_SCRIPT_NEW })}
+                                        >
+                                            <Translate msg="scripts.overview.header.add_button" />
+                                        </Button>
+                                    </Box>
+                                </Box>
                             </AppTemplateContainer>
                         </Box>
                         <ContentWithSlideoutPanel
