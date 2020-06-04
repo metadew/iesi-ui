@@ -4,9 +4,9 @@ import {
     AddRounded as AddIcon,
     Save as SaveIcon,
     Delete as DeleteIcon,
-    InsertChart as ReportIcon,
     PlayArrowRounded as PlayIcon,
 } from '@material-ui/icons';
+import ReportIcon from 'views/common/icons/Report';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { THEME_COLORS } from 'config/themes/colors';
 

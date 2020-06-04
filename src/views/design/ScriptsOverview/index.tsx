@@ -12,7 +12,8 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
-import { Edit, Delete, PlayArrowRounded, InsertChart, AddRounded, WatchLater } from '@material-ui/icons';
+import { Edit, Delete, PlayArrowRounded, AddRounded, WatchLater } from '@material-ui/icons';
+import ReportIcon from 'views/common/icons/Report';
 import {
     ListColumns,
     ISortedColumn,
@@ -284,7 +285,7 @@ const ScriptsOverview = withStyles(styles)(
                                         params: { scriptId: id },
                                     }),
                                 }, {
-                                    icon: <InsertChart />,
+                                    icon: <ReportIcon />,
                                     label: <Translate msg="scripts.overview.list.actions.report" />,
                                     // eslint-disable-next-line no-alert
                                     onClick: (id) => alert(`report: ${id}`),
