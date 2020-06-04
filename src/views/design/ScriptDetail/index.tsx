@@ -231,6 +231,7 @@ export default function ScriptDetail() {
                 goBackTo={ROUTE_KEYS.R_SCRIPTS}
                 contentOverlay={editAction ? <EditActionContent /> : <AddScriptContent />}
                 contentOverlayOpen={!!editAction || isAddOpen}
+                toggleLabel={<Translate msg="scripts.detail.side.toggle_button" />}
             />
             <ConfirmationDialog
                 title={<Translate msg="scripts.detail.delete_script_dialog.title" />}

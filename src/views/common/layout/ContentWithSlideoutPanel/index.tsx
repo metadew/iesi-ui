@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import classnames from 'classnames';
+import classNames from 'classnames';
 import { makeStyles, Box, Button } from '@material-ui/core';
 import { TTranslatorComponent } from 'models/i18n.models';
+import { PlayArrowSharp } from '@material-ui/icons';
 
 const SIDE_PANEL_WIDTH = 350;
 
@@ -24,10 +25,20 @@ const useStyles = makeStyles(({ palette, typography }) => ({
         transformOrigin: 'top right',
     },
     toggleButton: {
+        borderTopLeftRadius: 0,
+        borderTopRightRadius: 0,
         minWidth: 80,
         fontWeight: typography.fontWeightBold,
-        fontSize: '.8rem',
+        fontSize: typography.pxToRem(12),
         textTransform: 'uppercase',
+        '& .MuiButton-endIcon': {
+            transform: 'rotate3d(0, 0, 1, 90deg)',
+        },
+    },
+    toggleButtonActive: {
+        '& .MuiButton-endIcon': {
+            transform: 'rotate3d(0, 0, 1, -90deg)',
+        },
     },
 }));
 
@@ -45,7 +56,7 @@ export default function ContentWithSlideoutPanel({
     const [isOpen, setIsOpen] = useState(false);
     const classes = useStyles();
 
-    const containerClasses = classnames(classes.container, {
+    const containerClasses = classNames(classes.container, {
         [classes.closed]: !isOpen,
         [classes.open]: isOpen,
     });
@@ -66,10 +77,13 @@ export default function ContentWithSlideoutPanel({
                 </Box>
                 <Box position="absolute" top="0" right="0" className={classes.toggle} zIndex={1}>
                     <Button
-                        className={classes.toggleButton}
+                        className={classNames(classes.toggleButton, {
+                            [classes.toggleButtonActive]: isOpen,
+                        })}
                         onClick={togglePanel}
                         variant="contained"
                         disableElevation
+                        endIcon={<PlayArrowSharp />}
                     >
                         {toggleLabel}
                     </Button>

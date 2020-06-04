@@ -81,6 +81,8 @@ const useStyles = makeStyles(({ breakpoints, palette, shape, typography, spacing
         '&.MuiTableCell-root': {
             paddingLeft: `${spacing(1.1)}px !important`,
             paddingRight: `${spacing(1.1)}px !important`,
+            borderTopRightRadius: shape.borderRadius,
+            borderBottomRightRadius: shape.borderRadius,
             '&:before': {
                 content: 'normal !important',
             },

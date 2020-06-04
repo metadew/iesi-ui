@@ -12,14 +12,23 @@ interface IPublicProps {
 
 function AppBody({ state, offsetTop }: IObserveProps & IPublicProps) {
     return (
-        <Box display="flex" flexDirection="column" flex="1 1 auto" paddingTop={offsetTop > 0 ? `${offsetTop}px` : 0}>
+        <Box
+            display="flex"
+            flexDirection="column"
+            flex="1 1 auto"
+            paddingTop={offsetTop > 0 ? `${offsetTop}px` : 0}
+            maxWidth="100vw"
+            overflow="hidden"
+        >
             <Switch>
                 {getAllowedParentRouteKeys(state).map((routeKey) => {
-                    const { path, exact, component, template } = getRoute({ routeKey });
+                    const { path, exact, component, template } = getRoute({
+                        routeKey,
+                    });
 
                     const parentComponent = template
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        ? template as React.ComponentType<any>
+                        ? (template as React.ComponentType<any>)
                         : component;
 
                     return (
