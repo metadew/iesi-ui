@@ -8,8 +8,9 @@ import {
     makeStyles,
     Typography,
     Chip,
+    IconButton,
 } from '@material-ui/core';
-import { ExpandMore } from '@material-ui/icons';
+import { AddRounded, RemoveRounded, CloseRounded } from '@material-ui/icons';
 import {
     IFilter,
     FilterConfig,
@@ -32,28 +33,74 @@ interface IPublicProps<ColumnNames> {
     listItems: IListItem<ColumnNames>[];
 }
 
-const useStyles = makeStyles(({ spacing }) => ({
+const useStyles = makeStyles(({ spacing, palette, typography, shape }) => ({
     title: {
-        marginBottom: spacing(2),
+        marginTop: spacing(1),
+        marginBottom: spacing(1),
     },
     chip: {
         marginRight: spacing(1),
         marginBottom: spacing(1),
+        borderRadius: shape.borderRadius,
+        fontWeight: typography.fontWeightBold,
+        '&.MuiChip-sizeSmall': {
+            height: typography.pxToRem(18),
+            fontSize: typography.pxToRem(10),
+            '& .MuiSvgIcon-root': {
+                width: typography.pxToRem(13),
+                height: typography.pxToRem(13),
+            },
+        },
+        '& .MuiSvgIcon-root': {
+            color: 'currentColor',
+        },
+    },
+    expansionPanelWrapper: {
+        borderBottom: '2px solid',
+        borderBottomColor: palette.background.default,
     },
     expansionPanel: {
         background: 'none',
         boxShadow: 'none',
+        borderTop: '2px solid',
+        borderTopColor: palette.background.default,
+        paddingLeft: spacing(5),
+        paddingRight: spacing(1.5),
+        '&:before': {
+            display: 'none',
+        },
+        '&.Mui-expanded': {
+            margin: 0,
+        },
     },
     expansionPanelLabel: {
-        fontSize: '1.25em',
+        fontSize: typography.pxToRem(18),
+        fontWeight: typography.fontWeightBold,
     },
     expansionPanelSummary: {
         paddingLeft: 0,
         paddingRight: 0,
+        minHeight: spacing(6.2),
+        '& .MuiExpansionPanelSummary-content': {
+            margin: 0,
+            alignItems: 'center',
+        },
+        '& .close-icon': {
+            display: 'none',
+        },
+        '&.Mui-expanded': {
+            minHeight: spacing(6.2),
+            '& .close-icon': {
+                display: 'block',
+            },
+            '& .open-icon': {
+                display: 'none',
+            },
+        },
     },
     expansionPanelDetail: {
         paddingLeft: 0,
-        paddingRight: 0,
+        paddingRight: spacing(3.5),
     },
 }));
 
@@ -73,78 +120,90 @@ function GenericFilter<ColumnNames>({
 
     return (
         <Box>
-            <Box marginBottom={3}>
-                <Typography variant="h4" className={classes.title}>
-                    <Translate msg="common.list.filter.header" />
-                </Typography>
+            <Box display="flex" alignItems="center" marginTop={-3} paddingY={1} paddingX={5} minHeight={96}>
                 <Box>
-                    {getAllFilterValuesFromFilters().map((item, index) => {
-                        const itemValue = item.value ? item.value.toString() : '';
-                        const itemValueParsedAsDate = parseISO(itemValue);
-                        const valueIsDate = isValidDate(itemValueParsedAsDate);
-                        const formattedValue = valueIsDate
-                            ? formatDate(itemValueParsedAsDate, 'dd/MM/yyyy')
-                            : item.value;
+                    <Typography variant="h4" className={classes.title}>
+                        <Translate msg="common.list.filter.header" />
+                    </Typography>
+                    <Box>
+                        {getAllFilterValuesFromFilters().map((item, index) => {
+                            const itemValue = item.value ? item.value.toString() : '';
+                            const itemValueParsedAsDate = parseISO(itemValue);
+                            const valueIsDate = isValidDate(itemValueParsedAsDate);
+                            const formattedValue = valueIsDate
+                                ? formatDate(itemValueParsedAsDate, 'dd/MM/yyyy')
+                                : item.value;
 
-                        return (
-                            <Chip
-                                // eslint-disable-next-line react/no-array-index-key
-                                key={`${itemValue}${index}`}
-                                label={(
-                                    <>
-                                        <span>{item.chipLabel}</span>
-                                        <span>{formattedValue}</span>
-                                    </>
-                                )}
-                                onDelete={() => clearFilter(item)}
-                                variant="outlined"
-                                className={classes.chip}
-                            />
-                        );
-                    })}
+                            return (
+                                <Chip
+                                    // eslint-disable-next-line react/no-array-index-key
+                                    key={`${itemValue}${index}`}
+                                    label={(
+                                        <>
+                                            <span>{item.chipLabel}</span>
+                                            <span>{formattedValue}</span>
+                                        </>
+                                    )}
+                                    onDelete={() => clearFilter(item)}
+                                    className={classes.chip}
+                                    size="small"
+                                    deleteIcon={<CloseRounded />}
+                                />
+                            );
+                        })}
+                    </Box>
                 </Box>
             </Box>
-            {Object.keys(filterConfig).map((untypedColumnName) => {
-                const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
-                const configItem = filterConfig[columnName] as IFilterConfigItem;
+            <Box className={classes.expansionPanelWrapper}>
+                {Object.keys(filterConfig).map((untypedColumnName) => {
+                    const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
+                    const configItem = filterConfig[columnName] as IFilterConfigItem;
 
-                return (
-                    <ExpansionPanel key={untypedColumnName} className={classes.expansionPanel}>
-                        <ExpansionPanelSummary
-                            expandIcon={<ExpandMore />}
-                            aria-controls="panel1a-content"
-                            id="panel1a-header"
-                            className={classes.expansionPanelSummary}
-                        >
-                            <Typography className={classes.expansionPanelLabel}>{configItem.label}</Typography>
-                        </ExpansionPanelSummary>
-                        <ExpansionPanelDetails className={classes.expansionPanelDetail}>
-                            {configItem.filterType === FilterType.Search && (
-                                <Search
-                                    onFilter={onFilter}
-                                    columnName={columnName as string}
-                                    filter={filters[columnName] as IFilter}
-                                />
-                            )}
-                            {configItem.filterType === FilterType.Select && (
-                                <Select
-                                    onFilter={onFilter}
-                                    columnName={columnName as string}
-                                    listItems={listItems}
-                                    filter={filters[columnName] as IFilter}
-                                />
-                            )}
-                            {configItem.filterType === FilterType.FromTo && (
-                                <FromTo
-                                    onFilter={onFilter}
-                                    columnName={columnName as string}
-                                    filter={filters[columnName] as IFilter}
-                                />
-                            )}
-                        </ExpansionPanelDetails>
-                    </ExpansionPanel>
-                );
-            })}
+                    return (
+                        <ExpansionPanel key={untypedColumnName} className={classes.expansionPanel}>
+                            <ExpansionPanelSummary
+                                className={classes.expansionPanelSummary}
+                                IconButtonProps={{
+                                    edge: false,
+                                }}
+                            >
+                                <Box flex="1 1 auto">
+                                    <Typography className={classes.expansionPanelLabel}>{configItem.label}</Typography>
+                                </Box>
+                                <IconButton>
+                                    <AddRounded className="open-icon" />
+                                    <RemoveRounded className="close-icon" />
+                                </IconButton>
+                            </ExpansionPanelSummary>
+                            <ExpansionPanelDetails className={classes.expansionPanelDetail}>
+                                {configItem.filterType === FilterType.Search && (
+                                    <Search
+                                        onFilter={onFilter}
+                                        columnName={columnName as string}
+                                        filter={filters[columnName] as IFilter}
+                                        inputProps={{ disableUnderline: true }}
+                                    />
+                                )}
+                                {configItem.filterType === FilterType.Select && (
+                                    <Select
+                                        onFilter={onFilter}
+                                        columnName={columnName as string}
+                                        listItems={listItems}
+                                        filter={filters[columnName] as IFilter}
+                                    />
+                                )}
+                                {configItem.filterType === FilterType.FromTo && (
+                                    <FromTo
+                                        onFilter={onFilter}
+                                        columnName={columnName as string}
+                                        filter={filters[columnName] as IFilter}
+                                    />
+                                )}
+                            </ExpansionPanelDetails>
+                        </ExpansionPanel>
+                    );
+                })}
+            </Box>
         </Box>
     );
 

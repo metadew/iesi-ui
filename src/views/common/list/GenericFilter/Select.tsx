@@ -29,13 +29,19 @@ interface IPublicProps {
     filter: IFilter;
 }
 
-const useStyles = makeStyles(({ spacing }) => ({
+const useStyles = makeStyles(({ shape, spacing, typography }) => ({
     list: {
         width: '100%',
     },
     formControl: {
         width: '100%',
         marginBottom: spacing(2),
+    },
+    checkbox: {
+        borderRadius: shape.borderRadius,
+        '& .MuiTypography-root': {
+            fontWeight: typography.fontWeightBold,
+        },
     },
 }));
 
@@ -99,11 +105,11 @@ export default function Select({
                     />
                 </FormControl>
             )}
-            <List dense className={classes.list}>
+            <List disablePadding className={classes.list}>
                 {uniqueValues.map((value) => {
                     const labelId = `checkbox-list-secondary-label-${value}`;
                     return (
-                        <ListItem key={value} button>
+                        <ListItem key={value} button className={classes.checkbox} onClick={() => handleToggle(value)}>
                             <ListItemText id={labelId} primary={value} />
                             <ListItemSecondaryAction>
                                 <Checkbox

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Box, makeStyles } from '@material-ui/core';
+import { Box, makeStyles, InputAdornment, Icon } from '@material-ui/core';
+import { EventRounded, TodayRounded } from '@material-ui/icons';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { IFilter, FilterType } from 'models/list.models';
 import DateFnsUtils from '@date-io/date-fns';
@@ -36,6 +37,7 @@ export default function FromTo({
         <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Box>
                 <DatePicker
+                    autoOk
                     open={isFromOpen}
                     onOpen={() => setIsFromOpen(true)}
                     onClose={() => setIsFromOpen(false)}
@@ -56,8 +58,21 @@ export default function FromTo({
                         });
                     }}
                     maxDate={toDate || undefined}
+                    fullWidth
+                    inputVariant="filled"
+                    InputProps={{
+                        disableUnderline: true,
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <Icon>
+                                    <TodayRounded />
+                                </Icon>
+                            </InputAdornment>
+                        ),
+                    }}
                 />
                 <DatePicker
+                    autoOk
                     open={isToOpen}
                     onOpen={() => setIsToOpen(true)}
                     onClose={() => setIsToOpen(false)}
@@ -78,6 +93,18 @@ export default function FromTo({
                         });
                     }}
                     minDate={fromDate || undefined}
+                    fullWidth
+                    inputVariant="filled"
+                    InputProps={{
+                        disableUnderline: true,
+                        endAdornment: (
+                            <InputAdornment position="end">
+                                <Icon>
+                                    <EventRounded />
+                                </Icon>
+                            </InputAdornment>
+                        ),
+                    }}
                 />
             </Box>
         </MuiPickersUtilsProvider>

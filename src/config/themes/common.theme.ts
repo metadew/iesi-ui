@@ -39,7 +39,7 @@ const commonTheme: ThemeOptions = {
         },
         h4: {
             fontSize: MUI_DEFAULT_THEME.typography.pxToRem(20),
-            fontWeight: MUI_DEFAULT_THEME.typography.fontWeightRegular,
+            fontWeight: MUI_DEFAULT_THEME.typography.fontWeightBold,
             color: THEME_COLORS.PRIMARY,
         },
         h6: {

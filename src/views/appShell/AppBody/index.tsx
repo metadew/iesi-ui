@@ -15,7 +15,7 @@ function AppBody({ state, offsetTop }: IObserveProps & IPublicProps) {
         <Box
             display="flex"
             flexDirection="column"
-            flex="1 1 auto"
+            flex="1 0 auto"
             paddingTop={offsetTop > 0 ? `${offsetTop}px` : 0}
             maxWidth="100vw"
             overflow="hidden"
