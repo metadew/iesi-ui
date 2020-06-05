@@ -23,7 +23,12 @@ export default function AppTemplate() {
                         <div>
                             <FlashMessages />
                         </div>
-                        <Box display="flex" flexDirection="column" height="100%">
+                        <Box
+                            position="relative"
+                            display="flex"
+                            flexDirection="column"
+                            minHeight="100%"
+                        >
                             <AppHeader
                                 toggleTheme={renderProps.toggleTheme}
                                 currentTheme={renderProps.currentTheme}

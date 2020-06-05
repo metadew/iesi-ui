@@ -152,6 +152,7 @@ export default function ScriptDetail() {
                     flexDirection="column"
                     flex="1 1 auto"
                     justifyContent="center"
+                    paddingBottom={5}
                 >
                     <Box textAlign="center">
                         <Typography variant="h2" paragraph>

@@ -269,7 +269,7 @@ const ScriptsOverview = withStyles(styles)(
 
             return (
                 <>
-                    <Box marginBottom={3} marginX={2.8}>
+                    <Box paddingBottom={5} marginX={2.8}>
                         <GenericList
                             listActions={[
                                 {
