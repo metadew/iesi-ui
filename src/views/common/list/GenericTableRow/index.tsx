@@ -36,7 +36,7 @@ const SHORTEN_VALUE_FROM_CHARACTERS = 40;
 
 interface IPublicProps<ColumnNames> {
     index: number;
-    item: IListItem<ColumnNames>;
+    item?: IListItem<ColumnNames>;
     columns: ListColumns<ColumnNames>;
     listActions?: IListAction[];
     draggableProps?: DraggableProvidedDraggableProps & DraggableProvidedDragHandleProps & {
@@ -138,6 +138,13 @@ const useStyles = makeStyles(({ breakpoints, palette, shape, typography, spacing
         fontWeight: typography.fontWeightBold,
         textAlign: 'center',
     },
+    placeholderContent: {
+        backgroundColor: palette.type === 'light'
+            ? THEME_COLORS.GREY_LIGHT
+            : THEME_COLORS.GREY_DARK,
+        minHeight: typography.pxToRem(20),
+        borderRadius: shape.borderRadius,
+    },
 }));
 
 export default function GenericTableRow<ColumnNames>({
@@ -164,6 +171,8 @@ export default function GenericTableRow<ColumnNames>({
         setAnchorEl(null);
     };
 
+    const isPlaceholder = typeof item === 'undefined';
+
     return (
         <TableRow
             className={classNames(classes.tableRow, className, {
@@ -182,64 +191,7 @@ export default function GenericTableRow<ColumnNames>({
                     <Typography className={classes.index}>{formatNumberWithTwoDigits(rowIndex)}</Typography>
                 </TableCell>
             )}
-            {Object.keys(columns).map((untypedColumnName) => {
-                const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
-                const column = columns[columnName] as IColumn<ColumnNames>;
-
-                const value = getListItemValueFromColumn(item, columnName).toString();
-                const shortenedValue = value.length > SHORTEN_VALUE_FROM_CHARACTERS
-                    ? `${value.substr(0, SHORTEN_VALUE_FROM_CHARACTERS)}…`
-                    : value;
-
-                const cellClassName = typeof column.className === 'function'
-                    ? column.className(value)
-                    : column.className;
-
-                const customTooltip = getListItemTooltipFromColumn(item, columnName);
-                const tooltip = customTooltip
-                    || (typeof column.tooltip === 'function' ? column.tooltip(value) : column.tooltip);
-                // const tooltip = typeof column.tooltip === 'function'
-                //     ? column.tooltip(value)
-                //     : column.tooltip;
-
-                return (
-                    <TableCell
-                        className={classNames(classes.tableCell, {
-                            [classes.hideOnCompactView]: !!column.hideOnCompactView,
-                        })}
-                        style={{ width: column.fixedWidth }}
-                        key={columnName as string}
-                    >
-                        <Box display="flex" alignItems="center">
-                            {column.icon && (
-                                <Box flex="0 0 auto" paddingRight={0.5}>
-                                    <Typography color="primary" className={classes.cellIcon}>
-                                        {column.icon}
-                                    </Typography>
-                                </Box>
-                            )}
-                            <Box flex="1 1 auto">
-                                {column.label && (
-                                    <Typography
-                                        display="block"
-                                        className={classes.label}
-                                    >
-                                        {column.label}
-                                    </Typography>
-                                )}
-                                <Box display="flex" alignItems="center">
-                                    <Typography variant="body2" className={cellClassName}>
-                                        {shortenedValue}
-                                        {tooltip && (
-                                            <Tooltip title={tooltip} iconSize="small" />
-                                        )}
-                                    </Typography>
-                                </Box>
-                            </Box>
-                        </Box>
-                    </TableCell>
-                );
-            })}
+            { isPlaceholder ? renderPlaceholderCells() : renderDataCells() }
             {listActions && (
                 <>
                     <TableCell
@@ -317,4 +269,92 @@ export default function GenericTableRow<ColumnNames>({
             )}
         </TableRow>
     );
+
+    function renderDataCells() {
+        return Object.keys(columns).map((untypedColumnName) => {
+            const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
+            const column = columns[columnName] as IColumn<ColumnNames>;
+
+            const value = getListItemValueFromColumn(item, columnName).toString();
+            const shortenedValue = value.length > SHORTEN_VALUE_FROM_CHARACTERS
+                ? `${value.substr(0, SHORTEN_VALUE_FROM_CHARACTERS)}…`
+                : value;
+
+            const cellClassName = typeof column.className === 'function'
+                ? column.className(value)
+                : column.className;
+
+            const customTooltip = getListItemTooltipFromColumn(item, columnName);
+            const tooltip = customTooltip
+                || (typeof column.tooltip === 'function' ? column.tooltip(value) : column.tooltip);
+
+            return (
+                <TableCell
+                    className={classNames(classes.tableCell, {
+                        [classes.hideOnCompactView]: !!column.hideOnCompactView,
+                    })}
+                    style={{ width: column.fixedWidth }}
+                    key={columnName as string}
+                >
+                    <Box display="flex" alignItems="center">
+                        {column.icon && (
+                            <Box flex="0 0 auto" paddingRight={0.5}>
+                                <Typography color="primary" className={classes.cellIcon}>
+                                    {column.icon}
+                                </Typography>
+                            </Box>
+                        )}
+                        <Box flex="1 1 auto">
+                            {column.label && (
+                                <Typography
+                                    display="block"
+                                    className={classes.label}
+                                >
+                                    {column.label}
+                                </Typography>
+                            )}
+                            <Box display="flex" alignItems="center">
+                                <Typography variant="body2" className={cellClassName}>
+                                    {shortenedValue}
+                                    {tooltip && (
+                                        <Tooltip title={tooltip} iconSize="small" />
+                                    )}
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </Box>
+                </TableCell>
+            );
+        });
+    }
+
+    function renderPlaceholderCells() {
+        return Object.keys(columns).map((untypedColumnName) => {
+            const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
+            const column = columns[columnName] as IColumn<ColumnNames>;
+
+            return (
+                <TableCell
+                    className={classNames(classes.tableCell, {
+                        [classes.hideOnCompactView]: !!column.hideOnCompactView,
+                    })}
+                    style={{ width: column.fixedWidth }}
+                    key={columnName as string}
+                >
+                    <Box display="flex" alignItems="center">
+                        {renderPlaceholderCellContent()}
+                    </Box>
+                </TableCell>
+            );
+        });
+    }
+
+    function renderPlaceholderCellContent() {
+        return (
+            <Box
+                className={classes.placeholderContent}
+                flex="1 1 auto"
+            />
+        );
+    }
 }

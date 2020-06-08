@@ -22,7 +22,9 @@ import {
     FilterType,
     ListFilters,
     FilterConfig,
+    IListItem,
 } from 'models/list.models';
+import { IScriptBase } from 'models/state/scripts.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
@@ -32,8 +34,8 @@ import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAsyncScripts } from 'state/entities/scripts/selectors';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
-import Loader from 'views/common/waiting/Loader';
-import { MOCKED_LIST_ITEMS } from './mock';
+import OrderedList from 'views/common/list/OrderedList';
+
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -119,8 +121,6 @@ type TProps = WithStyles<typeof styles>;
 
 const ScriptsOverview = withStyles(styles)(
     class extends React.Component<TProps & IObserveProps, IComponentState> {
-        private mockedListItems = MOCKED_LIST_ITEMS;
-
         public constructor(props: TProps & IObserveProps) {
             super(props);
 
@@ -143,6 +143,11 @@ const ScriptsOverview = withStyles(styles)(
             const { classes } = this.props;
             const { sortedColumn, idOfScriptToDelete } = this.state;
 
+            const scripts = getAsyncScripts(this.props.state).data;
+            const listItems = scripts
+                ? mapScriptsToListItems(this.props.state.entities.scripts.data)
+                : [];
+
             return (
                 <>
                     <Box height="100%" display="flex" flexDirection="column">
@@ -155,7 +160,7 @@ const ScriptsOverview = withStyles(styles)(
                                 <Typography variant="h6">
                                     <Translate
                                         msg="scripts.overview.header.amount"
-                                        placeholders={{ amount: this.mockedListItems.length }}
+                                        placeholders={{ amount: listItems.length }}
                                     />
                                 </Typography>
                                 <Box display="flex" alignItems="flex-end">
@@ -184,8 +189,8 @@ const ScriptsOverview = withStyles(styles)(
                             toggleLabel={
                                 <Translate msg="common.list.filter.toggle" />
                             }
-                            panel={this.renderPanel()}
-                            content={this.renderContent()}
+                            panel={this.renderPanel({ listItems })}
+                            content={this.renderContent({ listItems })}
                         />
                     </Box>
                     <ConfirmationDialog
@@ -199,17 +204,17 @@ const ScriptsOverview = withStyles(styles)(
             );
         }
 
-        private renderPanel() {
+        private renderPanel({ listItems }: { listItems: IListItem<IColumnNames>[] }) {
             return (
                 <GenericFilter
                     filterConfig={filterConfig}
                     onFilterChange={this.onFilter}
-                    listItems={this.mockedListItems}
+                    listItems={listItems}
                 />
             );
         }
 
-        private renderContent() {
+        private renderContent({ listItems }: { listItems: IListItem<IColumnNames>[] }) {
             const { classes } = this.props;
             const { sortedColumn, filters } = this.state;
             const columns: ListColumns<IColumnNames> = {
@@ -263,9 +268,8 @@ const ScriptsOverview = withStyles(styles)(
                 },
             };
 
-            const scripts = getAsyncScripts(this.props.state);
-            const isFetching = scripts.fetch.status === AsyncStatus.Busy;
-            // TODO: actually use data from API call
+            const scriptsFetchData = getAsyncScripts(this.props.state).fetch;
+            const isFetching = scriptsFetchData.status === AsyncStatus.Busy;
 
             return (
                 <>
@@ -298,11 +302,11 @@ const ScriptsOverview = withStyles(styles)(
                             columns={columns}
                             sortedColumn={sortedColumn}
                             filters={filters}
-                            listItems={this.mockedListItems}
+                            listItems={listItems}
                             enablePagination
+                            isLoading={isFetching}
                         />
                     </Box>
-                    <Loader showImmediately show={isFetching} />
                 </>
             );
         }
@@ -324,5 +328,47 @@ const ScriptsOverview = withStyles(styles)(
         }
     },
 );
+
+function mapScriptsToListItems(scripts: IScriptBase[]): IListItem<IColumnNames>[] {
+    return scripts.map((script, index) => ({
+        id: index,
+        columns: {
+            name: script.name,
+            description: script.description,
+            version: (script.version.number).toString(),
+            labels: {
+                value: script.labels.length,
+                tooltip: script.labels.length > 0 && (
+                    <Typography variant="body2" component="div">
+                        <OrderedList
+                            items={script.labels.map((label) => ({
+                                content: `${label.name} - ${label.value}`,
+                            }))}
+                        />
+                    </Typography>
+                ),
+            },
+            scheduling: { // TODO: fetch should return scheduling data
+                value: 2,
+                tooltip: (
+                    <Typography variant="body2" component="div">
+                        TODO:
+                        <OrderedList
+                            items={[
+                                { content: 'Scheduling A' },
+                                { content: 'Scheduling B' },
+                            ]}
+                        />
+                    </Typography>
+                ),
+            },
+            lastRunDate: { // TODO: fetch should return last run data
+                value: '22-04-2020',
+                sortValue: new Date('2020-04-22').toISOString(),
+            },
+            lastRunStatus: 'Passed',
+        },
+    }));
+}
 
 export default observe<TProps>([StateChangeNotification.DESIGN_SCRIPTS_LIST], ScriptsOverview);

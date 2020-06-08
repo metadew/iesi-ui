@@ -13,7 +13,7 @@ export function getListItemValueFromColumn<ColumnNames>(
     } else {
         value = item.columns[columnName] as ReactText;
     }
-    return value || '';
+    return typeof value !== 'undefined' ? value : '';
 }
 
 export function getListItemSortValueFromColumn<ColumnNames>(
@@ -27,7 +27,7 @@ export function getListItemSortValueFromColumn<ColumnNames>(
     } else {
         value = item.columns[columnName] as ReactText;
     }
-    return value || '';
+    return typeof value !== 'undefined' ? value : '';
 }
 
 export function getListItemTooltipFromColumn<ColumnNames>(
@@ -39,7 +39,7 @@ export function getListItemTooltipFromColumn<ColumnNames>(
         const columnData = item.columns[columnName] as IListItemValueWithSortValue;
         tooltip = columnData.tooltip;
     }
-    return tooltip || '';
+    return typeof tooltip !== 'undefined' ? tooltip : '';
 }
 
 export function getUniqueValuesFromListItems<ColumnNames>(
