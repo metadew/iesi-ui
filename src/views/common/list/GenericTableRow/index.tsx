@@ -50,6 +50,10 @@ interface IPublicProps<ColumnNames> {
         selected: boolean;
     };
     className?: string;
+    placeholderProps?: {
+        showDraggableCell: boolean;
+        showIndexCell: boolean;
+    };
 }
 
 const useStyles = makeStyles(({ breakpoints, palette, shape, typography, spacing }: Theme) => ({
@@ -143,6 +147,7 @@ const useStyles = makeStyles(({ breakpoints, palette, shape, typography, spacing
             ? THEME_COLORS.GREY_LIGHT
             : THEME_COLORS.GREY_DARK,
         minHeight: typography.pxToRem(20),
+        minWidth: typography.pxToRem(40),
         borderRadius: shape.borderRadius,
     },
 }));
@@ -158,6 +163,7 @@ export default function GenericTableRow<ColumnNames>({
     selectable,
     className,
     index: rowIndex,
+    placeholderProps,
 }: IPublicProps<ColumnNames>) {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
@@ -171,7 +177,7 @@ export default function GenericTableRow<ColumnNames>({
         setAnchorEl(null);
     };
 
-    const isPlaceholder = typeof item === 'undefined';
+    const isPlaceholder = placeholderProps || typeof item === 'undefined';
 
     return (
         <TableRow
@@ -181,14 +187,16 @@ export default function GenericTableRow<ColumnNames>({
             })}
             {...draggableProps}
         >
-            {isSet(draggableProps) && (
+            {(isSet(draggableProps) || (placeholderProps && placeholderProps.showDraggableCell)) && (
                 <TableCell className={classNames(classes.tableCell, 'drag-handle')}>
                     <DragHandlerIcon fontSize="inherit" />
                 </TableCell>
             )}
-            {isSet(showIndex) && (
+            {isSet(showIndex || (placeholderProps && placeholderProps.showIndexCell)) && (
                 <TableCell className={classes.tableCell}>
-                    <Typography className={classes.index}>{formatNumberWithTwoDigits(rowIndex)}</Typography>
+                    {!isPlaceholder ? (
+                        <Typography className={classes.index}>{formatNumberWithTwoDigits(rowIndex)}</Typography>
+                    ) : renderPlaceholderCellContent()}
                 </TableCell>
             )}
             { isPlaceholder ? renderPlaceholderCells() : renderDataCells() }
@@ -204,12 +212,14 @@ export default function GenericTableRow<ColumnNames>({
                             {listActions.map((action, listActionIndex) => (
                                 // eslint-disable-next-line react/no-array-index-key
                                 <div key={listActionIndex} className={classes.actionsItem}>
-                                    <IconButton
-                                        onClick={() => action.onClick(item.id, rowIndex)}
-                                        className={classes.actionIcon}
-                                    >
-                                        {action.icon}
-                                    </IconButton>
+                                    {!isPlaceholder ? (
+                                        <IconButton
+                                            onClick={() => action.onClick(item.id, rowIndex)}
+                                            className={classes.actionIcon}
+                                        >
+                                            {action.icon}
+                                        </IconButton>
+                                    ) : renderPlaceholderCellContent()}
                                 </div>
                             ))}
                         </div>
@@ -219,14 +229,16 @@ export default function GenericTableRow<ColumnNames>({
                             align="right"
                             className={classNames(classes.tableCell, classes.actionsCell, classes.actionsCellCompact)}
                         >
-                            <IconButton
-                                aria-label="more"
-                                aria-controls={`actions-menu-${rowIndex}`}
-                                aria-haspopup="true"
-                                onClick={handleClick}
-                            >
-                                <MoreVertIcon />
-                            </IconButton>
+                            {!isPlaceholder ? (
+                                <IconButton
+                                    aria-label="more"
+                                    aria-controls={`actions-menu-${rowIndex}`}
+                                    aria-haspopup="true"
+                                    onClick={handleClick}
+                                >
+                                    <MoreVertIcon />
+                                </IconButton>
+                            ) : renderPlaceholderCellContent()}
                             <Menu
                                 id={`actions-menu-${rowIndex}`}
                                 anchorEl={anchorEl}
