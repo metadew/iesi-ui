@@ -331,7 +331,7 @@ const ScriptsOverview = withStyles(styles)(
 
 function mapScriptsToListItems(scripts: IScriptBase[]): IListItem<IColumnNames>[] {
     return scripts.map((script, index) => ({
-        id: index,
+        id: script.name,
         columns: {
             name: script.name,
             description: script.description,
