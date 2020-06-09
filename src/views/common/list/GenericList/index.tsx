@@ -38,6 +38,7 @@ interface IPublicProps<ColumnNames> {
     sortedColumn?: ISortedColumn<ColumnNames>;
     filters?: ListFilters<Partial<ColumnNames>>;
     enablePagination?: boolean;
+    isLoading?: boolean;
 }
 
 const useStyles = makeStyles(({ palette }: Theme) => ({
@@ -54,6 +55,7 @@ export default function GenericList<ColumnNames>({
     sortedColumn,
     filters,
     enablePagination,
+    isLoading,
 }: IPublicProps<ColumnNames>) {
     const [page, setPage] = React.useState(1);
     const classes = useStyles();
@@ -81,28 +83,42 @@ export default function GenericList<ColumnNames>({
             <TableContainer elevation={0} component={Paper} className={listClasses.tableContainer}>
                 <Table className={listClasses.table} aria-label="simple table">
                     <TableBody>
-                        {itemsToDisplay.length === 0 && (
-                            <TableRow>
-                                <TableCell>
-                                    <Typography>
-                                        <Translate msg="common.list.no_results" />
-                                    </Typography>
-                                </TableCell>
-                            </TableRow>
+                        {isLoading ? (
+                            [...Array(ROWS_PER_PAGE)].map((placeholder, key) => (
+                                <GenericTableRow
+                                    // eslint-disable-next-line react/no-array-index-key
+                                    key={`${key}-placeholder`}
+                                    index={key}
+                                    listActions={listActions}
+                                    columns={columns}
+                                />
+                            ))
+                        ) : (
+                            <>
+                                {itemsToDisplay.length === 0 && (
+                                    <TableRow>
+                                        <TableCell>
+                                            <Typography>
+                                                <Translate msg="common.list.no_results" />
+                                            </Typography>
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                                {itemsToDisplay.map((item: IListItem<ColumnNames>, index) => (
+                                    <GenericTableRow
+                                        index={index}
+                                        key={item.id}
+                                        item={item}
+                                        listActions={listActions}
+                                        columns={columns}
+                                    />
+                                ))}
+                            </>
                         )}
-                        {itemsToDisplay.map((item: IListItem<ColumnNames>, index) => (
-                            <GenericTableRow
-                                index={index}
-                                key={item.id}
-                                item={item}
-                                listActions={listActions}
-                                columns={columns}
-                            />
-                        ))}
                     </TableBody>
                 </Table>
             </TableContainer>
-            {enablePagination && (
+            {(enablePagination && !isLoading) && (
                 <AppTemplateContainer>
                     <Pagination
                         count={Math.ceil(filteredItems.length / ROWS_PER_PAGE)}

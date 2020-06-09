@@ -36,7 +36,7 @@ const SHORTEN_VALUE_FROM_CHARACTERS = 40;
 
 interface IPublicProps<ColumnNames> {
     index: number;
-    item: IListItem<ColumnNames>;
+    item?: IListItem<ColumnNames>;
     columns: ListColumns<ColumnNames>;
     listActions?: IListAction[];
     draggableProps?: DraggableProvidedDraggableProps & DraggableProvidedDragHandleProps & {
@@ -50,6 +50,10 @@ interface IPublicProps<ColumnNames> {
         selected: boolean;
     };
     className?: string;
+    placeholderProps?: {
+        showDraggableCell: boolean;
+        showIndexCell: boolean;
+    };
 }
 
 const useStyles = makeStyles(({ breakpoints, palette, shape, typography, spacing }: Theme) => ({
@@ -138,6 +142,14 @@ const useStyles = makeStyles(({ breakpoints, palette, shape, typography, spacing
         fontWeight: typography.fontWeightBold,
         textAlign: 'center',
     },
+    placeholderContent: {
+        backgroundColor: palette.type === 'light'
+            ? THEME_COLORS.GREY_LIGHT
+            : THEME_COLORS.GREY_DARK,
+        minHeight: typography.pxToRem(20),
+        minWidth: typography.pxToRem(40),
+        borderRadius: shape.borderRadius,
+    },
 }));
 
 export default function GenericTableRow<ColumnNames>({
@@ -151,6 +163,7 @@ export default function GenericTableRow<ColumnNames>({
     selectable,
     className,
     index: rowIndex,
+    placeholderProps,
 }: IPublicProps<ColumnNames>) {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
@@ -164,6 +177,8 @@ export default function GenericTableRow<ColumnNames>({
         setAnchorEl(null);
     };
 
+    const isPlaceholder = placeholderProps || typeof item === 'undefined';
+
     return (
         <TableRow
             className={classNames(classes.tableRow, className, {
@@ -172,74 +187,19 @@ export default function GenericTableRow<ColumnNames>({
             })}
             {...draggableProps}
         >
-            {isSet(draggableProps) && (
+            {(isSet(draggableProps) || (placeholderProps && placeholderProps.showDraggableCell)) && (
                 <TableCell className={classNames(classes.tableCell, 'drag-handle')}>
                     <DragHandlerIcon fontSize="inherit" />
                 </TableCell>
             )}
-            {isSet(showIndex) && (
+            {isSet(showIndex || (placeholderProps && placeholderProps.showIndexCell)) && (
                 <TableCell className={classes.tableCell}>
-                    <Typography className={classes.index}>{formatNumberWithTwoDigits(rowIndex)}</Typography>
+                    {!isPlaceholder ? (
+                        <Typography className={classes.index}>{formatNumberWithTwoDigits(rowIndex)}</Typography>
+                    ) : renderPlaceholderCellContent()}
                 </TableCell>
             )}
-            {Object.keys(columns).map((untypedColumnName) => {
-                const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
-                const column = columns[columnName] as IColumn<ColumnNames>;
-
-                const value = getListItemValueFromColumn(item, columnName).toString();
-                const shortenedValue = value.length > SHORTEN_VALUE_FROM_CHARACTERS
-                    ? `${value.substr(0, SHORTEN_VALUE_FROM_CHARACTERS)}…`
-                    : value;
-
-                const cellClassName = typeof column.className === 'function'
-                    ? column.className(value)
-                    : column.className;
-
-                const customTooltip = getListItemTooltipFromColumn(item, columnName);
-                const tooltip = customTooltip
-                    || (typeof column.tooltip === 'function' ? column.tooltip(value) : column.tooltip);
-                // const tooltip = typeof column.tooltip === 'function'
-                //     ? column.tooltip(value)
-                //     : column.tooltip;
-
-                return (
-                    <TableCell
-                        className={classNames(classes.tableCell, {
-                            [classes.hideOnCompactView]: !!column.hideOnCompactView,
-                        })}
-                        style={{ width: column.fixedWidth }}
-                        key={columnName as string}
-                    >
-                        <Box display="flex" alignItems="center">
-                            {column.icon && (
-                                <Box flex="0 0 auto" paddingRight={0.5}>
-                                    <Typography color="primary" className={classes.cellIcon}>
-                                        {column.icon}
-                                    </Typography>
-                                </Box>
-                            )}
-                            <Box flex="1 1 auto">
-                                {column.label && (
-                                    <Typography
-                                        display="block"
-                                        className={classes.label}
-                                    >
-                                        {column.label}
-                                    </Typography>
-                                )}
-                                <Box display="flex" alignItems="center">
-                                    <Typography variant="body2" className={cellClassName}>
-                                        {shortenedValue}
-                                        {tooltip && (
-                                            <Tooltip title={tooltip} iconSize="small" />
-                                        )}
-                                    </Typography>
-                                </Box>
-                            </Box>
-                        </Box>
-                    </TableCell>
-                );
-            })}
+            { isPlaceholder ? renderPlaceholderCells() : renderDataCells() }
             {listActions && (
                 <>
                     <TableCell
@@ -252,12 +212,14 @@ export default function GenericTableRow<ColumnNames>({
                             {listActions.map((action, listActionIndex) => (
                                 // eslint-disable-next-line react/no-array-index-key
                                 <div key={listActionIndex} className={classes.actionsItem}>
-                                    <IconButton
-                                        onClick={() => action.onClick(item.id, rowIndex)}
-                                        className={classes.actionIcon}
-                                    >
-                                        {action.icon}
-                                    </IconButton>
+                                    {!isPlaceholder ? (
+                                        <IconButton
+                                            onClick={() => action.onClick(item.id, rowIndex)}
+                                            className={classes.actionIcon}
+                                        >
+                                            {action.icon}
+                                        </IconButton>
+                                    ) : renderPlaceholderCellContent()}
                                 </div>
                             ))}
                         </div>
@@ -267,14 +229,16 @@ export default function GenericTableRow<ColumnNames>({
                             align="right"
                             className={classNames(classes.tableCell, classes.actionsCell, classes.actionsCellCompact)}
                         >
-                            <IconButton
-                                aria-label="more"
-                                aria-controls={`actions-menu-${rowIndex}`}
-                                aria-haspopup="true"
-                                onClick={handleClick}
-                            >
-                                <MoreVertIcon />
-                            </IconButton>
+                            {!isPlaceholder ? (
+                                <IconButton
+                                    aria-label="more"
+                                    aria-controls={`actions-menu-${rowIndex}`}
+                                    aria-haspopup="true"
+                                    onClick={handleClick}
+                                >
+                                    <MoreVertIcon />
+                                </IconButton>
+                            ) : renderPlaceholderCellContent()}
                             <Menu
                                 id={`actions-menu-${rowIndex}`}
                                 anchorEl={anchorEl}
@@ -317,4 +281,92 @@ export default function GenericTableRow<ColumnNames>({
             )}
         </TableRow>
     );
+
+    function renderDataCells() {
+        return Object.keys(columns).map((untypedColumnName) => {
+            const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
+            const column = columns[columnName] as IColumn<ColumnNames>;
+
+            const value = getListItemValueFromColumn(item, columnName).toString();
+            const shortenedValue = value.length > SHORTEN_VALUE_FROM_CHARACTERS
+                ? `${value.substr(0, SHORTEN_VALUE_FROM_CHARACTERS)}…`
+                : value;
+
+            const cellClassName = typeof column.className === 'function'
+                ? column.className(value)
+                : column.className;
+
+            const customTooltip = getListItemTooltipFromColumn(item, columnName);
+            const tooltip = customTooltip
+                || (typeof column.tooltip === 'function' ? column.tooltip(value) : column.tooltip);
+
+            return (
+                <TableCell
+                    className={classNames(classes.tableCell, {
+                        [classes.hideOnCompactView]: !!column.hideOnCompactView,
+                    })}
+                    style={{ width: column.fixedWidth }}
+                    key={columnName as string}
+                >
+                    <Box display="flex" alignItems="center">
+                        {column.icon && (
+                            <Box flex="0 0 auto" paddingRight={0.5}>
+                                <Typography color="primary" className={classes.cellIcon}>
+                                    {column.icon}
+                                </Typography>
+                            </Box>
+                        )}
+                        <Box flex="1 1 auto">
+                            {column.label && (
+                                <Typography
+                                    display="block"
+                                    className={classes.label}
+                                >
+                                    {column.label}
+                                </Typography>
+                            )}
+                            <Box display="flex" alignItems="center">
+                                <Typography variant="body2" className={cellClassName}>
+                                    {shortenedValue}
+                                    {tooltip && (
+                                        <Tooltip title={tooltip} iconSize="small" />
+                                    )}
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </Box>
+                </TableCell>
+            );
+        });
+    }
+
+    function renderPlaceholderCells() {
+        return Object.keys(columns).map((untypedColumnName) => {
+            const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
+            const column = columns[columnName] as IColumn<ColumnNames>;
+
+            return (
+                <TableCell
+                    className={classNames(classes.tableCell, {
+                        [classes.hideOnCompactView]: !!column.hideOnCompactView,
+                    })}
+                    style={{ width: column.fixedWidth }}
+                    key={columnName as string}
+                >
+                    <Box display="flex" alignItems="center">
+                        {renderPlaceholderCellContent()}
+                    </Box>
+                </TableCell>
+            );
+        });
+    }
+
+    function renderPlaceholderCellContent() {
+        return (
+            <Box
+                className={classes.placeholderContent}
+                flex="1 1 auto"
+            />
+        );
+    }
 }
