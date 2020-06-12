@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
 import { Box, Typography, makeStyles } from '@material-ui/core';
-import { ExpandMore as ExpandIcon } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import DescriptionList from 'views/common/list/DescriptionList';
 import { ROUTE_KEYS } from 'views/routes';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel/index';
 import { ListColumns } from 'models/list.models';
-import GenericCollapsingList from 'views/common/list/GenericCollapsingList';
-import ShowLabels from './labels';
-import ShowSchedules from './schedules';
+import CollapsingList from './CollapsingList';
+import ShowLabels from './ShowLabels';
+import ShowSchedules from './ShowSchedules';
 import { MOCKED_SCRIPT_LABELS, MOCKED_SCRIPT_SCHEDULES, MOCKED_ACTIONS_LIST_ITEMS } from './mock';
 
 interface IColumnNames {
     name: string;
     description: string;
 }
+
 
 const useStyles = makeStyles(({ palette, typography }) => ({
     scriptName: {
@@ -23,7 +23,6 @@ const useStyles = makeStyles(({ palette, typography }) => ({
     },
     scriptDescription: {
         fontWeight: typography.fontWeightBold,
-        position: 'relative',
     },
 }));
 
@@ -33,14 +32,15 @@ export default function ScriptDetail() {
 
     const columns: ListColumns<IColumnNames> = {
         name: {
-            fixedWidth: '20%',
+            fixedWidth: '30%',
             className: classes.scriptName,
         },
         description: {
-            fixedWidth: '70%',
+            fixedWidth: '30%',
             className: classes.scriptDescription,
         },
     };
+
 
     const ScriptDetailPanel = () => (
         <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
@@ -93,18 +93,9 @@ export default function ScriptDetail() {
         return (
             <>
                 <Box marginY={1}>
-                    <GenericCollapsingList
+                    <CollapsingList
                         listItems={listItems}
                         columns={columns}
-                        listActions={[
-                            {
-                                icon: <ExpandIcon />,
-                                label: <Translate msg="script_reports.detail.main.list.item.actions.expand" />,
-                                onClick: (id, index) => {
-                                    console.log(id, index);
-                                },
-                            },
-                        ]}
                     />
                 </Box>
             </>

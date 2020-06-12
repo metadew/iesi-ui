@@ -9,6 +9,17 @@ export const MOCKED_ACTIONS_LIST_ITEMS = [{
         description: 'ID to use for this script',
     },
     data: {
+        error: 'An error occured because of multiple entries',
+        parameters: [
+            {
+                description: 'Name of the parameter to set as runtime variable',
+                values: ['old name', 'new name'],
+            },
+            {
+                description: 'Name of the parameter to set as runtime variable',
+                values: ['old name', 'new name'],
+            },
+        ],
         category: 'Parameters',
     },
 }, {
@@ -18,6 +29,17 @@ export const MOCKED_ACTIONS_LIST_ITEMS = [{
         description: 'Set duration for the script to run',
     },
     data: {
+        error: 'An error occured because of multiple entries',
+        parameters: [
+            {
+                description: 'Name of the parameter to set as runtime variable',
+                values: ['old name', 'new name'],
+            },
+            {
+                description: 'Name of the parameter to set as runtime variable',
+                values: ['old name', 'new name'],
+            },
+        ],
         category: 'Parameters',
     },
 }, {
@@ -27,6 +49,17 @@ export const MOCKED_ACTIONS_LIST_ITEMS = [{
         description: 'Set script repeat amount',
     },
     data: {
+        error: 'An error occured because of multiple entries',
+        parameters: [
+            {
+                description: 'Name of the parameter to set as runtime variable',
+                values: ['old name', 'new name'],
+            },
+            {
+                description: 'Name of the parameter to set as runtime variable',
+                values: ['old name', 'new name'],
+            },
+        ],
         category: 'Parameters',
     },
 }, {
@@ -36,6 +69,17 @@ export const MOCKED_ACTIONS_LIST_ITEMS = [{
         description: 'Removes all rows with incomplete data',
     },
     data: {
+        error: 'An error occured because of multiple entries',
+        parameters: [
+            {
+                description: 'Name of the parameter to set as runtime variable',
+                values: ['old name', 'new name'],
+            },
+            {
+                description: 'Name of the parameter to set as runtime variable',
+                values: ['old name', 'new name'],
+            },
+        ],
         category: 'Database',
     },
 }, {
@@ -45,6 +89,17 @@ export const MOCKED_ACTIONS_LIST_ITEMS = [{
         description: 'Copy data from one row to another',
     },
     data: {
+        error: 'An error occured because of multiple entries',
+        parameters: [
+            {
+                description: 'Name of the parameter to set as runtime variable',
+                values: ['old name', 'new name'],
+            },
+            {
+                description: 'Name of the parameter to set as runtime variable',
+                values: ['old name', 'new name'],
+            },
+        ],
         category: 'Database',
     },
 }, {
@@ -54,6 +109,17 @@ export const MOCKED_ACTIONS_LIST_ITEMS = [{
         description: 'Delete row from database',
     },
     data: {
+        error: 'An error occured because of multiple entries',
+        parameters: [
+            {
+                description: 'Name of the parameter to set as runtime variable',
+                values: ['old name', 'new name'],
+            },
+            {
+                description: 'Name of the parameter to set as runtime variable',
+                values: ['old name', 'new name'],
+            },
+        ],
         category: 'Database',
     },
 }];
