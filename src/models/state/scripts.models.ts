@@ -82,4 +82,5 @@ export interface IDummyScriptActionParameter {
     name: string;
     description: string;
     value: string;
+    values?: string[];
 }

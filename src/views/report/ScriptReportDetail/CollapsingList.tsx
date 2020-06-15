@@ -8,7 +8,10 @@ import {
     ExpansionPanelSummary,
     ExpansionPanelDetails,
 } from '@material-ui/core';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import {
+    ExpandMore as ExpandMoreIcon,
+    ErrorOutline as ErrorOutlineIcon,
+} from '@material-ui/icons';
 import {
     IListItem,
     ListColumns,
@@ -16,6 +19,9 @@ import {
 } from 'models/list.models';
 import { formatNumberWithTwoDigits } from 'utils/number/format';
 import { getListItemValueFromColumn } from 'utils/list/list';
+import { THEME_COLORS } from 'config/themes/colors';
+import { Alert, AlertTitle } from '@material-ui/lab';
+import { IDummyScriptActionParameter } from 'models/state/scripts.models';
 
 interface IPublicProps<ColumnNames> {
     listItems: IListItem<ColumnNames>[];
@@ -28,6 +34,9 @@ const useStyles = makeStyles(({ typography }: Theme) => ({
         flexGrow: 0,
         fontWeight: typography.fontWeightBold,
         textAlign: 'center',
+    },
+    errorIcon: {
+        fill: THEME_COLORS.ERROR,
     },
 }));
 
@@ -50,12 +59,13 @@ export default function CollapsingList<ColumnNames>({
                         </Typography>
                         {renderDataCols(item)}
 
+                        {item.data.error && (
+                            <ErrorOutlineIcon className={classes.errorIcon} />
+                        )}
+
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
-                        <Typography>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,
-                            sit amet blandit leo lobortis eget.
-                        </Typography>
+                        {renderCollapsibleContent(item)}
                     </ExpansionPanelDetails>
                 </ExpansionPanel>
             ))}
@@ -79,5 +89,50 @@ export default function CollapsingList<ColumnNames>({
                 </Typography>
             );
         });
+    }
+
+    function renderCollapsibleContent(item: IListItem<ColumnNames>) {
+        return (
+            <>
+                {item.data.error && (
+                    <Alert severity="error">
+                        <AlertTitle>Error</AlertTitle>
+                        {item.data.error}
+                    </Alert>
+                )}
+
+                { item.data.parameters.map((parameter: IDummyScriptActionParameter, index: number) => {
+                    console.log(parameter, index);
+
+                    return (
+                        <ExpansionPanel>
+                            <ExpansionPanelSummary>
+                                <Typography>
+                                    Parameter
+                                    {' '}
+                                    {index}
+                                </Typography>
+                                <Typography>{parameter.description}</Typography>
+                            </ExpansionPanelSummary>
+                            <ExpansionPanelDetails>
+                                <Typography>
+                                    Value 1
+                                </Typography>
+                                <Typography>
+                                    {parameter.values[0]}
+                                </Typography>
+                                <Typography>
+                                    Value 2
+                                </Typography>
+                                <Typography>
+                                    {parameter.values[1]}
+                                </Typography>
+                            </ExpansionPanelDetails>
+                        </ExpansionPanel>
+                    );
+                })}
+            </>
+
+        );
     }
 }
