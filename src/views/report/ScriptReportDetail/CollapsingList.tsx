@@ -1,6 +1,7 @@
 import React from 'react';
+import classnames from 'classnames';
 import {
-    // Box,
+    Box,
     Typography,
     makeStyles,
     Theme,
@@ -12,6 +13,7 @@ import {
     ExpandMore as ExpandMoreIcon,
     ErrorOutline as ErrorOutlineIcon,
 } from '@material-ui/icons';
+import DescriptionList from 'views/common/list/DescriptionList';
 import {
     IListItem,
     ListColumns,
@@ -28,15 +30,46 @@ interface IPublicProps<ColumnNames> {
     columns: ListColumns<ColumnNames>;
 }
 
-const useStyles = makeStyles(({ typography }: Theme) => ({
+const useStyles = makeStyles(({ typography, palette, spacing }: Theme) => ({
     index: {
         width: 50,
         flexGrow: 0,
         fontWeight: typography.fontWeightBold,
         textAlign: 'center',
+        paddingLeft: 0,
+        paddingRight: 1,
+    },
+    tableCell: {
+        position: 'relative',
+        '&:after': {
+            content: '" "',
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            right: 0,
+            width: '1px',
+            backgroundColor: THEME_COLORS.GREY,
+        },
+    },
+    summary: {
+        background: palette.background.paper,
+        padding: 0,
+        margin: 0,
+    },
+    expandableItem: {
+        margin: '10px 0',
     },
     errorIcon: {
         fill: THEME_COLORS.ERROR,
+    },
+    details: {
+        background: THEME_COLORS.GREY_LIGHTER,
+    },
+    error: {
+        marginBottom: `${spacing(2)}px`,
+    },
+    detailList: {
+        width: '40%',
     },
 }));
 
@@ -50,22 +83,49 @@ export default function CollapsingList<ColumnNames>({
     return (
         <>
             { listItems.map((item: IListItem<ColumnNames>, index: number) => (
-                <ExpansionPanel key={item.id as string}>
+                <ExpansionPanel key={item.id as string} className={classes.expandableItem}>
                     <ExpansionPanelSummary
+                        className={classes.summary}
                         expandIcon={<ExpandMoreIcon />}
                     >
-                        <Typography className={classes.index}>
-                            {formatNumberWithTwoDigits(index + 1)}
-                        </Typography>
-                        {renderDataCols(item)}
+                        <Box
+                            display="flex"
+                            justifyContent="space-between"
+                            alignItems="center"
+                            width="100%"
+                            padding={1}
+                        >
+                            <Box
+                                paddingY={1.1}
+                                boxSizing="content-box"
+                                width={50}
+                                className={classnames(classes.tableCell, classes.index)}
+                            >
+                                {formatNumberWithTwoDigits(index + 1)}
+                            </Box>
+                            {renderDataCols(item)}
 
-                        {item.data.error && (
-                            <ErrorOutlineIcon className={classes.errorIcon} />
-                        )}
+                            {item.data.error && (
+                                <Box
+                                    paddingX={0}
+                                    paddingY={1.1}
+                                    boxSizing="content-box"
+                                    flex="0 0 auto"
+                                >
+                                    <ErrorOutlineIcon className={classes.errorIcon} />
+                                </Box>
+                            )}
+                        </Box>
+
 
                     </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
-                        {renderCollapsibleContent(item)}
+                    <ExpansionPanelDetails className={classes.details}>
+                        <Box
+                            width="100%"
+                            paddingY={1.1}
+                        >
+                            {renderCollapsibleContent(item)}
+                        </Box>
                     </ExpansionPanelDetails>
                 </ExpansionPanel>
             ))}
@@ -83,10 +143,30 @@ export default function CollapsingList<ColumnNames>({
                 ? column.className(value)
                 : column.className;
 
+            if (column.fixedWidth) {
+                return (
+                    <Box
+                        key={columnName as string}
+                        paddingX={3}
+                        paddingY={1.1}
+                        style={{ width: column.fixedWidth }}
+                        className={classnames(classes.tableCell, colClassName)}
+                    >
+                        {value}
+                    </Box>
+                );
+            }
+
             return (
-                <Typography key={columnName as string} className={colClassName}>
+                <Box
+                    key={columnName as string}
+                    paddingX={3}
+                    paddingY={1.1}
+                    flex="1 1 auto"
+                    className={colClassName}
+                >
                     {value}
-                </Typography>
+                </Box>
             );
         });
     }
@@ -95,7 +175,7 @@ export default function CollapsingList<ColumnNames>({
         return (
             <>
                 {item.data.error && (
-                    <Alert severity="error">
+                    <Alert severity="error" className={classes.error}>
                         <AlertTitle>Error</AlertTitle>
                         {item.data.error}
                     </Alert>
@@ -106,7 +186,9 @@ export default function CollapsingList<ColumnNames>({
 
                     return (
                         <ExpansionPanel>
-                            <ExpansionPanelSummary>
+                            <ExpansionPanelSummary
+                                expandIcon={<ExpandMoreIcon />}
+                            >
                                 <Typography>
                                     Parameter
                                     {' '}
@@ -115,18 +197,14 @@ export default function CollapsingList<ColumnNames>({
                                 <Typography>{parameter.description}</Typography>
                             </ExpansionPanelSummary>
                             <ExpansionPanelDetails>
-                                <Typography>
-                                    Value 1
-                                </Typography>
-                                <Typography>
-                                    {parameter.values[0]}
-                                </Typography>
-                                <Typography>
-                                    Value 2
-                                </Typography>
-                                <Typography>
-                                    {parameter.values[1]}
-                                </Typography>
+                                <Box mt={1} display="flex" flexDirection="column" flex="0 1 40%">
+                                    <DescriptionList
+                                        items={[
+                                            { label: 'Value 1', value: parameter.values[0] },
+                                            { label: 'Value 2', value: parameter.values[1] },
+                                        ]}
+                                    />
+                                </Box>
                             </ExpansionPanelDetails>
                         </ExpansionPanel>
                     );

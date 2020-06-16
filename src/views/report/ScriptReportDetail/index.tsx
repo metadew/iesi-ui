@@ -4,15 +4,13 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import DescriptionList from 'views/common/list/DescriptionList';
 import { ROUTE_KEYS } from 'views/routes';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel/index';
-import { ListColumns } from 'models/list.models';
 import CollapsingList from './CollapsingList';
 import ShowLabels from './ShowLabels';
 import ShowSchedules from './ShowSchedules';
 import { MOCKED_SCRIPT_LABELS, MOCKED_SCRIPT_SCHEDULES, MOCKED_ACTIONS_LIST_ITEMS } from './mock';
 
 interface IColumnNames {
-    name: string;
-    description: string;
+    [key: string]: string | boolean;
 }
 
 
@@ -30,14 +28,14 @@ export default function ScriptDetail() {
     const [listItems] = useState(MOCKED_ACTIONS_LIST_ITEMS);
     const classes = useStyles();
 
-    const columns: ListColumns<IColumnNames> = {
+    const columns: Record<string, IColumnNames> = {
         name: {
-            fixedWidth: '30%',
+            fixedWidth: '20%',
             className: classes.scriptName,
         },
         description: {
-            fixedWidth: '30%',
             className: classes.scriptDescription,
+            border: false,
         },
     };
 

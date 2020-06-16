@@ -100,6 +100,19 @@ const commonTheme: ThemeOptions = {
                 borderRadius: MUI_DEFAULT_THEME.shape.borderRadius,
             },
         },
+        // Collapse
+        MuiExpansionPanelSummary: {
+            content: {
+                margin: '0',
+
+                '&$expanded': {
+                    margin: '0',
+                },
+            },
+            expandIcon: {
+                marginRight: '0',
+            },
+        },
     },
 };
 
