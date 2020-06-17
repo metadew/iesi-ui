@@ -116,3 +116,5 @@ script_reports:
         version: Version
     header:
       amount: 'You have {amount} scripts'
+    detail:
+      parameter_index: 'Parameter {index}'

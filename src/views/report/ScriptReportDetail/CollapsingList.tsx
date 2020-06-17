@@ -13,6 +13,7 @@ import {
     ExpandMore as ExpandMoreIcon,
     ErrorOutline as ErrorOutlineIcon,
 } from '@material-ui/icons';
+import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import DescriptionList from 'views/common/list/DescriptionList';
 import {
     IListItem,
@@ -30,7 +31,7 @@ interface IPublicProps<ColumnNames> {
     columns: ListColumns<ColumnNames>;
 }
 
-const useStyles = makeStyles(({ typography, palette, spacing }: Theme) => ({
+const useStyles = makeStyles(({ typography, palette, shape, spacing }: Theme) => ({
     index: {
         width: 50,
         flexGrow: 0,
@@ -58,9 +59,25 @@ const useStyles = makeStyles(({ typography, palette, spacing }: Theme) => ({
     },
     expandableItem: {
         margin: '10px 0',
+        boxShadow: '0 2px 22px rgba(0, 0, 0, .10)',
+        borderRadius: shape.borderRadius,
+        border: 'none',
+        overflow: 'hidden',
     },
-    errorIcon: {
-        fill: THEME_COLORS.ERROR,
+    childExpandableItem: {
+        overflow: 'hidden',
+        boxShadow: 'none',
+        border: `1px solid ${THEME_COLORS.GREY_LIGHT}`,
+        '&:first-child': {
+            borderTopLeftRadius: shape.borderRadius,
+        },
+    },
+    childExpandableItemSummery: {
+        padding: '0 0 0 20px',
+        margin: 0,
+    },
+    errorCell: {
+        color: THEME_COLORS.ERROR,
     },
     details: {
         background: THEME_COLORS.GREY_LIGHTER,
@@ -71,6 +88,17 @@ const useStyles = makeStyles(({ typography, palette, spacing }: Theme) => ({
     detailList: {
         width: '40%',
     },
+    detailParameterLabel: {
+        fontSize: typography.pxToRem(12),
+        color: palette.grey[500],
+    },
+    descriptionListHolder: {
+        margin: 0,
+
+        '& > dl': {
+            margin: 0,
+        },
+    },
 }));
 
 export default function CollapsingList<ColumnNames>({
@@ -78,7 +106,6 @@ export default function CollapsingList<ColumnNames>({
     columns,
 }: IPublicProps<ColumnNames>) {
     const classes = useStyles();
-    console.log(listItems);
 
     return (
         <>
@@ -111,8 +138,9 @@ export default function CollapsingList<ColumnNames>({
                                     paddingY={1.1}
                                     boxSizing="content-box"
                                     flex="0 0 auto"
+                                    className={classes.errorCell}
                                 >
-                                    <ErrorOutlineIcon className={classes.errorIcon} />
+                                    <ErrorOutlineIcon />
                                 </Box>
                             )}
                         </Box>
@@ -181,34 +209,47 @@ export default function CollapsingList<ColumnNames>({
                     </Alert>
                 )}
 
-                { item.data.parameters.map((parameter: IDummyScriptActionParameter, index: number) => {
-                    console.log(parameter, index);
-
-                    return (
-                        <ExpansionPanel>
-                            <ExpansionPanelSummary
-                                expandIcon={<ExpandMoreIcon />}
+                { item.data.parameters.map((parameter: IDummyScriptActionParameter, index: number) => (
+                    <ExpansionPanel key={parameter.id as string} className={classes.childExpandableItem}>
+                        <ExpansionPanelSummary
+                            expandIcon={<ExpandMoreIcon />}
+                            className={classes.childExpandableItemSummery}
+                        >
+                            <Box
+                                paddingX={0}
+                                paddingY={2}
                             >
-                                <Typography>
-                                    Parameter
-                                    {' '}
-                                    {index}
+                                <Typography className={classes.detailParameterLabel}>
+                                    <Translate
+                                        msg="script_reports.detail.parameter_index"
+                                        placeholders={{
+                                            index,
+                                        }}
+                                    />
                                 </Typography>
                                 <Typography>{parameter.description}</Typography>
-                            </ExpansionPanelSummary>
-                            <ExpansionPanelDetails>
-                                <Box mt={1} display="flex" flexDirection="column" flex="0 1 40%">
-                                    <DescriptionList
-                                        items={[
-                                            { label: 'Value 1', value: parameter.values[0] },
-                                            { label: 'Value 2', value: parameter.values[1] },
-                                        ]}
-                                    />
-                                </Box>
-                            </ExpansionPanelDetails>
-                        </ExpansionPanel>
-                    );
-                })}
+                            </Box>
+
+                        </ExpansionPanelSummary>
+                        <ExpansionPanelDetails>
+                            <Box
+                                paddingX={0}
+                                paddingY={0}
+                                display="flex"
+                                flexDirection="column"
+                                flex="0 1 40%"
+                                className={classes.descriptionListHolder}
+                            >
+                                <DescriptionList
+                                    items={[
+                                        { label: 'Value 1', value: parameter.values[0] },
+                                        { label: 'Value 2', value: parameter.values[1] },
+                                    ]}
+                                />
+                            </Box>
+                        </ExpansionPanelDetails>
+                    </ExpansionPanel>
+                ))}
             </>
 
         );

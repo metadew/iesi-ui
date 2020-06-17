@@ -14,10 +14,12 @@ export const MOCKED_ACTIONS_LIST_ITEMS = [{
             {
                 description: 'Name of the parameter to set as runtime variable',
                 values: ['old name', 'new name'],
+                id: 1,
             },
             {
                 description: 'Name of the parameter to set as runtime variable',
                 values: ['old name', 'new name'],
+                id: 2,
             },
         ],
         category: 'Parameters',
@@ -34,10 +36,12 @@ export const MOCKED_ACTIONS_LIST_ITEMS = [{
             {
                 description: 'Name of the parameter to set as runtime variable',
                 values: ['old name', 'new name'],
+                id: 3,
             },
             {
                 description: 'Name of the parameter to set as runtime variable',
                 values: ['old name', 'new name'],
+                id: 4,
             },
         ],
         category: 'Parameters',
@@ -54,10 +58,12 @@ export const MOCKED_ACTIONS_LIST_ITEMS = [{
             {
                 description: 'Name of the parameter to set as runtime variable',
                 values: ['old name', 'new name'],
+                id: 5,
             },
             {
                 description: 'Name of the parameter to set as runtime variable',
                 values: ['old name', 'new name'],
+                id: 6,
             },
         ],
         category: 'Parameters',
@@ -74,10 +80,12 @@ export const MOCKED_ACTIONS_LIST_ITEMS = [{
             {
                 description: 'Name of the parameter to set as runtime variable',
                 values: ['old name', 'new name'],
+                id: 7,
             },
             {
                 description: 'Name of the parameter to set as runtime variable',
                 values: ['old name', 'new name'],
+                id: 8,
             },
         ],
         category: 'Database',
@@ -94,10 +102,12 @@ export const MOCKED_ACTIONS_LIST_ITEMS = [{
             {
                 description: 'Name of the parameter to set as runtime variable',
                 values: ['old name', 'new name'],
+                id: 9,
             },
             {
                 description: 'Name of the parameter to set as runtime variable',
                 values: ['old name', 'new name'],
+                id: 10,
             },
         ],
         category: 'Database',
@@ -114,10 +124,12 @@ export const MOCKED_ACTIONS_LIST_ITEMS = [{
             {
                 description: 'Name of the parameter to set as runtime variable',
                 values: ['old name', 'new name'],
+                id: 11,
             },
             {
                 description: 'Name of the parameter to set as runtime variable',
                 values: ['old name', 'new name'],
+                id: 12,
             },
         ],
         category: 'Database',
