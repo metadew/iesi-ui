@@ -11,7 +11,7 @@ import {
     IEntitiesInitialState,
     IWithKeyIndex,
 } from './types';
-import { asyncEntityFetch } from './asyncEntityUpdaters';
+import { asyncEntityFetch, asyncEntityCreate, asyncEntityRemove, asyncEntityUpdate } from './asyncEntityUpdaters';
 
 export interface IAsyncEntityActionCreators<ActionType, State, ExtraProcessInput, StateChangeNotificationKey> {
     createAsyncEntityAction<ExtraInput extends object, ApiInput, ApiResult, ApiResponse = ApiResult>(
@@ -210,8 +210,10 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                     // eslint-disable-next-line arrow-body-style
                     updateAsyncEntityInState((entity) => {
                         return resetDataOnTrigger
-                            ? asyncEntityFetch.trigger(entity, entitiesInitialState[asyncEntityKey].data)
-                            : asyncEntityFetch.triggerWithoutDataReset(entity);
+                            ? getAsyncEntityUpdaterFromOperation(operation)
+                                .trigger(entity, entitiesInitialState[asyncEntityKey].data)
+                            : getAsyncEntityUpdaterFromOperation(operation)
+                                .triggerWithoutDataReset(entity);
                     });
 
                     const apiInput = isSet(apiInputSelector)
@@ -226,11 +228,16 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                     // eslint-disable-next-line arrow-body-style
                     updateAsyncEntityInState((entity) => {
                         return updateDataOnSuccess
-                            ? asyncEntityFetch.succeeded(entity, apiResult)
-                            : asyncEntityFetch.succeededWithoutDataSet(entity);
+                            ? getAsyncEntityUpdaterFromOperation(operation)
+                                .succeeded(entity, apiResult)
+                            : getAsyncEntityUpdaterFromOperation(operation)
+                                .succeededWithoutDataSet(entity);
                     });
                 } catch (error) {
-                    updateAsyncEntityInState((entity) => asyncEntityFetch.failed(entity, error));
+                    updateAsyncEntityInState(
+                        (entity) => getAsyncEntityUpdaterFromOperation(operation)
+                            .failed(entity, error),
+                    );
                 }
 
                 function updateAsyncEntityInState(
@@ -251,6 +258,16 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                         notificationsToTrigger,
                         nrOfParentNotificationLevelsToTrigger,
                     });
+                }
+
+                function getAsyncEntityUpdaterFromOperation(currentOperation: AsyncOperation) {
+                    const map = {
+                        [AsyncOperation.create]: asyncEntityCreate,
+                        [AsyncOperation.fetch]: asyncEntityFetch,
+                        [AsyncOperation.remove]: asyncEntityRemove,
+                        [AsyncOperation.update]: asyncEntityUpdate,
+                    };
+                    return map[currentOperation];
                 }
             },
         });
