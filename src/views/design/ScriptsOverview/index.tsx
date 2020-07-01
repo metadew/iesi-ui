@@ -297,10 +297,17 @@ const ScriptsOverview = withStyles(styles)(
                                 }, {
                                     icon: <Edit />,
                                     label: <Translate msg="scripts.overview.list.actions.edit" />,
-                                    onClick: (id) => redirectTo({
-                                        routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                        params: { scriptId: id },
-                                    }),
+                                    onClick: (id) => {
+                                        const scripts = getAsyncScripts(this.props.state).data;
+                                        const selectedScript = scripts.find((item) => item.name === id);
+                                        redirectTo({
+                                            routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                            params: {
+                                                name: selectedScript.name,
+                                                version: selectedScript.version.number,
+                                            },
+                                        });
+                                    },
                                 }, {
                                     icon: <ReportIcon />,
                                     label: <Translate msg="scripts.overview.list.actions.report" />,

@@ -1,5 +1,5 @@
 import { IRoute } from 'models/router.models';
-import { triggerFetchScripts } from 'state/entities/scripts/triggers';
+import { triggerFetchScripts, triggerFetchScriptDetail } from 'state/entities/scripts/triggers';
 import { ROUTE_KEYS, registerRoutes } from './routes';
 import NotFound from './appShell/NotFound';
 import Home from './Home';
@@ -28,8 +28,17 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
         },
         {
             routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-            path: '/:scriptId',
+            path: '/:name/:version',
             component: ScriptDetail,
+            executeOnRoute: [{
+                // TODO: Fix this typing error so we dont need to cast to () => unknown? Can this be simpler?
+                // Maybe pass the routeLocation to the execute so we dont need the executeInputSelector prop?
+                execute: triggerFetchScriptDetail as () => unknown,
+                executeInputSelector: ({ routeLocation }) => ({
+                    name: routeLocation.params.name,
+                    version: routeLocation.params.version,
+                }),
+            }],
         },
     ],
     executeOnRoute: [{

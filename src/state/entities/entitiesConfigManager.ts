@@ -5,6 +5,7 @@ import { ITraceableApiError } from 'models/api.models';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { api } from 'api';
 import { ICreateExecutionRequestPayload } from 'models/state/executionRequests.models';
+import { IScriptByNameAndVersionPayload } from 'models/state/scripts.models';
 
 // eslint-disable-next-line max-len
 const entitiesConfigManager = initAsyncEntitiesConfigManager<IState, {}, ITraceableApiError, string, IExtraProcessInput>();
@@ -14,6 +15,16 @@ entitiesConfigManager.register({
     operationsConfig: {
         fetch: {
             api: api.scripts.fetchScripts,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetail,
+    operationsConfig: {
+        fetch: {
+            api: api.scripts.fetchScriptVersion,
+            apiInputSelector: ({ extraInput }) => extraInput as IScriptByNameAndVersionPayload,
         },
     },
 });
