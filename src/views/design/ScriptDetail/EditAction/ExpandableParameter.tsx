@@ -11,12 +11,13 @@ import {
     FilledInput,
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
-import { IDummyScriptActionParameter } from 'models/state/scripts.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
+import { IParameter } from 'models/state/iesiGeneric.models';
 
 interface IPublicProps {
     onChange: (value: string) => void;
-    parameter: IDummyScriptActionParameter;
+    parameter: IParameter;
+    number: number;
 }
 
 const useStyles = makeStyles(({ palette, spacing }) => ({
@@ -54,7 +55,7 @@ const useStyles = makeStyles(({ palette, spacing }) => ({
     },
 }));
 
-export default function ExpandableParameter({ parameter, onChange }: IPublicProps) {
+export default function ExpandableParameter({ parameter, onChange, number }: IPublicProps) {
     const classes = useStyles();
 
     return (
@@ -65,10 +66,13 @@ export default function ExpandableParameter({ parameter, onChange }: IPublicProp
             >
                 <Box>
                     <Typography className={classes.expansionPanelLabel}>
-                        {parameter.name}
+                        <Translate
+                            msg="scripts.detail.edit_action.parameter.title"
+                            placeholders={{ number }}
+                        />
                     </Typography>
                     <Typography className={classes.expansionPanelTitle}>
-                        {parameter.description}
+                        {parameter.name}
                     </Typography>
                 </Box>
             </ExpansionPanelSummary>
@@ -80,7 +84,7 @@ export default function ExpandableParameter({ parameter, onChange }: IPublicProp
                         <Translate msg="scripts.detail.edit_action.parameter.value" />
                     </InputLabel>
                     <FilledInput
-                        id="input"
+                        id={`${parameter.name}-input`}
                         type="text"
                         value={parameter.value}
                         onChange={(e) => onChange(e.target.value)}

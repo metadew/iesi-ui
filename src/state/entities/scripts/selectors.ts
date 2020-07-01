@@ -6,3 +6,5 @@ export const getScriptByName = (state: IState, scriptName: string) => {
     const scripts = getAsyncScripts(state).data || [];
     return scripts.find((script) => script.name === scriptName);
 };
+
+export const getAsyncScriptDetail = (state: IState) => state.entities.scriptDetail;

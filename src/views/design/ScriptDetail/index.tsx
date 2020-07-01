@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import { getTranslator } from 'state/i18n/selectors';
 import { Box, Typography, Button, makeStyles } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
     Edit as EditIcon,
 } from '@material-ui/icons';
-import { IDummyScriptAction } from 'models/state/scripts.models';
+import { IDummyScriptAction, IScriptAction } from 'models/state/scripts.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import TextInput from 'views/common/input/TextInput';
 import DescriptionList from 'views/common/list/DescriptionList';
@@ -18,13 +17,13 @@ import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel/index
 import { THEME_COLORS } from 'config/themes/colors';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
+import { getAsyncScriptDetail } from 'state/entities/scripts/selectors';
 
 import DetailActions from './DetailActions';
 import AddAction from './AddAction';
 import EditAction from './EditAction';
 import EditLabels from './EditLabels';
 import EditSchedules from './EditSchedules';
-import { MOCKED_SCRIPT_LABELS, MOCKED_SCRIPT_SCHEDULES } from './mock';
 
 
 interface IColumnNames {
@@ -82,12 +81,30 @@ const mockedListItems: IListItem<IColumnNames>[] = [{
 }];
 
 function ScriptDetail({ state }: IObserveProps) {
+    const scriptDetail = getAsyncScriptDetail(state).data;
+    const scriptDetailAsyncStatus = getAsyncScriptDetail(state).fetch.status;
+    const uniqueScriptId = scriptDetail && scriptDetail.name
+        ? `${scriptDetail.name}-${scriptDetail.version.number}` : '';
+
     const [isAddOpen, setIsAddOpen] = useState(false);
-    const [editAction, setEditAction] = useState<{ action: IDummyScriptAction; index: number }>(null);
+    const [editAction, setEditAction] = useState<{ action: IScriptAction; index: number }>(null);
     const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
     const [listItems, setListItems] = useState(mockedListItems);
 
-    const { scriptId } = useParams();
+    useEffect(() => {
+        const newListItems: IListItem<IColumnNames>[] = scriptDetail && scriptDetail.actions
+            ? scriptDetail.actions.map((action) => ({
+                id: action.name,
+                columns: {
+                    name: action.name,
+                    description: action.description,
+                },
+            }))
+            : [];
+        setListItems(newListItems);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [uniqueScriptId]);
+
     const classes = useStyles();
 
     const translator = getTranslator(state);
@@ -113,13 +130,14 @@ function ScriptDetail({ state }: IObserveProps) {
                         required
                         error
                         helperText="Scriptname is a required field"
+                        value={scriptDetail && scriptDetail.name ? scriptDetail.name : ''}
                     />
                     <TextInput
                         id="script-description"
                         label="Description"
                         multiline
                         rows={8}
-                        value={`Script detail: ${scriptId}`}
+                        value={scriptDetail && scriptDetail.description ? scriptDetail.description : ''}
                     />
                 </form>
                 <DescriptionList
@@ -127,11 +145,15 @@ function ScriptDetail({ state }: IObserveProps) {
                     items={[
                         {
                             label: <Translate msg="scripts.detail.side.labels.title" />,
-                            value: <EditLabels labels={MOCKED_SCRIPT_LABELS} />,
+                            value: <EditLabels
+                                labels={scriptDetail && scriptDetail.labels ? scriptDetail.labels : []}
+                            />,
                         },
                         {
                             label: <Translate msg="scripts.detail.side.schedules.title" />,
-                            value: <EditSchedules schedules={MOCKED_SCRIPT_SCHEDULES} />,
+                            value: <EditSchedules
+                                schedules={scriptDetail && scriptDetail.scheduling ? scriptDetail.scheduling : []}
+                            />,
                         },
                     ]}
                 />
@@ -139,9 +161,18 @@ function ScriptDetail({ state }: IObserveProps) {
             <Box>
                 <DescriptionList
                     items={[
-                        { label: 'Version', value: '01' },
-                        { label: 'Last run date', value: '10-10-2018' },
-                        { label: 'Last run status', value: 'Passed' },
+                        {
+                            label: translator('scripts.detail.side.description.version'),
+                            value: scriptDetail && scriptDetail.version ? scriptDetail.version.number : '',
+                        },
+                        {
+                            label: translator('scripts.detail.side.description.last_run_date'),
+                            value: '10-10-2018',
+                        },
+                        {
+                            label: translator('scripts.detail.side.description.last_run_status'),
+                            value: 'Passed',
+                        },
                     ]}
                 />
             </Box>
@@ -196,15 +227,8 @@ function ScriptDetail({ state }: IObserveProps) {
                                 icon: <EditIcon />,
                                 label: <Translate msg="scripts.detail.main.list.item.actions.edit" />,
                                 onClick: (id, index) => {
-                                    const action = listItems.find((item) => item.id === id);
-                                    setEditAction({
-                                        action: {
-                                            id,
-                                            description: action.columns.description.toString(),
-                                            name: action.columns.name.toString(),
-                                        },
-                                        index,
-                                    });
+                                    const action = scriptDetail.actions.find((item) => item.name === id);
+                                    setEditAction({ action, index });
                                 },
                             },
                         ]}
@@ -239,6 +263,7 @@ function ScriptDetail({ state }: IObserveProps) {
                 contentOverlay={editAction ? <EditActionContent /> : <AddScriptContent />}
                 contentOverlayOpen={!!editAction || isAddOpen}
                 toggleLabel={<Translate msg="scripts.detail.side.toggle_button" />}
+                showLoader={scriptDetailAsyncStatus}
             />
             <ConfirmationDialog
                 title={translator('scripts.detail.delete_script_dialog.title')}
@@ -271,4 +296,7 @@ function ScriptDetail({ state }: IObserveProps) {
     }
 }
 
-export default observe([StateChangeNotification.I18N_TRANSLATIONS], ScriptDetail);
+export default observe([
+    StateChangeNotification.I18N_TRANSLATIONS,
+    StateChangeNotification.DESIGN_SCRIPTS_DETAIL,
+], ScriptDetail);

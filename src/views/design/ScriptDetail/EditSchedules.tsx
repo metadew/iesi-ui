@@ -97,7 +97,7 @@ export default function EditSchedules({
                     }))}
                 />
             ) : (
-                <Translate msg="No schedules" />
+                <Translate msg="scripts.detail.side.schedules.empty" />
             )}
             {(MOCKED_ENVS && MOCKED_ENVS.length > 0) && (
                 <ClickAwayListener onClickAway={handleClickAway}>

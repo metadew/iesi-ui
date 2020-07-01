@@ -9,14 +9,14 @@ import {
     Checkbox,
 } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
-import { IDummyScriptAction } from 'models/state/scripts.models';
+import { IScriptAction } from 'models/state/scripts.models';
 import { formatNumberWithTwoDigits } from 'utils/number/format';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import ExpandableParameter from './ExpandableParameter';
 
 interface IPublicProps {
     index: number;
-    action: IDummyScriptAction;
+    action: IScriptAction;
     onClose: () => void;
 }
 
@@ -63,17 +63,7 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
 }));
 
 function EditAction({ onClose, action, index }: IPublicProps) {
-    const [parameters, setParameters] = useState([{
-        id: 1,
-        name: 'Parameter 1',
-        description: 'Name of the parameter to set at runtime',
-        value: '',
-    }, {
-        id: 2,
-        name: 'Parameter 2',
-        description: 'Amount of times this action should be repeated',
-        value: '',
-    }]);
+    const [parameters, setParameters] = useState(action.parameters);
     const classes = useStyles();
 
     return (
@@ -102,11 +92,12 @@ function EditAction({ onClose, action, index }: IPublicProps) {
                 </IconButton>
             </Box>
             <Box padding={2}>
-                {parameters.map((parameter) => (
+                {parameters.map((parameter, parameterIndex) => (
                     <ExpandableParameter
+                        key={parameter.name}
                         onChange={(value) => {
                             const newParameters = parameters.map((item) => {
-                                if (item.id === parameter.id) {
+                                if (item.name === parameter.name) {
                                     return {
                                         ...item,
                                         value,
@@ -117,6 +108,7 @@ function EditAction({ onClose, action, index }: IPublicProps) {
                             setParameters(newParameters);
                         }}
                         parameter={parameter}
+                        number={parameterIndex + 1}
                     />
                 ))}
                 <Box display="flex" justifyContent="flex-end" marginTop={2}>

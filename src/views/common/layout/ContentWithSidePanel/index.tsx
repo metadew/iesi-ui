@@ -5,6 +5,8 @@ import GoBack from 'views/common/navigation/GoBack';
 import { ROUTE_KEYS } from 'views/routes';
 import { TTranslatorComponent } from 'models/i18n.models';
 import { PlayArrowSharp } from '@material-ui/icons';
+import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import Loader from 'views/common/waiting/Loader';
 
 interface IPublicProps {
     panel: React.ReactNode;
@@ -13,6 +15,7 @@ interface IPublicProps {
     contentOverlay?: React.ReactNode;
     contentOverlayOpen?: boolean;
     toggleLabel: TTranslatorComponent;
+    showLoader?: boolean | AsyncStatus;
 }
 
 const SIDE_PANEL_WIDTH_MOBILE = 350;
@@ -77,6 +80,7 @@ export default function ContentWithSidePanel({
     contentOverlay,
     contentOverlayOpen,
     toggleLabel,
+    showLoader,
 }: IPublicProps) {
     const classes = useStyles();
     const [isOpen, setIsOpen] = useState(false);
@@ -96,6 +100,7 @@ export default function ContentWithSidePanel({
                     [classes.open]: isOpen,
                 })}
             >
+                <Loader show={showLoader} />
                 <Box
                     position="absolute"
                     top={0}
