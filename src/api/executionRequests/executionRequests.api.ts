@@ -1,4 +1,8 @@
-import { IExecutionRequest, IExecutionRequestByIdPayload } from 'models/state/executionRequests.models';
+import {
+    IExecutionRequest,
+    IExecutionRequestByIdPayload,
+    ICreateExecutionRequestPayload,
+} from 'models/state/executionRequests.models';
 import { IListResponse } from 'models/state/iesiGeneric.models';
 import { get, post } from '../requestWrapper';
 import API_URLS from '../apiUrls';
@@ -20,7 +24,8 @@ export function fetchExecutionRequest({ id }: IExecutionRequestByIdPayload) {
     });
 }
 
-export function createExecutionRequest(executionRequest: Omit<IExecutionRequest, 'executionRequestId'>) {
+export function createExecutionRequest(executionRequest: ICreateExecutionRequestPayload) {
+    console.log('API: Create Execution request', executionRequest);
     return post<IExecutionRequest>({
         url: API_URLS.EXECUTION_REQUESTS,
         body: executionRequest,

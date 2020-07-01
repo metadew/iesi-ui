@@ -1,4 +1,4 @@
-import { ILabel } from './iesiGeneric.models';
+import { ILabel, IParameter } from './iesiGeneric.models';
 
 export interface IExecutionRequest {
     executionRequestId: string;
@@ -13,7 +13,19 @@ export interface IExecutionRequest {
     executionRequestLabels: ILabel[];
 }
 
-type TExecutionRequestStatus = 'NEW'; // TODO
+export interface ICreateExecutionRequestPayload {
+    requestTimestamp: Date; // format 2020-05-04T10:01:13.923Z
+    name: string;
+    description: string;
+    scope: string;
+    context: string;
+    email: string;
+    executionRequestStatus: TExecutionRequestStatus;
+    scriptExecutionRequests: Omit<IScriptExecutionRequest, 'executionRequestId' | 'scriptExecutionRequestId'>[];
+    executionRequestLabels: ILabel[];
+}
+
+export type TExecutionRequestStatus = 'NEW'; // TODO
 
 interface IScriptExecutionRequest {
     scriptExecutionRequestId: string;
@@ -21,7 +33,7 @@ interface IScriptExecutionRequest {
     environment: string;
     exit: boolean;
     impersonations: { name: string }[];
-    parameters: { [additionalProp: string]: string };
+    parameters: IParameter[];
     scriptExecutionRequestStatus: TExecutionRequestStatus;
     scriptName: string;
     scriptVersion: number;

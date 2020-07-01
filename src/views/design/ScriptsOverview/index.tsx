@@ -12,6 +12,7 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
+import { getTranslator } from 'state/i18n/selectors';
 import { Edit, Delete, PlayArrowRounded, AddRounded, WatchLater } from '@material-ui/icons';
 import ReportIcon from 'views/common/icons/Report';
 import {
@@ -35,6 +36,7 @@ import { StateChangeNotification } from 'models/state.models';
 import { getAsyncScripts } from 'state/entities/scripts/selectors';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import OrderedList from 'views/common/list/OrderedList';
+import ExecuteScriptDialog from './ExecuteScriptDialog';
 
 
 const styles = ({ palette, typography }: Theme) =>
@@ -114,7 +116,8 @@ const sortActions: SortActions<Partial<IColumnNames>> = {
 interface IComponentState {
     sortedColumn: ISortedColumn<IColumnNames>;
     filters: ListFilters<Partial<IColumnNames>>;
-    idOfScriptToDelete: ReactText;
+    scriptNameToDelete: string;
+    scriptNameToExecute: string;
 }
 
 type TProps = WithStyles<typeof styles>;
@@ -127,7 +130,8 @@ const ScriptsOverview = withStyles(styles)(
             this.state = {
                 sortedColumn: null,
                 filters: getIntialFiltersFromFilterConfig(filterConfig),
-                idOfScriptToDelete: null,
+                scriptNameToDelete: null,
+                scriptNameToExecute: null,
             };
 
             this.renderPanel = this.renderPanel.bind(this);
@@ -137,16 +141,20 @@ const ScriptsOverview = withStyles(styles)(
 
             this.clearScriptToDelete = this.clearScriptToDelete.bind(this);
             this.setScriptToDelete = this.setScriptToDelete.bind(this);
+            this.clearScriptToExecute = this.clearScriptToExecute.bind(this);
+            this.setScriptToExecute = this.setScriptToExecute.bind(this);
         }
 
         public render() {
-            const { classes } = this.props;
-            const { sortedColumn, idOfScriptToDelete } = this.state;
+            const { classes, state } = this.props;
+            const { sortedColumn, scriptNameToDelete, scriptNameToExecute } = this.state;
 
             const scripts = getAsyncScripts(this.props.state).data;
             const listItems = scripts
                 ? mapScriptsToListItems(this.props.state.entities.scripts.data)
                 : [];
+
+            const translator = getTranslator(state);
 
             return (
                 <>
@@ -194,11 +202,16 @@ const ScriptsOverview = withStyles(styles)(
                         />
                     </Box>
                     <ConfirmationDialog
-                        title={<Translate msg="scripts.overview.delete_script_dialog.title" />}
-                        text={<Translate msg="scripts.overview.delete_script_dialog.text" />}
-                        open={!!idOfScriptToDelete}
+                        title={translator('scripts.overview.delete_script_dialog.title')}
+                        text={translator('scripts.overview.delete_script_dialog.text')}
+                        open={!!scriptNameToDelete}
                         onClose={this.clearScriptToDelete}
                         onConfirm={this.clearScriptToDelete} // TODO: actually delete script
+                    />
+                    <ExecuteScriptDialog
+                        scriptName={scriptNameToExecute}
+                        open={!!scriptNameToExecute}
+                        onClose={this.clearScriptToExecute}
                     />
                 </>
             );
@@ -280,7 +293,7 @@ const ScriptsOverview = withStyles(styles)(
                                     icon: <PlayArrowRounded />,
                                     label: <Translate msg="scripts.overview.list.actions.execute" />,
                                     // eslint-disable-next-line no-alert
-                                    onClick: (id) => alert(`execute: ${id}`),
+                                    onClick: this.setScriptToExecute,
                                 }, {
                                     icon: <Edit />,
                                     label: <Translate msg="scripts.overview.list.actions.edit" />,
@@ -320,11 +333,19 @@ const ScriptsOverview = withStyles(styles)(
         }
 
         private clearScriptToDelete() {
-            this.setState({ idOfScriptToDelete: null });
+            this.setState({ scriptNameToDelete: null });
         }
 
         private setScriptToDelete(id: ReactText) {
-            this.setState({ idOfScriptToDelete: id });
+            this.setState({ scriptNameToDelete: id as string });
+        }
+
+        private clearScriptToExecute() {
+            this.setState({ scriptNameToExecute: null });
+        }
+
+        private setScriptToExecute(id: ReactText) {
+            this.setState({ scriptNameToExecute: id as string });
         }
     },
 );
@@ -371,4 +392,7 @@ function mapScriptsToListItems(scripts: IScriptBase[]): IListItem<IColumnNames>[
     }));
 }
 
-export default observe<TProps>([StateChangeNotification.DESIGN_SCRIPTS_LIST], ScriptsOverview);
+export default observe<TProps>([
+    StateChangeNotification.DESIGN_SCRIPTS_LIST,
+    StateChangeNotification.I18N_TRANSLATIONS,
+], ScriptsOverview);

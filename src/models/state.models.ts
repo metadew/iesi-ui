@@ -35,6 +35,7 @@ export enum StateChangeNotification {
     FLASH_MESSAGES = 'FLASH_MESSAGES',
     AUTH = 'AUTH',
     DESIGN_SCRIPTS_LIST = 'DESIGN.SCRIPTS.LIST',
+    EXECUTION_REQUESTS_CREATE = 'EXECUTION_REQUESTS.CREATE',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

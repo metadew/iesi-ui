@@ -28,6 +28,7 @@ common:
     sort:
       sort_by: Sort by
 error:
+  default: Something when wrong.
   unexpected: An unexpected error occurred.
   timeout: The server did not respond in a timely fashion. Please try again.
 scripts:
@@ -35,6 +36,13 @@ scripts:
     delete_script_dialog:
       text: Are you sure you want to delete this script?
       title: Delete script
+    execute_script_dialog:
+      confirm: Execute script
+      error: Something went wrong during the creation of your execution request.
+      form:
+        description: Description
+        name: Name
+      text: Please specify a name and description for your execution request.
     header:
       amount: 'You have {amount} scripts'
       add_button: Create new script

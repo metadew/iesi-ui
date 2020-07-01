@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { getTranslator } from 'state/i18n/selectors';
 import { Box, Typography, Button, makeStyles } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
@@ -15,6 +16,8 @@ import GenericDraggableList from 'views/common/list/GenericDraggableList';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel/index';
 import { THEME_COLORS } from 'config/themes/colors';
+import { observe, IObserveProps } from 'views/observe';
+import { StateChangeNotification } from 'models/state.models';
 
 import DetailActions from './DetailActions';
 import AddAction from './AddAction';
@@ -22,6 +25,7 @@ import EditAction from './EditAction';
 import EditLabels from './EditLabels';
 import EditSchedules from './EditSchedules';
 import { MOCKED_SCRIPT_LABELS, MOCKED_SCRIPT_SCHEDULES } from './mock';
+
 
 interface IColumnNames {
     name: string;
@@ -77,7 +81,7 @@ const mockedListItems: IListItem<IColumnNames>[] = [{
     },
 }];
 
-export default function ScriptDetail() {
+function ScriptDetail({ state }: IObserveProps) {
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [editAction, setEditAction] = useState<{ action: IDummyScriptAction; index: number }>(null);
     const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
@@ -85,6 +89,8 @@ export default function ScriptDetail() {
 
     const { scriptId } = useParams();
     const classes = useStyles();
+
+    const translator = getTranslator(state);
 
     const columns: ListColumns<IColumnNames> = {
         name: {
@@ -235,8 +241,8 @@ export default function ScriptDetail() {
                 toggleLabel={<Translate msg="scripts.detail.side.toggle_button" />}
             />
             <ConfirmationDialog
-                title={<Translate msg="scripts.detail.delete_script_dialog.title" />}
-                text={<Translate msg="scripts.detail.delete_script_dialog.text" />}
+                title={translator('scripts.detail.delete_script_dialog.title')}
+                text={translator('scripts.detail.delete_script_dialog.text')}
                 open={isConfirmDeleteOpen}
                 onClose={() => setIsConfirmDeleteOpen(false)}
                 onConfirm={() => setIsConfirmDeleteOpen(false)} // TODO: actually delete script
@@ -264,3 +270,5 @@ export default function ScriptDetail() {
         onCloseAddAction();
     }
 }
+
+export default observe([StateChangeNotification.I18N_TRANSLATIONS], ScriptDetail);

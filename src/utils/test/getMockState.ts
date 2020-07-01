@@ -40,6 +40,13 @@ export default function getMockState({
                     error: null,
                 },
             },
+            executionRequests: {
+                data: null,
+                create: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
         },
     };
 }
