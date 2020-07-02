@@ -10,8 +10,10 @@ import {
 } from '@material-ui/core';
 import { ISortedColumn, ISortAction, SortOrder, SortActions } from 'models/list.models';
 import { TObjectWithProps } from 'models/core.models';
-import ImportExport from '@material-ui/icons/ImportExport';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
+import { ReactComponent as SortIcon } from 'views/assets/img/icon-sort.svg';
+import { ReactComponent as SortIconAscending } from 'views/assets/img/icon-sort-ascending.svg';
+import { ReactComponent as SortIconDescending } from 'views/assets/img/icon-sort-descending.svg';
 
 interface IPublicProps<ColumnNames> {
     sortActions: SortActions<ColumnNames>;
@@ -58,6 +60,18 @@ export default function GenericSort<ColumnNames>({
                     const columnName = untypedColumnName as unknown as keyof ColumnNames;
                     const sortAction = sortActions[columnName] as ISortAction<ColumnNames>;
                     const isActive = !!sortedColumn && sortedColumn.name === columnName;
+                    const sortOrder = getSortOrder(columnName);
+                    let EndIcon = <SortIcon />;
+
+                    if (isActive) {
+                        if (sortOrder === 'ascending') {
+                            EndIcon = <SortIconAscending />;
+                        } else {
+                            EndIcon = <SortIconDescending />;
+                        }
+                    }
+
+                    console.log(sortOrder);
 
                     return (
                         <Button
@@ -65,7 +79,7 @@ export default function GenericSort<ColumnNames>({
                             variant="contained"
                             className={classnames(classes.button, { [classes.active]: isActive })}
                             disableElevation
-                            endIcon={<ImportExport />}
+                            endIcon={EndIcon}
                             onClick={() => onSort({
                                 name: columnName,
                                 sortOrder: getSortOrder(columnName),
