@@ -24,12 +24,12 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
         {
             routeKey: ROUTE_KEYS.R_SCRIPT_NEW,
             path: '/new',
-            component: ScriptDetail,
+            component: ScriptDetail as React.ComponentType<unknown>,
         },
         {
             routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
             path: '/:name/:version',
-            component: ScriptDetail,
+            component: ScriptDetail as React.ComponentType<unknown>,
             executeOnRoute: [{
                 // TODO: Fix this typing error so we dont need to cast to () => unknown? Can this be simpler?
                 // Maybe pass the routeLocation to the execute so we dont need the executeInputSelector prop?
