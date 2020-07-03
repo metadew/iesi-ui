@@ -13,4 +13,7 @@ export const THEME_COLORS = {
     WHITE: '#FFFFFF',
 
     ERROR: '#E05552',
+    WARNING: '#FFB446',
+    SUCCESS: '#39C6A0',
+    INFO: '#29ABE2',
 };
