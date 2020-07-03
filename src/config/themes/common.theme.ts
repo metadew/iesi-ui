@@ -17,6 +17,15 @@ const commonTheme: ThemeOptions = {
         error: {
             main: THEME_COLORS.ERROR,
         },
+        success: {
+            main: THEME_COLORS.SUCCESS,
+        },
+        warning: {
+            main: THEME_COLORS.WARNING,
+        },
+        info: {
+            main: THEME_COLORS.INFO,
+        },
     },
     spacing: DEFAULT_SPACING,
     typography: {
@@ -113,6 +122,7 @@ const commonTheme: ThemeOptions = {
                 marginRight: '0',
             },
         },
+
     },
 };
 
