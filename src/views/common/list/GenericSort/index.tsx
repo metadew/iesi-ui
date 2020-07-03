@@ -71,8 +71,6 @@ export default function GenericSort<ColumnNames>({
                         }
                     }
 
-                    console.log(sortOrder);
-
                     return (
                         <Button
                             key={untypedColumnName}

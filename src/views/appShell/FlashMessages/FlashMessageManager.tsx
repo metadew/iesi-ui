@@ -29,8 +29,6 @@ function FlashMessageManager({
                 key, translationKey, options, dismissed, navigateToRoute, translationPlaceholders,
             } = flashMessage;
 
-            console.log(flashMessage);
-
             if (dismissed) {
                 // dismiss snackbar using notistack
                 closeSnackbar(key);
