@@ -37,6 +37,7 @@ export enum StateChangeNotification {
     DESIGN_SCRIPTS_LIST = 'DESIGN.SCRIPTS.LIST',
     DESIGN_SCRIPTS_DETAIL = 'DESIGN.SCRIPTS.DETAIL',
     EXECUTION_REQUESTS_CREATE = 'EXECUTION_REQUESTS.CREATE',
+    ENVIRONMENTS = 'ENVIRONMENTS',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

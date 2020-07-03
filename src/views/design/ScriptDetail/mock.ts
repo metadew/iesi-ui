@@ -1,4 +1,3 @@
-import { IEnvironment } from 'models/state/environments.models';
 import { IScriptSchedule } from 'models/state/scripts.models';
 import { ILabel } from 'models/state/iesiGeneric.models';
 
@@ -76,16 +75,5 @@ export const MOCKED_SCRIPT_SCHEDULES: IScriptSchedule[] = [
     {
         environment: 'production',
         frequency: 60,
-    },
-];
-
-export const MOCKED_ENVS: IEnvironment[] = [
-    {
-        name: 'staging',
-        description: 'staging description',
-    },
-    {
-        name: 'production',
-        description: 'prod description',
     },
 ];
