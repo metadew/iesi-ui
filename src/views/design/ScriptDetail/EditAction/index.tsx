@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import classnames from 'classnames';
 import { THEME_COLORS } from 'config/themes/colors';
 import {
@@ -15,9 +15,9 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import ExpandableParameter from './ExpandableParameter';
 
 interface IPublicProps {
-    index: number;
     action: IScriptAction;
     onClose: () => void;
+    onEdit: (action: IScriptAction) => void;
 }
 
 const useStyles = makeStyles(({ palette, spacing, typography }) => ({
@@ -62,8 +62,7 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
     },
 }));
 
-function EditAction({ onClose, action, index }: IPublicProps) {
-    const [parameters, setParameters] = useState(action.parameters);
+function EditAction({ onClose, action, onEdit }: IPublicProps) {
     const classes = useStyles();
 
     return (
@@ -77,7 +76,7 @@ function EditAction({ onClose, action, index }: IPublicProps) {
             >
                 {/* eslint-disable-next-line max-len */}
                 <Box paddingX={3} paddingY={1.1} boxSizing="content-box" width={50} className={classnames(classes.tableCell, classes.index)}>
-                    {formatNumberWithTwoDigits(index)}
+                    {formatNumberWithTwoDigits(action.number)}
                 </Box>
                 {/* eslint-disable-next-line max-len */}
                 <Box paddingX={3} paddingY={1.1} className={classnames(classes.tableCell, classes.actionName)} width="30%">
@@ -92,11 +91,11 @@ function EditAction({ onClose, action, index }: IPublicProps) {
                 </IconButton>
             </Box>
             <Box padding={2}>
-                {parameters.map((parameter, parameterIndex) => (
+                {action.parameters.map((parameter, parameterIndex) => (
                     <ExpandableParameter
                         key={parameter.name}
                         onChange={(value) => {
-                            const newParameters = parameters.map((item) => {
+                            const newParameters = action.parameters.map((item) => {
                                 if (item.name === parameter.name) {
                                     return {
                                         ...item,
@@ -105,7 +104,7 @@ function EditAction({ onClose, action, index }: IPublicProps) {
                                 }
                                 return item;
                             });
-                            setParameters(newParameters);
+                            updateAction({ parameters: newParameters });
                         }}
                         parameter={parameter}
                         number={parameterIndex + 1}
@@ -118,6 +117,8 @@ function EditAction({ onClose, action, index }: IPublicProps) {
                         </Typography>
                         <Checkbox
                             edge="end"
+                            checked={!action.errorStop}
+                            onChange={() => updateAction({ errorStop: !action.errorStop })}
                         />
                     </Box>
                     <Box display="flex" alignItems="center" marginLeft={2}>
@@ -126,12 +127,21 @@ function EditAction({ onClose, action, index }: IPublicProps) {
                         </Typography>
                         <Checkbox
                             edge="end"
+                            checked={action.errorExpected}
+                            onChange={() => updateAction({ errorExpected: !action.errorExpected })}
                         />
                     </Box>
                 </Box>
             </Box>
         </Box>
     );
+
+    function updateAction(fieldsToUpdate: Partial<IScriptAction>) {
+        onEdit({
+            ...action,
+            ...fieldsToUpdate,
+        });
+    }
 }
 
 export default EditAction;

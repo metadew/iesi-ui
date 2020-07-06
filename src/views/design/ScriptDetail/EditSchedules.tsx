@@ -22,6 +22,11 @@ import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import Loader from 'views/common/waiting/Loader';
 
+interface IPublicProps {
+    schedules: IScriptSchedule[];
+    onChange: (newSchedules: IScriptSchedule[]) => void;
+}
+
 interface IFrequency {
     [key: string]: number;
 }
@@ -48,12 +53,8 @@ const useStyles = makeStyles(({ typography }) => ({
     },
 }));
 
-function EditSchedules({ schedules: initialSchedules, state }: IPublicProps & IObserveProps) {
-    const environments = getAsyncEnviroments(state).data;
-    const environmentsAsyncStatus = getAsyncEnviroments(state).fetch.status;
-
+function EditSchedules({ schedules, onChange, state }: IPublicProps & IObserveProps) {
     const classes = useStyles();
-    const [schedules, setSchedules] = useState(initialSchedules);
     const [isAddScheduleFormOpen, setIsScheduleLabelFormOpen] = useState(false);
     const [isSelectOpen, setIsSelectOpen] = useState(false);
 
@@ -62,6 +63,9 @@ function EditSchedules({ schedules: initialSchedules, state }: IPublicProps & IO
         SCHEDULE_FREQUENCIES[Object.keys(SCHEDULE_FREQUENCIES)[0]], // first item as default
     );
     const [newSchedulingFrequencyAmount, setNewSchedulingFrequencyAmount] = useState<string>('');
+
+    const environments = getAsyncEnviroments(state).data;
+    const environmentsAsyncStatus = getAsyncEnviroments(state).fetch.status;
 
     const handleClickAway = () => {
         if (isAddScheduleFormOpen && !isSelectOpen) {
@@ -85,11 +89,14 @@ function EditSchedules({ schedules: initialSchedules, state }: IPublicProps & IO
 
     const handleSubmit = () => {
         if (newSchedulingEnv !== '' && newSchedulingFrequencyAmount !== '') {
+            onChange([
+                ...schedules,
+                {
+                    environment: newSchedulingEnv,
+                    frequency: parseInt(newSchedulingFrequencyAmount, 10) * newSchedulingFrequencyFactor,
+                },
+            ]);
             setIsScheduleLabelFormOpen(false);
-            console.log({
-                environment: newSchedulingEnv,
-                frequency: parseInt(newSchedulingFrequencyAmount, 10) * newSchedulingFrequencyFactor,
-            });
         }
     };
 
@@ -100,7 +107,7 @@ function EditSchedules({ schedules: initialSchedules, state }: IPublicProps & IO
                     items={schedules.map((schedule) => ({
                         content: `${schedule.environment} - ${schedule.frequency}`,
                         onDelete: () =>
-                            setSchedules(
+                            onChange(
                                 schedules.filter(
                                     (l) =>
                                         l.environment !== schedule.environment
