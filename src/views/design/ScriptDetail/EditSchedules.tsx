@@ -15,7 +15,12 @@ import OrderedList from 'views/common/list/OrderedList';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import ButtonWithContent from 'views/common/input/ButtonWithContent';
 import TextInputWithSelect from 'views/common/input/TextInputWithSelect';
-import { MOCKED_ENVS } from './mock';
+import { observe, IObserveProps } from 'views/observe';
+import { StateChangeNotification } from 'models/state.models';
+import { getAsyncEnviroments } from 'state/entities/environments/selectors';
+import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
+import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import Loader from 'views/common/waiting/Loader';
 
 interface IPublicProps {
     schedules: IScriptSchedule[];
@@ -24,6 +29,10 @@ interface IPublicProps {
 
 interface IFrequency {
     [key: string]: number;
+}
+
+interface IPublicProps {
+    schedules: IScriptSchedule[];
 }
 
 const SCHEDULE_FREQUENCIES: IFrequency = {
@@ -37,9 +46,14 @@ const useStyles = makeStyles(({ typography }) => ({
     frequencyLabel: {
         fontWeight: typography.fontWeightBold,
     },
+    formControlWithLoader: {
+        '& .SpinningDots': {
+            fontSize: typography.pxToRem(4),
+        },
+    },
 }));
 
-export default function EditSchedules({ schedules, onChange }: IPublicProps) {
+function EditSchedules({ schedules, onChange, state }: IPublicProps & IObserveProps) {
     const classes = useStyles();
     const [isAddScheduleFormOpen, setIsScheduleLabelFormOpen] = useState(false);
     const [isSelectOpen, setIsSelectOpen] = useState(false);
@@ -49,6 +63,9 @@ export default function EditSchedules({ schedules, onChange }: IPublicProps) {
         SCHEDULE_FREQUENCIES[Object.keys(SCHEDULE_FREQUENCIES)[0]], // first item as default
     );
     const [newSchedulingFrequencyAmount, setNewSchedulingFrequencyAmount] = useState<string>('');
+
+    const environments = getAsyncEnviroments(state).data;
+    const environmentsAsyncStatus = getAsyncEnviroments(state).fetch.status;
 
     const handleClickAway = () => {
         if (isAddScheduleFormOpen && !isSelectOpen) {
@@ -102,84 +119,98 @@ export default function EditSchedules({ schedules, onChange }: IPublicProps) {
             ) : (
                 <Translate msg="scripts.detail.side.schedules.empty" />
             )}
-            {(MOCKED_ENVS && MOCKED_ENVS.length > 0) && (
-                <ClickAwayListener onClickAway={handleClickAway}>
-                    <div>
-                        <ButtonWithContent
-                            buttonText={
-                                <Translate msg="scripts.detail.side.schedules.add_button" />
-                            }
-                            isOpen={isAddScheduleFormOpen}
-                            onOpenIntent={() => setIsScheduleLabelFormOpen(true)}
-                            onCloseIntent={() => setIsScheduleLabelFormOpen(false)}
-                            // forwardRef={schedulesButtonWithContentRef}
+            <ClickAwayListener onClickAway={handleClickAway}>
+                <div>
+                    <ButtonWithContent
+                        buttonText={
+                            <Translate msg="scripts.detail.side.schedules.add_button" />
+                        }
+                        isOpen={isAddScheduleFormOpen}
+                        onOpenIntent={onOpenAddScheduling}
+                        onCloseIntent={() => setIsScheduleLabelFormOpen(false)}
+                    >
+                        <FormControl
+                            variant="filled"
+                            fullWidth
+                            required
+                            size="small"
+                            margin="dense"
+                            className={classes.formControlWithLoader}
                         >
-                            <FormControl variant="filled" fullWidth required size="small" margin="dense">
-                                <InputLabel id="new-schedule-choose-env-label">
-                                    <Translate msg="scripts.detail.side.schedules.add_new.environment.placeholder" />
-                                </InputLabel>
-                                <Select
-                                    labelId="new-schedule-choose-env-label"
-                                    id="new-schedule-choose-env"
-                                    disableUnderline
-                                    value={newSchedulingEnv}
-                                    onChange={handleChangeNewSchedulingEnv}
-                                    onOpen={() => setIsSelectOpen(true)}
-                                    onClose={() => setIsSelectOpen(false)}
-                                >
-                                    {MOCKED_ENVS.map((env) => (
-                                        <MenuItem
-                                            key={JSON.stringify(env.name)}
-                                            value={env.name}
-                                        >
-                                            {env.name}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                            <Box display="flex" alignItems="center">
-                                <Typography variant="body2" className={classes.frequencyLabel}>
-                                    <Translate msg="Script runs every" />
-                                </Typography>
-                                <TextInputWithSelect
-                                    inputProps={{
-                                        id: 'new-schedule-choose-frequency-number',
-                                        placeholder: 'Amount TODO',
-                                        'aria-label': 'new schedule frequency',
-                                        type: 'number',
-                                        inputProps: {
-                                            min: 0,
-                                        },
-                                        value: newSchedulingFrequencyAmount,
-                                        onChange: handleChangeNewSchedulingFrequencyAmount,
-                                    }}
-                                    selectProps={{
-                                        id: 'new-schedule-choose-frequency-factor',
-                                        onOpen: () => setIsSelectOpen(true),
-                                        onClose: () => setIsSelectOpen(false),
-                                        onChange: handleChangeNewSchedulingFrequencyFactor,
-                                        value: newSchedulingFrequencyFactor,
-                                    }}
-                                    selectOptions={Object.keys(SCHEDULE_FREQUENCIES).map((key) => ({
-                                        value: SCHEDULE_FREQUENCIES[key],
-                                        displayValue: key,
-                                    }))}
-                                />
-                            </Box>
-                            <Box textAlign="right" marginTop={1}>
-                                <Button
-                                    variant="contained"
-                                    color="secondary"
-                                    disableElevation
-                                    onClick={handleSubmit}
-                                >
-                                    <Translate msg="add" />
-                                </Button>
-                            </Box>
-                        </ButtonWithContent>
-                    </div>
-                </ClickAwayListener>
-            )}
+                            <Loader show={environmentsAsyncStatus === AsyncStatus.Busy} />
+                            <InputLabel id="new-schedule-choose-env-label">
+                                <Translate msg="scripts.detail.side.schedules.add_new.environment.placeholder" />
+                            </InputLabel>
+                            <Select
+                                labelId="new-schedule-choose-env-label"
+                                id="new-schedule-choose-env"
+                                disableUnderline
+                                value={newSchedulingEnv}
+                                onChange={handleChangeNewSchedulingEnv}
+                                onOpen={() => setIsSelectOpen(true)}
+                                onClose={() => setIsSelectOpen(false)}
+                            >
+                                {environments && environments.map((env) => (
+                                    <MenuItem
+                                        key={JSON.stringify(env.name)}
+                                        value={env.name}
+                                    >
+                                        {env.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                        <Box display="flex" alignItems="center">
+                            <Typography variant="body2" className={classes.frequencyLabel}>
+                                <Translate msg="Script runs every" />
+                            </Typography>
+                            <TextInputWithSelect
+                                inputProps={{
+                                    id: 'new-schedule-choose-frequency-number',
+                                    placeholder: 'Amount TODO',
+                                    'aria-label': 'new schedule frequency',
+                                    type: 'number',
+                                    inputProps: {
+                                        min: 0,
+                                    },
+                                    value: newSchedulingFrequencyAmount,
+                                    onChange: handleChangeNewSchedulingFrequencyAmount,
+                                }}
+                                selectProps={{
+                                    id: 'new-schedule-choose-frequency-factor',
+                                    onOpen: () => setIsSelectOpen(true),
+                                    onClose: () => setIsSelectOpen(false),
+                                    onChange: handleChangeNewSchedulingFrequencyFactor,
+                                    value: newSchedulingFrequencyFactor,
+                                }}
+                                selectOptions={Object.keys(SCHEDULE_FREQUENCIES).map((key) => ({
+                                    value: SCHEDULE_FREQUENCIES[key],
+                                    displayValue: key,
+                                }))}
+                            />
+                        </Box>
+                        <Box textAlign="right" marginTop={1}>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                disableElevation
+                                onClick={handleSubmit}
+                            >
+                                <Translate msg="add" />
+                            </Button>
+                        </Box>
+                    </ButtonWithContent>
+                </div>
+            </ClickAwayListener>
         </>
     );
+
+    function onOpenAddScheduling() {
+        setIsScheduleLabelFormOpen(true);
+        triggerFetchEnvironments();
+    }
 }
+
+export default observe<IPublicProps>([
+    StateChangeNotification.ENVIRONMENTS,
+], EditSchedules);

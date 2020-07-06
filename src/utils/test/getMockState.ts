@@ -54,6 +54,13 @@ export default function getMockState({
                     error: null,
                 },
             },
+            environments: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
         },
     };
 }

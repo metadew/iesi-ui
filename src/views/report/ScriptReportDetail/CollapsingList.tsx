@@ -80,7 +80,7 @@ const useStyles = makeStyles(({ typography, palette, shape, spacing }: Theme) =>
         color: THEME_COLORS.ERROR,
     },
     details: {
-        background: THEME_COLORS.GREY_LIGHTER,
+        background: palette.background.default,
     },
     error: {
         marginBottom: `${spacing(2)}px`,
