@@ -96,8 +96,12 @@ const useStyles = makeStyles(({ breakpoints, palette, shape, typography, spacing
                 content: 'normal !important',
             },
         },
+        [breakpoints.down('md')]: {
+            width: '5%',
+        },
     },
     actionsCellCompact: {
+        width: '5%',
         [breakpoints.up('md')]: {
             display: 'none',
         },
