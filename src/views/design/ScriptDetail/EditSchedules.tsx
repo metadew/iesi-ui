@@ -17,6 +17,11 @@ import ButtonWithContent from 'views/common/input/ButtonWithContent';
 import TextInputWithSelect from 'views/common/input/TextInputWithSelect';
 import { MOCKED_ENVS } from './mock';
 
+interface IPublicProps {
+    schedules: IScriptSchedule[];
+    onChange: (newSchedules: IScriptSchedule[]) => void;
+}
+
 interface IFrequency {
     [key: string]: number;
 }
@@ -34,13 +39,8 @@ const useStyles = makeStyles(({ typography }) => ({
     },
 }));
 
-export default function EditSchedules({
-    schedules: initialSchedules,
-}: {
-    schedules: IScriptSchedule[];
-}) {
+export default function EditSchedules({ schedules, onChange }: IPublicProps) {
     const classes = useStyles();
-    const [schedules, setSchedules] = useState(initialSchedules);
     const [isAddScheduleFormOpen, setIsScheduleLabelFormOpen] = useState(false);
     const [isSelectOpen, setIsSelectOpen] = useState(false);
 
@@ -72,11 +72,14 @@ export default function EditSchedules({
 
     const handleSubmit = () => {
         if (newSchedulingEnv !== '' && newSchedulingFrequencyAmount !== '') {
+            onChange([
+                ...schedules,
+                {
+                    environment: newSchedulingEnv,
+                    frequency: parseInt(newSchedulingFrequencyAmount, 10) * newSchedulingFrequencyFactor,
+                },
+            ]);
             setIsScheduleLabelFormOpen(false);
-            console.log({
-                environment: newSchedulingEnv,
-                frequency: parseInt(newSchedulingFrequencyAmount, 10) * newSchedulingFrequencyFactor,
-            });
         }
     };
 
@@ -87,7 +90,7 @@ export default function EditSchedules({
                     items={schedules.map((schedule) => ({
                         content: `${schedule.environment} - ${schedule.frequency}`,
                         onDelete: () =>
-                            setSchedules(
+                            onChange(
                                 schedules.filter(
                                     (l) =>
                                         l.environment !== schedule.environment

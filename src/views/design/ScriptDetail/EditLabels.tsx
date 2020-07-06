@@ -6,10 +6,12 @@ import ButtonWithContent from 'views/common/input/ButtonWithContent';
 import TextInputWithButton from 'views/common/input/TextInputWithButton';
 import { ClickAwayListener } from '@material-ui/core';
 
-export default function EditLabels({ labels: initialLabels }: {
+interface IPublicProps {
     labels: ILabel[];
-}) {
-    const [labels, setLabels] = useState(initialLabels);
+    onChange: (newLabels: ILabel[]) => void;
+}
+
+export default function EditLabels({ labels, onChange }: IPublicProps) {
     const [isAddLabelFormOpen, setIsAddLabelFormOpen] = useState(false);
 
     const handleClickAway = () => {
@@ -22,7 +24,7 @@ export default function EditLabels({ labels: initialLabels }: {
                 <OrderedList
                     items={labels.map((label) => ({
                         content: label.value,
-                        onDelete: () => setLabels(labels.filter((l) => l.name !== label.name)),
+                        onDelete: () => onChange(labels.filter((l) => l.name !== label.name)),
                     }))}
                 />
             ) : (
@@ -45,7 +47,7 @@ export default function EditLabels({ labels: initialLabels }: {
                             buttonText={<Translate msg="scripts.detail.side.labels.add_new.button" />}
                             onSubmit={(value) => {
                                 if (value) {
-                                    setLabels([...labels, { name: JSON.stringify(value), value }]);
+                                    onChange([...labels, { name: JSON.stringify(value), value }]);
                                 }
                                 setIsAddLabelFormOpen(false);
                             }}
