@@ -26,7 +26,6 @@ import DetailActions from './DetailActions';
 import AddAction from './AddAction';
 import EditAction from './EditAction';
 import EditLabels from './EditLabels';
-import EditSchedules from './EditSchedules';
 
 
 interface IColumnNames {
@@ -182,14 +181,15 @@ const ScriptDetail = withStyles(styles)(
                                         onChange={(labels) => this.updateScript({ labels })}
                                     />,
                                 },
-                                {
-                                    label: <Translate msg="scripts.detail.side.schedules.title" />,
-                                    value: <EditSchedules
-                                        schedules={newScriptDetail && newScriptDetail.scheduling
-                                            ? newScriptDetail.scheduling : []}
-                                        onChange={(scheduling) => this.updateScript({ scheduling })}
-                                    />,
-                                },
+                                // Hide schedules for now
+                                // {
+                                //     label: <Translate msg="scripts.detail.side.schedules.title" />,
+                                //     value: <EditSchedules
+                                //         schedules={newScriptDetail && newScriptDetail.scheduling
+                                //             ? newScriptDetail.scheduling : []}
+                                //         onChange={(scheduling) => this.updateScript({ scheduling })}
+                                //     />,
+                                // },
                             ]}
                         />
                     </Box>

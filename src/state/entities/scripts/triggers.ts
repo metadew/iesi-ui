@@ -4,15 +4,18 @@ import { IScriptByNameAndVersionPayload } from 'models/state/scripts.models';
 import { StateChangeNotification } from 'models/state.models';
 
 // TODO add filter payload
-export const triggerFetchScripts = (filter: object = {}) => entitiesStateManager.triggerAsyncEntityFetch<{}>({
-    asyncEntityToFetch: {
-        asyncEntityKey: ASYNC_ENTITY_KEYS.scripts,
-        refreshMode: 'always',
-        resetDataOnTrigger: false,
-    },
-    extraInputSelector: () => filter,
-    notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_LIST],
-});
+export const triggerFetchScripts = (filter: object = {}) => {
+    console.log('trigger fetch scripts');
+    return entitiesStateManager.triggerAsyncEntityFetch<{}>({
+        asyncEntityToFetch: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.scripts,
+            refreshMode: 'always',
+            resetDataOnTrigger: false,
+        },
+        extraInputSelector: () => filter,
+        notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_LIST],
+    });
+};
 
 export const triggerFetchScriptDetail = (payload: IScriptByNameAndVersionPayload) =>
     entitiesStateManager.triggerAsyncEntityFetch<{}>({

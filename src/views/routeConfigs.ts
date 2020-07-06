@@ -15,6 +15,9 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     path: '/',
     exact: true,
     component: Home,
+    executeOnRoute: [{
+        execute: triggerFetchScripts, // Temp fix to fetch scripts when redirecting from / => /scripts
+    }],
 }, {
     routeKey: ROUTE_KEYS.R_SCRIPTS,
     path: '/scripts',

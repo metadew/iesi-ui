@@ -87,8 +87,10 @@ scripts:
       labels:
         add_button: Add labels
         add_new:
+          name: Name
           placeholder: Label
           button: Add
+          value: Value
         empty: No labels
         title: Labels
       schedules:
