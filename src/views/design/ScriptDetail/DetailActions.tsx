@@ -51,7 +51,6 @@ export default function DetailActions({
                     aria-label="add action"
                     className={classes.addButton}
                     onClick={onAdd}
-                    // variant="contained"
                     color="default"
                 >
                     <AddIcon />

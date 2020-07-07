@@ -30,8 +30,8 @@ import EditLabels from './EditLabels';
 
 
 interface IColumnNames {
+    type: string;
     name: string;
-    description: string;
 }
 
 const styles = ({ palette, spacing, typography }: Theme) =>
@@ -40,7 +40,7 @@ const styles = ({ palette, spacing, typography }: Theme) =>
             fontWeight: typography.fontWeightBold,
             color: palette.primary.main,
         },
-        scriptDescription: {
+        scriptType: {
             fontWeight: typography.fontWeightBold,
         },
         scriptNav: {
@@ -256,13 +256,13 @@ const ScriptDetail = withStyles(styles)(
             }
 
             const columns: ListColumns<IColumnNames> = {
-                name: {
-                    fixedWidth: '30%',
-                    className: classes.scriptName,
+                type: {
+                    fixedWidth: '40%',
+                    className: classes.scriptType,
                 },
-                description: {
-                    fixedWidth: '70%',
-                    className: classes.scriptDescription,
+                name: {
+                    fixedWidth: '60%',
+                    className: classes.scriptName,
                 },
             };
 
@@ -372,8 +372,8 @@ function getSortedListItemsFromScriptDetail(detail: IScript) {
             .map((action) => ({
                 id: action.name,
                 columns: {
+                    type: action.type,
                     name: action.name,
-                    description: action.description,
                 },
             }))
         : [];

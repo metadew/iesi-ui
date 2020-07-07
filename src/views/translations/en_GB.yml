@@ -116,7 +116,7 @@ scripts:
         title: Environment schedules
     main:
       alert:
-        save_changes: Don't forget to save your changes.
+        save_changes: You made changes to this script. Don't forget to save them.
       add_action:
         header: Choose the actions you like to add
       list:
