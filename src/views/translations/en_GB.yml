@@ -43,6 +43,7 @@ scripts:
       form:
         description: Description
         name: Name
+        environment: Environment
       text: Please specify a name and description for your execution request.
     header:
       amount: 'You have {amount} scripts'

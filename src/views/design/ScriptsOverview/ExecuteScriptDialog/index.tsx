@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Button,
     Box,
     makeStyles,
     FormControl,
     TextField,
+    InputLabel,
+    Select,
+    MenuItem,
 } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { observe, IObserveProps } from 'views/observe';
@@ -18,6 +21,8 @@ import { Alert } from '@material-ui/lab';
 import entitiesStateManager from 'state/entities/entitiesStateManager';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
+import { getAsyncEnviroments } from 'state/entities/environments/selectors';
+import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 
 const useStyles = makeStyles(({ spacing }) => ({
     formControl: {
@@ -35,6 +40,7 @@ interface IPublicProps {
 interface IFormValues {
     name: string;
     description: string;
+    environment: string;
 }
 
 function ExecuteScriptDialog({
@@ -47,6 +53,7 @@ function ExecuteScriptDialog({
     const [formValues, setFormValues] = useState<IFormValues>({
         name: '',
         description: '',
+        environment: '',
     });
 
     const translator = getTranslator(state);
@@ -54,6 +61,14 @@ function ExecuteScriptDialog({
     const createAsyncInfo = entitiesStateManager.getAsyncEntity({
         asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequests,
     }).create;
+    const environments = getAsyncEnviroments(state).data;
+    const environmentsAsyncStatus = getAsyncEnviroments(state).fetch.status;
+
+    // Trigger Fetch envs on mount
+    useEffect(() => {
+        triggerFetchEnvironments();
+        return () => {};
+    }, []);
 
     return (
         <ClosableDialog
@@ -65,41 +80,69 @@ function ExecuteScriptDialog({
             <Box marginBottom={2}>
                 <Translate msg="scripts.overview.execute_script_dialog.text" />
             </Box>
-            <FormControl className={classes.formControl}>
-                <TextField
-                    id="execute-script-name"
-                    type="text"
-                    value={formValues.name}
-                    label={translator('scripts.overview.execute_script_dialog.form.name')}
-                    onChange={(e) => {
-                        setFormValues({
-                            ...formValues,
-                            name: e.target.value,
-                        });
-                    }}
-                />
-            </FormControl>
-            <FormControl className={classes.formControl}>
-                <TextField
-                    id="execute-script-description"
-                    type="text"
-                    value={formValues.description}
-                    label={translator('scripts.overview.execute_script_dialog.form.description')}
-                    onChange={(e) => {
-                        setFormValues({
-                            ...formValues,
-                            description: e.target.value,
-                        });
-                    }}
-                />
-            </FormControl>
-            {createAsyncInfo.error && (
-                <Box marginTop={2}>
-                    <Alert severity="error">
-                        <Translate msg="scripts.overview.execute_script_dialog.error" />
-                    </Alert>
-                </Box>
-            )}
+            <Box textAlign="left" maxWidth={400} marginX="auto">
+                <FormControl className={classes.formControl}>
+                    <TextField
+                        id="execute-script-name"
+                        type="text"
+                        value={formValues.name}
+                        label={translator('scripts.overview.execute_script_dialog.form.name')}
+                        onChange={(e) => {
+                            setFormValues({
+                                ...formValues,
+                                name: e.target.value,
+                            });
+                        }}
+                    />
+                </FormControl>
+                <FormControl className={classes.formControl}>
+                    <TextField
+                        id="execute-script-description"
+                        type="text"
+                        value={formValues.description}
+                        label={translator('scripts.overview.execute_script_dialog.form.description')}
+                        onChange={(e) => {
+                            setFormValues({
+                                ...formValues,
+                                description: e.target.value,
+                            });
+                        }}
+                    />
+                </FormControl>
+                <FormControl className={classes.formControl}>
+                    <Loader show={environmentsAsyncStatus === AsyncStatus.Busy} />
+                    <InputLabel id="execute-script-environment-label">
+                        <Translate msg="scripts.overview.execute_script_dialog.form.environment" />
+                    </InputLabel>
+                    <Select
+                        labelId="execute-script-environment-label"
+                        id="execute-script-environment"
+                        value={formValues.environment}
+                        onChange={(e) => {
+                            setFormValues({
+                                ...formValues,
+                                environment: e.target.value as string,
+                            });
+                        }}
+                    >
+                        {environments && environments.map((env) => (
+                            <MenuItem
+                                key={JSON.stringify(env.name)}
+                                value={env.name}
+                            >
+                                {env.name}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                {createAsyncInfo.error && (
+                    <Box marginTop={2}>
+                        <Alert severity="error">
+                            <Translate msg="scripts.overview.execute_script_dialog.error" />
+                        </Alert>
+                    </Box>
+                )}
+            </Box>
 
             <Box
                 marginTop={2}
@@ -132,7 +175,7 @@ function ExecuteScriptDialog({
             scriptExecutionRequests: [
                 {
                     scriptName: script.name,
-                    environment: '', // TODO
+                    environment: formValues.environment,
                     exit: true, // TODO?
                     impersonations: [], // TODO
                     parameters: script.parameters,
@@ -147,4 +190,5 @@ function ExecuteScriptDialog({
 export default observe<IPublicProps>([
     StateChangeNotification.I18N_TRANSLATIONS,
     StateChangeNotification.EXECUTION_REQUESTS_CREATE,
+    StateChangeNotification.ENVIRONMENTS,
 ], ExecuteScriptDialog);
