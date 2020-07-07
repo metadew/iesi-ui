@@ -80,10 +80,6 @@ interface IColumnNames {
 }
 
 const filterConfig: FilterConfig<Partial<IColumnNames>> = {
-    lastRunStatus: {
-        label: <Translate msg="scripts.overview.list.filter.last_run_status" />,
-        filterType: FilterType.Select,
-    },
     name: {
         label: <Translate msg="scripts.overview.list.filter.script_name" />,
         filterType: FilterType.Search,
@@ -94,10 +90,6 @@ const sortActions: SortActions<Partial<IColumnNames>> = {
     name: {
         label: <Translate msg="scripts.overview.list.sort.script_name" />,
         sortType: SortType.String,
-    },
-    version: {
-        label: <Translate msg="scripts.overview.list.sort.version" />,
-        sortType: SortType.DotSeparatedNumber,
     },
 };
 
