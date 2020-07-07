@@ -13,7 +13,7 @@ import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
 import { getTranslator } from 'state/i18n/selectors';
-import { Edit, Delete, PlayArrowRounded, AddRounded, WatchLater } from '@material-ui/icons';
+import { Edit, Delete, PlayArrowRounded, AddRounded } from '@material-ui/icons';
 import ReportIcon from 'views/common/icons/Report';
 import {
     ListColumns,
@@ -58,9 +58,6 @@ const styles = ({ palette, typography }: Theme) =>
             fontWeight: typography.fontWeightBold,
             fontSize: typography.pxToRem(12),
         },
-        scriptSchedules: {
-            fontWeight: typography.fontWeightBold,
-        },
         scriptLabels: {
             fontWeight: typography.fontWeightBold,
         },
@@ -77,18 +74,12 @@ const styles = ({ palette, typography }: Theme) =>
 interface IColumnNames {
     name: string;
     version: string;
-    scheduling: number;
     description: string;
-    lastRunDate: string;
     lastRunStatus: string;
     labels: number;
 }
 
 const filterConfig: FilterConfig<Partial<IColumnNames>> = {
-    lastRunDate: {
-        label: <Translate msg="scripts.overview.list.filter.last_run_date" />,
-        filterType: FilterType.FromTo,
-    },
     lastRunStatus: {
         label: <Translate msg="scripts.overview.list.filter.last_run_status" />,
         filterType: FilterType.Select,
@@ -107,10 +98,6 @@ const sortActions: SortActions<Partial<IColumnNames>> = {
     version: {
         label: <Translate msg="scripts.overview.list.sort.version" />,
         sortType: SortType.DotSeparatedNumber,
-    },
-    lastRunDate: {
-        label: <Translate msg="scripts.overview.list.sort.last_run_date" />,
-        sortType: SortType.String,
     },
 };
 
@@ -245,21 +232,6 @@ const ScriptsOverview = withStyles(styles)(
                     className: classes.scriptDescription,
                     tooltip: (value) => value,
                     fixedWidth: '26%',
-                },
-                scheduling: {
-                    label: (
-                        <Translate msg="scripts.overview.list.labels.scheduling" />
-                    ),
-                    className: classes.scriptSchedules,
-                    fixedWidth: '9%',
-                },
-                lastRunDate: {
-                    label: (
-                        <Translate msg="scripts.overview.list.labels.last_run_date" />
-                    ),
-                    fixedWidth: '17%',
-                    hideOnCompactView: true,
-                    icon: <WatchLater />,
                 },
                 lastRunStatus: {
                     fixedWidth: '17%',
