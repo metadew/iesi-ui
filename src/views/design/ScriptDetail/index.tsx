@@ -16,6 +16,7 @@ import { ListColumns, IListItem } from 'models/list.models';
 import GenericDraggableList from 'views/common/list/GenericDraggableList';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel/index';
+import ClosableDialog from 'views/common/layout/ClosableDialog';
 import { THEME_COLORS } from 'config/themes/colors';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
@@ -61,6 +62,7 @@ type TProps = WithStyles<typeof styles>;
 interface IComponentState {
     isAddOpen: boolean;
     isConfirmDeleteOpen: boolean;
+    isSaveDialogOpen: boolean;
     editActionIndex: number;
     newScriptDetail: IScript;
     checked: boolean;
@@ -74,6 +76,7 @@ const ScriptDetail = withStyles(styles)(
             this.state = {
                 isAddOpen: false,
                 isConfirmDeleteOpen: false,
+                isSaveDialogOpen: false,
                 editActionIndex: -1,
                 newScriptDetail: null,
                 checked: true, // TODO: should be false by default
@@ -101,7 +104,7 @@ const ScriptDetail = withStyles(styles)(
 
         public render() {
             const { state } = this.props;
-            const { isAddOpen, isConfirmDeleteOpen } = this.state;
+            const { isAddOpen, isConfirmDeleteOpen, isSaveDialogOpen } = this.state;
 
             // State
             const scriptDetailAsyncStatus = getAsyncScriptDetail(state).fetch.status;
@@ -127,6 +130,43 @@ const ScriptDetail = withStyles(styles)(
                         onClose={() => this.setState({ isConfirmDeleteOpen: false })}
                         onConfirm={() => this.setState({ isConfirmDeleteOpen: false })} // TODO: actually delete script
                     />
+                    <ClosableDialog
+                        title={translator('scripts.detail.save_script_dialog.title')}
+                        open={isSaveDialogOpen}
+                        onClose={() => this.setState({ isSaveDialogOpen: false })}
+                    >
+                        <Typography>
+                            <Translate msg="scripts.detail.save_script_dialog.text" />
+                        </Typography>
+                        <Box display="flex" alignItems="center" justifyContent="space-between" marginTop={2}>
+                            <Box paddingRight={1}>
+                                <Button
+                                    id="save-update-current-version"
+                                    onClick={() => {
+                                        alert('overwrite current version');
+                                        this.setState({ isSaveDialogOpen: false });
+                                    }}
+                                    variant="contained"
+                                    color="secondary"
+                                >
+                                    <Translate msg="scripts.detail.save_script_dialog.update_current_version" />
+                                </Button>
+                            </Box>
+                            <Box paddingLeft={1}>
+                                <Button
+                                    id="save-save-as-new-version"
+                                    onClick={() => {
+                                        alert('create new version');
+                                        this.setState({ isSaveDialogOpen: false });
+                                    }}
+                                    color="secondary"
+                                    variant="outlined"
+                                >
+                                    <Translate msg="scripts.detail.save_script_dialog.save_as_new_version" />
+                                </Button>
+                            </Box>
+                        </Box>
+                    </ClosableDialog>
                 </>
             );
 
@@ -226,8 +266,9 @@ const ScriptDetail = withStyles(styles)(
             const listItems = getSortedListItemsFromScriptDetail(newScriptDetail);
             const hasActions = listItems.length > 0;
 
-            const handleChange = () => {
+            const handleSaveAction = () => {
                 this.setState({ checked: !checked });
+                this.setState({ isSaveDialogOpen: true });
             };
 
             if (!hasActions) {
@@ -277,8 +318,7 @@ const ScriptDetail = withStyles(styles)(
                             </Box>
                         </Collapse>
                         <DetailActions
-                            // onSave={() => console.log('save')}
-                            onSave={handleChange}
+                            onSave={handleSaveAction}
                             onDelete={() => this.setState({ isConfirmDeleteOpen: true })}
                             onAdd={() => this.setState({ isAddOpen: true })}
                             onPlay={() => console.log('play')}

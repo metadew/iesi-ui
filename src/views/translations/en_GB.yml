@@ -82,6 +82,11 @@ scripts:
     delete_script_dialog:
       text: Are you sure you want to delete this script?
       title: Delete script
+    save_script_dialog:
+      title: Save script
+      text: Do you wnat to overwrite the current version or create a new version with the current changes?
+      update_current_version: Update current version
+      save_as_new_version: Save as new version
     edit_action:
       description: Action description
       parameter:

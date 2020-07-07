@@ -81,6 +81,9 @@ const commonTheme: ThemeOptions = {
                     fontSize: '1em',
                 },
             },
+            outlined: {
+                padding: '.475em .912em',
+            },
             outlinedSizeSmall: {
                 fontSize: MUI_DEFAULT_THEME.typography.pxToRem(14),
             },
