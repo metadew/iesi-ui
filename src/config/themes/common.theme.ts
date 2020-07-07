@@ -59,6 +59,9 @@ const commonTheme: ThemeOptions = {
             fontSize: MUI_DEFAULT_THEME.typography.pxToRem(20),
             textTransform: 'none',
         },
+        subtitle2: {
+            fontWeight: MUI_DEFAULT_THEME.typography.fontWeightBold,
+        },
     },
     overrides: {
         // Buttons

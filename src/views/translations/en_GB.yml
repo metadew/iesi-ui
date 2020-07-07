@@ -44,6 +44,14 @@ scripts:
         description: Description
         name: Name
         environment: Environment
+        input_param:
+          add:
+            name: Name
+            value: Value
+            button: Add
+            title: Add input parameter
+          empty: No input params defined yet.
+          title: Input parameters
       text: Please specify a name and description for your execution request.
     header:
       amount: 'You have {amount} scripts'

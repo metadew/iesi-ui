@@ -8,6 +8,8 @@ import {
     InputLabel,
     Select,
     MenuItem,
+    Paper,
+    Typography,
 } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { observe, IObserveProps } from 'views/observe';
@@ -23,11 +25,16 @@ import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import { getAsyncEnviroments } from 'state/entities/environments/selectors';
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
+import { IParameter } from 'models/state/iesiGeneric.models';
+import OrderedList from 'views/common/list/OrderedList';
 
-const useStyles = makeStyles(({ spacing }) => ({
+const useStyles = makeStyles(({ spacing, typography }) => ({
     formControl: {
         width: '100%',
         marginBottom: spacing(2),
+        '& .SpinningDots': {
+            fontSize: typography.pxToRem(4),
+        },
     },
 }));
 
@@ -41,6 +48,7 @@ interface IFormValues {
     name: string;
     description: string;
     environment: string;
+    parameters: IParameter[];
 }
 
 function ExecuteScriptDialog({
@@ -54,6 +62,12 @@ function ExecuteScriptDialog({
         name: '',
         description: '',
         environment: '',
+        parameters: [],
+    });
+
+    const [newParameter, setNewParameter] = useState<IParameter>({
+        name: '',
+        value: '',
     });
 
     const translator = getTranslator(state);
@@ -81,35 +95,36 @@ function ExecuteScriptDialog({
                 <Translate msg="scripts.overview.execute_script_dialog.text" />
             </Box>
             <Box textAlign="left" maxWidth={400} marginX="auto">
-                <FormControl className={classes.formControl}>
-                    <TextField
-                        id="execute-script-name"
-                        type="text"
-                        value={formValues.name}
-                        label={translator('scripts.overview.execute_script_dialog.form.name')}
-                        onChange={(e) => {
-                            setFormValues({
-                                ...formValues,
-                                name: e.target.value,
-                            });
-                        }}
-                    />
-                </FormControl>
-                <FormControl className={classes.formControl}>
-                    <TextField
-                        id="execute-script-description"
-                        type="text"
-                        value={formValues.description}
-                        label={translator('scripts.overview.execute_script_dialog.form.description')}
-                        onChange={(e) => {
-                            setFormValues({
-                                ...formValues,
-                                description: e.target.value,
-                            });
-                        }}
-                    />
-                </FormControl>
-                <FormControl className={classes.formControl}>
+                <TextField
+                    id="execute-script-name"
+                    type="text"
+                    value={formValues.name}
+                    label={translator('scripts.overview.execute_script_dialog.form.name')}
+                    className={classes.formControl}
+                    autoFocus
+                    required
+                    onChange={(e) => {
+                        setFormValues({
+                            ...formValues,
+                            name: e.target.value,
+                        });
+                    }}
+                />
+                <TextField
+                    id="execute-script-description"
+                    type="text"
+                    value={formValues.description}
+                    label={translator('scripts.overview.execute_script_dialog.form.description')}
+                    className={classes.formControl}
+                    required
+                    onChange={(e) => {
+                        setFormValues({
+                            ...formValues,
+                            description: e.target.value,
+                        });
+                    }}
+                />
+                <FormControl required className={classes.formControl}>
                     <Loader show={environmentsAsyncStatus === AsyncStatus.Busy} />
                     <InputLabel id="execute-script-environment-label">
                         <Translate msg="scripts.overview.execute_script_dialog.form.environment" />
@@ -135,6 +150,93 @@ function ExecuteScriptDialog({
                         ))}
                     </Select>
                 </FormControl>
+                <Box marginBottom={1}>
+                    <InputLabel shrink>
+                        <Translate msg="scripts.overview.execute_script_dialog.form.input_param.title" />
+                    </InputLabel>
+                    {formValues.parameters.length > 0 ? (
+                        <OrderedList
+                            items={formValues.parameters.map((param) => ({
+                                content: `${param.name}: ${param.value}`,
+                                onDelete: () => {
+                                    setFormValues({
+                                        ...formValues,
+                                        parameters: formValues.parameters.filter((p) =>
+                                            param.name !== p.name || param.value !== p.value),
+                                    });
+                                },
+                            }))}
+                        />
+                    ) : (
+                        <Typography variant="body2">
+                            <Translate msg="scripts.overview.execute_script_dialog.form.input_param.empty" />
+                        </Typography>
+                    )}
+                </Box>
+                <Paper variant="outlined">
+                    <Box padding={2}>
+                        <InputLabel shrink>
+                            <Translate msg="scripts.overview.execute_script_dialog.form.input_param.add.title" />
+                        </InputLabel>
+                        <Box display="flex" alignItems="center">
+                            <Box flex="1 1 auto" paddingRight={0.5}>
+                                <FormControl className={classes.formControl}>
+                                    <TextField
+                                        id="execute-script-input-param-name"
+                                        type="text"
+                                        // eslint-disable-next-line max-len
+                                        label={translator('scripts.overview.execute_script_dialog.form.input_param.add.name')}
+                                        value={newParameter.name}
+                                        onChange={(e) => setNewParameter({
+                                            ...newParameter,
+                                            name: e.target.value,
+                                        })}
+                                    />
+                                </FormControl>
+                            </Box>
+                            <Box flex="1 1 auto" paddingRight={0.5}>
+                                <FormControl className={classes.formControl}>
+                                    <TextField
+                                        id="execute-script-input-param-value"
+                                        type="text"
+                                        // eslint-disable-next-line max-len
+                                        label={translator('scripts.overview.execute_script_dialog.form.input_param.add.value')}
+                                        value={newParameter.value}
+                                        onChange={(e) => setNewParameter({
+                                            ...newParameter,
+                                            value: e.target.value,
+                                        })}
+                                    />
+                                </FormControl>
+                            </Box>
+                            <Box flex="1 1 auto">
+                                <Button
+                                    id="add-input-param"
+                                    variant="contained"
+                                    color="primary"
+                                    size="small"
+                                    disabled={!newParameter.name.trim() || !newParameter.value.trim()}
+                                    onClick={() => {
+                                        setFormValues({
+                                            ...formValues,
+                                            parameters: [
+                                                ...formValues.parameters,
+                                                {
+                                                    name: newParameter.name,
+                                                    value: newParameter.value,
+                                                },
+                                            ],
+                                        });
+                                        setNewParameter({ name: '', value: '' });
+                                    }}
+                                >
+                                    {/* eslint-disable-next-line max-len */}
+                                    <Translate msg="scripts.overview.execute_script_dialog.form.input_param.add.button" />
+                                </Button>
+                            </Box>
+                        </Box>
+                    </Box>
+                </Paper>
                 {createAsyncInfo.error && (
                     <Box marginTop={2}>
                         <Alert severity="error">
@@ -142,22 +244,16 @@ function ExecuteScriptDialog({
                         </Alert>
                     </Box>
                 )}
-            </Box>
-
-            <Box
-                marginTop={2}
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-            >
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={createExecutionRequest}
-                    disabled={!formValues.name.trim() || !formValues.description.trim()}
-                >
-                    <Translate msg="scripts.overview.execute_script_dialog.confirm" />
-                </Button>
+                <Box marginTop={2} textAlign="right">
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={createExecutionRequest}
+                        disabled={!formValues.name.trim() || !formValues.description.trim()}
+                    >
+                        <Translate msg="scripts.overview.execute_script_dialog.confirm" />
+                    </Button>
+                </Box>
             </Box>
         </ClosableDialog>
     );
@@ -178,7 +274,7 @@ function ExecuteScriptDialog({
                     environment: formValues.environment,
                     exit: true, // TODO?
                     impersonations: [], // TODO
-                    parameters: script.parameters,
+                    parameters: formValues.parameters,
                     scriptExecutionRequestStatus: 'NEW',
                     scriptVersion: script.version.number,
                 },
