@@ -38,9 +38,9 @@ const styles = ({ palette, spacing, typography }: Theme) =>
     createStyles({
         scriptName: {
             fontWeight: typography.fontWeightBold,
-            color: palette.primary.main,
         },
         scriptType: {
+            color: palette.primary.main,
             fontWeight: typography.fontWeightBold,
         },
         scriptNav: {
@@ -155,17 +155,17 @@ const ScriptDetail = withStyles(styles)(
                         <form noValidate autoComplete="off">
                             <TextInput
                                 id="script-name"
-                                label="Scriptname"
+                                label={translator('scripts.detail.side.script_name')}
                                 required
-                                error
-                                helperText="Scriptname is a required field"
+                                // error
+                                // helperText="Scriptname is a required field"
                                 value={newScriptDetail && newScriptDetail.name
                                     ? newScriptDetail.name : ''}
                                 onChange={(e) => this.updateScript({ name: e.target.value })}
                             />
                             <TextInput
                                 id="script-description"
-                                label="Description"
+                                label={translator('scripts.detail.side.script_description')}
                                 multiline
                                 rows={8}
                                 value={newScriptDetail && newScriptDetail.description

@@ -7,11 +7,16 @@ import {
     IconButton,
     Typography,
     Checkbox,
+    Paper,
 } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 import { IScriptAction } from 'models/state/scripts.models';
 import { formatNumberWithTwoDigits } from 'utils/number/format';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
+import TextInput from 'views/common/input/TextInput';
+import { IObserveProps, observe } from 'views/observe';
+import { getTranslator } from 'state/i18n/selectors';
+import { StateChangeNotification } from 'models/state.models';
 import ExpandableParameter from './ExpandableParameter';
 
 interface IPublicProps {
@@ -39,10 +44,16 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
     },
     actionName: {
         fontWeight: typography.fontWeightBold,
-        color: palette.primary.main,
     },
-    actionDescription: {
+    actionType: {
+        color: palette.primary.main,
         fontWeight: typography.fontWeightBold,
+    },
+    descriptionTextField: {
+        marginTop: 0,
+        '& .MuiFilledInput-root': {
+            background: palette.background.paper,
+        },
     },
     footerAction: {
         fontSize: '.8rem',
@@ -62,8 +73,9 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
     },
 }));
 
-function EditAction({ onClose, action, onEdit }: IPublicProps) {
+function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveProps) {
     const classes = useStyles();
+    const translator = getTranslator(state);
 
     return (
         <Box className={classes.dialog}>
@@ -79,18 +91,31 @@ function EditAction({ onClose, action, onEdit }: IPublicProps) {
                     {formatNumberWithTwoDigits(action.number)}
                 </Box>
                 {/* eslint-disable-next-line max-len */}
-                <Box paddingX={3} paddingY={1.1} className={classnames(classes.tableCell, classes.actionName)} width="30%">
-                    {action.name}
+                <Box paddingX={3} paddingY={1.1} className={classnames(classes.tableCell, classes.actionType)} width="40%">
+                    {action.type}
                 </Box>
                 {/* eslint-disable-next-line max-len */}
-                <Box paddingX={3} paddingY={1.1} className={classnames(classes.actionDescription)} width="70%">
-                    {action.description}
+                <Box paddingX={3} paddingY={1.1} className={classnames(classes.actionName)} width="60%">
+                    {action.name}
                 </Box>
                 <IconButton className={classes.headerAction} onClick={onClose}>
                     <Close />
                 </IconButton>
             </Box>
             <Box padding={2}>
+                <Box marginBottom={2}>
+                    <Paper>
+                        <TextInput
+                            id="action-description"
+                            label={translator('scripts.detail.edit_action.description')}
+                            multiline
+                            rows={3}
+                            className={classes.descriptionTextField}
+                            defaultValue={action.description}
+                            onBlur={(e) => updateAction({ description: e.target.value })}
+                        />
+                    </Paper>
+                </Box>
                 {action.parameters.map((parameter, parameterIndex) => (
                     <ExpandableParameter
                         key={parameter.name}
@@ -144,4 +169,4 @@ function EditAction({ onClose, action, onEdit }: IPublicProps) {
     }
 }
 
-export default EditAction;
+export default observe<IPublicProps>([StateChangeNotification.I18N_TRANSLATIONS], EditAction);
