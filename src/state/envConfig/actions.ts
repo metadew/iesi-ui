@@ -3,7 +3,6 @@ import { asyncEntityFetch } from 'snipsonian/observable-state/src/actionableStor
 import { StateChangeNotification } from 'models/state.models';
 import { IEnvConfig } from 'models/state/envConfig.models';
 import { overrideTranslationsIfAny } from 'views/translations';
-import { ROUTE_KEYS } from 'views/routes';
 import { triggerFlashMessage } from 'state/ui/actions';
 import { getStore } from 'state/index';
 import { setIesiApiBaseUrl, setIesiApiTimeoutInSeconds } from 'api/requestWrapper';
@@ -24,8 +23,6 @@ export const fetchEnvConfig = () => createAction<{}>({
             if (isSet(envConfigData)) {
                 configureIesiApi(envConfigData);
             }
-
-            dispatch(triggerFlashMessage({ translationKey: 'Fetch ENV: start' }));
 
             setStateImmutable({
                 toState: (draftState) => {
@@ -51,12 +48,6 @@ export const fetchEnvConfig = () => createAction<{}>({
                 },
                 notificationsToTrigger: [StateChangeNotification.ENV_CONFIG, ...i18nNotifications],
             });
-
-            dispatch(triggerFlashMessage({
-                translationKey: 'Fetch ENV: success',
-                type: 'success',
-                navigateToRoute: { routeKey: ROUTE_KEYS.R_REPORTS },
-            }));
         } catch (error) {
             setStateImmutable({
                 toState: (draftState) => {
@@ -64,7 +55,7 @@ export const fetchEnvConfig = () => createAction<{}>({
                 },
                 notificationsToTrigger: [StateChangeNotification.ENV_CONFIG],
             });
-            dispatch(triggerFlashMessage({ translationKey: 'Fetch ENV: error', type: 'error' }));
+            dispatch(triggerFlashMessage({ translationKey: 'error.fetch_env', type: 'error' }));
         }
     },
 });

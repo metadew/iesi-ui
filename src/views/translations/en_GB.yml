@@ -31,6 +31,7 @@ error:
   default: Something when wrong.
   unexpected: An unexpected error occurred.
   timeout: The server did not respond in a timely fashion. Please try again.
+  fetch_env: Could not fetch ENV
 scripts:
   overview:
     delete_script_dialog:
