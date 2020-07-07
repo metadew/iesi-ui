@@ -106,6 +106,8 @@ scripts:
         empty: No schedules
         title: Environment schedules
     main:
+      alert:
+        save_changes: Don't forget to save your changes.
       add_action:
         header: Choose the actions you like to add
       list:

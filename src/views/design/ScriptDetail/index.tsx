@@ -1,11 +1,12 @@
 import React from 'react';
 import clone from 'ramda/es/clone';
 import { getTranslator } from 'state/i18n/selectors';
-import { Box, Typography, Button, withStyles, createStyles, Theme, WithStyles } from '@material-ui/core';
+import { Box, Typography, Button, withStyles, createStyles, Theme, WithStyles, Collapse } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
     Edit as EditIcon,
 } from '@material-ui/icons';
+import { Alert } from '@material-ui/lab';
 import { IScript } from 'models/state/scripts.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import TextInput from 'views/common/input/TextInput';
@@ -62,6 +63,7 @@ interface IComponentState {
     isConfirmDeleteOpen: boolean;
     editActionIndex: number;
     newScriptDetail: IScript;
+    checked: boolean;
 }
 
 const ScriptDetail = withStyles(styles)(
@@ -74,6 +76,7 @@ const ScriptDetail = withStyles(styles)(
                 isConfirmDeleteOpen: false,
                 editActionIndex: -1,
                 newScriptDetail: null,
+                checked: true, // TODO: should be false by default
             };
 
             this.renderAddScriptContent = this.renderAddScriptContent.bind(this);
@@ -218,10 +221,14 @@ const ScriptDetail = withStyles(styles)(
 
         private renderScriptDetailContent() {
             const { classes } = this.props;
-            const { newScriptDetail } = this.state;
+            const { newScriptDetail, checked } = this.state;
 
             const listItems = getSortedListItemsFromScriptDetail(newScriptDetail);
             const hasActions = listItems.length > 0;
+
+            const handleChange = () => {
+                this.setState({ checked: !checked });
+            };
 
             if (!hasActions) {
                 return (
@@ -262,8 +269,16 @@ const ScriptDetail = withStyles(styles)(
             return (
                 <>
                     <Box>
+                        <Collapse in={checked}>
+                            <Box marginX={2} marginBottom={2}>
+                                <Alert severity="warning">
+                                    <Translate msg="scripts.detail.main.alert.save_changes" />
+                                </Alert>
+                            </Box>
+                        </Collapse>
                         <DetailActions
-                            onSave={() => console.log('save')}
+                            // onSave={() => console.log('save')}
+                            onSave={handleChange}
                             onDelete={() => this.setState({ isConfirmDeleteOpen: true })}
                             onAdd={() => this.setState({ isAddOpen: true })}
                             onPlay={() => console.log('play')}
