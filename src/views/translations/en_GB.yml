@@ -49,6 +49,7 @@ scripts:
       amount: 'You have {amount} scripts'
       add_button: Create new script
     list:
+      fetch_error: Something went wrong while loading the scripts, please try again.
       actions:
         delete: Delete
         edit: Edit

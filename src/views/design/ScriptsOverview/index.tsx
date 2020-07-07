@@ -36,6 +36,7 @@ import { StateChangeNotification } from 'models/state.models';
 import { getAsyncScripts } from 'state/entities/scripts/selectors';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import OrderedList from 'views/common/list/OrderedList';
+import { Alert } from '@material-ui/lab';
 import ExecuteScriptDialog from './ExecuteScriptDialog';
 
 
@@ -150,6 +151,7 @@ const ScriptsOverview = withStyles(styles)(
             const { sortedColumn, scriptNameToDelete, scriptNameToExecute } = this.state;
 
             const scripts = getAsyncScripts(this.props.state).data;
+
             const listItems = scripts
                 ? mapScriptsToListItems(this.props.state.entities.scripts.data)
                 : [];
@@ -283,49 +285,61 @@ const ScriptsOverview = withStyles(styles)(
 
             const scriptsFetchData = getAsyncScripts(this.props.state).fetch;
             const isFetching = scriptsFetchData.status === AsyncStatus.Busy;
+            const hasError = scriptsFetchData.status === AsyncStatus.Error;
 
             return (
                 <>
                     <Box paddingBottom={5} marginX={2.8}>
-                        <GenericList
-                            listActions={[
-                                {
-                                    icon: <PlayArrowRounded />,
-                                    label: <Translate msg="scripts.overview.list.actions.execute" />,
-                                    // eslint-disable-next-line no-alert
-                                    onClick: this.setScriptToExecute,
-                                }, {
-                                    icon: <Edit />,
-                                    label: <Translate msg="scripts.overview.list.actions.edit" />,
-                                    onClick: (id) => {
-                                        const scripts = getAsyncScripts(this.props.state).data;
-                                        const selectedScript = scripts.find((item) => item.name === id);
-                                        redirectTo({
-                                            routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                            params: {
-                                                name: selectedScript.name,
-                                                version: selectedScript.version.number,
-                                            },
-                                        });
+                        { !hasError && (
+                            <GenericList
+                                listActions={[
+                                    {
+                                        icon: <PlayArrowRounded />,
+                                        label: <Translate msg="scripts.overview.list.actions.execute" />,
+                                        // eslint-disable-next-line no-alert
+                                        onClick: this.setScriptToExecute,
+                                    }, {
+                                        icon: <Edit />,
+                                        label: <Translate msg="scripts.overview.list.actions.edit" />,
+                                        onClick: (id) => {
+                                            const scripts = getAsyncScripts(this.props.state).data;
+                                            const selectedScript = scripts.find((item) => item.name === id);
+                                            redirectTo({
+                                                routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                                params: {
+                                                    name: selectedScript.name,
+                                                    version: selectedScript.version.number,
+                                                },
+                                            });
+                                        },
+                                    }, {
+                                        icon: <ReportIcon />,
+                                        label: <Translate msg="scripts.overview.list.actions.report" />,
+                                        // eslint-disable-next-line no-alert
+                                        onClick: (id) => alert(`report: ${id}`),
+                                    }, {
+                                        icon: <Delete />,
+                                        label: <Translate msg="scripts.overview.list.actions.delete" />,
+                                        onClick: this.setScriptToDelete,
                                     },
-                                }, {
-                                    icon: <ReportIcon />,
-                                    label: <Translate msg="scripts.overview.list.actions.report" />,
-                                    // eslint-disable-next-line no-alert
-                                    onClick: (id) => alert(`report: ${id}`),
-                                }, {
-                                    icon: <Delete />,
-                                    label: <Translate msg="scripts.overview.list.actions.delete" />,
-                                    onClick: this.setScriptToDelete,
-                                },
-                            ]}
-                            columns={columns}
-                            sortedColumn={sortedColumn}
-                            filters={filters}
-                            listItems={listItems}
-                            enablePagination
-                            isLoading={isFetching}
-                        />
+                                ]}
+                                columns={columns}
+                                sortedColumn={sortedColumn}
+                                filters={filters}
+                                listItems={listItems}
+                                enablePagination
+                                isLoading={isFetching}
+                            />
+                        )}
+
+                        {hasError && (
+                            <Box padding={2}>
+                                <Alert severity="error">
+                                    <Translate msg="scripts.overview.list.fetch_error" />
+                                </Alert>
+                            </Box>
+                        )}
+
                     </Box>
                 </>
             );
