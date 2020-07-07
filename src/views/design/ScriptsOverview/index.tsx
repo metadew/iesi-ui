@@ -158,7 +158,7 @@ const ScriptsOverview = withStyles(styles)(
 
             return (
                 <>
-                    <Box height="100%" display="flex" flexDirection="column">
+                    <Box height="100%" display="flex" flexDirection="column" flex="1 0 auto">
                         <Box
                             paddingTop={3}
                             paddingBottom={3}

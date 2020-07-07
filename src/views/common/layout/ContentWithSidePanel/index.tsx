@@ -155,9 +155,8 @@ export default function ContentWithSidePanel({
                     flex="1 1 auto"
                     width={{ xs: '100%', md: 2 / 3 }}
                     paddingLeft={{ xs: 1, md: 0 }}
-
                 >
-                    <Box padding={2} className={classes.content}>
+                    <Box display="flex" flexDirection="column" flex="1 0 auto" padding={2} className={classes.content}>
                         {content}
                     </Box>
                     {contentOverlayOpen && (
