@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classnames from 'classnames';
 import { THEME_COLORS } from 'config/themes/colors';
 import {
     Box,
     makeStyles,
-    IconButton,
     Typography,
     Checkbox,
+    Button,
+    ButtonGroup,
     Paper,
 } from '@material-ui/core';
-import { Close } from '@material-ui/icons';
 import { IScriptAction } from 'models/state/scripts.models';
 import { formatNumberWithTwoDigits } from 'utils/number/format';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -76,6 +76,11 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
 function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveProps) {
     const classes = useStyles();
     const translator = getTranslator(state);
+    const [errorStopChecked, setErrorStopChecked] = useState<boolean>(action.errorStop);
+    const [errorExpectedChecked, setErrorExpectedChecked] = useState<boolean>(action.errorExpected);
+    const [parameters, setParameters] = useState(action.parameters);
+    const [description, setDescription] = useState(action.description);
+
 
     return (
         <Box className={classes.dialog}>
@@ -98,9 +103,6 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                 <Box paddingX={3} paddingY={1.1} className={classnames(classes.actionName)} width="60%">
                     {action.name}
                 </Box>
-                <IconButton className={classes.headerAction} onClick={onClose}>
-                    <Close />
-                </IconButton>
             </Box>
             <Box padding={2}>
                 <Box marginBottom={2}>
@@ -111,12 +113,12 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                             multiline
                             rows={3}
                             className={classes.descriptionTextField}
-                            defaultValue={action.description}
-                            onBlur={(e) => updateAction({ description: e.target.value })}
+                            defaultValue={description}
+                            onBlur={(e) => setDescription(e.target.value)}
                         />
                     </Paper>
                 </Box>
-                {action.parameters.map((parameter, parameterIndex) => (
+                {parameters.map((parameter, parameterIndex) => (
                     <ExpandableParameter
                         key={parameter.name}
                         onChange={(value) => {
@@ -129,21 +131,24 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                                 }
                                 return item;
                             });
-                            updateAction({ parameters: newParameters });
+
+                            setParameters(newParameters);
                         }}
                         parameter={parameter}
                         number={parameterIndex + 1}
                     />
                 ))}
-                <Box display="flex" justifyContent="flex-end" marginTop={2}>
+                <Box display="flex" justifyContent="flex-end" marginTop={2} alignItems="center">
                     <Box display="flex" alignItems="center">
                         <Typography className={classes.footerAction}>
                             <Translate msg="scripts.detail.edit_action.footer.continue_on_fail" />
                         </Typography>
                         <Checkbox
                             edge="end"
-                            checked={!action.errorStop}
-                            onChange={() => updateAction({ errorStop: !action.errorStop })}
+                            checked={errorStopChecked}
+                            onChange={() => {
+                                setErrorStopChecked(!errorStopChecked);
+                            }}
                         />
                     </Box>
                     <Box display="flex" alignItems="center" marginLeft={2}>
@@ -152,20 +157,38 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                         </Typography>
                         <Checkbox
                             edge="end"
-                            checked={action.errorExpected}
-                            onChange={() => updateAction({ errorExpected: !action.errorExpected })}
+                            checked={errorExpectedChecked}
+                            onChange={() => {
+                                setErrorExpectedChecked(!errorExpectedChecked);
+                            }}
                         />
+                    </Box>
+
+                    <Box marginLeft={2}>
+                        <ButtonGroup color="primary" size="small">
+                            <Button onClick={onClose}>
+                                <Translate msg="scripts.detail.edit_action.footer.cancel" />
+                            </Button>
+                            <Button onClick={updateAction}>
+                                <Translate msg="scripts.detail.edit_action.footer.save" />
+                            </Button>
+                        </ButtonGroup>
                     </Box>
                 </Box>
             </Box>
         </Box>
     );
 
-    function updateAction(fieldsToUpdate: Partial<IScriptAction>) {
+    function updateAction() {
         onEdit({
             ...action,
-            ...fieldsToUpdate,
+            parameters,
+            description,
+            errorStop: errorStopChecked,
+            errorExpected: errorExpectedChecked,
         });
+
+        onClose();
     }
 }
 

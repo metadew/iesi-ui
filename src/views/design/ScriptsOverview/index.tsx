@@ -80,8 +80,16 @@ interface IColumnNames {
 }
 
 const filterConfig: FilterConfig<Partial<IColumnNames>> = {
+    lastRunStatus: {
+        label: <Translate msg="scripts.overview.list.filter.last_run_status" />,
+        filterType: FilterType.Select,
+    },
     name: {
         label: <Translate msg="scripts.overview.list.filter.script_name" />,
+        filterType: FilterType.Search,
+    },
+    labels: {
+        label: <Translate msg="scripts.overview.list.filter.script_label" />,
         filterType: FilterType.Search,
     },
 };
