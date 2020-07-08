@@ -143,19 +143,20 @@ script_reports:
       actions:
         report: Reporting
       filter:
-        last_run_date: Last run date
-        last_run_status: Last run status
         script_name: Script name
+        script_version: Script version
+        environment: Environment
+        labels: Label
       labels:
         labels: Labels
-        last_run_date: Last run date
-        last_run_status: Last run status
-        scheduling: Schedules
+        parameters: Parameters
+        request_timestamp: Request timestamp
+        execution_status: Status
       sort:
-        last_run_date: Last run date
+        request_timestamp: Request timestamp
         script_name: Script name
         version: Version
     header:
-      amount: 'You have {amount} scripts'
+      amount: 'You have {amount} script executions'
     detail:
       parameter_index: 'Parameter {index}'

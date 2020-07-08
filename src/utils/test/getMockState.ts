@@ -49,7 +49,18 @@ export default function getMockState({
             },
             executionRequests: {
                 data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            executionRequestDetail: {
+                data: null,
                 create: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+                fetch: {
                     status: AsyncStatus.Initial,
                     error: null,
                 },

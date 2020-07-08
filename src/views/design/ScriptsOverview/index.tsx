@@ -348,7 +348,7 @@ function mapScriptsToListItems(scripts: IScriptBase[]): IListItem<IColumnNames>[
                     <Typography variant="body2" component="div">
                         <OrderedList
                             items={script.labels.map((label) => ({
-                                content: `${label.name} - ${label.value}`,
+                                content: `${label.name}:${label.value}`,
                             }))}
                         />
                     </Typography>

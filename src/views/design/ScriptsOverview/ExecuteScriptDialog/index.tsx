@@ -23,7 +23,7 @@ import { Alert } from '@material-ui/lab';
 import entitiesStateManager from 'state/entities/entitiesStateManager';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
-import { getAsyncEnviroments } from 'state/entities/environments/selectors';
+import { getAsyncEnvironments } from 'state/entities/environments/selectors';
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { IParameter } from 'models/state/iesiGeneric.models';
 import OrderedList from 'views/common/list/OrderedList';
@@ -74,10 +74,12 @@ function ExecuteScriptDialog({
     const translator = getTranslator(state);
     const script = getScriptByName(state, scriptName);
     const createAsyncInfo = entitiesStateManager.getAsyncEntity({
-        asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequests,
+        asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequestDetail,
     }).create;
-    const environments = getAsyncEnviroments(state).data;
-    const environmentsAsyncStatus = getAsyncEnviroments(state).fetch.status;
+    const environments = getAsyncEnvironments(state).data;
+    const environmentsAsyncInfo = entitiesStateManager.getAsyncEntity({
+        asyncEntityKey: ASYNC_ENTITY_KEYS.environments,
+    }).fetch;
 
     // Trigger Fetch envs on open dialog
     useEffect(() => {
@@ -147,7 +149,7 @@ function ExecuteScriptDialog({
                             }}
                         />
                         <FormControl required className={classes.formControl}>
-                            <Loader show={environmentsAsyncStatus === AsyncStatus.Busy} />
+                            <Loader show={environmentsAsyncInfo.status === AsyncStatus.Busy} />
                             <InputLabel id="execute-script-environment-label">
                                 <Translate msg="scripts.overview.execute_script_dialog.form.environment" />
                             </InputLabel>

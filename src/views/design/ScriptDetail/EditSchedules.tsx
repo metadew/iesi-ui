@@ -17,7 +17,7 @@ import ButtonWithContent from 'views/common/input/ButtonWithContent';
 import TextInputWithSelect from 'views/common/input/TextInputWithSelect';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
-import { getAsyncEnviroments } from 'state/entities/environments/selectors';
+import { getAsyncEnvironments } from 'state/entities/environments/selectors';
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import Loader from 'views/common/waiting/Loader';
@@ -64,8 +64,8 @@ function EditSchedules({ schedules, onChange, state }: IPublicProps & IObservePr
     );
     const [newSchedulingFrequencyAmount, setNewSchedulingFrequencyAmount] = useState<string>('');
 
-    const environments = getAsyncEnviroments(state).data;
-    const environmentsAsyncStatus = getAsyncEnviroments(state).fetch.status;
+    const environments = getAsyncEnvironments(state).data;
+    const environmentsAsyncStatus = getAsyncEnvironments(state).fetch.status;
 
     const handleClickAway = () => {
         if (isAddScheduleFormOpen && !isSelectOpen) {
