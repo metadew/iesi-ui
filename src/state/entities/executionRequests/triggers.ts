@@ -3,11 +3,22 @@ import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { ICreateExecutionRequestPayload } from 'models/state/executionRequests.models';
 import { StateChangeNotification } from 'models/state.models';
 
-// eslint-disable-next-line
-export const triggerCreateExecutionRequest = (payload: ICreateExecutionRequestPayload) => entitiesStateManager.triggerAsyncEntityCreate<{}>({
-    asyncEntityToCreate: {
-        asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequests,
-    },
-    extraInputSelector: () => payload,
-    notificationsToTrigger: [StateChangeNotification.EXECUTION_REQUESTS_CREATE],
-});
+export const triggerFetchExecutionRequests = (filter: object = {}) =>
+    entitiesStateManager.triggerAsyncEntityFetch<{}>({
+        asyncEntityToFetch: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequests,
+            refreshMode: 'always',
+            resetDataOnTrigger: false,
+        },
+        extraInputSelector: () => filter,
+        notificationsToTrigger: [StateChangeNotification.EXECUTION_REQUESTS_LIST],
+    });
+
+export const triggerCreateExecutionRequest = (payload: ICreateExecutionRequestPayload) =>
+    entitiesStateManager.triggerAsyncEntityCreate<{}>({
+        asyncEntityToCreate: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequestDetail,
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.EXECUTION_REQUESTS_CREATE],
+    });

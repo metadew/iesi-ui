@@ -24,16 +24,17 @@ import {
     FilterConfig,
     IListItem,
 } from 'models/list.models';
-// import { IScriptBase } from 'models/state/scripts.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
-import { getAsyncScripts } from 'state/entities/scripts/selectors';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
-// import OrderedList from 'views/common/list/OrderedList';
-import { MOCKED_LIST_ITEMS } from './mock';
+import { getAsyncExecutionRequests } from 'state/entities/executionRequests/selectors';
+import { IExecutionRequest } from 'models/state/executionRequests.models';
+import { Alert } from '@material-ui/lab';
+import { parseISO, format as formatDate } from 'date-fns/esm';
+import OrderedList from 'views/common/list/OrderedList';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -59,6 +60,9 @@ const styles = ({ palette, typography }: Theme) =>
         scriptLabels: {
             fontWeight: typography.fontWeightBold,
         },
+        scriptParameters: {
+            fontWeight: typography.fontWeightBold,
+        },
         scriptSuccess: {
             fontWeight: typography.fontWeightBold,
             color: palette.secondary.main,
@@ -67,29 +71,37 @@ const styles = ({ palette, typography }: Theme) =>
             fontWeight: typography.fontWeightBold,
             color: palette.error.main,
         },
+        scriptNew: {
+            fontWeight: typography.fontWeightBold,
+            color: palette.primary.main,
+        },
     });
 
 interface IColumnNames {
     name: string;
     version: string;
-    scheduling: number;
-    description: string;
-    lastRunDate: string;
-    lastRunStatus: string;
+    environment: string;
+    requestTimestamp: string;
+    executionStatus: string;
     labels: number;
+    parameters: number;
 }
 
 const filterConfig: FilterConfig<Partial<IColumnNames>> = {
-    lastRunDate: {
-        label: <Translate msg="script_reports.overview.list.filter.last_run_date" />,
-        filterType: FilterType.FromTo,
-    },
-    lastRunStatus: {
-        label: <Translate msg="script_reports.overview.list.filter.last_run_status" />,
-        filterType: FilterType.Select,
-    },
     name: {
         label: <Translate msg="script_reports.overview.list.filter.script_name" />,
+        filterType: FilterType.Search,
+    },
+    version: {
+        label: <Translate msg="script_reports.overview.list.filter.script_version" />,
+        filterType: FilterType.Search,
+    },
+    environment: {
+        label: <Translate msg="script_reports.overview.list.filter.environment" />,
+        filterType: FilterType.Select,
+    },
+    labels: {
+        label: <Translate msg="script_reports.overview.list.filter.labels" />,
         filterType: FilterType.Search,
     },
 };
@@ -103,8 +115,8 @@ const sortActions: SortActions<Partial<IColumnNames>> = {
         label: <Translate msg="script_reports.overview.list.sort.version" />,
         sortType: SortType.DotSeparatedNumber,
     },
-    lastRunDate: {
-        label: <Translate msg="script_reports.overview.list.sort.last_run_date" />,
+    requestTimestamp: {
+        label: <Translate msg="script_reports.overview.list.sort.request_timestamp" />,
         sortType: SortType.String,
     },
 };
@@ -138,8 +150,10 @@ const ScriptReportsOverview = withStyles(styles)(
             const { classes } = this.props;
             const { sortedColumn } = this.state;
 
-            // const scripts = getAsyncScripts(this.props.state).data;
-            const listItems = MOCKED_LIST_ITEMS;
+            const executions = getAsyncExecutionRequests(this.props.state).data;
+            const listItems = executions
+                ? mapExecutionsToListItems(this.props.state.entities.executionRequests.data)
+                : [];
 
             return (
                 <>
@@ -195,40 +209,34 @@ const ScriptReportsOverview = withStyles(styles)(
             const columns: ListColumns<IColumnNames> = {
                 name: {
                     className: classes.scriptName,
-                    fixedWidth: '16%',
+                    fixedWidth: '25%',
                 },
                 version: {
                     className: classes.scriptVersion,
                     fixedWidth: '7%',
                 },
-                description: {
-                    className: classes.scriptDescription,
-                    tooltip: (value) => value,
-                    fixedWidth: '26%',
+                environment: {
+                    fixedWidth: '20%',
                 },
-                scheduling: {
+                requestTimestamp: {
                     label: (
-                        <Translate msg="script_reports.overview.list.labels.scheduling" />
+                        <Translate msg="script_reports.overview.list.labels.request_timestamp" />
                     ),
-                    className: classes.scriptSchedules,
-                    fixedWidth: '9%',
-                },
-                lastRunDate: {
-                    label: (
-                        <Translate msg="script_reports.overview.list.labels.last_run_date" />
-                    ),
-                    fixedWidth: '17%',
+                    fixedWidth: '20%',
                     hideOnCompactView: true,
                     icon: <WatchLater />,
                 },
-                lastRunStatus: {
-                    fixedWidth: '17%',
+                executionStatus: {
+                    fixedWidth: '10%',
                     label: (
-                        <Translate msg="script_reports.overview.list.labels.last_run_status" />
+                        <Translate msg="script_reports.overview.list.labels.execution_status" />
                     ),
                     className: (value) => {
-                        if (value === 'Passed') {
+                        if (value.toString().toLowerCase() === 'passed') {
                             return classes.scriptSuccess;
+                        }
+                        if (value.toString().toLowerCase() === 'new') {
+                            return classes.scriptNew;
                         }
                         return classes.scriptFailed;
                     },
@@ -239,36 +247,50 @@ const ScriptReportsOverview = withStyles(styles)(
                         <Translate msg="script_reports.overview.list.labels.labels" />
                     ),
                     className: classes.scriptLabels,
+                    hideOnCompactView: true,
                     fixedWidth: '8%',
+                },
+                parameters: {
+                    label: (
+                        <Translate msg="script_reports.overview.list.labels.parameters" />
+                    ),
+                    className: classes.scriptParameters,
+                    hideOnCompactView: true,
+                    fixedWidth: '10%',
                 },
             };
 
-            const scriptsFetchData = getAsyncScripts(this.props.state).fetch;
-            const isFetching = scriptsFetchData.status === AsyncStatus.Busy;
+            const executionsFetchData = getAsyncExecutionRequests(this.props.state).fetch;
+            const isFetching = executionsFetchData.status === AsyncStatus.Busy;
+            const hasError = executionsFetchData.status === AsyncStatus.Error;
 
-            return (
-                <>
-                    <Box paddingBottom={5} marginX={2.8}>
-                        <GenericList
-                            listActions={[
-                                {
-                                    icon: <ReportIcon />,
-                                    label: <Translate msg="script_reports.overview.list.actions.report" />,
-                                    onClick: (id) => redirectTo({
-                                        routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
-                                        params: { scriptId: id },
-                                    }),
-                                },
-                            ]}
-                            columns={columns}
-                            sortedColumn={sortedColumn}
-                            filters={filters}
-                            listItems={listItems}
-                            enablePagination
-                            isLoading={isFetching}
-                        />
-                    </Box>
-                </>
+            return !hasError ? (
+                <Box paddingBottom={5} marginX={2.8}>
+                    <GenericList
+                        listActions={[
+                            {
+                                icon: <ReportIcon />,
+                                label: <Translate msg="script_reports.overview.list.actions.report" />,
+                                onClick: (id) => redirectTo({
+                                    routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
+                                    params: { scriptId: id },
+                                }),
+                            },
+                        ]}
+                        columns={columns}
+                        sortedColumn={sortedColumn}
+                        filters={filters}
+                        listItems={listItems}
+                        enablePagination
+                        isLoading={isFetching}
+                    />
+                </Box>
+            ) : (
+                <Box padding={2}>
+                    <Alert severity="error">
+                        <Translate msg="script_reports.overview.list.fetch_error" />
+                    </Alert>
+                </Box>
             );
         }
 
@@ -282,46 +304,56 @@ const ScriptReportsOverview = withStyles(styles)(
     },
 );
 
-// function mapScriptsToListItems(scripts: IScriptBase[]): IListItem<IColumnNames>[] {
-//     return scripts.map((script) => ({
-//         id: script.name,
-//         columns: {
-//             name: script.name,
-//             description: script.description,
-//             version: (script.version.number).toString(),
-//             labels: {
-//                 value: script.labels.length,
-//                 tooltip: script.labels.length > 0 && (
-//                     <Typography variant="body2" component="div">
-//                         <OrderedList
-//                             items={script.labels.map((label) => ({
-//                                 content: `${label.name} - ${label.value}`,
-//                             }))}
-//                         />
-//                     </Typography>
-//                 ),
-//             },
-//             scheduling: { // TODO: fetch should return scheduling data
-//                 value: 2,
-//                 tooltip: (
-//                     <Typography variant="body2" component="div">
-//                         TODO:
-//                         <OrderedList
-//                             items={[
-//                                 { content: 'Scheduling A' },
-//                                 { content: 'Scheduling B' },
-//                             ]}
-//                         />
-//                     </Typography>
-//                 ),
-//             },
-//             lastRunDate: { // TODO: fetch should return last run data
-//                 value: '22-04-2020',
-//                 sortValue: new Date('2020-04-22').toISOString(),
-//             },
-//             lastRunStatus: 'Passed',
-//         },
-//     }));
-// }
+function mapExecutionsToListItems(executionRequests: IExecutionRequest[]): IListItem<IColumnNames>[] {
+    return executionRequests.reduce(
+        (acc, executionRequest) => {
+            const { scriptExecutionRequests } = executionRequest;
+            scriptExecutionRequests.forEach((scriptExecution) => {
+                acc.push({
+                    id: scriptExecution.executionRequestId,
+                    columns: {
+                        name: scriptExecution.scriptName,
+                        version: (scriptExecution.scriptVersion).toString(),
+                        environment: scriptExecution.environment,
+                        requestTimestamp: {
+                            value: formatDate(
+                                parseISO(executionRequest.requestTimestamp.toString()),
+                                'dd/MM/yyyy HH:mm:ss',
+                            ),
+                            sortValue: new Date(executionRequest.requestTimestamp).toISOString(),
+                        },
+                        executionStatus: executionRequest.executionRequestStatus,
+                        labels: {
+                            value: executionRequest.executionRequestLabels.length,
+                            tooltip: executionRequest.executionRequestLabels.length > 0 && (
+                                <Typography variant="body2" component="div">
+                                    <OrderedList
+                                        items={executionRequest.executionRequestLabels.map((label) => ({
+                                            content: `${label.name}:${label.value}`,
+                                        }))}
+                                    />
+                                </Typography>
+                            ),
+                        },
+                        parameters: {
+                            value: scriptExecution.parameters.length,
+                            tooltip: scriptExecution.parameters.length > 0 && (
+                                <Typography variant="body2" component="div">
+                                    <OrderedList
+                                        items={scriptExecution.parameters.map((parameter) => ({
+                                            content: `${parameter.name}:${parameter.value}`,
+                                        }))}
+                                    />
+                                </Typography>
+                            ),
+                        },
+                    },
+                });
+            });
+            return acc;
+        },
+        [] as IListItem<IColumnNames>[],
+    );
+}
 
-export default observe<TProps>([StateChangeNotification.DESIGN_SCRIPTS_LIST], ScriptReportsOverview);
+export default observe<TProps>([StateChangeNotification.EXECUTION_REQUESTS_LIST], ScriptReportsOverview);

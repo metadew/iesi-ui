@@ -25,6 +25,7 @@ export enum ASYNC_ENTITY_KEYS {
     scriptReportDetail = 'scriptReportDetail',
 
     executionRequests = 'executionRequests',
+    executionRequestDetail = 'executionRequestDetail',
 }
 
 /* Keep the keys in sync with ASYNC_ENTITY_KEYS !! */
@@ -32,5 +33,6 @@ export interface IEntitiesState {
     scripts: ICustomAsyncEntity<IScriptBase[]>;
     scriptDetail: ICustomAsyncEntity<IScript>;
     executionRequests: ICustomAsyncEntity<IExecutionRequest[]>;
+    executionRequestDetail: ICustomAsyncEntity<IExecutionRequest>;
     environments: ICustomAsyncEntity<IEnvironment[]>;
 }

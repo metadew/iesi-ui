@@ -32,6 +32,15 @@ entitiesConfigManager.register({
 entitiesConfigManager.register({
     asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequests,
     operationsConfig: {
+        fetch: {
+            api: api.executionRequests.fetchExecutionRequests,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequestDetail,
+    operationsConfig: {
         create: {
             api: api.executionRequests.createExecutionRequest,
             apiInputSelector: ({ extraInput }) => extraInput as ICreateExecutionRequestPayload,

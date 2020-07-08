@@ -108,6 +108,11 @@ export default function Select({
             <List disablePadding className={classes.list}>
                 {uniqueValues.map((value) => {
                     const labelId = `checkbox-list-secondary-label-${value}`;
+
+                    if (value === '') {
+                        return null;
+                    }
+
                     return (
                         <ListItem key={value} button className={classes.checkbox} onClick={() => handleToggle(value)}>
                             <ListItemText id={labelId} primary={value} />
