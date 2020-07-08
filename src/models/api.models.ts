@@ -8,7 +8,10 @@ export interface ITraceableApiError extends ITraceableApiErrorBase<IErrorRespons
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IErrorResponseData {
-    // TODO
+    message: string;
+    error: string;
+    timestamp: string;
+    status: number;
 }
 
 export interface ICustomApiConfig {

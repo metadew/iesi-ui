@@ -9,8 +9,8 @@ const API_URLS = {
     ENVIRONMENTS: '/environments',
     ENVIRONMENT_BY_NAME: '/environments/{name}',
 
-    EXECUTION_REQUESTS: '/execution_request',
-    EXECUTION_REQUEST_BY_ID: '/execution_request/{id}',
+    EXECUTION_REQUESTS: '/execution_requests',
+    EXECUTION_REQUEST_BY_ID: '/execution_requests/{id}',
 
     SCRIPTS: '/scripts',
     SCRIPT_BY_NAME: '/scripts/{name}',

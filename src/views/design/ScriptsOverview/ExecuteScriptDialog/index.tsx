@@ -27,6 +27,7 @@ import { getAsyncEnviroments } from 'state/entities/environments/selectors';
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { IParameter } from 'models/state/iesiGeneric.models';
 import OrderedList from 'views/common/list/OrderedList';
+import isSet from '@snipsonian/core/es/is/isSet';
 
 const useStyles = makeStyles(({ spacing, typography }) => ({
     formControl: {
@@ -240,7 +241,11 @@ function ExecuteScriptDialog({
                 {createAsyncInfo.error && (
                     <Box marginTop={2}>
                         <Alert severity="error">
-                            <Translate msg="scripts.overview.execute_script_dialog.error" />
+                            {isSet(createAsyncInfo.error.response.message) ? (
+                                createAsyncInfo.error.response.message
+                            ) : (
+                                <Translate msg="scripts.overview.execute_script_dialog.error" />
+                            )}
                         </Alert>
                     </Box>
                 )}
@@ -260,14 +265,14 @@ function ExecuteScriptDialog({
 
     function createExecutionRequest() {
         triggerCreateExecutionRequest({
-            context: null, // May be ignored for now
+            context: '', // May be ignored for now
             description: formValues.description.trim(),
             email: null, // May be ignored for now
             executionRequestLabels: [], // TODO
             executionRequestStatus: 'NEW',
             name: formValues.name.trim(),
             requestTimestamp: new Date(),
-            scope: null, // May be ignored for now
+            scope: '', // May be ignored for now
             scriptExecutionRequests: [
                 {
                     scriptName: script.name,
