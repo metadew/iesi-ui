@@ -40,6 +40,9 @@ scripts:
     execute_script_dialog:
       confirm: Execute script
       error: Something went wrong during the creation of your execution request.
+      success:
+        text: Execution request is created.
+        close_button: Back to overview
       form:
         description: Description
         name: Name

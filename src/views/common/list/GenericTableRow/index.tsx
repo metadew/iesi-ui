@@ -257,7 +257,10 @@ export default function GenericTableRow<ColumnNames>({
                                     <MenuItem
                                         // eslint-disable-next-line react/no-array-index-key
                                         key={listActionIndex}
-                                        onClick={() => action.onClick(item.id, rowIndex)}
+                                        onClick={() => {
+                                            handleClose();
+                                            action.onClick(item.id, rowIndex);
+                                        }}
                                         dense
                                         className={classes.actionsMenuItem}
                                     >
