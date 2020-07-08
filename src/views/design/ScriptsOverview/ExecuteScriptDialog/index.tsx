@@ -79,11 +79,13 @@ function ExecuteScriptDialog({
     const environments = getAsyncEnviroments(state).data;
     const environmentsAsyncStatus = getAsyncEnviroments(state).fetch.status;
 
-    // Trigger Fetch envs on mount
+    // Trigger Fetch envs on open dialog
     useEffect(() => {
-        triggerFetchEnvironments();
+        if (open) {
+            triggerFetchEnvironments();
+        }
         return () => {};
-    }, []);
+    }, [open]);
 
     return (
         <ClosableDialog
@@ -254,7 +256,9 @@ function ExecuteScriptDialog({
                         variant="contained"
                         color="secondary"
                         onClick={createExecutionRequest}
-                        disabled={!formValues.name.trim() || !formValues.description.trim()}
+                        disabled={
+                            !formValues.name.trim() || !formValues.description.trim() || !formValues.environment.trim()
+                        }
                     >
                         <Translate msg="scripts.overview.execute_script_dialog.confirm" />
                     </Button>

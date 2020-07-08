@@ -25,7 +25,6 @@ export function fetchExecutionRequest({ id }: IExecutionRequestByIdPayload) {
 }
 
 export function createExecutionRequest(executionRequest: ICreateExecutionRequestPayload) {
-    console.log('API: Create Execution request', executionRequest);
     return post<IExecutionRequest>({
         url: API_URLS.EXECUTION_REQUESTS,
         body: executionRequest,
