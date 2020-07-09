@@ -8,7 +8,7 @@ export interface IExecutionRequest {
     scope: string;
     context: string;
     email: string;
-    executionRequestStatus: TExecutionRequestStatus;
+    executionRequestStatus: ExecutionRequestStatus;
     scriptExecutionRequests: IScriptExecutionRequest[];
     executionRequestLabels: ILabel[];
 }
@@ -20,12 +20,10 @@ export interface ICreateExecutionRequestPayload {
     scope: string;
     context: string;
     email: string;
-    executionRequestStatus: TExecutionRequestStatus;
+    executionRequestStatus: ExecutionRequestStatus;
     scriptExecutionRequests: Omit<IScriptExecutionRequest, 'executionRequestId' | 'scriptExecutionRequestId'>[];
     executionRequestLabels: ILabel[];
 }
-
-export type TExecutionRequestStatus = 'NEW'; // TODO
 
 interface IScriptExecutionRequest {
     scriptExecutionRequestId: string;
@@ -34,11 +32,18 @@ interface IScriptExecutionRequest {
     exit: boolean;
     impersonations: { name: string }[];
     parameters: IParameter[];
-    scriptExecutionRequestStatus: TExecutionRequestStatus;
+    scriptExecutionRequestStatus: ExecutionRequestStatus;
     scriptName: string;
     scriptVersion: number;
 }
 
 export interface IExecutionRequestByIdPayload {
     id: string;
+}
+
+export enum ExecutionRequestStatus {
+    New = 'NEW',
+    Passed = 'PASSED',
+    Failed = 'FAILED',
+    // TODO
 }

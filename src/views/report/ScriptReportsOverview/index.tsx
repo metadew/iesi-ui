@@ -157,7 +157,7 @@ const ScriptReportsOverview = withStyles(styles)(
 
             return (
                 <>
-                    <Box height="100%" display="flex" flexDirection="column">
+                    <Box height="100%" display="flex" flexDirection="column" flex="1 0 auto">
                         <Box
                             paddingTop={3}
                             paddingBottom={3}
@@ -216,6 +216,9 @@ const ScriptReportsOverview = withStyles(styles)(
                     fixedWidth: '7%',
                 },
                 environment: {
+                    label: (
+                        <Translate msg="script_reports.overview.list.labels.environment" />
+                    ),
                     fixedWidth: '20%',
                 },
                 requestTimestamp: {

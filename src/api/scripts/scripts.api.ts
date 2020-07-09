@@ -16,10 +16,10 @@ import API_URLS from '../apiUrls';
  * --> ideally Robbe adds a query param to conditionally get only the latest script versions
  *     otherwise we have to filter them ourselves
  */
-export function fetchScripts() {
+export function fetchScripts({ expandResponseWith }: IFetchScriptsOptions) {
     return get<IScript[], IListResponse<IScript>>({
         url: API_URLS.SCRIPTS,
-        // queryParams: toExpandQueryParam(expandResponseWith), // TODO: fix expandResponseWith
+        queryParams: toExpandQueryParam(expandResponseWith),
         // eslint-disable-next-line no-underscore-dangle
         mapResponse: ({ data }) => data._embedded,
     });

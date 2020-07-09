@@ -28,6 +28,7 @@ import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { IParameter } from 'models/state/iesiGeneric.models';
 import OrderedList from 'views/common/list/OrderedList';
 import isSet from '@snipsonian/core/es/is/isSet';
+import { ExecutionRequestStatus } from 'models/state/executionRequests.models';
 
 const useStyles = makeStyles(({ spacing, typography }) => ({
     formControl: {
@@ -299,7 +300,7 @@ function ExecuteScriptDialog({
             description: formValues.description.trim(),
             email: null, // May be ignored for now
             executionRequestLabels: [], // TODO
-            executionRequestStatus: 'NEW',
+            executionRequestStatus: ExecutionRequestStatus.New,
             name: formValues.name.trim(),
             requestTimestamp: new Date(),
             scope: '', // May be ignored for now
@@ -310,7 +311,7 @@ function ExecuteScriptDialog({
                     exit: true, // TODO?
                     impersonations: [], // TODO
                     parameters: formValues.parameters,
-                    scriptExecutionRequestStatus: 'NEW',
+                    scriptExecutionRequestStatus: ExecutionRequestStatus.New,
                     scriptVersion: script.version.number,
                 },
             ],

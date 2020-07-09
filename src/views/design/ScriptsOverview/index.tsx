@@ -25,7 +25,8 @@ import {
     FilterConfig,
     IListItem,
 } from 'models/list.models';
-import { IScriptBase } from 'models/state/scripts.models';
+import { IScript } from 'models/state/scripts.models';
+import { ExecutionRequestStatus } from 'models/state/executionRequests.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
@@ -60,6 +61,10 @@ const styles = ({ palette, typography }: Theme) =>
         },
         scriptLabels: {
             fontWeight: typography.fontWeightBold,
+        },
+        scriptNew: {
+            fontWeight: typography.fontWeightBold,
+            color: palette.primary.main,
         },
         scriptSuccess: {
             fontWeight: typography.fontWeightBold,
@@ -239,10 +244,16 @@ const ScriptsOverview = withStyles(styles)(
                         <Translate msg="scripts.overview.list.labels.last_run_status" />
                     ),
                     className: (value) => {
-                        if (value === 'Passed') {
+                        if (value === ExecutionRequestStatus.New) {
+                            return classes.scriptNew;
+                        }
+                        if (value === ExecutionRequestStatus.Passed) {
                             return classes.scriptSuccess;
                         }
-                        return classes.scriptFailed;
+                        if (value === ExecutionRequestStatus.Failed) {
+                            return classes.scriptFailed;
+                        }
+                        return '';
                     },
                     hideOnCompactView: true,
                 },
@@ -343,7 +354,7 @@ const ScriptsOverview = withStyles(styles)(
     },
 );
 
-function mapScriptsToListItems(scripts: IScriptBase[]): IListItem<IColumnNames>[] {
+function mapScriptsToListItems(scripts: IScript[]): IListItem<IColumnNames>[] {
     return scripts.map((script) => ({
         id: script.name,
         columns: {
@@ -362,25 +373,7 @@ function mapScriptsToListItems(scripts: IScriptBase[]): IListItem<IColumnNames>[
                     </Typography>
                 ),
             },
-            scheduling: { // TODO: fetch should return scheduling data
-                value: 2,
-                tooltip: (
-                    <Typography variant="body2" component="div">
-                        TODO:
-                        <OrderedList
-                            items={[
-                                { content: 'Scheduling A' },
-                                { content: 'Scheduling B' },
-                            ]}
-                        />
-                    </Typography>
-                ),
-            },
-            lastRunDate: { // TODO: fetch should return last run data
-                value: '22-04-2020',
-                sortValue: new Date('2020-04-22').toISOString(),
-            },
-            lastRunStatus: 'Passed',
+            lastRunStatus: script.execution.mostRecent[0]?.runStatus,
         },
     }));
 }

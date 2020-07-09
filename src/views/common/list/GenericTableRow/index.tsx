@@ -297,7 +297,9 @@ export default function GenericTableRow<ColumnNames>({
             const value = getListItemValueFromColumn(item, columnName).toString();
             const shortenedValue = value.length > SHORTEN_VALUE_FROM_CHARACTERS
                 ? `${value.substr(0, SHORTEN_VALUE_FROM_CHARACTERS)}…`
-                : value;
+                : value === ''
+                    ? '-'
+                    : value;
 
             const cellClassName = typeof column.className === 'function'
                 ? column.className(value)

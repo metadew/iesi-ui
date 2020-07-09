@@ -67,17 +67,14 @@ scripts:
         execute: Run script
         report: Reporting
       filter:
-        last_run_date: Last run date
         last_run_status: Last run status
         script_name: Script name
         script_label: Script labels
       labels:
         labels: Labels
-        last_run_date: Last run date
         last_run_status: Last run status
         scheduling: Schedules
       sort:
-        last_run_date: Last run date
         script_name: Script name
         version: Version
   detail:
@@ -151,6 +148,7 @@ script_reports:
         environment: Environment
         labels: Label
       labels:
+        environment: Environment
         labels: Labels
         parameters: Parameters
         request_timestamp: Request timestamp
