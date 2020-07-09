@@ -1,24 +1,17 @@
-import React, { useState } from 'react';
-import { ILabel } from 'models/state/iesiGeneric.models';
+import React from 'react';
 import OrderedList from 'views/common/list/OrderedList';
-import Translate from '@snipsonian/react/es/components/i18n/Translate';
+import { ILabel } from 'models/state/iesiGeneric.models';
 
-export default function ShowLabels({ labels: initialLabels }: {
+export default function ShowLabels({
+    labels,
+}: {
     labels: ILabel[];
 }) {
-    const [labels] = useState(initialLabels);
-
-    return (
-        <>
-            {labels.length > 0 ? (
-                <OrderedList
-                    items={labels.map((label) => ({
-                        content: label.value,
-                    }))}
-                />
-            ) : (
-                <Translate msg="scripts.detail.side.labels.empty" />
-            )}
-        </>
+    return labels.length > 0 && (
+        <OrderedList
+            items={labels.map((label) => ({
+                content: `${label.name}:${label.value}`,
+            }))}
+        />
     );
 }

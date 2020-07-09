@@ -57,7 +57,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     childRoutes: [{
         routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
         path: '/:reportId',
-        component: ScriptReportDetail,
+        component: ScriptReportDetail as React.ComponentType<unknown>,
     }],
     executeOnRoute: [{
         execute: triggerFetchExecutionRequests,

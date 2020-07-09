@@ -1,6 +1,4 @@
-import { IEnvironment } from 'models/state/environments.models';
-import { IScriptSchedule } from 'models/state/scripts.models';
-import { ILabel } from 'models/state/iesiGeneric.models';
+import { ILabel, IParameter } from 'models/state/iesiGeneric.models';
 
 export const MOCKED_ACTIONS_LIST_ITEMS = [{
     id: 1232321,
@@ -146,24 +144,12 @@ export const MOCKED_SCRIPT_LABELS: ILabel[] = [
     },
 ];
 
-export const MOCKED_SCRIPT_SCHEDULES: IScriptSchedule[] = [
+export const MOCKED_SCRIPT_PARAMETERS: IParameter[] = [
     {
-        environment: 'staging',
-        frequency: 10,
-    },
-    {
-        environment: 'production',
-        frequency: 60,
-    },
-];
-
-export const MOCKED_ENVS: IEnvironment[] = [
-    {
-        name: 'staging',
-        description: 'staging description',
-    },
-    {
-        name: 'production',
-        description: 'prod description',
+        name: 'param-1',
+        value: 'value 1',
+    }, {
+        name: 'param-2',
+        value: 'value2',
     },
 ];

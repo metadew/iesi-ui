@@ -161,3 +161,14 @@ script_reports:
       amount: 'You have {amount} script executions'
     detail:
       parameter_index: 'Parameter {index}'
+  detail:
+    side:
+      toggle_button: Details
+      description:
+        version: Version
+        request_timestamp: Request timestamp
+        execution_status: Status
+      labels:
+        title: Labels
+      parameters:
+        title: Parameters
