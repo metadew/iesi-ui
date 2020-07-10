@@ -43,7 +43,9 @@ export interface IExecutionRequestByIdPayload {
 
 export enum ExecutionRequestStatus {
     New = 'NEW',
-    Passed = 'PASSED',
-    Failed = 'FAILED',
-    // TODO
+    Submitted = 'SUBMITTED',
+    Aborted = 'ABORTED',
+    Declined = 'DECLINED',
+    Accepted = 'ACCEPTED',
+    Completed = 'COMPLETED',
 }

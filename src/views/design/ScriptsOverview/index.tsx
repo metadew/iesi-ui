@@ -244,13 +244,13 @@ const ScriptsOverview = withStyles(styles)(
                         <Translate msg="scripts.overview.list.labels.last_run_status" />
                     ),
                     className: (value) => {
-                        if (value === ExecutionRequestStatus.New) {
+                        if (value === ExecutionRequestStatus.New || value === ExecutionRequestStatus.Submitted) {
                             return classes.scriptNew;
                         }
-                        if (value === ExecutionRequestStatus.Passed) {
+                        if (value === ExecutionRequestStatus.Completed || value === ExecutionRequestStatus.Accepted) {
                             return classes.scriptSuccess;
                         }
-                        if (value === ExecutionRequestStatus.Failed) {
+                        if (value === ExecutionRequestStatus.Aborted || value === ExecutionRequestStatus.Declined) {
                             return classes.scriptFailed;
                         }
                         return '';
