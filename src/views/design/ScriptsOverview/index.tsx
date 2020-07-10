@@ -298,8 +298,17 @@ const ScriptsOverview = withStyles(styles)(
                                     }, {
                                         icon: <ReportIcon />,
                                         label: <Translate msg="scripts.overview.list.actions.report" />,
-                                        // eslint-disable-next-line no-alert
-                                        onClick: (id) => alert(`report: ${id}`),
+                                        onClick: (id) => {
+                                            const scripts = getAsyncScripts(this.props.state).data;
+                                            const selectedScript = scripts.find((item) => item.name === id);
+                                            redirectTo({
+                                                routeKey: ROUTE_KEYS.R_REPORTS,
+                                                queryParams: {
+                                                    name: selectedScript.name,
+                                                    version: selectedScript.version.number,
+                                                },
+                                            });
+                                        },
                                     }, {
                                         icon: <Delete />,
                                         label: <Translate msg="scripts.overview.list.actions.delete" />,
