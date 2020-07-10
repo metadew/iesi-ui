@@ -27,6 +27,7 @@ export interface IExecuteOnRoute<ExecuteInput = {}> {
 export interface INavigateToRoute {
     routeKey: ROUTE_KEYS;
     params?: IPathParams;
+    queryParams?: IPathParams;
 }
 
 export interface IPathParams {

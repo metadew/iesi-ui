@@ -109,14 +109,17 @@ export function setBrowserHistory(history: History) {
     }
 }
 
-export function redirectTo({ routeKey, params }: INavigateToRoute) {
+export function redirectTo({ routeKey, params, queryParams }: INavigateToRoute) {
     if (browserHistory) {
-        browserHistory.push(
-            replacePathPlaceholders({
+        browserHistory.push({
+            pathname: replacePathPlaceholders({
                 path: getRoutePath({ routeKey }),
                 placeholders: params,
             }),
-        );
+            search: queryParams
+                ? Object.keys(queryParams).map((key) => `${key}=${queryParams[key]}`).join('&')
+                : '',
+        });
     }
 }
 
