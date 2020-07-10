@@ -24,6 +24,7 @@ import { getAsyncScriptDetail } from 'state/entities/scripts/selectors';
 import { getUniqueIdFromScript } from 'utils/scripts/scripts';
 
 import Loader from 'views/common/waiting/Loader';
+import { triggerUpdateScriptDetail, triggerCreateScriptDetail } from 'state/entities/scripts/triggers';
 import DetailActions from './DetailActions';
 import AddAction from './AddAction';
 import EditAction from './EditAction';
@@ -65,7 +66,7 @@ interface IComponentState {
     isSaveDialogOpen: boolean;
     editActionIndex: number;
     newScriptDetail: IScript;
-    checked: boolean;
+    hasChangesToCheck: boolean;
 }
 
 const ScriptDetail = withStyles(styles)(
@@ -79,7 +80,7 @@ const ScriptDetail = withStyles(styles)(
                 isSaveDialogOpen: false,
                 editActionIndex: -1,
                 newScriptDetail: null,
-                checked: true, // TODO: should be false by default
+                hasChangesToCheck: false,
             };
 
             this.renderAddScriptContent = this.renderAddScriptContent.bind(this);
@@ -104,7 +105,7 @@ const ScriptDetail = withStyles(styles)(
 
         public render() {
             const { state } = this.props;
-            const { isAddOpen, isConfirmDeleteOpen, isSaveDialogOpen } = this.state;
+            const { isAddOpen, isConfirmDeleteOpen, isSaveDialogOpen, newScriptDetail } = this.state;
 
             // State
             const scriptDetailAsyncStatus = getAsyncScriptDetail(state).fetch.status;
@@ -143,7 +144,7 @@ const ScriptDetail = withStyles(styles)(
                                 <Button
                                     id="save-update-current-version"
                                     onClick={() => {
-                                        alert('overwrite current version');
+                                        triggerUpdateScriptDetail({ ...newScriptDetail });
                                         this.setState({ isSaveDialogOpen: false });
                                     }}
                                     variant="contained"
@@ -156,7 +157,13 @@ const ScriptDetail = withStyles(styles)(
                                 <Button
                                     id="save-save-as-new-version"
                                     onClick={() => {
-                                        alert('create new version');
+                                        triggerCreateScriptDetail({
+                                            ...newScriptDetail,
+                                            version: {
+                                                ...newScriptDetail.version,
+                                                number: newScriptDetail.version.number + 1,
+                                            },
+                                        });
                                         this.setState({ isSaveDialogOpen: false });
                                     }}
                                     color="secondary"
@@ -261,13 +268,13 @@ const ScriptDetail = withStyles(styles)(
 
         private renderScriptDetailContent() {
             const { classes } = this.props;
-            const { newScriptDetail, checked } = this.state;
+            const { newScriptDetail, hasChangesToCheck } = this.state;
 
             const listItems = getSortedListItemsFromScriptDetail(newScriptDetail);
             const hasActions = listItems.length > 0;
 
             const handleSaveAction = () => {
-                this.setState({ checked: !checked });
+                this.setState({ hasChangesToCheck: false });
                 this.setState({ isSaveDialogOpen: true });
             };
 
@@ -310,7 +317,7 @@ const ScriptDetail = withStyles(styles)(
             return (
                 <>
                     <Box>
-                        <Collapse in={checked}>
+                        <Collapse in={hasChangesToCheck}>
                             <Box marginX={2} marginBottom={2}>
                                 <Alert severity="warning">
                                     <Translate msg="scripts.detail.main.alert.save_changes" />
@@ -393,6 +400,8 @@ const ScriptDetail = withStyles(styles)(
                     ...fieldsToUpdate,
                 },
             }));
+
+            this.setState({ hasChangesToCheck: true });
         }
 
         private getEditAction() {
