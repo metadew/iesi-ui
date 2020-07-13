@@ -3,7 +3,7 @@ const API_URLS = {
 
     ENV_CONFIG: '/env-config.json',
 
-    ACTION_TYPES: '/action-types',
+    ACTION_TYPES: '/action_types',
     CONNECTION_TYPES: '/connection-types',
 
     ENVIRONMENTS: '/environments',

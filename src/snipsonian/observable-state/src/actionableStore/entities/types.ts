@@ -99,7 +99,7 @@ export interface IAsyncEntitiesStateManager<State, StateChangeNotificationKey, C
 /* eslint-enable max-len */
 
 export interface ITriggerAsyncEntityOperationBaseProps<State, ExtraInput extends object, StateChangeNotificationKey> {
-    extraInputSelector?: (props: { state: State }) => ExtraInput;
+    extraInputSelector: (props: { state: State }) => ExtraInput;
     /**
      * If notificationsToTrigger not specified, by default a notification will be triggered (possibly extended with
      * parent notifications based on the nrOfParentNotificationLevelsToTrigger) of the following format:

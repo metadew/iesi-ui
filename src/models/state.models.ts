@@ -28,6 +28,7 @@ export interface IState {
  * p.s. the number of parent levels to get triggered can be overruled per action.
  */
 export enum StateChangeNotification {
+    CONSTANTS_ACTION_TYPES = 'CONSTANTS.ACTION_TYPES',
     ENV_CONFIG = 'ENV_CONFIG',
     I18N_TRANSLATIONS = 'I18N.TRANSLATIONS',
     I18N_TRANSLATIONS_REFRESHED = 'I18N.TRANSLATIONS.REFRESHED',

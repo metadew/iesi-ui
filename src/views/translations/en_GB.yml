@@ -91,7 +91,6 @@ scripts:
     edit_action:
       description: Action description
       parameter:
-        title: 'Parameter {number}'
         value: Value
       footer:
         continue_on_fail: Continue if action fails

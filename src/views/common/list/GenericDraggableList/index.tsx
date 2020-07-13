@@ -58,7 +58,11 @@ export default function GenericDraggableList<ColumnNames>({
                                     </TableRow>
                                 )}
                                 {listItems.map((item: IListItem<ColumnNames>, index: number) => (
-                                    <Draggable key={item.id} draggableId={item.id.toString()} index={index}>
+                                    <Draggable // eslint-disable-next-line react/no-array-index-key
+                                        key={`${item.id}${index}`}
+                                        draggableId={`${item.id.toString()}${index}`}
+                                        index={index}
+                                    >
                                         {(draggableProvided, draggableSnapshot) => (
                                             <GenericTableRow
                                                 draggableProps={{

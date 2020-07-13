@@ -15,6 +15,7 @@ import { formatNumberWithTwoDigits } from 'utils/number/format';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import TextInput from 'views/common/input/TextInput';
 import { IObserveProps, observe } from 'views/observe';
+import { getAsyncActionTypes } from 'state/entities/constants/selectors';
 import { getTranslator } from 'state/i18n/selectors';
 import { StateChangeNotification } from 'models/state.models';
 import ExpandableParameter from './ExpandableParameter';
@@ -81,6 +82,8 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
     const [parameters, setParameters] = useState(action.parameters);
     const [description, setDescription] = useState(action.description);
 
+    const actionTypes = getAsyncActionTypes(state).data || [];
+    const matchingActionType = actionTypes.find((item) => action.type === item.type);
 
     return (
         <Box className={classes.dialog}>
@@ -118,26 +121,32 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                         />
                     </Paper>
                 </Box>
-                {parameters.map((parameter, parameterIndex) => (
-                    <ExpandableParameter
-                        key={parameter.name}
-                        onChange={(value) => {
-                            const newParameters = action.parameters.map((item) => {
-                                if (item.name === parameter.name) {
-                                    return {
-                                        ...item,
-                                        value,
-                                    };
-                                }
-                                return item;
-                            });
+                <Box maxHeight={400} overflow="scroll">
+                    {parameters.map((parameter) => {
+                        // eslint-disable-next-line max-len
+                        const constantParameter = matchingActionType.parameters.find((item) => item.name === parameter.name);
+                        return (
+                            <ExpandableParameter
+                                key={parameter.name}
+                                onChange={(value) => {
+                                    const newParameters = action.parameters.map((item) => {
+                                        if (item.name === parameter.name) {
+                                            return {
+                                                ...item,
+                                                value,
+                                            };
+                                        }
+                                        return item;
+                                    });
 
-                            setParameters(newParameters);
-                        }}
-                        parameter={parameter}
-                        number={parameterIndex + 1}
-                    />
-                ))}
+                                    setParameters(newParameters);
+                                }}
+                                parameter={parameter}
+                                constantParameter={constantParameter}
+                            />
+                        );
+                    })}
+                </Box>
                 <Box display="flex" justifyContent="flex-end" marginTop={2} alignItems="center">
                     <Box display="flex" alignItems="center">
                         <Typography className={classes.footerAction}>
@@ -145,7 +154,7 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                         </Typography>
                         <Checkbox
                             edge="end"
-                            checked={errorStopChecked}
+                            checked={!errorStopChecked}
                             onChange={() => {
                                 setErrorStopChecked(!errorStopChecked);
                             }}

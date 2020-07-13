@@ -199,7 +199,7 @@ export default function GenericTableRow<ColumnNames>({
             {isSet(showIndex || (placeholderProps && placeholderProps.showIndexCell)) && (
                 <TableCell className={classes.tableCell}>
                     {!isPlaceholder ? (
-                        <Typography className={classes.index}>{formatNumberWithTwoDigits(rowIndex)}</Typography>
+                        <Typography className={classes.index}>{formatNumberWithTwoDigits(rowIndex + 1)}</Typography>
                     ) : renderPlaceholderCellContent()}
                 </TableCell>
             )}

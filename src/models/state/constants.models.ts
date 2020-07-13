@@ -13,8 +13,13 @@ export interface IConstantParameter {
     encrypted: boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IActionType extends IConstant {}
+export interface IActionType {
+    name: string;
+    type: string;
+    status: string;
+    parameters: IConstantParameter[];
+    category: string;
+}
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IConnectionType extends IConstant {}

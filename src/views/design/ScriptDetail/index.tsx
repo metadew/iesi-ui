@@ -7,7 +7,7 @@ import {
     Edit as EditIcon,
 } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
-import { IScript } from 'models/state/scripts.models';
+import { IScript, IScriptAction } from 'models/state/scripts.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import TextInput from 'views/common/input/TextInput';
 import DescriptionList from 'views/common/list/DescriptionList';
@@ -22,9 +22,11 @@ import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAsyncScriptDetail } from 'state/entities/scripts/selectors';
 import { getUniqueIdFromScript } from 'utils/scripts/scripts';
-
+import { getAsyncActionTypes } from 'state/entities/constants/selectors';
+import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import Loader from 'views/common/waiting/Loader';
 import { triggerUpdateScriptDetail, triggerCreateScriptDetail } from 'state/entities/scripts/triggers';
+
 import DetailActions from './DetailActions';
 import AddAction from './AddAction';
 import EditAction from './EditAction';
@@ -88,6 +90,7 @@ const ScriptDetail = withStyles(styles)(
             this.renderScriptDetailPanel = this.renderScriptDetailPanel.bind(this);
             this.renderScriptDetailContent = this.renderScriptDetailContent.bind(this);
 
+            this.onAddActions = this.onAddActions.bind(this);
             this.updateScript = this.updateScript.bind(this);
 
             this.getEditAction = this.getEditAction.bind(this);
@@ -109,13 +112,19 @@ const ScriptDetail = withStyles(styles)(
 
             // State
             const scriptDetailAsyncStatus = getAsyncScriptDetail(state).fetch.status;
+            const actionTypesAsyncStatus = getAsyncActionTypes(state).fetch.status;
             const translator = getTranslator(state);
 
             const editAction = this.getEditAction();
 
             return (
                 <>
-                    <Loader show={scriptDetailAsyncStatus} />
+                    <Loader
+                        show={
+                            scriptDetailAsyncStatus === AsyncStatus.Busy
+                            || actionTypesAsyncStatus === AsyncStatus.Busy
+                        }
+                    />
                     <ContentWithSidePanel
                         panel={this.renderScriptDetailPanel()}
                         content={this.renderScriptDetailContent()}
@@ -176,18 +185,20 @@ const ScriptDetail = withStyles(styles)(
                     </ClosableDialog>
                 </>
             );
+        }
 
-            // function onAddActions(actions: IDummyScriptAction[]) {
-            //     const newListItems: IListItem<IColumnNames>[] = actions.map((action) => ({
-            //         id: action.id,
-            //         columns: {
-            //             name: action.name,
-            //             description: action.description,
-            //         },
-            //     }));
-            //     setListItems([...listItems, ...newListItems]);
-            //     onCloseAddAction();
-            // }
+        private onAddActions(actions: IScriptAction[]) {
+            const { newScriptDetail } = this.state;
+            this.updateScript({
+                actions: [
+                    ...newScriptDetail.actions,
+                    ...actions.map((item, index) => ({
+                        ...item,
+                        number: newScriptDetail.actions.length + (index + 1),
+                    })),
+                ],
+            });
+            this.setState({ isAddOpen: false });
         }
 
         private renderScriptDetailPanel() {
@@ -367,7 +378,7 @@ const ScriptDetail = withStyles(styles)(
             return (
                 <AddAction
                     onClose={() => this.setState({ isAddOpen: false })}
-                    onAdd={() => this.setState({ isAddOpen: false })}
+                    onAdd={this.onAddActions}
                 />
             );
         }

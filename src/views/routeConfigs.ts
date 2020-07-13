@@ -1,6 +1,7 @@
 import { IRoute } from 'models/router.models';
 import { triggerFetchScripts, triggerFetchScriptDetail } from 'state/entities/scripts/triggers';
 import { triggerFetchExecutionRequests } from 'state/entities/executionRequests/triggers';
+import { triggerFetchActionTypes } from 'state/entities/constants/triggers';
 import { ROUTE_KEYS, registerRoutes } from './routes';
 import NotFound from './appShell/NotFound';
 import Home from './Home';
@@ -39,6 +40,8 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
                     name: routeLocation.params.name,
                     version: routeLocation.params.version,
                 }),
+            }, {
+                execute: triggerFetchActionTypes,
             }],
         },
     ],

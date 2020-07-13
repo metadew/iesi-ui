@@ -76,4 +76,13 @@ entitiesConfigManager.register({
     },
 });
 
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.actionTypes,
+    operationsConfig: {
+        fetch: {
+            api: api.constants.fetchActionTypes,
+        },
+    },
+});
+
 export default entitiesConfigManager;

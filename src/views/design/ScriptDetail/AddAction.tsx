@@ -1,19 +1,28 @@
 import React, { useState, ReactText } from 'react';
 import classnames from 'classnames';
-import { Box, makeStyles, IconButton, Typography, Input, Button, ButtonGroup } from '@material-ui/core';
+import {
+    Box,
+    makeStyles,
+    IconButton,
+    Typography,
+    Input,
+    Button,
+    ButtonGroup,
+} from '@material-ui/core';
 import { Search, Close } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
 import GenericSelectableList from 'views/common/list/GenericSelectableList';
-import { FilterType, SortOrder, SortType } from 'models/list.models';
-import { IDummyScriptAction } from 'models/state/scripts.models';
-import { MOCKED_ACTIONS_LIST_ITEMS } from './mock';
+import { FilterType, SortOrder, SortType, IListItem } from 'models/list.models';
+import { getAsyncActionTypes } from 'state/entities/constants/selectors';
+import { IActionType } from 'models/state/constants.models';
+import { IScriptAction } from 'models/state/scripts.models';
 
 interface IPublicProps {
     onClose: () => void;
-    onAdd: (actions: IDummyScriptAction[]) => void;
+    onAdd: (actions: IScriptAction[]) => void;
 }
 
 const useStyles = makeStyles(({ palette, spacing, typography }) => ({
@@ -30,11 +39,11 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
         flex: '1 1 auto',
         margin: spacing(1),
     },
-    scriptName: {
+    actionType: {
         fontWeight: typography.fontWeightBold,
         color: palette.primary.main,
     },
-    scriptDescription: {
+    actionName: {
         fontWeight: typography.fontWeightBold,
         fontSize: typography.pxToRem(12),
     },
@@ -48,32 +57,36 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
     categoryActive: {
         color: palette.primary.main,
     },
+    actionsList: {
+        maxHeight: 400,
+        overflowY: 'scroll',
+    },
 }));
 
 interface IColumnNames {
     name: string;
-    description: string;
+    type: string;
 }
 
 interface IListData {
     category: string;
 }
 
-function AddAction({
-    state,
-    onClose,
-    onAdd,
-}: IObserveProps & IPublicProps) {
-    const [selectedCategory, setSelectedCategory] = useState('Parameters');
+function AddAction({ state, onClose, onAdd }: IObserveProps & IPublicProps) {
+    const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedIds, setSelectedIds] = useState([]);
     const [isSearchActive, setIsSearchActive] = useState(false);
     const [searchFilter, setSearchFilter] = useState('');
     const classes = useStyles();
 
     const translator = getTranslator(state);
-    const categories = getCategoriesFromListItems();
-
-    const categorizedListItems = MOCKED_ACTIONS_LIST_ITEMS.filter((item) => item.data.category === selectedCategory);
+    const actionTypes = getAsyncActionTypes(state).data || [];
+    const listItems = mapActionTypesToListItems(actionTypes);
+    const categories = getCategoriesFromListItems(listItems);
+    const filteredListItems = filterListItemsOnCategory(
+        listItems,
+        selectedCategory || (categories.length > 0 ? categories[0] : ''),
+    );
 
     return (
         <Box className={classes.dialog}>
@@ -84,7 +97,10 @@ function AddAction({
                 alignItems="center"
                 padding={1}
             >
-                <IconButton className={classes.headerAction} onClick={() => setIsSearchActive(!isSearchActive)}>
+                <IconButton
+                    className={classes.headerAction}
+                    onClick={() => setIsSearchActive(!isSearchActive)}
+                >
                     <Search />
                 </IconButton>
                 {isSearchActive ? (
@@ -120,11 +136,10 @@ function AddAction({
                                 variant="contained"
                                 disableElevation
                                 size="small"
-                                className={
-                                    classnames(classes.categoryButton, {
-                                        [classes.categoryActive]: category === selectedCategory,
-                                    })
-                                }
+                                className={classnames(classes.categoryButton, {
+                                    [classes.categoryActive]:
+                                        category === (selectedCategory || (categories.length > 0 ? categories[0] : '')),
+                                })}
                                 onClick={() => {
                                     if (category !== selectedCategory) {
                                         setSelectedCategory(category);
@@ -138,30 +153,31 @@ function AddAction({
                     </ButtonGroup>
                 </Box>
                 <GenericSelectableList
+                    className={classes.actionsList}
                     onChange={onSelectionChange}
                     columns={{
-                        name: {
+                        type: {
                             fixedWidth: '30%',
-                            className: classes.scriptName,
+                            className: classes.actionType,
                         },
-                        description: {
+                        name: {
                             fixedWidth: '70%',
-                            className: classes.scriptDescription,
+                            className: classes.actionName,
                         },
                     }}
                     filters={{
-                        name: {
+                        type: {
                             filterType: FilterType.Search,
                             values: [searchFilter],
-                            name: 'name',
+                            name: 'type',
                         },
                     }}
                     sortedColumn={{
-                        name: 'name',
+                        name: 'type',
                         sortOrder: SortOrder.Descending,
                         sortType: SortType.String,
                     }}
-                    listItems={categorizedListItems}
+                    listItems={filteredListItems}
                     selectedIds={selectedIds}
                     setSelectedIds={setSelectedIds}
                 />
@@ -187,28 +203,62 @@ function AddAction({
     }
 
     function onAddItems() {
-        const actionsToAdd = MOCKED_ACTIONS_LIST_ITEMS
-            .filter((item) => selectedIds.includes(item.id))
-            .map((item) => ({
-                id: item.id,
-                name: item.columns.name,
-                description: item.columns.description,
-            } as IDummyScriptAction));
-        onAdd(actionsToAdd);
+        const actionsToAdd = actionTypes.filter((item) => selectedIds.includes(item.name));
+        onAdd(actionsToAdd.map((item) => ({
+            component: null,
+            condition: '',
+            description: 'default',
+            errorExpected: false,
+            errorStop: true,
+            iteration: null,
+            name: item.name,
+            number: null,
+            parameters: item.parameters.map((parameter) => ({
+                name: parameter.name,
+                value: '',
+            })),
+            retries: 0,
+            type: item.type,
+        })));
     }
 
-    function getCategoriesFromListItems() {
-        return MOCKED_ACTIONS_LIST_ITEMS.reduce(
-            (acc, listItem) => {
-                const { category } = listItem.data;
-                if (!acc.includes(category)) {
-                    acc.push(category);
-                }
-                return acc;
-            },
-            [] as string[],
-        );
+    function mapActionTypesToListItems(items: IActionType[]) {
+        return items.map((item) => {
+            const listItem: IListItem<IColumnNames, IListData> = {
+                id: item.name,
+                columns: {
+                    name: item.name,
+                    type: item.type,
+                },
+                data: {
+                    category: item.category,
+                },
+            };
+            return listItem;
+        });
+    }
+
+    function getCategoriesFromListItems(
+        items: IListItem<IColumnNames, IListData>[],
+    ) {
+        return items.reduce((acc, listItem) => {
+            const { category } = listItem.data;
+            if (!acc.includes(category)) {
+                acc.push(category);
+            }
+            return acc;
+        }, [] as string[]);
+    }
+
+    function filterListItemsOnCategory(
+        items: IListItem<IColumnNames, IListData>[],
+        category: string,
+    ) {
+        return items.filter((item) => item.data.category === category);
     }
 }
 
-export default observe<IPublicProps>([StateChangeNotification.I18N_TRANSLATIONS], AddAction);
+export default observe<IPublicProps>(
+    [StateChangeNotification.I18N_TRANSLATIONS],
+    AddAction,
+);

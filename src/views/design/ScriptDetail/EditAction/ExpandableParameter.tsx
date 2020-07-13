@@ -13,11 +13,12 @@ import {
 import { ExpandMore } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { IParameter } from 'models/state/iesiGeneric.models';
+import { IConstantParameter } from 'models/state/constants.models';
 
 interface IPublicProps {
     onChange: (value: string) => void;
     parameter: IParameter;
-    number: number;
+    constantParameter: IConstantParameter;
 }
 
 const useStyles = makeStyles(({ palette, spacing }) => ({
@@ -55,7 +56,7 @@ const useStyles = makeStyles(({ palette, spacing }) => ({
     },
 }));
 
-export default function ExpandableParameter({ parameter, onChange, number }: IPublicProps) {
+export default function ExpandableParameter({ parameter, onChange, constantParameter }: IPublicProps) {
     const classes = useStyles();
 
     return (
@@ -66,13 +67,10 @@ export default function ExpandableParameter({ parameter, onChange, number }: IPu
             >
                 <Box>
                     <Typography className={classes.expansionPanelLabel}>
-                        <Translate
-                            msg="scripts.detail.edit_action.parameter.title"
-                            placeholders={{ number }}
-                        />
+                        {constantParameter.name}
                     </Typography>
                     <Typography className={classes.expansionPanelTitle}>
-                        {parameter.name}
+                        {constantParameter.description}
                     </Typography>
                 </Box>
             </ExpansionPanelSummary>

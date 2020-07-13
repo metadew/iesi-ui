@@ -1,4 +1,5 @@
 import React, { ReactText } from 'react';
+import classnames from 'classnames';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -30,6 +31,7 @@ interface IPublicProps<ColumnNames> {
     onChange: (selectedIds: ReactText[]) => void;
     selectedIds: ReactText[];
     setSelectedIds: (selectedIds: ReactText[]) => void;
+    className?: string;
 }
 
 const useStyles = makeStyles(({ spacing, shape, palette }) => ({
@@ -77,6 +79,7 @@ export default function GenericSelectableList<ColumnNames>({
     onChange,
     selectedIds,
     setSelectedIds,
+    className,
 }: IPublicProps<ColumnNames>) {
     const classes = useStyles();
 
@@ -89,7 +92,7 @@ export default function GenericSelectableList<ColumnNames>({
         : items;
 
     return (
-        <TableContainer elevation={0} component={Paper} className={classes.table}>
+        <TableContainer elevation={0} component={Paper} className={classnames(classes.table, className)}>
             <Table aria-label="selectable table">
                 <TableBody>
                     {filteredItems.length === 0 && (
