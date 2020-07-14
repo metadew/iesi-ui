@@ -86,8 +86,9 @@ export function getRouteByPath({ path }: { path: string }): IRoute<ROUTE_KEYS> {
         .find((route) => route.path === path);
 }
 
-export function getRouteKeyByPath({ path }: { path: string }): string {
-    return getRouteByPath({ path }).path;
+export function getRouteKeyByPath({ path }: {path: string}) {
+    return getAllRouteKeys()
+        .find((routeKey) => getRoute({ routeKey }).path === path);
 }
 
 export function getAllRouteKeys(): ROUTE_KEYS[] {

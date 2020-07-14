@@ -27,6 +27,9 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             routeKey: ROUTE_KEYS.R_SCRIPT_NEW,
             path: '/new',
             component: ScriptDetail as React.ComponentType<unknown>,
+            executeOnRoute: [{
+                execute: triggerFetchActionTypes,
+            }],
         },
         {
             routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,

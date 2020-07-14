@@ -1,4 +1,5 @@
 import React from 'react';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 import clone from 'ramda/es/clone';
 import { getTranslator } from 'state/i18n/selectors';
 import { Box, Typography, Button, withStyles, createStyles, Theme, WithStyles, Collapse } from '@material-ui/core';
@@ -11,7 +12,7 @@ import { IScript, IScriptAction } from 'models/state/scripts.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import TextInput from 'views/common/input/TextInput';
 import DescriptionList from 'views/common/list/DescriptionList';
-import { ROUTE_KEYS } from 'views/routes';
+import { ROUTE_KEYS, getRouteKeyByPath, redirectTo } from 'views/routes';
 import { ListColumns, IListItem } from 'models/list.models';
 import GenericDraggableList from 'views/common/list/GenericDraggableList';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
@@ -26,6 +27,8 @@ import { getAsyncActionTypes } from 'state/entities/constants/selectors';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import Loader from 'views/common/waiting/Loader';
 import { triggerUpdateScriptDetail, triggerCreateScriptDetail } from 'state/entities/scripts/triggers';
+import { TRequiredFieldsState } from 'models/form.models';
+import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 
 import DetailActions from './DetailActions';
 import AddAction from './AddAction';
@@ -69,11 +72,12 @@ interface IComponentState {
     editActionIndex: number;
     newScriptDetail: IScript;
     hasChangesToCheck: boolean;
+    requiredFieldsState: TRequiredFieldsState<IScript>;
 }
 
 const ScriptDetail = withStyles(styles)(
-    class extends React.Component<TProps & IObserveProps, IComponentState> {
-        public constructor(props: TProps & IObserveProps) {
+    class extends React.Component<TProps & IObserveProps & RouteComponentProps, IComponentState> {
+        public constructor(props: TProps & IObserveProps & RouteComponentProps) {
             super(props);
 
             this.state = {
@@ -81,8 +85,28 @@ const ScriptDetail = withStyles(styles)(
                 isConfirmDeleteOpen: false,
                 isSaveDialogOpen: false,
                 editActionIndex: -1,
-                newScriptDetail: null,
+                newScriptDetail: {
+                    actions: [],
+                    description: '',
+                    labels: [],
+                    name: '',
+                    parameters: [],
+                    version: {
+                        description: '',
+                        number: 0,
+                    },
+                    scheduling: [],
+                    execution: {
+                        mostRecent: [],
+                        total: 0,
+                    },
+                },
                 hasChangesToCheck: false,
+                requiredFieldsState: {
+                    name: {
+                        showError: false,
+                    },
+                },
             };
 
             this.renderAddScriptContent = this.renderAddScriptContent.bind(this);
@@ -94,16 +118,16 @@ const ScriptDetail = withStyles(styles)(
             this.updateScript = this.updateScript.bind(this);
 
             this.getEditAction = this.getEditAction.bind(this);
+
+            this.isCreateScriptRoute = this.isCreateScriptRoute.bind(this);
+
+            this.updateScriptInStateIfNewScriptWasLoaded = this.updateScriptInStateIfNewScriptWasLoaded.bind(this);
+            this.navigateToScriptAfterCreation = this.navigateToScriptAfterCreation.bind(this);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
-            const scriptDetail = getAsyncScriptDetail(this.props.state).data;
-            const prevScriptDetail = getAsyncScriptDetail(prevProps.state).data;
-            if (getUniqueIdFromScript(scriptDetail) !== getUniqueIdFromScript(prevScriptDetail)) {
-                const scriptDetailDeepClone = clone(scriptDetail);
-                // eslint-disable-next-line react/no-did-update-set-state
-                this.setState({ newScriptDetail: scriptDetailDeepClone });
-            }
+            this.updateScriptInStateIfNewScriptWasLoaded(prevProps);
+            this.navigateToScriptAfterCreation(prevProps);
         }
 
         public render() {
@@ -158,6 +182,7 @@ const ScriptDetail = withStyles(styles)(
                                     }}
                                     variant="contained"
                                     color="secondary"
+                                    disabled={this.isCreateScriptRoute()}
                                 >
                                     <Translate msg="scripts.detail.save_script_dialog.update_current_version" />
                                 </Button>
@@ -170,7 +195,8 @@ const ScriptDetail = withStyles(styles)(
                                             ...newScriptDetail,
                                             version: {
                                                 ...newScriptDetail.version,
-                                                number: newScriptDetail.version.number + 1,
+                                                number: this.isCreateScriptRoute()
+                                                    ? 0 : newScriptDetail.version.number + 1,
                                             },
                                         });
                                         this.setState({ isSaveDialogOpen: false });
@@ -202,7 +228,7 @@ const ScriptDetail = withStyles(styles)(
         }
 
         private renderScriptDetailPanel() {
-            const { newScriptDetail } = this.state;
+            const { newScriptDetail, requiredFieldsState } = this.state;
             const { state } = this.props;
 
             const translator = getTranslator(state);
@@ -215,8 +241,8 @@ const ScriptDetail = withStyles(styles)(
                                 id="script-name"
                                 label={translator('scripts.detail.side.script_name')}
                                 required
-                                // error
-                                // helperText="Scriptname is a required field"
+                                error={requiredFieldsState.name.showError}
+                                helperText={requiredFieldsState.name.showError && 'Scriptname is a required field'}
                                 value={newScriptDetail && newScriptDetail.name
                                     ? newScriptDetail.name : ''}
                                 onChange={(e) => this.updateScript({ name: e.target.value })}
@@ -285,8 +311,16 @@ const ScriptDetail = withStyles(styles)(
             const hasActions = listItems.length > 0;
 
             const handleSaveAction = () => {
-                this.setState({ hasChangesToCheck: false });
-                this.setState({ isSaveDialogOpen: true });
+                const { passed, requiredFieldsState } = requiredFieldsCheck({
+                    data: newScriptDetail,
+                    requiredFields: ['name'],
+                });
+                this.setState({ requiredFieldsState });
+
+                if (passed) {
+                    this.setState({ hasChangesToCheck: false });
+                    this.setState({ isSaveDialogOpen: true });
+                }
             };
 
             if (!hasActions) {
@@ -306,6 +340,7 @@ const ScriptDetail = withStyles(styles)(
                                 variant="contained"
                                 color="secondary"
                                 startIcon={<AddIcon />}
+                                onClick={() => this.setState({ isAddOpen: true })}
                             >
                                 <Translate msg="scripts.detail.main.no_actions.button" />
                             </Button>
@@ -422,6 +457,37 @@ const ScriptDetail = withStyles(styles)(
             }
             return newScriptDetail && newScriptDetail.actions && newScriptDetail.actions[editActionIndex];
         }
+
+        private updateScriptInStateIfNewScriptWasLoaded(prevProps: TProps & IObserveProps) {
+            const scriptDetail = getAsyncScriptDetail(this.props.state).data;
+            const prevScriptDetail = getAsyncScriptDetail(prevProps.state).data;
+            if (getUniqueIdFromScript(scriptDetail) !== getUniqueIdFromScript(prevScriptDetail)) {
+                const scriptDetailDeepClone = clone(scriptDetail);
+                // eslint-disable-next-line react/no-did-update-set-state
+                this.setState({ newScriptDetail: scriptDetailDeepClone });
+            }
+        }
+
+        private navigateToScriptAfterCreation(prevProps: TProps & IObserveProps) {
+            const { newScriptDetail } = this.state;
+            const { status } = getAsyncScriptDetail(this.props.state).create;
+            const prevStatus = getAsyncScriptDetail(prevProps.state).create.status;
+
+            if (status === AsyncStatus.Success && prevStatus === AsyncStatus.Busy) {
+                redirectTo({
+                    routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                    params: {
+                        name: newScriptDetail.name,
+                        version: this.isCreateScriptRoute() ? 0 : newScriptDetail.version.number + 1,
+                    },
+                });
+            }
+        }
+
+        private isCreateScriptRoute() {
+            const currentRouteKey = getRouteKeyByPath({ path: this.props.match.path });
+            return currentRouteKey === ROUTE_KEYS.R_SCRIPT_NEW;
+        }
     },
 );
 
@@ -443,4 +509,8 @@ function getSortedListItemsFromScriptDetail(detail: IScript) {
 export default observe([
     StateChangeNotification.I18N_TRANSLATIONS,
     StateChangeNotification.DESIGN_SCRIPTS_DETAIL,
-], ScriptDetail);
+    StateChangeNotification.CONSTANTS_ACTION_TYPES,
+    // This is a typign mismatch, but does not cause an actual problem
+    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+    // @ts-ignore
+], withRouter(ScriptDetail));

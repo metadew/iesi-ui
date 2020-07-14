@@ -129,7 +129,7 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                             <ExpandableParameter
                                 key={parameter.name}
                                 onChange={(value) => {
-                                    const newParameters = action.parameters.map((item) => {
+                                    const newParameters = parameters.map((item) => {
                                         if (item.name === parameter.name) {
                                             return {
                                                 ...item,
