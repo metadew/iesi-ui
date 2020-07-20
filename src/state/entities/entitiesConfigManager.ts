@@ -45,6 +45,15 @@ entitiesConfigManager.register({
             // @ts-ignore
             apiInputSelector: ({ extraInput }) => extraInput as IScriptBase,
         },
+        remove: {
+            // IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.scripts.deleteScriptVersion,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IScriptByNameAndVersionPayload,
+        },
     },
 });
 

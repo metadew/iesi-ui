@@ -16,6 +16,7 @@ interface IPublicProps {
     onAdd: () => void;
     onSave: () => void;
     onViewReport: () => void;
+    isCreateRoute?: boolean;
 }
 
 const useStyles = makeStyles(({ palette, spacing }) => ({
@@ -42,6 +43,7 @@ export default function DetailActions({
     onAdd,
     onSave,
     onViewReport,
+    isCreateRoute,
 }: IPublicProps) {
     const classes = useStyles();
     return (
@@ -69,13 +71,13 @@ export default function DetailActions({
                             <Translate msg="Save" />
                         </Button>
                     </Box>
-                    <IconButton aria-label="delete script" onClick={onDelete}>
+                    <IconButton disabled={isCreateRoute} aria-label="delete script" onClick={onDelete}>
                         <DeleteIcon />
                     </IconButton>
-                    <IconButton aria-label="view reports" onClick={onViewReport}>
+                    <IconButton disabled={isCreateRoute} aria-label="view reports" onClick={onViewReport}>
                         <ReportIcon />
                     </IconButton>
-                    <IconButton aria-label="execute script" onClick={onPlay}>
+                    <IconButton disabled={isCreateRoute} aria-label="execute script" onClick={onPlay}>
                         <PlayIcon />
                     </IconButton>
                 </Paper>

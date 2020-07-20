@@ -47,3 +47,12 @@ export const triggerCreateScriptDetail = (payload: IScriptBase) =>
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_DETAIL],
     });
+
+export const triggerDeleteScriptDetail = (payload: IScriptByNameAndVersionPayload) =>
+    entitiesStateManager.triggerAsyncEntityRemove<{}>({
+        asyncEntityToRemove: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetail,
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_DETAIL],
+    });

@@ -34,10 +34,11 @@ import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
-import { getAsyncScripts } from 'state/entities/scripts/selectors';
+import { getAsyncScripts, getAsyncScriptDetail } from 'state/entities/scripts/selectors';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import OrderedList from 'views/common/list/OrderedList';
 import { Alert } from '@material-ui/lab';
+import { triggerDeleteScriptDetail, triggerFetchScripts } from 'state/entities/scripts/triggers';
 import ExecuteScriptDialog from './ExecuteScriptDialog';
 
 
@@ -136,6 +137,14 @@ const ScriptsOverview = withStyles(styles)(
             this.setScriptToDelete = this.setScriptToDelete.bind(this);
             this.clearScriptToExecute = this.clearScriptToExecute.bind(this);
             this.setScriptToExecute = this.setScriptToExecute.bind(this);
+
+            this.onDeleteScript = this.onDeleteScript.bind(this);
+            // eslint-disable-next-line max-len
+            this.closeDeleteScriptDialogAfterSuccessfulDelete = this.closeDeleteScriptDialogAfterSuccessfulDelete.bind(this);
+        }
+
+        public componentDidUpdate(prevProps: TProps & IObserveProps) {
+            this.closeDeleteScriptDialogAfterSuccessfulDelete(prevProps);
         }
 
         public render() {
@@ -143,6 +152,7 @@ const ScriptsOverview = withStyles(styles)(
             const { sortedColumn, scriptNameToDelete, scriptNameToExecute } = this.state;
 
             const scripts = getAsyncScripts(this.props.state).data;
+            const deleteStatus = getAsyncScriptDetail(this.props.state).remove.status;
 
             const listItems = scripts
                 ? mapScriptsToListItems(this.props.state.entities.scripts.data)
@@ -200,7 +210,8 @@ const ScriptsOverview = withStyles(styles)(
                         text={translator('scripts.overview.delete_script_dialog.text')}
                         open={!!scriptNameToDelete}
                         onClose={this.clearScriptToDelete}
-                        onConfirm={this.clearScriptToDelete} // TODO: actually delete script
+                        onConfirm={this.onDeleteScript}
+                        showLoader={deleteStatus === AsyncStatus.Busy}
                     />
                     <ExecuteScriptDialog
                         scriptName={scriptNameToExecute}
@@ -337,6 +348,25 @@ const ScriptsOverview = withStyles(styles)(
             );
         }
 
+        private onDeleteScript() {
+            const { state } = this.props;
+            const { scriptNameToDelete } = this.state;
+            const scriptToDelete = getAsyncScripts(state).data.find((item) => item.name === scriptNameToDelete);
+            if (scriptToDelete) {
+                triggerDeleteScriptDetail({ name: scriptToDelete.name, version: scriptToDelete.version.number });
+            }
+        }
+
+        private closeDeleteScriptDialogAfterSuccessfulDelete(prevProps: TProps & IObserveProps) {
+            const { status } = getAsyncScriptDetail(this.props.state).remove;
+            const prevStatus = getAsyncScriptDetail(prevProps.state).remove.status;
+
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                this.clearScriptToDelete();
+                triggerFetchScripts({ expandResponseWith: { scheduling: false } });
+            }
+        }
+
         private onSort(sortedColumn: ISortedColumn<IColumnNames>) {
             this.setState({ sortedColumn });
         }
@@ -389,5 +419,6 @@ function mapScriptsToListItems(scripts: IScript[]): IListItem<IColumnNames>[] {
 
 export default observe<TProps>([
     StateChangeNotification.DESIGN_SCRIPTS_LIST,
+    StateChangeNotification.DESIGN_SCRIPTS_DETAIL,
     StateChangeNotification.I18N_TRANSLATIONS,
 ], ScriptsOverview);

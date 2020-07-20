@@ -26,7 +26,11 @@ import { getUniqueIdFromScript } from 'utils/scripts/scripts';
 import { getAsyncActionTypes } from 'state/entities/constants/selectors';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import Loader from 'views/common/waiting/Loader';
-import { triggerUpdateScriptDetail, triggerCreateScriptDetail } from 'state/entities/scripts/triggers';
+import {
+    triggerUpdateScriptDetail,
+    triggerCreateScriptDetail,
+    triggerDeleteScriptDetail,
+} from 'state/entities/scripts/triggers';
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 
@@ -123,11 +127,15 @@ const ScriptDetail = withStyles(styles)(
 
             this.updateScriptInStateIfNewScriptWasLoaded = this.updateScriptInStateIfNewScriptWasLoaded.bind(this);
             this.navigateToScriptAfterCreation = this.navigateToScriptAfterCreation.bind(this);
+            this.navigateToScriptAfterDeletion = this.navigateToScriptAfterDeletion.bind(this);
+
+            this.onDeleteScript = this.onDeleteScript.bind(this);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
             this.updateScriptInStateIfNewScriptWasLoaded(prevProps);
             this.navigateToScriptAfterCreation(prevProps);
+            this.navigateToScriptAfterDeletion(prevProps);
         }
 
         public render() {
@@ -138,6 +146,7 @@ const ScriptDetail = withStyles(styles)(
             const scriptDetailAsyncStatus = getAsyncScriptDetail(state).fetch.status;
             const actionTypesAsyncStatus = getAsyncActionTypes(state).fetch.status;
             const translator = getTranslator(state);
+            const deleteStatus = getAsyncScriptDetail(this.props.state).remove.status;
 
             const editAction = this.getEditAction();
 
@@ -162,7 +171,8 @@ const ScriptDetail = withStyles(styles)(
                         text={translator('scripts.detail.delete_script_dialog.text')}
                         open={isConfirmDeleteOpen}
                         onClose={() => this.setState({ isConfirmDeleteOpen: false })}
-                        onConfirm={() => this.setState({ isConfirmDeleteOpen: false })} // TODO: actually delete script
+                        onConfirm={this.onDeleteScript}
+                        showLoader={deleteStatus === AsyncStatus.Busy}
                     />
                     <ClosableDialog
                         title={translator('scripts.detail.save_script_dialog.title')}
@@ -376,6 +386,7 @@ const ScriptDetail = withStyles(styles)(
                             onAdd={() => this.setState({ isAddOpen: true })}
                             onPlay={() => console.log('play')}
                             onViewReport={() => console.log('view report')}
+                            isCreateRoute={this.isCreateScriptRoute()}
                         />
                     </Box>
                     <Box marginY={1}>
@@ -450,6 +461,14 @@ const ScriptDetail = withStyles(styles)(
             this.setState({ hasChangesToCheck: true });
         }
 
+        private onDeleteScript() {
+            const { state } = this.props;
+            const detail = getAsyncScriptDetail(state).data;
+            if (detail) {
+                triggerDeleteScriptDetail({ name: detail.name, version: detail.version.number });
+            }
+        }
+
         private getEditAction() {
             const { newScriptDetail, editActionIndex } = this.state;
             if (editActionIndex === -1) {
@@ -473,13 +492,24 @@ const ScriptDetail = withStyles(styles)(
             const { status } = getAsyncScriptDetail(this.props.state).create;
             const prevStatus = getAsyncScriptDetail(prevProps.state).create.status;
 
-            if (status === AsyncStatus.Success && prevStatus === AsyncStatus.Busy) {
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
                 redirectTo({
                     routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
                     params: {
                         name: newScriptDetail.name,
                         version: this.isCreateScriptRoute() ? 0 : newScriptDetail.version.number + 1,
                     },
+                });
+            }
+        }
+
+        private navigateToScriptAfterDeletion(prevProps: TProps & IObserveProps) {
+            const { status } = getAsyncScriptDetail(this.props.state).remove;
+            const prevStatus = getAsyncScriptDetail(prevProps.state).remove.status;
+
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                redirectTo({
+                    routeKey: ROUTE_KEYS.R_SCRIPTS,
                 });
             }
         }

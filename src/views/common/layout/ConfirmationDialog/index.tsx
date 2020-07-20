@@ -1,6 +1,7 @@
 import React from 'react';
 import { Typography, Button, Box, makeStyles } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
+import Loader from 'views/common/waiting/Loader';
 import ClosableDialog from '../ClosableDialog';
 
 const useStyles = makeStyles(({ spacing }) => ({
@@ -19,6 +20,7 @@ interface IPublicProps {
     open: boolean;
     onClose: () => void;
     onConfirm: () => void;
+    showLoader?: boolean;
 }
 
 export default function ConfirmationDialog({
@@ -27,11 +29,13 @@ export default function ConfirmationDialog({
     open,
     title,
     text,
+    showLoader,
 }: IPublicProps) {
     const classes = useStyles();
 
     return (
         <ClosableDialog onClose={onClose} title={title} open={open}>
+            <Loader show={showLoader} />
             <Typography>{text}</Typography>
             <Box marginTop={4} display="flex" flexDirection="column" alignItems="center">
                 <Button variant="contained" color="secondary" onClick={onConfirm}>
