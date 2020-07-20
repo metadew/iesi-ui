@@ -4,7 +4,7 @@ import { IExtraProcessInput, IState } from 'models/state.models';
 import { ITraceableApiError } from 'models/api.models';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { api } from 'api';
-import { ICreateExecutionRequestPayload } from 'models/state/executionRequests.models';
+import { ICreateExecutionRequestPayload, IExecutionRequestByIdPayload } from 'models/state/executionRequests.models';
 import { IScriptByNameAndVersionPayload, IFetchScriptsOptions, IScriptBase } from 'models/state/scripts.models';
 
 // eslint-disable-next-line max-len
@@ -28,7 +28,7 @@ entitiesConfigManager.register({
             apiInputSelector: ({ extraInput }) => extraInput as IScriptByNameAndVersionPayload,
         },
         create: {
-            // IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
             api: api.scripts.createScriptVersion,
@@ -37,7 +37,7 @@ entitiesConfigManager.register({
             apiInputSelector: ({ extraInput }) => extraInput as IScriptBase,
         },
         update: {
-            // IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
             api: api.scripts.updateScriptVersion,
@@ -46,7 +46,7 @@ entitiesConfigManager.register({
             apiInputSelector: ({ extraInput }) => extraInput as IScriptBase,
         },
         remove: {
-            // IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
             api: api.scripts.deleteScriptVersion,
@@ -69,8 +69,17 @@ entitiesConfigManager.register({
 entitiesConfigManager.register({
     asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequestDetail,
     operationsConfig: {
+        fetch: {
+            api: api.executionRequests.fetchExecutionRequest,
+            apiInputSelector: ({ extraInput }) => extraInput as IExecutionRequestByIdPayload,
+        },
         create: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             api: api.executionRequests.createExecutionRequest,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             apiInputSelector: ({ extraInput }) => extraInput as ICreateExecutionRequestPayload,
         },
     },

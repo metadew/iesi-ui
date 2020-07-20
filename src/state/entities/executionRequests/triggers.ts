@@ -1,6 +1,6 @@
 import entitiesStateManager from 'state/entities/entitiesStateManager';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
-import { ICreateExecutionRequestPayload } from 'models/state/executionRequests.models';
+import { ICreateExecutionRequestPayload, IExecutionRequestByIdPayload } from 'models/state/executionRequests.models';
 import { StateChangeNotification } from 'models/state.models';
 
 export const triggerFetchExecutionRequests = (filter: object = {}) =>
@@ -12,6 +12,17 @@ export const triggerFetchExecutionRequests = (filter: object = {}) =>
         },
         extraInputSelector: () => filter,
         notificationsToTrigger: [StateChangeNotification.EXECUTION_REQUESTS_LIST],
+    });
+
+export const triggerFetchExecutionRequestDetail = (payload: IExecutionRequestByIdPayload) =>
+    entitiesStateManager.triggerAsyncEntityFetch<{}>({
+        asyncEntityToFetch: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequestDetail,
+            refreshMode: 'always',
+            resetDataOnTrigger: true,
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.EXECUTION_REQUESTS_DETAIL],
     });
 
 export const triggerCreateExecutionRequest = (payload: ICreateExecutionRequestPayload) =>

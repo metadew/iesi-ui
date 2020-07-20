@@ -276,7 +276,7 @@ const ScriptReportsOverview = withStyles(styles)(
                                 label: <Translate msg="script_reports.overview.list.actions.report" />,
                                 onClick: (id) => redirectTo({
                                     routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
-                                    params: { scriptId: id },
+                                    params: { reportId: id },
                                 }),
                             },
                         ]}
