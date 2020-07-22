@@ -45,6 +45,10 @@ interface IColumnNames {
     name: string;
 }
 
+interface IData {
+    number: number;
+}
+
 const styles = ({ palette, spacing, typography }: Theme) =>
     createStyles({
         scriptName: {
@@ -405,7 +409,10 @@ const ScriptDetail = withStyles(styles)(
                             onOrder={(list) => {
                                 this.updateScript({
                                     actions: list.map((item, index) => {
-                                        const action = newScriptDetail.actions.find((a) => a.name === item.id);
+                                        const typedItem = item as IListItem<IColumnNames, IData>;
+                                        const action = newScriptDetail.actions.find((a) => (
+                                            a.name === typedItem.id && a.number === typedItem.data.number
+                                        ));
                                         return {
                                             ...action,
                                             // Order starts from 1
@@ -522,7 +529,7 @@ const ScriptDetail = withStyles(styles)(
 );
 
 function getSortedListItemsFromScriptDetail(detail: IScript) {
-    const newListItems: IListItem<IColumnNames>[] = detail && detail.actions
+    const newListItems: IListItem<IColumnNames, IData>[] = detail && detail.actions
         ? detail.actions
             .sort((a, b) => (a.number < b.number ? -1 : a.number > b.number ? 1 : 0))
             .map((action) => ({
@@ -530,6 +537,9 @@ function getSortedListItemsFromScriptDetail(detail: IScript) {
                 columns: {
                     type: action.type,
                     name: action.name,
+                },
+                data: {
+                    number: action.number,
                 },
             }))
         : [];
