@@ -161,6 +161,10 @@ script_reports:
     detail:
       parameter_index: 'Parameter {index}'
   detail:
+    main:
+      execution_pending:
+        text: More details will be available once the script execution has been completed.
+        title: Execution request pending
     side:
       toggle_button: Details
       description:

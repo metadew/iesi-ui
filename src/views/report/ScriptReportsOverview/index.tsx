@@ -23,6 +23,7 @@ import {
     ListFilters,
     FilterConfig,
     IListItem,
+    SortOrder,
 } from 'models/list.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
@@ -135,7 +136,11 @@ const ScriptReportsOverview = withStyles(styles)(
             super(props);
 
             this.state = {
-                sortedColumn: null,
+                sortedColumn: {
+                    name: 'requestTimestamp',
+                    sortOrder: SortOrder.Descending,
+                    sortType: SortType.String,
+                },
                 filters: getIntialFiltersFromFilterConfig(filterConfig),
                 idOfScriptToDelete: null,
             };
