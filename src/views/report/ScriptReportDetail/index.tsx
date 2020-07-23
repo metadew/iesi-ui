@@ -13,7 +13,10 @@ import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
 import { IExecutionRequest } from 'models/state/executionRequests.models';
 import { ListColumns } from 'models/list.models';
-import { isExecutionRequestStatusNewOrSubmitted } from 'utils/scripts/executionRequests';
+import {
+    isExecutionRequestStatusNewOrSubmitted,
+    isExecutionRequestStatusAbortedOrDeclined,
+} from 'utils/scripts/executionRequests';
 import CollapsingList from './CollapsingList';
 import ShowLabels from './ShowLabels';
 import { MOCKED_ACTIONS_LIST_ITEMS } from './mock';
@@ -40,12 +43,12 @@ const useStyles = makeStyles(({ palette, typography }) => ({
 function ExecutionDetail({ state }: IObserveProps) {
     const classes = useStyles();
 
-    const executionRequestStatus = getAsyncExecutionRequestDetail(state).fetch.status;
+    const asyncExecutionRequest = getAsyncExecutionRequestDetail(state).fetch;
     const executionRequestDetail = getAsyncExecutionRequestDetail(state).data || {} as IExecutionRequest;
 
     return (
         <>
-            <Loader show={executionRequestStatus === AsyncStatus.Busy} />
+            <Loader show={asyncExecutionRequest.status === AsyncStatus.Busy} />
             <ContentWithSidePanel
                 panel={renderDetailPanel()}
                 content={renderDetailContent()}
@@ -56,12 +59,32 @@ function ExecutionDetail({ state }: IObserveProps) {
     );
 
     function renderDetailContent() {
+        if (asyncExecutionRequest.error) {
+            return (
+                <div>
+                    <Alert severity="error">
+                        <AlertTitle><Translate msg="script_reports.detail.main.error.title" /></AlertTitle>
+                        <Translate msg="script_reports.detail.main.error.text" />
+                    </Alert>
+                </div>
+            );
+        }
         if (isExecutionRequestStatusNewOrSubmitted(executionRequestDetail.executionRequestStatus)) {
             return (
                 <div>
                     <Alert severity="info">
                         <AlertTitle><Translate msg="script_reports.detail.main.execution_pending.title" /></AlertTitle>
                         <Translate msg="script_reports.detail.main.execution_pending.text" />
+                    </Alert>
+                </div>
+            );
+        }
+        if (isExecutionRequestStatusAbortedOrDeclined(executionRequestDetail.executionRequestStatus)) {
+            return (
+                <div>
+                    <Alert severity="info">
+                        <AlertTitle><Translate msg="script_reports.detail.main.execution_failed.title" /></AlertTitle>
+                        <Translate msg="script_reports.detail.main.execution_failed.text" />
                     </Alert>
                 </div>
             );
@@ -92,6 +115,10 @@ function ExecutionDetail({ state }: IObserveProps) {
 
     function renderDetailPanel() {
         const translator = getTranslator(state);
+
+        if (asyncExecutionRequest.error) {
+            return null;
+        }
 
         return (
             <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
