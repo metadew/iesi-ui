@@ -22,7 +22,7 @@ import { THEME_COLORS } from 'config/themes/colors';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAsyncScriptDetail } from 'state/entities/scripts/selectors';
-import { getUniqueIdFromScript } from 'utils/scripts/scripts';
+import { getUniqueIdFromScript } from 'utils/scripts/scriptUtils';
 import { getAsyncActionTypes } from 'state/entities/constants/selectors';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import Loader from 'views/common/waiting/Loader';

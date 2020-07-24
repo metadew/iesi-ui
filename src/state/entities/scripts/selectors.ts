@@ -1,5 +1,5 @@
 import { IState } from 'models/state.models';
-import { getUniqueIdFromScript } from 'utils/scripts/scripts';
+import { getUniqueIdFromScript } from 'utils/scripts/scriptUtils';
 
 export const getAsyncScripts = (state: IState) => state.entities.scripts;
 

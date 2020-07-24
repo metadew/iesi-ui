@@ -7,6 +7,8 @@ import {
     withStyles,
     WithStyles,
     Button,
+    FormControlLabel,
+    Switch,
 } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
@@ -39,7 +41,7 @@ import { AsyncStatus, AsyncOperation } from 'snipsonian/observable-state/src/act
 import OrderedList from 'views/common/list/OrderedList';
 import { Alert } from '@material-ui/lab';
 import { triggerDeleteScriptDetail, triggerFetchScripts } from 'state/entities/scripts/triggers';
-import { getUniqueIdFromScript } from 'utils/scripts/scripts';
+import { getUniqueIdFromScript, getLatestVersionsFromScripts } from 'utils/scripts/scriptUtils';
 import { triggerResetAsyncExecutionRequest } from 'state/entities/executionRequests/triggers';
 import ExecuteScriptDialog from './ExecuteScriptDialog';
 
@@ -114,6 +116,7 @@ interface IComponentState {
     filters: ListFilters<Partial<IColumnNames>>;
     scriptIdToDelete: string;
     scriptIdToExecute: string;
+    showAllVersions: boolean;
 }
 
 type TProps = WithStyles<typeof styles>;
@@ -128,6 +131,7 @@ const ScriptsOverview = withStyles(styles)(
                 filters: getIntialFiltersFromFilterConfig(filterConfig),
                 scriptIdToDelete: null,
                 scriptIdToExecute: null,
+                showAllVersions: false,
             };
 
             this.renderPanel = this.renderPanel.bind(this);
@@ -151,14 +155,15 @@ const ScriptsOverview = withStyles(styles)(
 
         public render() {
             const { classes, state } = this.props;
-            const { sortedColumn, scriptIdToDelete, scriptIdToExecute } = this.state;
+            const { sortedColumn, scriptIdToDelete, scriptIdToExecute, showAllVersions } = this.state;
 
             const scripts = getAsyncScripts(this.props.state).data;
             const deleteStatus = getAsyncScriptDetail(this.props.state).remove.status;
 
             const listItems = scripts
-                ? mapScriptsToListItems(this.props.state.entities.scripts.data)
+                ? mapScriptsToListItems(showAllVersions ? scripts : getLatestVersionsFromScripts(scripts))
                 : [];
+
 
             const translator = getTranslator(state);
 
@@ -225,12 +230,30 @@ const ScriptsOverview = withStyles(styles)(
         }
 
         private renderPanel({ listItems }: { listItems: IListItem<IColumnNames>[] }) {
+            const { state } = this.props;
+            const translator = getTranslator(state);
             return (
-                <GenericFilter
-                    filterConfig={filterConfig}
-                    onFilterChange={this.onFilter}
-                    listItems={listItems}
-                />
+                <>
+                    <GenericFilter
+                        filterConfig={filterConfig}
+                        onFilterChange={this.onFilter}
+                        listItems={listItems}
+                    />
+                    <Box paddingX={5} paddingY={3}>
+                        <FormControlLabel
+                            control={(
+                                <Switch
+                                    checked={this.state.showAllVersions}
+                                    onClick={() => this.setState((prevState) => ({
+                                        showAllVersions: !prevState.showAllVersions,
+                                    }))}
+                                    color="default"
+                                />
+                            )}
+                            label={translator('scripts.overview.list.filter.all_versions')}
+                        />
+                    </Box>
+                </>
             );
         }
 
@@ -299,7 +322,9 @@ const ScriptsOverview = withStyles(styles)(
                                         label: <Translate msg="scripts.overview.list.actions.edit" />,
                                         onClick: (id) => {
                                             const scripts = getAsyncScripts(this.props.state).data;
-                                            const selectedScript = scripts.find((item) => item.name === id);
+                                            const selectedScript = scripts.find((item) =>
+                                                getUniqueIdFromScript(item) === id);
+
                                             redirectTo({
                                                 routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
                                                 params: {
@@ -313,7 +338,9 @@ const ScriptsOverview = withStyles(styles)(
                                         label: <Translate msg="scripts.overview.list.actions.report" />,
                                         onClick: (id) => {
                                             const scripts = getAsyncScripts(this.props.state).data;
-                                            const selectedScript = scripts.find((item) => item.name === id);
+                                            const selectedScript = scripts.find((item) =>
+                                                getUniqueIdFromScript(item) === id);
+
                                             redirectTo({
                                                 routeKey: ROUTE_KEYS.R_REPORTS,
                                                 queryParams: {
