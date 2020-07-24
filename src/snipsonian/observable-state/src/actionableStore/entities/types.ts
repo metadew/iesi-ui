@@ -1,6 +1,7 @@
 import { ITraceableApiErrorBase } from '@snipsonian/core/es/typings/apiErrors';
 import { TNrOfParentNotificationLevelsToTrigger }
     from '@snipsonian/observable-state/es/observer/extendNotificationsToTrigger';
+import { Dispatch, Action } from '@snipsonian/observable-state/es/actionableStore/types';
 
 export type TEntityKey = string;
 
@@ -110,6 +111,8 @@ export interface ITriggerAsyncEntityOperationBaseProps<State, ExtraInput extends
      */
     notificationsToTrigger?: StateChangeNotificationKey[];
     nrOfParentNotificationLevelsToTrigger?: TNrOfParentNotificationLevelsToTrigger;
+    onSuccess?: (props: { dispatch: Dispatch<Action> }) => void;
+    onFail?: (props: { dispatch: Dispatch<Action> }) => void;
 }
 
 export interface ITriggerAsyncEntityCreateProps<State, ExtraInput extends object, StateChangeNotificationKey>

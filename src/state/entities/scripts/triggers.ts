@@ -7,6 +7,7 @@ import {
 } from 'models/state/scripts.models';
 import { StateChangeNotification } from 'models/state.models';
 import isSet from '@snipsonian/core/es/is/isSet';
+import { triggerFlashMessage } from 'state/ui/actions';
 
 export const triggerFetchScripts = (filter: IFetchScriptsOptions = {}) =>
     entitiesStateManager.triggerAsyncEntityFetch<{}>({
@@ -17,6 +18,10 @@ export const triggerFetchScripts = (filter: IFetchScriptsOptions = {}) =>
         },
         extraInputSelector: () => (isSet(filter) ? filter : {}),
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_LIST],
+        onSuccess: ({ dispatch }) => dispatch(triggerFlashMessage({
+            translationKey: 'Fetched scripts',
+            type: 'success',
+        })),
     });
 
 export const triggerFetchScriptDetail = (payload: IScriptByNameAndVersionPayload) =>

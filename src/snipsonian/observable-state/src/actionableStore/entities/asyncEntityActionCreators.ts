@@ -1,5 +1,5 @@
 import isSet from '@snipsonian/core/es/is/isSet';
-import { IObservableStateAction } from '@snipsonian/observable-state/es/actionableStore/types';
+import { IObservableStateAction, Dispatch, Action } from '@snipsonian/observable-state/es/actionableStore/types';
 import { createObservableStateAction } from '@snipsonian/observable-state/es/actionableStore/actionCreators';
 import {
     TNrOfParentNotificationLevelsToTrigger,
@@ -52,6 +52,9 @@ interface ICreateAsyncEntityActionPropsBase
     mapApiResponse?: (props: { response: ApiResponse; state: State }) => ApiResult;
     notificationsToTrigger: StateChangeNotificationKey[];
     nrOfParentNotificationLevelsToTrigger?: TNrOfParentNotificationLevelsToTrigger;
+    dispatch: Dispatch<Action>;
+    onSuccess: (props: { dispatch: Dispatch<Action> }) => void;
+    onFail: (props: { dispatch: Dispatch<Action> }) => void;
 }
 
 interface ICreateFetchAsyncEntityActionProps
@@ -106,6 +109,9 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
             notificationsToTrigger,
             nrOfParentNotificationLevelsToTrigger,
             updateDataOnSuccess = false,
+            dispatch,
+            onFail,
+            onSuccess,
             // eslint-disable-next-line max-len
         }: ICreateUpdateAsyncEntityActionProps<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse>) =>
             createAsyncEntityActionBase({
@@ -119,6 +125,9 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                 operation: AsyncOperation.create,
                 resetDataOnTrigger: false,
                 updateDataOnSuccess,
+                dispatch,
+                onFail,
+                onSuccess,
             }),
 
         updateAsyncEntityAction: <ExtraInput extends object, ApiInput, ApiResult, ApiResponse = ApiResult>({
@@ -130,6 +139,9 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
             notificationsToTrigger,
             nrOfParentNotificationLevelsToTrigger,
             updateDataOnSuccess = false,
+            dispatch,
+            onFail,
+            onSuccess,
             // eslint-disable-next-line max-len
         }: ICreateUpdateAsyncEntityActionProps<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse>) =>
             createAsyncEntityActionBase({
@@ -143,6 +155,9 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                 operation: AsyncOperation.update,
                 resetDataOnTrigger: false,
                 updateDataOnSuccess,
+                dispatch,
+                onFail,
+                onSuccess,
             }),
 
         removeAsyncEntityAction: <ExtraInput extends object, ApiInput, ApiResult, ApiResponse = ApiResult>({
@@ -152,6 +167,9 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
             apiInputSelector,
             notificationsToTrigger,
             nrOfParentNotificationLevelsToTrigger,
+            dispatch,
+            onFail,
+            onSuccess,
             // eslint-disable-next-line max-len
         }: ICreateRemoveAsyncEntityActionProps<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse>) =>
             createAsyncEntityActionBase({
@@ -165,6 +183,9 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                 operation: AsyncOperation.remove,
                 resetDataOnTrigger: false,
                 updateDataOnSuccess: true,
+                dispatch,
+                onFail,
+                onSuccess,
             }),
 
         // TODO (but e.g. without always storing the response on success in the data)
@@ -177,6 +198,9 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
             notificationsToTrigger,
             nrOfParentNotificationLevelsToTrigger,
             resetDataOnTrigger = true,
+            dispatch,
+            onFail,
+            onSuccess,
             // eslint-disable-next-line max-len
         }: ICreateFetchAsyncEntityActionProps<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse>) =>
             createAsyncEntityActionBase({
@@ -190,6 +214,9 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                 operation: AsyncOperation.fetch,
                 resetDataOnTrigger,
                 updateDataOnSuccess: true,
+                dispatch,
+                onFail,
+                onSuccess,
             }),
 
         resetAsyncEntityAction: ({
@@ -271,6 +298,9 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
         operation,
         resetDataOnTrigger,
         updateDataOnSuccess,
+        dispatch,
+        onSuccess,
+        onFail,
         // eslint-disable-next-line max-len
     }: ICreateAsyncEntityActionPropsBase<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse> & {
         operation: AsyncOperation;
@@ -304,6 +334,10 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                         ? mapApiResponse({ response: apiResponse, state: getState() })
                         : apiResponse;
 
+                    if (typeof onSuccess === 'function') {
+                        onSuccess({ dispatch });
+                    }
+
                     // eslint-disable-next-line arrow-body-style
                     updateAsyncEntityInState((entity) => {
                         return updateDataOnSuccess
@@ -313,6 +347,10 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                                 .succeededWithoutDataSet(entity);
                     });
                 } catch (error) {
+                    if (typeof onFail === 'function') {
+                        onSuccess({ dispatch });
+                    }
+
                     updateAsyncEntityInState(
                         (entity) => getAsyncEntityUpdaterFromOperation(operation)
                             .failed(entity, error),
