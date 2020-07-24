@@ -116,7 +116,7 @@ interface IComponentState {
     filters: ListFilters<Partial<IColumnNames>>;
     scriptIdToDelete: string;
     scriptIdToExecute: string;
-    showAllVersions: boolean;
+    onlyShowLatestVersion: boolean;
 }
 
 type TProps = WithStyles<typeof styles>;
@@ -131,7 +131,7 @@ const ScriptsOverview = withStyles(styles)(
                 filters: getIntialFiltersFromFilterConfig(filterConfig),
                 scriptIdToDelete: null,
                 scriptIdToExecute: null,
-                showAllVersions: false,
+                onlyShowLatestVersion: true,
             };
 
             this.renderPanel = this.renderPanel.bind(this);
@@ -155,13 +155,13 @@ const ScriptsOverview = withStyles(styles)(
 
         public render() {
             const { classes, state } = this.props;
-            const { sortedColumn, scriptIdToDelete, scriptIdToExecute, showAllVersions } = this.state;
+            const { sortedColumn, scriptIdToDelete, scriptIdToExecute, onlyShowLatestVersion } = this.state;
 
             const scripts = getAsyncScripts(this.props.state).data;
             const deleteStatus = getAsyncScriptDetail(this.props.state).remove.status;
 
             const listItems = scripts
-                ? mapScriptsToListItems(showAllVersions ? scripts : getLatestVersionsFromScripts(scripts))
+                ? mapScriptsToListItems(onlyShowLatestVersion ? getLatestVersionsFromScripts(scripts) : scripts)
                 : [];
 
 
@@ -243,14 +243,14 @@ const ScriptsOverview = withStyles(styles)(
                         <FormControlLabel
                             control={(
                                 <Switch
-                                    checked={this.state.showAllVersions}
+                                    checked={this.state.onlyShowLatestVersion}
                                     onClick={() => this.setState((prevState) => ({
-                                        showAllVersions: !prevState.showAllVersions,
+                                        onlyShowLatestVersion: !prevState.onlyShowLatestVersion,
                                     }))}
                                     color="default"
                                 />
                             )}
-                            label={translator('scripts.overview.list.filter.all_versions')}
+                            label={translator('scripts.overview.list.filter.show_latest')}
                         />
                     </Box>
                 </>

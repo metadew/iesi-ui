@@ -67,10 +67,10 @@ scripts:
         execute: Run script
         report: Reporting
       filter:
-        all_versions: Show all script versions 
         last_run_status: Last run status
         script_name: Script name
         script_label: Script labels
+        show_latest: Only show latest version 
       labels:
         labels: Labels
         last_run_status: Last run status
