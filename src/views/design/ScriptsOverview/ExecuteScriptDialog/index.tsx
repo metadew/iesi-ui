@@ -266,7 +266,7 @@ function ExecuteScriptDialog({
                         {createAsyncInfo.error && (
                             <Box marginTop={2}>
                                 <Alert severity="error">
-                                    {isSet(createAsyncInfo.error.response.message) ? (
+                                    {isSet(createAsyncInfo?.error?.response?.message) ? (
                                         createAsyncInfo.error.response.message
                                     ) : (
                                         <Translate msg="scripts.overview.execute_script_dialog.error" />

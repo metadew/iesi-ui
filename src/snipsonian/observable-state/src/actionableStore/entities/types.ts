@@ -93,6 +93,8 @@ export interface IAsyncEntitiesStateManager<State, StateChangeNotificationKey, C
     triggerAsyncEntityUpdate<ExtraInput extends object, ApiResult = {}, ApiResponse = ApiResult>(props: ITriggerAsyncEntityUpdateProps<State, ExtraInput, StateChangeNotificationKey>): boolean;
     triggerAsyncEntityRemove<ExtraInput extends object, ApiResult = {}, ApiResponse = ApiResult>(props: ITriggerAsyncEntityRemoveProps<State, ExtraInput, StateChangeNotificationKey>): boolean;
     triggerAsyncEntityFetch<ExtraInput extends object, ApiResult = {}, ApiResponse = ApiResult>(props: ITriggerAsyncEntityFetchProps<State, ExtraInput, StateChangeNotificationKey>): boolean;
+    triggerAsyncEntityReset(props: ITriggerResetAsyncEntityProps<State, StateChangeNotificationKey>): boolean;
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getAsyncEntity<Data = any>(props: { asyncEntityKey: TEntityKey }): IAsyncEntity<Data, Error>;
 }
@@ -130,8 +132,19 @@ export interface ITriggerAsyncEntityFetchProps<State, ExtraInput extends object,
     asyncEntityToFetch: IAsyncEntityToFetch<State, ExtraInput>;
 }
 
+export interface ITriggerResetAsyncEntityProps<State, StateChangeNotificationKey>
+    extends ITriggerAsyncEntityOperationBaseProps<State, object, StateChangeNotificationKey>{
+    asyncEntityToReset: IAsyncEntityToReset;
+    operation: AsyncOperation;
+}
+
 export interface IAsyncEntityToOperationBase {
     asyncEntityKey: TEntityKey;
+}
+
+export interface IAsyncEntityToReset {
+    asyncEntityKey: TEntityKey;
+    resetDataOnTrigger: boolean;
 }
 
 export interface IAsyncEntityToUpdate extends IAsyncEntityToOperationBase {

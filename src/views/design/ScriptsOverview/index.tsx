@@ -35,10 +35,11 @@ import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAsyncScripts, getAsyncScriptDetail } from 'state/entities/scripts/selectors';
-import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import { AsyncStatus, AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import OrderedList from 'views/common/list/OrderedList';
 import { Alert } from '@material-ui/lab';
 import { triggerDeleteScriptDetail, triggerFetchScripts } from 'state/entities/scripts/triggers';
+import { triggerResetAsyncExecutionRequest } from 'state/entities/executionRequests/triggers';
 import ExecuteScriptDialog from './ExecuteScriptDialog';
 
 
@@ -135,7 +136,7 @@ const ScriptsOverview = withStyles(styles)(
 
             this.clearScriptToDelete = this.clearScriptToDelete.bind(this);
             this.setScriptToDelete = this.setScriptToDelete.bind(this);
-            this.clearScriptToExecute = this.clearScriptToExecute.bind(this);
+            this.onCloseExecuteDialog = this.onCloseExecuteDialog.bind(this);
             this.setScriptToExecute = this.setScriptToExecute.bind(this);
 
             this.onDeleteScript = this.onDeleteScript.bind(this);
@@ -216,7 +217,7 @@ const ScriptsOverview = withStyles(styles)(
                     <ExecuteScriptDialog
                         scriptName={scriptNameToExecute}
                         open={!!scriptNameToExecute}
-                        onClose={this.clearScriptToExecute}
+                        onClose={this.onCloseExecuteDialog}
                     />
                 </>
             );
@@ -383,7 +384,8 @@ const ScriptsOverview = withStyles(styles)(
             this.setState({ scriptNameToDelete: id as string });
         }
 
-        private clearScriptToExecute() {
+        private onCloseExecuteDialog() {
+            triggerResetAsyncExecutionRequest({ operation: AsyncOperation.create });
             this.setState({ scriptNameToExecute: null });
         }
 

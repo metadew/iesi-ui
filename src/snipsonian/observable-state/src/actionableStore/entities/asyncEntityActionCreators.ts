@@ -37,6 +37,10 @@ export interface IAsyncEntityActionCreators<ActionType, State, ExtraProcessInput
         props: ICreateFetchAsyncEntityActionProps<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse>
         // eslint-disable-next-line max-len
     ): IObservableStateAction<ActionType, IAsyncEntityActionPayload, State, ExtraProcessInput, StateChangeNotificationKey>;
+    resetAsyncEntityAction(
+        props: ICReateResetAsyncEntityActionProps<State, StateChangeNotificationKey>
+        // eslint-disable-next-line max-len
+    ): IObservableStateAction<ActionType, IAsyncEntityActionPayload, State, ExtraProcessInput, StateChangeNotificationKey>;
 }
 
 interface ICreateAsyncEntityActionPropsBase
@@ -71,6 +75,14 @@ interface ICreateRemoveAsyncEntityActionProps
 <State, StateChangeNotificationKey, ExtraInput extends object, ApiInput, ApiResult, ApiResponse = ApiResult>
     extends ICreateAsyncEntityActionPropsBase
     <State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse> {}
+
+interface ICReateResetAsyncEntityActionProps<State, StateChangeNotificationKey> {
+    operation: AsyncOperation;
+    asyncEntityKey: TEntityKey;
+    notificationsToTrigger: StateChangeNotificationKey[];
+    nrOfParentNotificationLevelsToTrigger?: TNrOfParentNotificationLevelsToTrigger;
+    resetDataOnTrigger: boolean;
+}
 
 interface IAsyncEntityActionPayload {
     operation: AsyncOperation;
@@ -179,7 +191,74 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                 resetDataOnTrigger,
                 updateDataOnSuccess: true,
             }),
+
+        resetAsyncEntityAction: ({
+            asyncEntityKey,
+            operation,
+            notificationsToTrigger,
+            nrOfParentNotificationLevelsToTrigger,
+            resetDataOnTrigger = true,
+        }: ICReateResetAsyncEntityActionProps<State, StateChangeNotificationKey>) =>
+            createAsyncEntityResetActionBase({
+                asyncEntityKey,
+                notificationsToTrigger,
+                nrOfParentNotificationLevelsToTrigger,
+                operation,
+                resetDataOnTrigger,
+            }),
     };
+
+    function createAsyncEntityResetActionBase({
+        operation,
+        resetDataOnTrigger,
+        notificationsToTrigger,
+        nrOfParentNotificationLevelsToTrigger,
+        asyncEntityKey,
+    }: {
+        operation: AsyncOperation;
+        asyncEntityKey: TEntityKey;
+        notificationsToTrigger: StateChangeNotificationKey[];
+        nrOfParentNotificationLevelsToTrigger?: TNrOfParentNotificationLevelsToTrigger;
+        resetDataOnTrigger: boolean;
+    }) {
+        // eslint-disable-next-line max-len
+        return createObservableStateAction<ActionType, IAsyncEntityActionPayload, State, ExtraProcessInput, StateChangeNotificationKey>({
+            type: `${asyncEntityKey}_${operation.toUpperCase()}_reset` as unknown as ActionType,
+            payload: {
+                operation,
+            },
+            process: ({ setState }) => {
+                // eslint-disable-next-line arrow-body-style
+                updateAsyncEntityInState((entity) => {
+                    return resetDataOnTrigger
+                        ? getAsyncEntityUpdaterFromOperation(operation)
+                            .reset(entity, entitiesInitialState[asyncEntityKey].data)
+                        : getAsyncEntityUpdaterFromOperation(operation)
+                            .resetWithoutDataReset(entity);
+                });
+
+                function updateAsyncEntityInState(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    entityUpdater: (currentEntity: IAsyncEntity<any>) => IAsyncEntity<any>,
+                ) {
+                    setState({
+                        newState: (currentState: State) => {
+                            const entity = (currentState as IWithKeyIndex)[entitiesStateField][asyncEntityKey];
+                            return {
+                                ...currentState,
+                                [entitiesStateField]: {
+                                    ...(currentState as IWithKeyIndex)[entitiesStateField],
+                                    [asyncEntityKey]: entityUpdater(entity),
+                                },
+                            };
+                        },
+                        notificationsToTrigger,
+                        nrOfParentNotificationLevelsToTrigger,
+                    });
+                }
+            },
+        });
+    }
 
     function createAsyncEntityActionBase<ExtraInput extends object, ApiInput, ApiResult, ApiResponse = ApiResult>({
         asyncEntityKey,
@@ -259,17 +338,17 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                         nrOfParentNotificationLevelsToTrigger,
                     });
                 }
-
-                function getAsyncEntityUpdaterFromOperation(currentOperation: AsyncOperation) {
-                    const map = {
-                        [AsyncOperation.create]: asyncEntityCreate,
-                        [AsyncOperation.fetch]: asyncEntityFetch,
-                        [AsyncOperation.remove]: asyncEntityRemove,
-                        [AsyncOperation.update]: asyncEntityUpdate,
-                    };
-                    return map[currentOperation];
-                }
             },
         });
     }
+}
+
+function getAsyncEntityUpdaterFromOperation(currentOperation: AsyncOperation) {
+    const map = {
+        [AsyncOperation.create]: asyncEntityCreate,
+        [AsyncOperation.fetch]: asyncEntityFetch,
+        [AsyncOperation.remove]: asyncEntityRemove,
+        [AsyncOperation.update]: asyncEntityUpdate,
+    };
+    return map[currentOperation];
 }

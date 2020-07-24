@@ -19,6 +19,7 @@ import {
     ITriggerAsyncEntityUpdateProps,
     ITriggerAsyncEntityRemoveProps,
     ITriggerAsyncEntityFetchProps,
+    ITriggerResetAsyncEntityProps,
 } from './types';
 import { IAsyncEntityActionCreators, initAsyncEntityActionCreators } from './asyncEntityActionCreators';
 
@@ -173,6 +174,26 @@ export default function initAsyncEntitiesStateManager
                     || getDefaultNotificationsToTrigger({ asyncEntityKey, operation }),
                 nrOfParentNotificationLevelsToTrigger,
                 resetDataOnTrigger,
+            }));
+
+            return true;
+        },
+
+        triggerAsyncEntityReset({
+            asyncEntityToReset,
+            notificationsToTrigger,
+            nrOfParentNotificationLevelsToTrigger,
+        }: ITriggerResetAsyncEntityProps<State, StateChangeNotificationKey>): boolean {
+            const { asyncEntityKey, resetDataOnTrigger } = asyncEntityToReset;
+            const operation = AsyncOperation.fetch;
+
+            store.dispatch(getAsyncEntityActionCreators().resetAsyncEntityAction({
+                asyncEntityKey,
+                notificationsToTrigger: notificationsToTrigger
+                    || getDefaultNotificationsToTrigger({ asyncEntityKey, operation }),
+                nrOfParentNotificationLevelsToTrigger,
+                resetDataOnTrigger,
+                operation: AsyncOperation.create,
             }));
 
             return true;

@@ -2,6 +2,7 @@ import entitiesStateManager from 'state/entities/entitiesStateManager';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { ICreateExecutionRequestPayload, IExecutionRequestByIdPayload } from 'models/state/executionRequests.models';
 import { StateChangeNotification } from 'models/state.models';
+import { AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 
 export const triggerFetchExecutionRequests = (filter: object = {}) =>
     entitiesStateManager.triggerAsyncEntityFetch<{}>({
@@ -32,4 +33,21 @@ export const triggerCreateExecutionRequest = (payload: ICreateExecutionRequestPa
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.EXECUTION_REQUESTS_CREATE],
+    });
+
+export const triggerResetAsyncExecutionRequest = ({
+    resetDataOnTrigger,
+    operation,
+}: {
+    resetDataOnTrigger?: boolean;
+    operation: AsyncOperation;
+}) =>
+    entitiesStateManager.triggerAsyncEntityReset({
+        asyncEntityToReset: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequestDetail,
+            resetDataOnTrigger,
+        },
+        extraInputSelector: () => ({}),
+        notificationsToTrigger: [StateChangeNotification.EXECUTION_REQUESTS_CREATE],
+        operation,
     });
