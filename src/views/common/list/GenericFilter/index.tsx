@@ -118,8 +118,6 @@ function GenericFilter<ColumnNames>({
     const [filters, setFilters] = useState(getIntialFiltersFromFilterConfig(filterConfig));
     const classes = useStyles();
 
-    console.log(filters);
-
     return (
         <Box>
             <Box display="flex" alignItems="center" marginTop={-3} paddingY={1} paddingX={5} minHeight={96}>
