@@ -1,10 +1,11 @@
 import { IState } from 'models/state.models';
+import { getUniqueIdFromScript } from 'utils/scripts/scripts';
 
 export const getAsyncScripts = (state: IState) => state.entities.scripts;
 
-export const getScriptByName = (state: IState, scriptName: string) => {
+export const getScriptByUniqueId = (state: IState, uniqueId: string) => {
     const scripts = getAsyncScripts(state).data || [];
-    return scripts.find((script) => script.name === scriptName);
+    return scripts.find((script) => getUniqueIdFromScript(script) === uniqueId);
 };
 
 export const getAsyncScriptDetail = (state: IState) => state.entities.scriptDetail;

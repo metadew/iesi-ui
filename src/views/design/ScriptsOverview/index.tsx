@@ -39,6 +39,7 @@ import { AsyncStatus, AsyncOperation } from 'snipsonian/observable-state/src/act
 import OrderedList from 'views/common/list/OrderedList';
 import { Alert } from '@material-ui/lab';
 import { triggerDeleteScriptDetail, triggerFetchScripts } from 'state/entities/scripts/triggers';
+import { getUniqueIdFromScript } from 'utils/scripts/scripts';
 import { triggerResetAsyncExecutionRequest } from 'state/entities/executionRequests/triggers';
 import ExecuteScriptDialog from './ExecuteScriptDialog';
 
@@ -111,8 +112,8 @@ const sortActions: SortActions<Partial<IColumnNames>> = {
 interface IComponentState {
     sortedColumn: ISortedColumn<IColumnNames>;
     filters: ListFilters<Partial<IColumnNames>>;
-    scriptNameToDelete: string;
-    scriptNameToExecute: string;
+    scriptIdToDelete: string;
+    scriptIdToExecute: string;
 }
 
 type TProps = WithStyles<typeof styles>;
@@ -125,8 +126,8 @@ const ScriptsOverview = withStyles(styles)(
             this.state = {
                 sortedColumn: null,
                 filters: getIntialFiltersFromFilterConfig(filterConfig),
-                scriptNameToDelete: null,
-                scriptNameToExecute: null,
+                scriptIdToDelete: null,
+                scriptIdToExecute: null,
             };
 
             this.renderPanel = this.renderPanel.bind(this);
@@ -150,7 +151,7 @@ const ScriptsOverview = withStyles(styles)(
 
         public render() {
             const { classes, state } = this.props;
-            const { sortedColumn, scriptNameToDelete, scriptNameToExecute } = this.state;
+            const { sortedColumn, scriptIdToDelete, scriptIdToExecute } = this.state;
 
             const scripts = getAsyncScripts(this.props.state).data;
             const deleteStatus = getAsyncScriptDetail(this.props.state).remove.status;
@@ -209,14 +210,14 @@ const ScriptsOverview = withStyles(styles)(
                     <ConfirmationDialog
                         title={translator('scripts.overview.delete_script_dialog.title')}
                         text={translator('scripts.overview.delete_script_dialog.text')}
-                        open={!!scriptNameToDelete}
+                        open={!!scriptIdToDelete}
                         onClose={this.clearScriptToDelete}
                         onConfirm={this.onDeleteScript}
                         showLoader={deleteStatus === AsyncStatus.Busy}
                     />
                     <ExecuteScriptDialog
-                        scriptName={scriptNameToExecute}
-                        open={!!scriptNameToExecute}
+                        scriptUniqueId={scriptIdToExecute}
+                        open={!!scriptIdToExecute}
                         onClose={this.onCloseExecuteDialog}
                     />
                 </>
@@ -351,8 +352,10 @@ const ScriptsOverview = withStyles(styles)(
 
         private onDeleteScript() {
             const { state } = this.props;
-            const { scriptNameToDelete } = this.state;
-            const scriptToDelete = getAsyncScripts(state).data.find((item) => item.name === scriptNameToDelete);
+            const { scriptIdToDelete } = this.state;
+            const scriptToDelete = getAsyncScripts(state).data.find((item) =>
+                getUniqueIdFromScript(item) === scriptIdToDelete);
+
             if (scriptToDelete) {
                 triggerDeleteScriptDetail({ name: scriptToDelete.name, version: scriptToDelete.version.number });
             }
@@ -377,27 +380,27 @@ const ScriptsOverview = withStyles(styles)(
         }
 
         private clearScriptToDelete() {
-            this.setState({ scriptNameToDelete: null });
+            this.setState({ scriptIdToDelete: null });
         }
 
         private setScriptToDelete(id: ReactText) {
-            this.setState({ scriptNameToDelete: id as string });
+            this.setState({ scriptIdToDelete: id as string });
         }
 
         private onCloseExecuteDialog() {
             triggerResetAsyncExecutionRequest({ operation: AsyncOperation.create });
-            this.setState({ scriptNameToExecute: null });
+            this.setState({ scriptIdToExecute: null });
         }
 
         private setScriptToExecute(id: ReactText) {
-            this.setState({ scriptNameToExecute: id as string });
+            this.setState({ scriptIdToExecute: id as string });
         }
     },
 );
 
 function mapScriptsToListItems(scripts: IScript[]): IListItem<IColumnNames>[] {
     return scripts.map((script) => ({
-        id: script.name,
+        id: getUniqueIdFromScript(script),
         columns: {
             name: script.name,
             description: script.description,

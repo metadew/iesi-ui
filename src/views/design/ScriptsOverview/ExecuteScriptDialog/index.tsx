@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { observe, IObserveProps } from 'views/observe';
-import { getScriptByName } from 'state/entities/scripts/selectors';
+import { getScriptByUniqueId } from 'state/entities/scripts/selectors';
 import { triggerCreateExecutionRequest } from 'state/entities/executionRequests/triggers';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
@@ -41,7 +41,7 @@ const useStyles = makeStyles(({ spacing, typography }) => ({
 }));
 
 interface IPublicProps {
-    scriptName: string;
+    scriptUniqueId: string;
     open: boolean;
     onClose: () => void;
 }
@@ -55,7 +55,7 @@ interface IFormValues {
 
 function ExecuteScriptDialog({
     onClose,
-    scriptName,
+    scriptUniqueId,
     open,
     state,
 }: IPublicProps & IObserveProps) {
@@ -73,7 +73,7 @@ function ExecuteScriptDialog({
     });
 
     const translator = getTranslator(state);
-    const script = getScriptByName(state, scriptName);
+    const script = getScriptByUniqueId(state, scriptUniqueId);
     const createAsyncInfo = entitiesStateManager.getAsyncEntity({
         asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequestDetail,
     }).create;
@@ -96,7 +96,7 @@ function ExecuteScriptDialog({
         <ClosableDialog
             onClose={onClose}
             open={open}
-            title={scriptName}
+            title={script && script.name}
         >
             <Box textAlign="left" maxWidth={400} marginX="auto">
                 {createAsyncInfo.status === AsyncStatus.Success ? (
