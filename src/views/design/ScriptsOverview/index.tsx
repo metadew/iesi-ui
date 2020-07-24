@@ -97,7 +97,7 @@ const filterConfig: FilterConfig<Partial<IColumnNames>> = {
     },
     labels: {
         label: <Translate msg="scripts.overview.list.filter.script_label" />,
-        filterType: FilterType.Search,
+        filterType: FilterType.Includes,
     },
 };
 
@@ -413,6 +413,7 @@ function mapScriptsToListItems(scripts: IScript[]): IListItem<IColumnNames>[] {
                         />
                     </Typography>
                 ),
+                includesFilterValues: script.labels.map((item) => item.name),
             },
             lastRunStatus: script.execution.mostRecent[0]?.runStatus,
         },

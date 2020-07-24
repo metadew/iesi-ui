@@ -118,6 +118,8 @@ function GenericFilter<ColumnNames>({
     const [filters, setFilters] = useState(getIntialFiltersFromFilterConfig(filterConfig));
     const classes = useStyles();
 
+    console.log(filters);
+
     return (
         <Box>
             <Box display="flex" alignItems="center" marginTop={-3} paddingY={1} paddingX={5} minHeight={96}>
@@ -176,14 +178,16 @@ function GenericFilter<ColumnNames>({
                                 </IconButton>
                             </ExpansionPanelSummary>
                             <ExpansionPanelDetails className={classes.expansionPanelDetail}>
-                                {configItem.filterType === FilterType.Search && (
-                                    <Search
-                                        onFilter={onFilter}
-                                        columnName={columnName as string}
-                                        filter={filters[columnName] as IFilter}
-                                        inputProps={{ disableUnderline: true }}
-                                    />
-                                )}
+                                {(configItem.filterType === FilterType.Search
+                                    || configItem.filterType === FilterType.Includes)
+                                    && (
+                                        <Search
+                                            onFilter={onFilter}
+                                            columnName={columnName as string}
+                                            filter={filters[columnName] as IFilter}
+                                            inputProps={{ disableUnderline: true }}
+                                        />
+                                    )}
                                 {configItem.filterType === FilterType.Select && (
                                     <Select
                                         onFilter={onFilter}
@@ -233,9 +237,10 @@ function GenericFilter<ColumnNames>({
 
     function onFilter(filter: IFilter<Partial<ColumnNames>>) {
         const newFilters = { ...filters };
+        const values = filter.values.filter((value) => !!value);
         newFilters[filter.name] = {
             ...newFilters[filter.name],
-            values: filter.values,
+            values,
         };
         setFilters(newFilters);
         onFilterChange(newFilters);

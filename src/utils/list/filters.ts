@@ -5,6 +5,7 @@ import {
     IListItem,
     IFilter,
     FilterType,
+    IListItemValueWithSortValue,
 } from 'models/list.models';
 import { TObjectWithProps } from 'models/core.models';
 import { ReactText } from 'react';
@@ -51,6 +52,14 @@ export function filterListItems<LI extends IListItem<TObjectWithProps>>(
                     filter.filterType === FilterType.FromTo
                 ) {
                     if (!fromToFilter({ item, filter, columnName })) {
+                        return false;
+                    }
+                }
+
+                if (
+                    filter.filterType === FilterType.Includes
+                ) {
+                    if (!includesFilter({ item, filter, columnName })) {
                         return false;
                     }
                 }
@@ -104,6 +113,27 @@ export function filterListItems<LI extends IListItem<TObjectWithProps>>(
         }
 
         return true;
+    }
+
+    function includesFilter({
+        item,
+        filter,
+        columnName,
+    }: {
+        item: LI;
+        filter: IFilter<TObjectWithProps>;
+        columnName: string;
+    }) {
+        const columnData = item.columns[columnName] as IListItemValueWithSortValue;
+        let match = false;
+        filter.values.forEach((value) => {
+            columnData.includesFilterValues.forEach((itemValue) => {
+                if (reactTextIncludesValue(itemValue, value)) {
+                    match = true;
+                }
+            });
+        });
+        return match;
     }
 }
 

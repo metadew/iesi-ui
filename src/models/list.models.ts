@@ -25,6 +25,7 @@ export interface IListAction {
 export interface IListItemValueWithSortValue {
     value: ReactText;
     sortValue?: ReactText;
+    includesFilterValues?: ReactText[];
     tooltip?: ReactText | ReactNode;
 }
 
@@ -67,6 +68,7 @@ export enum FilterType {
     Search = 'search',
     Select = 'select',
     FromTo = 'from-to',
+    Includes = 'includes',
 }
 
 export interface IFilter<ColumnNames = TObjectWithProps> {
