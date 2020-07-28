@@ -7,7 +7,18 @@ export interface IParameter {
     value: string;
 }
 
+export interface IParameterRawValue {
+    name: string;
+    rawValue: string;
+    resolvedValue: string;
+}
+
 export interface ILabel {
+    name: string;
+    value: string;
+}
+
+export interface IOutputValue {
     name: string;
     value: string;
 }
