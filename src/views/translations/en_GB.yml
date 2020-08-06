@@ -70,7 +70,7 @@ scripts:
         last_run_status: Last run status
         script_name: Script name
         script_label: Script labels
-        show_latest: Only show latest version 
+        show_latest: Only show latest version
       labels:
         labels: Labels
         last_run_status: Last run status
@@ -96,8 +96,8 @@ scripts:
       footer:
         continue_on_fail: Continue if action fails
         expected_to_fail: Action expected to fail
-        cancel: cancel
-        save: save
+        cancel: Discard changes
+        save: Update action
     side:
       script_description: Script description
       script_name: Script name

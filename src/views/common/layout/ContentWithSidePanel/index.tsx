@@ -52,6 +52,10 @@ const useStyles = makeStyles(({ spacing, breakpoints, palette, typography }) => 
     contentOverlay: {
         backgroundColor: 'rgba(51, 65, 85, 0.9)',
     },
+    contentOverlayInner: {
+        maxHeight: 'calc(100vh - 65px)', // headerHeight
+        overflow: 'auto',
+    },
     toggle: {
         transform: 'rotate3d(0, 0, 1, -90deg) translate3d(-100%, 0, 0)',
         transformOrigin: 'top left',
@@ -170,6 +174,7 @@ export default function ContentWithSidePanel({
                             right="0"
                         >
                             <Box
+                                className={classes.contentOverlayInner}
                                 paddingX={4}
                                 paddingY={8}
                                 width="100%"

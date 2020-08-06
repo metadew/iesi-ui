@@ -57,10 +57,6 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
     categoryActive: {
         color: palette.primary.main,
     },
-    actionsList: {
-        maxHeight: 400,
-        overflowY: 'scroll',
-    },
 }));
 
 interface IColumnNames {
@@ -153,7 +149,6 @@ function AddAction({ state, onClose, onAdd }: IObserveProps & IPublicProps) {
                     </ButtonGroup>
                 </Box>
                 <GenericSelectableList
-                    className={classes.actionsList}
                     onChange={onSelectionChange}
                     columns={{
                         type: {

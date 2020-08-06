@@ -121,7 +121,7 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                         />
                     </Paper>
                 </Box>
-                <Box maxHeight={400} overflow="scroll">
+                <Box>
                     {parameters.map((parameter) => {
                         // eslint-disable-next-line max-len
                         const constantParameter = matchingActionType.parameters.find((item) => item.name === parameter.name);
@@ -174,11 +174,11 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                     </Box>
 
                     <Box marginLeft={2}>
-                        <ButtonGroup color="primary" size="small">
-                            <Button onClick={onClose}>
+                        <ButtonGroup size="small">
+                            <Button color="default" variant="outlined" onClick={onClose}>
                                 <Translate msg="scripts.detail.edit_action.footer.cancel" />
                             </Button>
-                            <Button onClick={updateAction}>
+                            <Button variant="contained" color="secondary" disableElevation onClick={updateAction}>
                                 <Translate msg="scripts.detail.edit_action.footer.save" />
                             </Button>
                         </ButtonGroup>
