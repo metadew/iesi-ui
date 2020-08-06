@@ -130,6 +130,7 @@ scripts:
         save_changes: You made changes to this script. Don't forget to save them.
       add_action:
         header: Choose the actions you like to add
+        select_category: Select a category
       list:
         item:
           actions:

@@ -1,4 +1,4 @@
-import React, { useState, ReactText } from 'react';
+import React, { useState, ReactText, ChangeEvent } from 'react';
 import classnames from 'classnames';
 import {
     Box,
@@ -8,6 +8,10 @@ import {
     Input,
     Button,
     ButtonGroup,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
 } from '@material-ui/core';
 import { Search, Close } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -48,6 +52,11 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
         fontSize: typography.pxToRem(12),
     },
     categories: {
+        marginBottom: spacing(2),
+    },
+    categoriesSelect: {
+        width: typography.pxToRem(180),
+        marginTop: 0,
         marginBottom: spacing(2),
     },
     categoryButton: {
@@ -121,32 +130,67 @@ function AddAction({ state, onClose, onAdd }: IObserveProps & IPublicProps) {
             </Box>
             <Box padding={2}>
                 <Box display="flex" justifyContent="center">
-                    <ButtonGroup
-                        variant="contained"
-                        aria-label="contained button group"
-                        className={classes.categories}
-                    >
-                        {categories.map((category) => (
-                            <Button
-                                key={category}
-                                variant="contained"
-                                disableElevation
-                                size="small"
-                                className={classnames(classes.categoryButton, {
-                                    [classes.categoryActive]:
-                                        category === (selectedCategory || (categories.length > 0 ? categories[0] : '')),
-                                })}
-                                onClick={() => {
+                    {categories.length > 5 ? (
+                        <FormControl
+                            variant="filled"
+                            size="small"
+                            className={classes.categoriesSelect}
+                        >
+                            <InputLabel id="select-action-category-label">
+                                <Translate msg="scripts.detail.main.add_action.select_category" />
+                            </InputLabel>
+                            <Select
+                                labelId="select-action-category-label"
+                                id="select-action-category"
+                                disableUnderline
+                                value={selectedCategory || (categories.length > 0 ? categories[0] : '')}
+                                onChange={(event: ChangeEvent<{ value: unknown }>) => {
+                                    const category = event.target.value as string;
                                     if (category !== selectedCategory) {
                                         setSelectedCategory(category);
                                         setSelectedIds([]);
                                     }
                                 }}
                             >
-                                {category}
-                            </Button>
-                        ))}
-                    </ButtonGroup>
+                                {categories.map((category) => (
+                                    <MenuItem
+                                        key={JSON.stringify(category)}
+                                        value={category}
+                                    >
+                                        {category}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    ) : (
+                        <ButtonGroup
+                            variant="contained"
+                            aria-label="contained button group"
+                            className={classes.categories}
+                        >
+                            {categories.map((category) => (
+                                <Button
+                                    key={category}
+                                    variant="contained"
+                                    disableElevation
+                                    size="small"
+                                    className={classnames(classes.categoryButton, {
+                                        [classes.categoryActive]:
+                                            category === (selectedCategory
+                                                || (categories.length > 0 ? categories[0] : '')),
+                                    })}
+                                    onClick={() => {
+                                        if (category !== selectedCategory) {
+                                            setSelectedCategory(category);
+                                            setSelectedIds([]);
+                                        }
+                                    }}
+                                >
+                                    {category}
+                                </Button>
+                            ))}
+                        </ButtonGroup>
+                    )}
                 </Box>
                 <GenericSelectableList
                     onChange={onSelectionChange}
