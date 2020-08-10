@@ -389,7 +389,16 @@ const ScriptDetail = withStyles(styles)(
                             onDelete={() => this.setState({ isConfirmDeleteOpen: true })}
                             onAdd={() => this.setState({ isAddOpen: true })}
                             onPlay={() => console.log('play')}
-                            onViewReport={() => console.log('view report')}
+                            onViewReport={() => {
+                                redirectTo({
+                                    routeKey: ROUTE_KEYS.R_REPORTS,
+                                    queryParams: {
+                                        name: newScriptDetail && newScriptDetail.name,
+                                        version: newScriptDetail && newScriptDetail.version
+                                            ? newScriptDetail.version.number : null,
+                                    },
+                                });
+                            }}
                             isCreateRoute={this.isCreateScriptRoute()}
                         />
                     </Box>
