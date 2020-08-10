@@ -28,7 +28,8 @@ import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { IParameter } from 'models/state/iesiGeneric.models';
 import OrderedList from 'views/common/list/OrderedList';
 import isSet from '@snipsonian/core/es/is/isSet';
-import { ExecutionRequestStatus } from 'models/state/executionRequests.models';
+import { ExecutionRequestStatus, IExecutionRequest } from 'models/state/executionRequests.models';
+import { getAsyncExecutionRequestDetail } from 'state/entities/executionRequests/selectors';
 
 const useStyles = makeStyles(({ spacing, typography }) => ({
     formControl: {
@@ -81,6 +82,7 @@ function ExecuteScriptDialog({
     const environmentsAsyncInfo = entitiesStateManager.getAsyncEntity({
         asyncEntityKey: ASYNC_ENTITY_KEYS.environments,
     }).fetch;
+    const executionRequestDetail = getAsyncExecutionRequestDetail(state).data || {} as IExecutionRequest;
 
     // Trigger Fetch envs on open dialog
     useEffect(() => {
@@ -91,6 +93,11 @@ function ExecuteScriptDialog({
         }
         return () => {};
     }, [open]);
+
+    if (createAsyncInfo.status === AsyncStatus.Success && executionRequestDetail) {
+        // Start polling mechanism for this execution request id
+        console.log(executionRequestDetail.executionRequestId);
+    }
 
     return (
         <ClosableDialog

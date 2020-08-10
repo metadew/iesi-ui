@@ -30,6 +30,7 @@ export const triggerCreateExecutionRequest = (payload: ICreateExecutionRequestPa
     entitiesStateManager.triggerAsyncEntityCreate<{}>({
         asyncEntityToCreate: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequestDetail,
+            updateDataOnSuccess: true,
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.EXECUTION_REQUESTS_CREATE],
