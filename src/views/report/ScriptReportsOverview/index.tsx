@@ -151,6 +151,23 @@ const ScriptReportsOverview = withStyles(styles)(
             this.onFilter = this.onFilter.bind(this);
         }
 
+        public componentDidMount() {
+            const searchParams = new URLSearchParams(window.location.search);
+            const { filters } = this.state;
+            const filtersByUrlSearchParams = filters;
+
+            Array.from(searchParams.keys()).forEach((searchParamKey: string) => {
+                if (Object.keys(filterConfig).includes(searchParamKey)) {
+                    filtersByUrlSearchParams[searchParamKey as keyof IColumnNames].values
+                        .push(searchParams.get(searchParamKey));
+                }
+            });
+
+            this.setState({
+                filters: filtersByUrlSearchParams,
+            });
+        }
+
         public render() {
             const { classes } = this.props;
             const { sortedColumn } = this.state;
