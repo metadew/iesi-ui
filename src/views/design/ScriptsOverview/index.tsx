@@ -43,7 +43,7 @@ import { Alert } from '@material-ui/lab';
 import { triggerDeleteScriptDetail, triggerFetchScripts } from 'state/entities/scripts/triggers';
 import { getUniqueIdFromScript, getLatestVersionsFromScripts } from 'utils/scripts/scriptUtils';
 import { triggerResetAsyncExecutionRequest } from 'state/entities/executionRequests/triggers';
-import ExecuteScriptDialog from './ExecuteScriptDialog';
+import ExecuteScriptDialog from '../common/ExecuteScriptDialog';
 
 
 const styles = ({ palette, typography }: Theme) =>

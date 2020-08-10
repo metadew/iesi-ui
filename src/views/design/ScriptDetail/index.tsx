@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactText } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import clone from 'ramda/es/clone';
 import { getTranslator } from 'state/i18n/selectors';
@@ -24,7 +24,8 @@ import { StateChangeNotification } from 'models/state.models';
 import { getAsyncScriptDetail } from 'state/entities/scripts/selectors';
 import { getUniqueIdFromScript } from 'utils/scripts/scriptUtils';
 import { getAsyncActionTypes } from 'state/entities/constants/selectors';
-import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import { triggerResetAsyncExecutionRequest } from 'state/entities/executionRequests/triggers';
+import { AsyncStatus, AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import Loader from 'views/common/waiting/Loader';
 import {
     triggerUpdateScriptDetail,
@@ -33,12 +34,12 @@ import {
 } from 'state/entities/scripts/triggers';
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
+import ExecuteScriptDialog from '../common/ExecuteScriptDialog';
 
 import DetailActions from './DetailActions';
 import AddAction from './AddAction';
 import EditAction from './EditAction';
 import EditLabels from './EditLabels';
-
 
 interface IColumnNames {
     type: string;
@@ -81,6 +82,7 @@ interface IComponentState {
     newScriptDetail: IScript;
     hasChangesToCheck: boolean;
     requiredFieldsState: TRequiredFieldsState<IScript>;
+    scriptIdToExecute: string;
 }
 
 const ScriptDetail = withStyles(styles)(
@@ -115,6 +117,7 @@ const ScriptDetail = withStyles(styles)(
                         showError: false,
                     },
                 },
+                scriptIdToExecute: null,
             };
 
             this.renderAddScriptContent = this.renderAddScriptContent.bind(this);
@@ -134,6 +137,7 @@ const ScriptDetail = withStyles(styles)(
             this.navigateToScriptAfterDeletion = this.navigateToScriptAfterDeletion.bind(this);
 
             this.onDeleteScript = this.onDeleteScript.bind(this);
+            this.onCloseExecuteDialog = this.onCloseExecuteDialog.bind(this);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
@@ -144,7 +148,7 @@ const ScriptDetail = withStyles(styles)(
 
         public render() {
             const { state } = this.props;
-            const { isAddOpen, isConfirmDeleteOpen, isSaveDialogOpen, newScriptDetail } = this.state;
+            const { isAddOpen, isConfirmDeleteOpen, isSaveDialogOpen, newScriptDetail, scriptIdToExecute } = this.state;
 
             // State
             const scriptDetailAsyncStatus = getAsyncScriptDetail(state).fetch.status;
@@ -177,6 +181,11 @@ const ScriptDetail = withStyles(styles)(
                         onClose={() => this.setState({ isConfirmDeleteOpen: false })}
                         onConfirm={this.onDeleteScript}
                         showLoader={deleteStatus === AsyncStatus.Busy}
+                    />
+                    <ExecuteScriptDialog
+                        scriptUniqueId={getUniqueIdFromScript(newScriptDetail)}
+                        open={!!scriptIdToExecute}
+                        onClose={this.onCloseExecuteDialog}
                     />
                     <ClosableDialog
                         title={translator('scripts.detail.save_script_dialog.title')}
@@ -388,7 +397,7 @@ const ScriptDetail = withStyles(styles)(
                             onSave={handleSaveAction}
                             onDelete={() => this.setState({ isConfirmDeleteOpen: true })}
                             onAdd={() => this.setState({ isAddOpen: true })}
-                            onPlay={() => console.log('play')}
+                            onPlay={() => this.setScriptToExecute(getUniqueIdFromScript(newScriptDetail))}
                             onViewReport={() => {
                                 redirectTo({
                                     routeKey: ROUTE_KEYS.R_REPORTS,
@@ -491,6 +500,15 @@ const ScriptDetail = withStyles(styles)(
                 return null;
             }
             return newScriptDetail && newScriptDetail.actions && newScriptDetail.actions[editActionIndex];
+        }
+
+        private setScriptToExecute(id: ReactText) {
+            this.setState({ scriptIdToExecute: id as string });
+        }
+
+        private onCloseExecuteDialog() {
+            triggerResetAsyncExecutionRequest({ operation: AsyncOperation.create });
+            this.setState({ scriptIdToExecute: null });
         }
 
         private updateScriptInStateIfNewScriptWasLoaded(prevProps: TProps & IObserveProps) {
