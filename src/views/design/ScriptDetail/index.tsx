@@ -313,11 +313,9 @@ const ScriptDetail = withStyles(styles)(
                                 },
                                 {
                                     label: translator('scripts.detail.side.description.last_run_date'),
-                                    value: '10-10-2018',
-                                },
-                                {
-                                    label: translator('scripts.detail.side.description.last_run_status'),
-                                    value: 'Passed',
+                                    value: newScriptDetail.execution.mostRecent[0]
+                                        ? newScriptDetail.execution.mostRecent[0]?.startTimestamp
+                                        : '-',
                                 },
                             ]}
                         />

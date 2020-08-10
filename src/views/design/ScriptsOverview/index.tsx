@@ -28,7 +28,6 @@ import {
     IListItem,
 } from 'models/list.models';
 import { IScript } from 'models/state/scripts.models';
-import { ExecutionRequestStatus } from 'models/state/executionRequests.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
@@ -67,33 +66,16 @@ const styles = ({ palette, typography }: Theme) =>
         scriptLabels: {
             fontWeight: typography.fontWeightBold,
         },
-        scriptNew: {
-            fontWeight: typography.fontWeightBold,
-            color: palette.primary.main,
-        },
-        scriptSuccess: {
-            fontWeight: typography.fontWeightBold,
-            color: palette.secondary.main,
-        },
-        scriptFailed: {
-            fontWeight: typography.fontWeightBold,
-            color: palette.error.main,
-        },
     });
 
 interface IColumnNames {
     name: string;
     version: string;
     description: string;
-    lastRunStatus: string;
     labels: number;
 }
 
 const filterConfig: FilterConfig<Partial<IColumnNames>> = {
-    lastRunStatus: {
-        label: <Translate msg="scripts.overview.list.filter.last_run_status" />,
-        filterType: FilterType.Select,
-    },
     name: {
         label: <Translate msg="scripts.overview.list.filter.script_name" />,
         filterType: FilterType.Search,
@@ -274,25 +256,6 @@ const ScriptsOverview = withStyles(styles)(
                     tooltip: (value) => value,
                     fixedWidth: '26%',
                 },
-                lastRunStatus: {
-                    fixedWidth: '17%',
-                    label: (
-                        <Translate msg="scripts.overview.list.labels.last_run_status" />
-                    ),
-                    className: (value) => {
-                        if (value === ExecutionRequestStatus.New || value === ExecutionRequestStatus.Submitted) {
-                            return classes.scriptNew;
-                        }
-                        if (value === ExecutionRequestStatus.Completed || value === ExecutionRequestStatus.Accepted) {
-                            return classes.scriptSuccess;
-                        }
-                        if (value === ExecutionRequestStatus.Aborted || value === ExecutionRequestStatus.Declined) {
-                            return classes.scriptFailed;
-                        }
-                        return '';
-                    },
-                    hideOnCompactView: true,
-                },
                 labels: {
                     label: (
                         <Translate msg="scripts.overview.list.labels.labels" />
@@ -445,7 +408,6 @@ function mapScriptsToListItems(scripts: IScript[]): IListItem<IColumnNames>[] {
                 ),
                 includesFilterValues: script.labels.map((item) => item.name),
             },
-            lastRunStatus: script.execution.mostRecent[0]?.runStatus,
         },
     }));
 }
