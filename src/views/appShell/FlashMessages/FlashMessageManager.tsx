@@ -94,7 +94,7 @@ function getActions({
         const { exact } = getRoute({ routeKey: navigateToRoute.routeKey });
 
         return (
-            <RouteLink to={navigateToRoute.routeKey} exact={exact} flashMessageLink>
+            <RouteLink to={navigateToRoute.routeKey} exact={exact} flashMessageLink params={navigateToRoute.params}>
                 <IconButton size="small" aria-label="close" color="inherit" onClick={onClose}>
                     <Visibility fontSize="small" />
                 </IconButton>
