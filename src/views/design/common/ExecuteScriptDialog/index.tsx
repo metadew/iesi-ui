@@ -30,6 +30,7 @@ import OrderedList from 'views/common/list/OrderedList';
 import isSet from '@snipsonian/core/es/is/isSet';
 import { ExecutionRequestStatus, IExecutionRequest } from 'models/state/executionRequests.models';
 import { getAsyncExecutionRequestDetail } from 'state/entities/executionRequests/selectors';
+import { addPollingExecutionRequest } from 'state/ui/actions';
 
 const useStyles = makeStyles(({ spacing, typography }) => ({
     formControl: {
@@ -59,6 +60,7 @@ function ExecuteScriptDialog({
     scriptUniqueId,
     open,
     state,
+    dispatch,
 }: IPublicProps & IObserveProps) {
     const classes = useStyles();
     const [formValues, setFormValues] = useState<IFormValues>({
@@ -95,8 +97,7 @@ function ExecuteScriptDialog({
     }, [open]);
 
     if (createAsyncInfo.status === AsyncStatus.Success && executionRequestDetail) {
-        // Start polling mechanism for this execution request id
-        console.log(executionRequestDetail.executionRequestId);
+        dispatch(addPollingExecutionRequest({ id: executionRequestDetail.executionRequestId }));
     }
 
     return (

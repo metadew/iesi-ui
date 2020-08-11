@@ -24,6 +24,7 @@ export default function getMockState({
         },
         ui: {
             flashMessages: [],
+            pollingExecutionRequestIds: [],
         },
         auth: {
             username: 'mocked-test-user',
