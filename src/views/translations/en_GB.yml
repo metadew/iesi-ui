@@ -32,6 +32,9 @@ error:
   unexpected: An unexpected error occurred.
   timeout: The server did not respond in a timely fashion. Please try again.
   fetch_env: Could not fetch ENV
+flash_messages:
+  execution_request:
+    run_finished: 'Script execution "{scriptName}" is finished!'
 scripts:
   overview:
     delete_script_dialog:

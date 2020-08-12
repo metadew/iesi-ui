@@ -4,6 +4,7 @@ import { INavigateToRoute } from 'models/router.models';
 
 export interface IUiState {
     flashMessages: IFlashMessage[];
+    pollingExecutionRequestIds: string[];
 }
 
 export interface IFlashMessage {

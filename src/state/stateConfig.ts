@@ -17,6 +17,7 @@ export const initialState: IState = {
     },
     ui: {
         flashMessages: [],
+        pollingExecutionRequestIds: [],
     },
     auth: {
         // Dummy auth
