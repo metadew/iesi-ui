@@ -73,6 +73,13 @@ export default function getMockState({
                     error: null,
                 },
             },
+            scriptExecutionDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
             environments: {
                 data: null,
                 fetch: {

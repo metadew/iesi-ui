@@ -1,8 +1,9 @@
 import React from 'react';
+import isEmptyObject from '@snipsonian/core/es/object/isEmptyObject';
 import { Box, makeStyles } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import DescriptionList from 'views/common/list/DescriptionList';
+import DescriptionList, { IDescriptionListItem } from 'views/common/list/DescriptionList';
 import { ROUTE_KEYS } from 'views/routes';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel/index';
 import { getAsyncExecutionRequestDetail } from 'state/entities/executionRequests/selectors';
@@ -12,14 +13,17 @@ import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/ent
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
 import { IExecutionRequest } from 'models/state/executionRequests.models';
-import { ListColumns } from 'models/list.models';
-import {
-    isExecutionRequestStatusNewOrSubmitted,
-    isExecutionRequestStatusAbortedOrDeclined,
-} from 'utils/scripts/executionRequests';
-import CollapsingList from './CollapsingList';
+import { IScriptExecutionDetailAction } from 'models/state/scriptExecutions.models';
+import { triggerFetchScriptExecutionDetail } from 'state/entities/scriptExecutions/triggers';
+import { getAsyncScriptExecutionDetail } from 'state/entities/scriptExecutions/selectors';
+import { ListColumns, IListItem } from 'models/list.models';
+// import {
+//     isExecutionRequestStatusNewOrSubmitted,
+//     isExecutionRequestStatusAbortedOrDeclined,
+// } from 'utils/scripts/executionRequests';
+import ScriptExecutionDetailActions from './ScriptExecutionDetailActions';
 import ShowLabels from './ShowLabels';
-import { MOCKED_ACTIONS_LIST_ITEMS } from './mock';
+import { MOCKED_SCRIPT_EXECUTION } from './mock';
 
 
 interface IColumnNames {
@@ -46,6 +50,21 @@ function ExecutionDetail({ state }: IObserveProps) {
     const asyncExecutionRequest = getAsyncExecutionRequestDetail(state).fetch;
     const executionRequestDetail = getAsyncExecutionRequestDetail(state).data || {} as IExecutionRequest;
 
+    // const scriptExecutionData = getAsyncScriptExecutionDetail(state).data;
+    const scriptExecutionData = MOCKED_SCRIPT_EXECUTION;
+    const scriptExecutionAsyncStatus = getAsyncScriptExecutionDetail(state).fetch.status;
+
+    const isExecutionRequestDataAvailable = !isEmptyObject(executionRequestDetail);
+    // && !isExecutionRequestStatusNewOrSubmitted(executionRequestDetail.executionRequestStatus)
+    // && !isExecutionRequestStatusAbortedOrDeclined(executionRequestDetail.executionRequestStatus);
+
+    if (isExecutionRequestDataAvailable) {
+        triggerFetchScriptExecutionDetail({
+            runId: '98ee8a1f-3760-420c-a953-ab829a0bcc9a', // TODO: runId?
+            processId: -1,
+        });
+    }
+
     return (
         <>
             <Loader show={asyncExecutionRequest.status === AsyncStatus.Busy} />
@@ -69,6 +88,7 @@ function ExecutionDetail({ state }: IObserveProps) {
                 </div>
             );
         }
+        /*
         if (isExecutionRequestStatusNewOrSubmitted(executionRequestDetail.executionRequestStatus)) {
             return (
                 <div>
@@ -89,9 +109,16 @@ function ExecutionDetail({ state }: IObserveProps) {
                 </div>
             );
         }
+        */
 
-        const listItems = MOCKED_ACTIONS_LIST_ITEMS;
+        // triggerFetchScriptExecutionDetail({
+        //     runId: '98ee8a1f-3760-420c-a953-ab829a0bcc9a',
+        //     processId: -1,
+        // });
+        // const scriptExecutionData = getAsyncScriptExecutionDetail(state).data;
+        // const scriptExecutionAsyncStatus = getAsyncScriptExecutionDetail(state).fetch.status;
 
+        const listItems = mapActionsToListItems(scriptExecutionData.actions);
         const columns: ListColumns<IColumnNames> = {
             name: {
                 fixedWidth: '40%',
@@ -105,7 +132,7 @@ function ExecutionDetail({ state }: IObserveProps) {
 
         return (
             <Box marginY={1}>
-                <CollapsingList
+                <ScriptExecutionDetailActions
                     listItems={listItems}
                     columns={columns}
                 />
@@ -120,24 +147,45 @@ function ExecutionDetail({ state }: IObserveProps) {
             return null;
         }
 
+        const descriptionListItems: IDescriptionListItem[] = [
+            {
+                label: translator('script_reports.detail.side.description.name'),
+                value: executionRequestDetail.scriptExecutionRequests
+                    && executionRequestDetail.name,
+            },
+            {
+                label: translator('script_reports.detail.side.description.description'),
+                value: executionRequestDetail.scriptExecutionRequests
+                    && executionRequestDetail.description,
+            },
+            {
+                label: translator('script_reports.detail.side.description.execution_status'),
+                value: executionRequestDetail.executionRequestStatus,
+            },
+        ];
+
+        if (isExecutionRequestDataAvailable && scriptExecutionAsyncStatus === AsyncStatus.Success) {
+            descriptionListItems.push(
+                {
+                    label: translator('script_reports.detail.side.description.version'),
+                    value: scriptExecutionData && scriptExecutionData.scriptVersion,
+                },
+                {
+                    label: translator('script_reports.detail.side.description.start_timestamp'),
+                    value: scriptExecutionData && scriptExecutionData.startTimestamp,
+                },
+                {
+                    label: translator('script_reports.detail.side.description.end_timestamp'),
+                    value: scriptExecutionData && scriptExecutionData.endTimestamp,
+                },
+            );
+        }
+
         return (
             <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
                 <Box>
                     <DescriptionList
-                        items={[
-                            {
-                                label: translator('script_reports.detail.side.description.version'),
-                                value: 'todo?',
-                            },
-                            {
-                                label: translator('script_reports.detail.side.description.request_timestamp'),
-                                value: executionRequestDetail.requestTimestamp,
-                            },
-                            {
-                                label: translator('script_reports.detail.side.description.execution_status'),
-                                value: executionRequestDetail.executionRequestStatus,
-                            },
-                        ]}
+                        items={descriptionListItems}
                     />
                     <DescriptionList
                         noLineAfterListItem
@@ -155,6 +203,24 @@ function ExecutionDetail({ state }: IObserveProps) {
                 </Box>
             </Box>
         );
+    }
+
+    function mapActionsToListItems(items: IScriptExecutionDetailAction[]) {
+        return items.map((item) => {
+            const listItem: IListItem<IColumnNames> = {
+                id: `${item.runId}-${item.processId}`,
+                columns: {
+                    name: item.name,
+                    description: item.description,
+                },
+                data: {
+                    processId: item.processId,
+                    error: null,
+                    parameters: item.inputParameters,
+                },
+            };
+            return listItem;
+        });
     }
 }
 

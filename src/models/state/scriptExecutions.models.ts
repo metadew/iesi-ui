@@ -1,8 +1,8 @@
-import { IParameterRawValue, ILabel, IOutputValue } from './iesiGeneric.models';
+import { IParameter, IParameterRawValue, ILabel, IOutputValue } from './iesiGeneric.models';
 
 export interface IScriptExecutionDetail {
     runId: string;
-    processId: string;
+    processId: number;
     parentProcessId: number;
     scriptId: string;
     scriptName: string;
@@ -11,7 +11,7 @@ export interface IScriptExecutionDetail {
     status: string;
     startTimestamp: string;
     endTimestamp: string;
-    inputParameters: IParameterRawValue[];
+    inputParameters: IParameter[];
     designLabels: ILabel[];
     executionLabels: ILabel[];
     output: ILabel[];
@@ -25,11 +25,16 @@ export interface IScriptExecutionDetailAction {
     name: string;
     description: string;
     condition: string;
-    errorStop: true;
-    errorExpected: true;
+    errorStop: boolean;
+    errorExpected: boolean;
     status: string;
     startTimestamp: string;
     endTimestamp: string;
     inputParameters: IParameterRawValue[];
     output: IOutputValue[];
+}
+
+export interface IScriptExecutionByRunIdAndProcessIdPayload {
+    runId: string;
+    processId: number;
 }

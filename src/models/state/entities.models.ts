@@ -1,3 +1,4 @@
+import { IScriptExecutionDetail } from 'models/state/scriptExecutions.models';
 import { IEnvironment } from 'models/state/environments.models';
 import { IAsyncEntity } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { ITraceableApiError } from 'models/api.models';
@@ -24,19 +25,19 @@ export enum ASYNC_ENTITY_KEYS {
     scripts = 'scripts',
     scriptDetail = 'scriptDetail',
 
-    scriptReports = 'scriptReports',
-    scriptReportDetail = 'scriptReportDetail',
-
     executionRequests = 'executionRequests',
     executionRequestDetail = 'executionRequestDetail',
+
+    scriptExecutionDetail = 'scriptExecutionDetail',
 }
 
 /* Keep the keys in sync with ASYNC_ENTITY_KEYS !! */
 export interface IEntitiesState {
     actionTypes: ICustomAsyncEntity<IActionType[]>;
+    environments: ICustomAsyncEntity<IEnvironment[]>;
     scripts: ICustomAsyncEntity<IScriptBase[]>;
     scriptDetail: ICustomAsyncEntity<IScript>;
     executionRequests: ICustomAsyncEntity<IExecutionRequest[]>;
     executionRequestDetail: ICustomAsyncEntity<IExecutionRequest>;
-    environments: ICustomAsyncEntity<IEnvironment[]>;
+    scriptExecutionDetail: ICustomAsyncEntity<IScriptExecutionDetail>;
 }

@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { makeStyles } from '@material-ui/core';
 import { THEME_COLORS } from 'config/themes/colors';
 
-interface IDescriptionListItem {
+export interface IDescriptionListItem {
     label: string | ReactNode;
     value: string | ReactNode;
 }

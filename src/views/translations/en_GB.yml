@@ -164,8 +164,6 @@ script_reports:
         version: Version
     header:
       amount: 'You have {amount} script executions'
-    detail:
-      parameter_index: 'Parameter {index}'
   detail:
     main:
       error:
@@ -177,9 +175,13 @@ script_reports:
       execution_pending:
         text: Action details will be available once the script execution has been completed.
         title: Execution request pending
+      action:
+        parameter_index: 'Parameter {index}'
     side:
       toggle_button: Details
       description:
+        name: Execution name
+        description: Execution description
         version: Version
         request_timestamp: Request timestamp
         execution_status: Status

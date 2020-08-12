@@ -20,11 +20,11 @@ import {
     ListColumns,
     IColumn,
 } from 'models/list.models';
-import { formatNumberWithTwoDigits } from 'utils/number/format';
 import { getListItemValueFromColumn } from 'utils/list/list';
 import { THEME_COLORS } from 'config/themes/colors';
 import { Alert, AlertTitle } from '@material-ui/lab';
-import { IDummyScriptActionParameter } from 'models/state/scripts.models';
+import { IParameterRawValue } from 'models/state/iesiGeneric.models';
+// import { IDummyScriptActionParameter } from 'models/state/scripts.models';
 
 interface IPublicProps<ColumnNames> {
     listItems: IListItem<ColumnNames>[];
@@ -101,7 +101,7 @@ const useStyles = makeStyles(({ typography, palette, shape, spacing }: Theme) =>
     },
 }));
 
-export default function CollapsingList<ColumnNames>({
+export default function ScriptExecutionDetailActions<ColumnNames>({
     listItems,
     columns,
 }: IPublicProps<ColumnNames>) {
@@ -109,7 +109,7 @@ export default function CollapsingList<ColumnNames>({
 
     return (
         <>
-            { listItems.map((item: IListItem<ColumnNames>, index: number) => (
+            { listItems.map((item: IListItem<ColumnNames>) => (
                 <ExpansionPanel key={item.id as string} className={classes.expandableItem}>
                     <ExpansionPanelSummary
                         className={classes.summary}
@@ -128,10 +128,9 @@ export default function CollapsingList<ColumnNames>({
                                 width={50}
                                 className={classnames(classes.tableCell, classes.index)}
                             >
-                                {formatNumberWithTwoDigits(index + 1)}
+                                {item.data?.processId}
                             </Box>
                             {renderDataCols(item)}
-
                             {item.data.error && (
                                 <Box
                                     paddingX={0}
@@ -174,7 +173,7 @@ export default function CollapsingList<ColumnNames>({
             if (column.fixedWidth) {
                 return (
                     <Box
-                        key={columnName as string}
+                        key={`${item.id}-${columnName as string}`}
                         paddingX={3}
                         paddingY={1.1}
                         style={{ width: column.fixedWidth }}
@@ -187,7 +186,7 @@ export default function CollapsingList<ColumnNames>({
 
             return (
                 <Box
-                    key={columnName as string}
+                    key={`${item.id}-${columnName as string}`}
                     paddingX={3}
                     paddingY={1.1}
                     flex="1 1 auto"
@@ -209,8 +208,8 @@ export default function CollapsingList<ColumnNames>({
                     </Alert>
                 )}
 
-                { item.data.parameters.map((parameter: IDummyScriptActionParameter, index: number) => (
-                    <ExpansionPanel key={parameter.id as string} className={classes.childExpandableItem}>
+                { item.data.parameters.map((parameter: IParameterRawValue, index: number) => (
+                    <ExpansionPanel key={`${item.id}-${parameter.name}`} className={classes.childExpandableItem}>
                         <ExpansionPanelSummary
                             expandIcon={<ExpandMoreIcon />}
                             className={classes.childExpandableItemSummery}
@@ -221,15 +220,14 @@ export default function CollapsingList<ColumnNames>({
                             >
                                 <Typography className={classes.detailParameterLabel}>
                                     <Translate
-                                        msg="script_reports.detail.parameter_index"
+                                        msg="script_reports.detail.main.action.parameter_index"
                                         placeholders={{
-                                            index,
+                                            index: index + 1,
                                         }}
                                     />
                                 </Typography>
-                                <Typography>{parameter.description}</Typography>
+                                <Typography>{parameter.name}</Typography>
                             </Box>
-
                         </ExpansionPanelSummary>
                         <ExpansionPanelDetails>
                             <Box
@@ -241,9 +239,10 @@ export default function CollapsingList<ColumnNames>({
                                 className={classes.descriptionListHolder}
                             >
                                 <DescriptionList
+                                    noLineAfterListItem
                                     items={[
-                                        { label: 'Value 1', value: parameter.values[0] },
-                                        { label: 'Value 2', value: parameter.values[1] },
+                                        { label: 'raw value', value: parameter.rawValue },
+                                        { label: 'resolved value', value: parameter.resolvedValue },
                                     ]}
                                 />
                             </Box>
