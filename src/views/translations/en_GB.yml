@@ -176,7 +176,7 @@ script_reports:
         text: Action details will be available once the script execution has been completed.
         title: Execution request pending
       action:
-        parameter_index: 'Parameter {index}'
+        input_parameters: Input parameters
     side:
       toggle_button: Details
       description:

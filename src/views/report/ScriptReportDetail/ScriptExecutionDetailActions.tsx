@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import classnames from 'classnames';
 import {
     Box,
@@ -208,47 +208,52 @@ export default function ScriptExecutionDetailActions<ColumnNames>({
                     </Alert>
                 )}
 
-                { item.data.parameters.map((parameter: IParameterRawValue, index: number) => (
-                    <ExpansionPanel key={`${item.id}-${parameter.name}`} className={classes.childExpandableItem}>
-                        <ExpansionPanelSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            className={classes.childExpandableItemSummery}
+                {/* { item.data.inputParameters.map((parameter: IParameterRawValue, index: number) => ( */}
+                <ExpansionPanel key={`${item.id}-inputParameters`} className={classes.childExpandableItem}>
+                    <ExpansionPanelSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        className={classes.childExpandableItemSummery}
+                    >
+                        <Box
+                            paddingX={0}
+                            paddingY={2}
                         >
-                            <Box
-                                paddingX={0}
-                                paddingY={2}
-                            >
-                                <Typography className={classes.detailParameterLabel}>
-                                    <Translate
-                                        msg="script_reports.detail.main.action.parameter_index"
-                                        placeholders={{
-                                            index: index + 1,
-                                        }}
-                                    />
-                                </Typography>
-                                <Typography>{parameter.name}</Typography>
-                            </Box>
-                        </ExpansionPanelSummary>
-                        <ExpansionPanelDetails>
-                            <Box
-                                paddingX={0}
-                                paddingY={0}
-                                display="flex"
-                                flexDirection="column"
-                                flex="0 1 40%"
-                                className={classes.descriptionListHolder}
-                            >
+                            <Typography className={classes.detailParameterLabel}>
+                                <Translate msg="script_reports.detail.main.action.input_parameters" />
+                            </Typography>
+                            <Typography>
+                                {item.data.inputParameters.map((parameter: IParameterRawValue, index: number) => (
+                                    <Fragment key={`${item.id}-${parameter.name}`}>
+                                        {index > 0 && ', '}
+                                        {parameter.name}
+                                    </Fragment>
+                                ))}
+                            </Typography>
+                        </Box>
+                    </ExpansionPanelSummary>
+                    <ExpansionPanelDetails>
+                        <Box
+                            paddingX={0}
+                            paddingY={0}
+                            display="flex"
+                            flexDirection="column"
+                            flex="0 1 40%"
+                            className={classes.descriptionListHolder}
+                        >
+                            {item.data.inputParameters.map((parameter: IParameterRawValue) => (
                                 <DescriptionList
+                                    key={`${item.id}-${parameter.name}-list`}
                                     noLineAfterListItem
                                     items={[
+                                        { label: 'name', value: parameter.name },
                                         { label: 'raw value', value: parameter.rawValue },
                                         { label: 'resolved value', value: parameter.resolvedValue },
                                     ]}
                                 />
-                            </Box>
-                        </ExpansionPanelDetails>
-                    </ExpansionPanel>
-                ))}
+                            ))}
+                        </Box>
+                    </ExpansionPanelDetails>
+                </ExpansionPanel>
             </>
 
         );

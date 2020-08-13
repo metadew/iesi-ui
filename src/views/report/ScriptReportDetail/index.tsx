@@ -216,7 +216,7 @@ function ExecutionDetail({ state }: IObserveProps) {
                 data: {
                     processId: item.processId,
                     error: null,
-                    parameters: item.inputParameters,
+                    inputParameters: item.inputParameters,
                 },
             };
             return listItem;
