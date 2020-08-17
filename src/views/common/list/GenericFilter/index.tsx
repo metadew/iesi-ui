@@ -1,4 +1,5 @@
-import React, { useState, ReactText } from 'react';
+import React, { useState, ReactText, useEffect } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
 import { TTranslatorComponent } from 'models/i18n.models';
 import {
     Box,
@@ -31,6 +32,7 @@ interface IPublicProps<ColumnNames> {
     filterConfig: FilterConfig<ColumnNames>;
     onFilterChange: (listFilters: ListFilters<ColumnNames>) => void;
     listItems: IListItem<ColumnNames>[];
+    initialFilters?: ListFilters<ColumnNames>;
 }
 
 const useStyles = makeStyles(({ spacing, palette, typography, shape }) => ({
@@ -114,9 +116,17 @@ function GenericFilter<ColumnNames>({
     filterConfig,
     onFilterChange,
     listItems,
+    initialFilters,
 }: IPublicProps<ColumnNames>) {
     const [filters, setFilters] = useState(getIntialFiltersFromFilterConfig(filterConfig));
     const classes = useStyles();
+    const [onFilterChangeDebounced] = useDebouncedCallback(onFilterChange, 500);
+
+    useEffect(() => {
+        if (initialFilters) {
+            setFilters(initialFilters);
+        }
+    }, [initialFilters]);
 
     return (
         <Box>
@@ -230,7 +240,7 @@ function GenericFilter<ColumnNames>({
         }, {} as ListFilters<ColumnNames>);
 
         setFilters(newFilters);
-        onFilterChange(newFilters);
+        onFilterChangeDebounced(newFilters);
     }
 
     function onFilter(filter: IFilter<Partial<ColumnNames>>) {
@@ -241,7 +251,7 @@ function GenericFilter<ColumnNames>({
             values,
         };
         setFilters(newFilters);
-        onFilterChange(newFilters);
+        onFilterChangeDebounced(newFilters);
     }
 
     function getAllFilterValuesFromFilters(): ISingleFilterValue[] {

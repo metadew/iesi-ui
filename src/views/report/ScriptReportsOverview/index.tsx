@@ -125,6 +125,7 @@ const sortActions: SortActions<Partial<IColumnNames>> = {
 interface IComponentState {
     sortedColumn: ISortedColumn<IColumnNames>;
     filters: ListFilters<Partial<IColumnNames>>;
+    initialFilters: ListFilters<Partial<IColumnNames>>;
     idOfScriptToDelete: ReactText;
 }
 
@@ -143,29 +144,19 @@ const ScriptReportsOverview = withStyles(styles)(
                 },
                 filters: getIntialFiltersFromFilterConfig(filterConfig),
                 idOfScriptToDelete: null,
+                initialFilters: null,
             };
 
             this.renderPanel = this.renderPanel.bind(this);
             this.renderContent = this.renderContent.bind(this);
             this.onSort = this.onSort.bind(this);
             this.onFilter = this.onFilter.bind(this);
+            this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
         }
 
         public componentDidMount() {
-            const searchParams = new URLSearchParams(window.location.search);
-            const { filters } = this.state;
-            const filtersByUrlSearchParams = filters;
-
-            Array.from(searchParams.keys()).forEach((searchParamKey: string) => {
-                if (Object.keys(filterConfig).includes(searchParamKey)) {
-                    filtersByUrlSearchParams[searchParamKey as keyof IColumnNames].values
-                        .push(searchParams.get(searchParamKey));
-                }
-            });
-
-            this.setState({
-                filters: filtersByUrlSearchParams,
-            });
+            const initialFilters = this.combineFiltersFromUrlAndCurrentFilters();
+            this.setState({ filters: initialFilters, initialFilters });
         }
 
         public render() {
@@ -215,12 +206,29 @@ const ScriptReportsOverview = withStyles(styles)(
             );
         }
 
+        private combineFiltersFromUrlAndCurrentFilters() {
+            const searchParams = new URLSearchParams(window.location.search);
+            const { filters } = this.state;
+            const filtersByUrlSearchParams = filters;
+
+            Array.from(searchParams.keys()).forEach((searchParamKey: string) => {
+                if (Object.keys(filterConfig).includes(searchParamKey)) {
+                    filtersByUrlSearchParams[searchParamKey as keyof IColumnNames].values
+                        .push(searchParams.get(searchParamKey));
+                }
+            });
+
+            return filtersByUrlSearchParams;
+        }
+
         private renderPanel({ listItems }: { listItems: IListItem<IColumnNames>[] }) {
+            const { initialFilters } = this.state;
             return (
                 <GenericFilter
                     filterConfig={filterConfig}
                     onFilterChange={this.onFilter}
                     listItems={listItems}
+                    initialFilters={initialFilters}
                 />
             );
         }
