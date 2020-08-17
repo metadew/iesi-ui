@@ -28,7 +28,7 @@ import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { IParameter } from 'models/state/iesiGeneric.models';
 import OrderedList from 'views/common/list/OrderedList';
 import isSet from '@snipsonian/core/es/is/isSet';
-import { ExecutionRequestStatus, IExecutionRequest } from 'models/state/executionRequests.models';
+import { IExecutionRequest } from 'models/state/executionRequests.models';
 import { getAsyncExecutionRequestDetail } from 'state/entities/executionRequests/selectors';
 import { addPollingExecutionRequest } from 'state/ui/actions';
 
@@ -308,18 +308,15 @@ function ExecuteScriptDialog({
             description: formValues.description.trim(),
             email: null, // May be ignored for now
             executionRequestLabels: [], // TODO
-            executionRequestStatus: ExecutionRequestStatus.New,
             name: formValues.name.trim(),
-            requestTimestamp: new Date(),
             scope: '', // May be ignored for now
             scriptExecutionRequests: [
                 {
                     scriptName: script.name,
                     environment: formValues.environment,
-                    exit: true, // TODO?
+                    exit: false,
                     impersonations: [], // TODO
                     parameters: formValues.parameters,
-                    scriptExecutionRequestStatus: ExecutionRequestStatus.New,
                     scriptVersion: script.version.number,
                 },
             ],

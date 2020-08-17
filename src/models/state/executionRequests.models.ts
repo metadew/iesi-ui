@@ -14,14 +14,13 @@ export interface IExecutionRequest {
 }
 
 export interface ICreateExecutionRequestPayload {
-    requestTimestamp: Date; // format 2020-05-04T10:01:13.923Z
     name: string;
     description: string;
     scope: string;
     context: string;
     email: string;
-    executionRequestStatus: ExecutionRequestStatus;
-    scriptExecutionRequests: Omit<IScriptExecutionRequest, 'executionRequestId' | 'scriptExecutionRequestId'>[];
+    // eslint-disable-next-line max-len
+    scriptExecutionRequests: Omit<IScriptExecutionRequest, 'executionRequestId' | 'scriptExecutionRequestId' | 'scriptExecutionRequestStatus'>[];
     executionRequestLabels: ILabel[];
 }
 
