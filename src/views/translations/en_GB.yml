@@ -146,6 +146,7 @@ script_reports:
     list:
       actions:
         report: Reporting
+      fetch_error: Something went wrong while loading the script executions, please try again.
       filter:
         script_name: Script name
         script_version: Script version

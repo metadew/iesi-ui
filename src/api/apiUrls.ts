@@ -3,14 +3,14 @@ const API_URLS = {
 
     ENV_CONFIG: '/env-config.json',
 
-    ACTION_TYPES: '/action_types',
+    ACTION_TYPES: '/action-types',
     CONNECTION_TYPES: '/connection-types',
 
     ENVIRONMENTS: '/environments',
     ENVIRONMENT_BY_NAME: '/environments/{name}',
 
-    EXECUTION_REQUESTS: '/execution_requests',
-    EXECUTION_REQUEST_BY_ID: '/execution_requests/{id}',
+    EXECUTION_REQUESTS: '/execution-requests',
+    EXECUTION_REQUEST_BY_ID: '/execution-requests/{id}',
 
     SCRIPTS: '/scripts',
     SCRIPT_BY_NAME: '/scripts/{name}',
