@@ -198,6 +198,7 @@ script_reports:
         start_timestamp: Start timestamp
         end_timestamp: End timestamp
         execution_status: Status
+        labels: Design labels
       input_parameters:
         title: Input parameters
         none: No input parameters given

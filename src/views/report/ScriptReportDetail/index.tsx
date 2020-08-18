@@ -235,6 +235,15 @@ function ExecutionDetail({ state }: IObserveProps) {
                     ),
                 },
             );
+
+            if (scriptExecutionData.designLabels.length > 0) {
+                scriptExecutionListItems.push(
+                    {
+                        label: translator('script_reports.detail.side.description.labels'),
+                        value: <ShowLabels labels={scriptExecutionData.designLabels} />,
+                    },
+                );
+            }
         }
 
         return (
