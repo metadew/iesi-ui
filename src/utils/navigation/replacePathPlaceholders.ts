@@ -15,7 +15,7 @@ export default function replacePathPlaceholders({
 
             const regex = new RegExp(`:${placeholderName}\\??`, 'g');
 
-            return !placeholderValue
+            return typeof placeholderValue === 'undefined'
                 ? prevPathResult
                 : prevPathResult.replace(regex, placeholderValue && placeholderValue.toString());
         },
