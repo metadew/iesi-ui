@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { parseISO, format as formatDate } from 'date-fns/esm';
 import isEmptyObject from '@snipsonian/core/es/object/isEmptyObject';
+import isSet from '@snipsonian/core/es/is/isSet';
 import { Box, makeStyles } from '@material-ui/core';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -16,22 +18,25 @@ import { IExecutionRequest } from 'models/state/executionRequests.models';
 import { IScriptExecutionDetailAction } from 'models/state/scriptExecutions.models';
 import { triggerFetchScriptExecutionDetail } from 'state/entities/scriptExecutions/triggers';
 import { getAsyncScriptExecutionDetail } from 'state/entities/scriptExecutions/selectors';
-import { ListColumns, IListItem } from 'models/list.models';
-// import {
-//     isExecutionRequestStatusNewOrSubmitted,
-//     isExecutionRequestStatusAbortedOrDeclined,
-// } from 'utils/scripts/executionRequests';
+import { ListColumns, IListItem, ISortedColumn, SortOrder, SortType } from 'models/list.models';
+import sortListItems from 'utils/list/sortListItems';
+import {
+    isExecutionRequestStatusNewOrSubmitted,
+    isExecutionRequestStatusAbortedOrDeclined,
+} from 'utils/scripts/executionRequests';
 import ScriptExecutionDetailActions from './ScriptExecutionDetailActions';
 import ShowLabels from './ShowLabels';
-import { MOCKED_SCRIPT_EXECUTION } from './mock';
-
 
 interface IColumnNames {
+    processId: number;
     name: string;
     description: string;
 }
 
 const useStyles = makeStyles(({ palette, typography }) => ({
+    processId: {
+        display: 'none',
+    },
     scriptName: {
         fontWeight: typography.fontWeightBold,
         color: palette.primary.main,
@@ -50,20 +55,26 @@ function ExecutionDetail({ state }: IObserveProps) {
     const asyncExecutionRequest = getAsyncExecutionRequestDetail(state).fetch;
     const executionRequestDetail = getAsyncExecutionRequestDetail(state).data || {} as IExecutionRequest;
 
-    // const scriptExecutionData = getAsyncScriptExecutionDetail(state).data;
-    const scriptExecutionData = MOCKED_SCRIPT_EXECUTION;
-    const scriptExecutionAsyncStatus = getAsyncScriptExecutionDetail(state).fetch.status;
+    const scriptExecutionData = getAsyncScriptExecutionDetail(state).data;
 
-    const isExecutionRequestDataAvailable = !isEmptyObject(executionRequestDetail);
-    // && !isExecutionRequestStatusNewOrSubmitted(executionRequestDetail.executionRequestStatus)
-    // && !isExecutionRequestStatusAbortedOrDeclined(executionRequestDetail.executionRequestStatus);
+    const isExecutionRequestDataAvailable = !isEmptyObject(executionRequestDetail)
+        && !isExecutionRequestStatusNewOrSubmitted(executionRequestDetail.executionRequestStatus)
+        && !isExecutionRequestStatusAbortedOrDeclined(executionRequestDetail.executionRequestStatus)
+        && executionRequestDetail.scriptExecutionRequests.length > 0
+        && executionRequestDetail.scriptExecutionRequests[0].runId;
 
-    if (isExecutionRequestDataAvailable) {
-        triggerFetchScriptExecutionDetail({
-            runId: '98ee8a1f-3760-420c-a953-ab829a0bcc9a', // TODO: runId?
-            processId: -1,
-        });
-    }
+    useEffect(() => {
+        if (isExecutionRequestDataAvailable) {
+            const currentRunId = executionRequestDetail.scriptExecutionRequests[0].runId;
+            if (!isSet(scriptExecutionData) || scriptExecutionData.runId !== currentRunId) {
+                triggerFetchScriptExecutionDetail({
+                    runId: executionRequestDetail.scriptExecutionRequests[0].runId,
+                    processId: -1,
+                });
+            }
+        }
+        return () => {};
+    }, [isExecutionRequestDataAvailable, executionRequestDetail, scriptExecutionData]);
 
     return (
         <>
@@ -88,7 +99,7 @@ function ExecutionDetail({ state }: IObserveProps) {
                 </div>
             );
         }
-        /*
+
         if (isExecutionRequestStatusNewOrSubmitted(executionRequestDetail.executionRequestStatus)) {
             return (
                 <div>
@@ -99,6 +110,7 @@ function ExecutionDetail({ state }: IObserveProps) {
                 </div>
             );
         }
+
         if (isExecutionRequestStatusAbortedOrDeclined(executionRequestDetail.executionRequestStatus)) {
             return (
                 <div>
@@ -109,39 +121,42 @@ function ExecutionDetail({ state }: IObserveProps) {
                 </div>
             );
         }
-        */
 
-        // triggerFetchScriptExecutionDetail({
-        //     runId: '98ee8a1f-3760-420c-a953-ab829a0bcc9a',
-        //     processId: -1,
-        // });
-        // const scriptExecutionData = getAsyncScriptExecutionDetail(state).data;
-        // const scriptExecutionAsyncStatus = getAsyncScriptExecutionDetail(state).fetch.status;
+        if (
+            isExecutionRequestDataAvailable && scriptExecutionData
+            && scriptExecutionData.runId === executionRequestDetail.scriptExecutionRequests[0].runId
+        ) {
+            const listItems = mapActionsToListItemsAndSortByProcessId(scriptExecutionData.actions);
+            const columns: ListColumns<IColumnNames> = {
+                processId: {
+                    className: classes.processId,
+                },
+                name: {
+                    fixedWidth: '40%',
+                    className: classes.scriptName,
+                },
+                description: {
+                    fixedWidth: '50%',
+                    className: classes.scriptDescription,
+                },
+            };
 
-        const listItems = mapActionsToListItems(scriptExecutionData.actions);
-        const columns: ListColumns<IColumnNames> = {
-            name: {
-                fixedWidth: '40%',
-                className: classes.scriptName,
-            },
-            description: {
-                fixedWidth: '50%',
-                className: classes.scriptDescription,
-            },
-        };
+            return (
+                <Box marginY={1}>
+                    <ScriptExecutionDetailActions
+                        listItems={listItems}
+                        columns={columns}
+                    />
+                </Box>
+            );
+        }
 
-        return (
-            <Box marginY={1}>
-                <ScriptExecutionDetailActions
-                    listItems={listItems}
-                    columns={columns}
-                />
-            </Box>
-        );
+        return isExecutionRequestDataAvailable ? <Loader show /> : null;
     }
 
     function renderDetailPanel() {
         const translator = getTranslator(state);
+        const scriptExecutionListItems: IDescriptionListItem[] = [];
 
         if (asyncExecutionRequest.error) {
             return null;
@@ -164,67 +179,99 @@ function ExecutionDetail({ state }: IObserveProps) {
             },
         ];
 
-        if (isExecutionRequestDataAvailable && scriptExecutionAsyncStatus === AsyncStatus.Success) {
-            descriptionListItems.push(
+        if (isExecutionRequestDataAvailable && scriptExecutionData) {
+            scriptExecutionListItems.push(
                 {
-                    label: translator('script_reports.detail.side.description.version'),
+                    label: translator('script_reports.detail.side.description.script_name'),
+                    value: scriptExecutionData && scriptExecutionData.scriptName,
+                },
+                {
+                    label: translator('script_reports.detail.side.description.script_version'),
                     value: scriptExecutionData && scriptExecutionData.scriptVersion,
                 },
                 {
                     label: translator('script_reports.detail.side.description.start_timestamp'),
-                    value: scriptExecutionData && scriptExecutionData.startTimestamp,
+                    value: scriptExecutionData && formatDate(
+                        parseISO(scriptExecutionData.startTimestamp.toString()),
+                        'dd/MM/yyyy HH:mm:ss',
+                    ),
                 },
                 {
                     label: translator('script_reports.detail.side.description.end_timestamp'),
-                    value: scriptExecutionData && scriptExecutionData.endTimestamp,
+                    value: scriptExecutionData && formatDate(
+                        parseISO(scriptExecutionData.endTimestamp.toString()),
+                        'dd/MM/yyyy HH:mm:ss',
+                    ),
                 },
             );
         }
 
         return (
             <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
-                <Box>
+                <Box flex="1 1 auto">
                     <DescriptionList
                         items={descriptionListItems}
                     />
+                    {(isExecutionRequestDataAvailable && scriptExecutionData) && (
+                        <DescriptionList
+                            noLineAfterListItem
+                            items={[
+                                {
+                                    label: <Translate msg="script_reports.detail.side.input_parameters.title" />,
+                                    value: scriptExecutionData.inputParameters.length
+                                        ? <ShowLabels labels={scriptExecutionData.inputParameters} />
+                                        : <Translate msg="script_reports.detail.side.input_parameters.none" />,
+                                },
+                            ]}
+                        />
+                    )}
+                </Box>
+                <Box>
                     <DescriptionList
                         noLineAfterListItem
-                        items={[
-                            {
-                                label: <Translate msg="script_reports.detail.side.labels.title" />,
-                                value: <ShowLabels labels={executionRequestDetail.executionRequestLabels || []} />,
-                            },
-                            // {
-                            //     label: <Translate msg="script_reports.detail.side.parameters.title" />,
-                            //     value: <ShowParameters parameters={MOCKED_SCRIPT_PARAMETERS} />,
-                            // },
-                        ]}
+                        items={scriptExecutionListItems}
                     />
                 </Box>
             </Box>
         );
     }
 
-    function mapActionsToListItems(items: IScriptExecutionDetailAction[]) {
-        return items.map((item) => {
+    function mapActionsToListItemsAndSortByProcessId(items: IScriptExecutionDetailAction[]) {
+        const listItems = items.map((item) => {
             const listItem: IListItem<IColumnNames> = {
                 id: `${item.runId}-${item.processId}`,
                 columns: {
+                    processId: item.processId,
                     name: item.name,
                     description: item.description,
                 },
                 data: {
                     processId: item.processId,
-                    error: null,
+                    error: 'error',
                     inputParameters: item.inputParameters,
+                    type: item.type,
+                    startTimestamp: item.startTimestamp,
+                    endTimestamp: item.endTimestamp,
+                    errorExpected: item.errorExpected,
+                    errorStop: item.errorStop,
+                    condition: item.condition,
+                    output: item.output,
                 },
             };
             return listItem;
         });
+
+        return sortListItems(listItems, {
+            name: 'processId',
+            sortOrder: SortOrder.Ascending,
+            sortType: SortType.Number,
+        } as ISortedColumn<{}>);
     }
 }
 
 export default observe([
     StateChangeNotification.EXECUTION_REQUESTS_DETAIL,
+    StateChangeNotification.EXECUTION_REQUESTS_DETAIL,
+    StateChangeNotification.SCRIPT_EXECUTION_DETAIL,
     StateChangeNotification.I18N_TRANSLATIONS,
 ], ExecutionDetail);

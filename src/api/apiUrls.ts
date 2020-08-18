@@ -16,7 +16,7 @@ const API_URLS = {
     SCRIPT_BY_NAME: '/scripts/{name}',
     SCRIPT_BY_NAME_VERSION: '/scripts/{name}/{version}',
 
-    SCRIPT_EXECUTION_BY_RUN_AND_PROCESS_ID: '/script_executions/{runId}/{processId}',
+    SCRIPT_EXECUTION_BY_RUN_AND_PROCESS_ID: '/script-executions/{runId}/{processId}',
 
     /* eslint-enable max-len */
 };

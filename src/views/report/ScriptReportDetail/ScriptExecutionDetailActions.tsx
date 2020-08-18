@@ -1,20 +1,28 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import classnames from 'classnames';
+import { parseISO, format as formatDate } from 'date-fns/esm';
 import {
     Box,
-    Typography,
     makeStyles,
     Theme,
     ExpansionPanel,
     ExpansionPanelSummary,
     ExpansionPanelDetails,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableBody,
+    TableContainer,
+    Paper,
+    Typography,
 } from '@material-ui/core';
 import {
     ExpandMore as ExpandMoreIcon,
     ErrorOutline as ErrorOutlineIcon,
 } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import DescriptionList from 'views/common/list/DescriptionList';
+import { getTranslator } from 'state/i18n/selectors';
 import {
     IListItem,
     ListColumns,
@@ -23,8 +31,9 @@ import {
 import { getListItemValueFromColumn } from 'utils/list/list';
 import { THEME_COLORS } from 'config/themes/colors';
 import { Alert, AlertTitle } from '@material-ui/lab';
-import { IParameterRawValue } from 'models/state/iesiGeneric.models';
-// import { IDummyScriptActionParameter } from 'models/state/scripts.models';
+import { IParameterRawValue, IOutputValue } from 'models/state/iesiGeneric.models';
+import { observe, IObserveProps } from 'views/observe';
+import { StateChangeNotification } from 'models/state.models';
 
 interface IPublicProps<ColumnNames> {
     listItems: IListItem<ColumnNames>[];
@@ -99,13 +108,19 @@ const useStyles = makeStyles(({ typography, palette, shape, spacing }: Theme) =>
             margin: 0,
         },
     },
+    thCell: {
+        wordBreak: 'normal',
+        verticalAlign: 'top',
+    },
 }));
 
-export default function ScriptExecutionDetailActions<ColumnNames>({
+function ScriptExecutionDetailActions<ColumnNames>({
     listItems,
     columns,
-}: IPublicProps<ColumnNames>) {
+    state,
+}: IPublicProps<ColumnNames> & IObserveProps) {
     const classes = useStyles();
+    const translator = getTranslator(state);
 
     return (
         <>
@@ -151,7 +166,7 @@ export default function ScriptExecutionDetailActions<ColumnNames>({
                             width="100%"
                             paddingY={1.1}
                         >
-                            {renderCollapsibleContent(item)}
+                            {renderDetailsContent(item)}
                         </Box>
                     </ExpansionPanelDetails>
                 </ExpansionPanel>
@@ -198,7 +213,7 @@ export default function ScriptExecutionDetailActions<ColumnNames>({
         });
     }
 
-    function renderCollapsibleContent(item: IListItem<ColumnNames>) {
+    function renderDetailsContent(item: IListItem<ColumnNames>) {
         return (
             <>
                 {item.data.error && (
@@ -208,54 +223,137 @@ export default function ScriptExecutionDetailActions<ColumnNames>({
                     </Alert>
                 )}
 
-                {/* { item.data.inputParameters.map((parameter: IParameterRawValue, index: number) => ( */}
-                <ExpansionPanel key={`${item.id}-inputParameters`} className={classes.childExpandableItem}>
-                    <ExpansionPanelSummary
-                        expandIcon={<ExpandMoreIcon />}
-                        className={classes.childExpandableItemSummery}
-                    >
-                        <Box
-                            paddingX={0}
-                            paddingY={2}
-                        >
-                            <Typography className={classes.detailParameterLabel}>
+                <Box marginBottom={2}>
+                    <Paper elevation={0}>
+                        <Box paddingX={1} paddingY={1}>
+                            <Typography variant="subtitle2">Action Type</Typography>
+                            <Typography>{item.data.type}</Typography>
+                        </Box>
+                    </Paper>
+                </Box>
+
+                <Box marginBottom={2}>
+                    <TableContainer component={Paper} elevation={0}>
+                        <Box paddingX={1} paddingY={1}>
+                            <Typography variant="subtitle2">
                                 <Translate msg="script_reports.detail.main.action.input_parameters" />
                             </Typography>
-                            <Typography>
-                                {item.data.inputParameters.map((parameter: IParameterRawValue, index: number) => (
-                                    <Fragment key={`${item.id}-${parameter.name}`}>
-                                        {index > 0 && ', '}
-                                        {parameter.name}
-                                    </Fragment>
+                        </Box>
+                        <Table
+                            size="small"
+                            aria-label={translator('script_reports.detail.main.action.input_parameters')}
+                        >
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>&nbsp;</TableCell>
+                                    <TableCell>Raw value</TableCell>
+                                    <TableCell>Resolved value</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {item.data.inputParameters.map((parameter: IParameterRawValue) => (
+                                    <TableRow key={`${item.id}-${parameter.name}`}>
+                                        <TableCell component="th" scope="row" className={classes.thCell}>
+                                            {parameter.name}
+                                        </TableCell>
+                                        <TableCell>{parameter.rawValue}</TableCell>
+                                        <TableCell>{parameter.resolvedValue}</TableCell>
+                                    </TableRow>
                                 ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Box>
+
+                {item.data.condition && (
+                    <Box marginBottom={2}>
+                        <Paper elevation={0}>
+                            <Box paddingX={1} paddingY={1}>
+                                <Typography variant="subtitle2">
+                                    <Translate msg="script_reports.detail.main.action.condition" />
+                                </Typography>
+                                <Typography>
+                                    {item.data.condition}
+                                </Typography>
+                            </Box>
+                        </Paper>
+                    </Box>
+                )}
+
+                <Box marginBottom={2}>
+                    <Paper elevation={0}>
+                        <Box paddingX={1} paddingY={1}>
+                            <Typography variant="subtitle2">
+                                <Translate msg="script_reports.detail.main.action.start_timestamp" />
+                            </Typography>
+                            <Typography>
+                                {formatDate(
+                                    parseISO(item.data.startTimestamp.toString()),
+                                    'dd/MM/yyyy HH:mm:ss',
+                                )}
                             </Typography>
                         </Box>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
-                        <Box
-                            paddingX={0}
-                            paddingY={0}
-                            display="flex"
-                            flexDirection="column"
-                            flex="0 1 40%"
-                            className={classes.descriptionListHolder}
-                        >
-                            {item.data.inputParameters.map((parameter: IParameterRawValue) => (
-                                <DescriptionList
-                                    key={`${item.id}-${parameter.name}-list`}
-                                    noLineAfterListItem
-                                    items={[
-                                        { label: 'name', value: parameter.name },
-                                        { label: 'raw value', value: parameter.rawValue },
-                                        { label: 'resolved value', value: parameter.resolvedValue },
-                                    ]}
-                                />
-                            ))}
-                        </Box>
-                    </ExpansionPanelDetails>
-                </ExpansionPanel>
-            </>
+                    </Paper>
+                </Box>
 
+                <Box marginBottom={2}>
+                    <Paper elevation={0}>
+                        <Box paddingX={1} paddingY={1}>
+                            <Typography variant="subtitle2">
+                                <Translate msg="script_reports.detail.main.action.end_timestamp" />
+                            </Typography>
+                            <Typography>
+                                {formatDate(
+                                    parseISO(item.data.endTimestamp.toString()),
+                                    'dd/MM/yyyy HH:mm:ss',
+                                )}
+                            </Typography>
+                        </Box>
+                    </Paper>
+                </Box>
+
+                {item.data.output.length > 0 && (
+                    <Box marginBottom={2}>
+                        <TableContainer component={Paper} elevation={0}>
+                            <Box paddingX={1} paddingY={1}>
+                                <Typography variant="subtitle2">
+                                    <Translate msg="script_reports.detail.main.action.output.label" />
+                                </Typography>
+                            </Box>
+                            <Table
+                                size="small"
+                                aria-label={translator('script_reports.detail.main.action.output.label')}
+                            >
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>
+                                            <Translate msg="script_reports.detail.main.action.output.name" />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Translate msg="script_reports.detail.main.action.output.value" />
+                                        </TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {item.data.output.map((output: IOutputValue) => (
+                                        <TableRow key={`${item.id}-${output.name}`}>
+                                            <TableCell component="th" scope="row" className={classes.thCell}>
+                                                {output.name}
+                                            </TableCell>
+                                            <TableCell>{output.value}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Box>
+                )}
+            </>
         );
     }
 }
+
+export default observe<IPublicProps<{}>>(
+    [StateChangeNotification.I18N_TRANSLATIONS],
+    ScriptExecutionDetailActions,
+);

@@ -128,7 +128,12 @@ const commonTheme: ThemeOptions = {
                 marginRight: '0',
             },
         },
-
+        // Tables
+        MuiTableCell: {
+            head: {
+                fontWeight: MUI_DEFAULT_THEME.typography.fontWeightBold,
+            },
+        },
     },
 };
 

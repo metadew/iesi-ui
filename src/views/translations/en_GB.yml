@@ -177,15 +177,22 @@ script_reports:
         title: Execution request pending
       action:
         input_parameters: Input parameters
+        start_timestamp: Start timestamp
+        end_timestamp: End timestamp
+        output:
+          label: Output
+          name: Name
+          value: Value
     side:
       toggle_button: Details
       description:
         name: Execution name
         description: Execution description
-        version: Version
-        request_timestamp: Request timestamp
+        script_name: Script name
+        script_version: Version
+        start_timestamp: Start timestamp
+        end_timestamp: End timestamp
         execution_status: Status
-      labels:
-        title: Labels
-      parameters:
-        title: Parameters
+      input_parameters:
+        title: Input parameters
+        none: No input parameters given
