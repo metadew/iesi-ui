@@ -35,7 +35,6 @@ interface IScriptExecutionRequest {
     scriptName: string;
     scriptVersion: number;
     runId?: string;
-    testId?: string;
 }
 
 export interface IExecutionRequestByIdPayload {
