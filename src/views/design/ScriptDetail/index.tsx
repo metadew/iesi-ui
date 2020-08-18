@@ -200,7 +200,8 @@ const ScriptDetail = withStyles(styles)(
                                 <Button
                                     id="save-update-current-version"
                                     onClick={() => {
-                                        triggerUpdateScriptDetail({ ...newScriptDetail });
+                                        const { scheduling, execution, ...newScriptData } = newScriptDetail;
+                                        triggerUpdateScriptDetail({ ...newScriptData });
                                         this.setState({ isSaveDialogOpen: false });
                                     }}
                                     variant="contained"
@@ -214,12 +215,13 @@ const ScriptDetail = withStyles(styles)(
                                 <Button
                                     id="save-save-as-new-version"
                                     onClick={() => {
+                                        const { scheduling, execution, ...newScriptData } = newScriptDetail;
                                         triggerCreateScriptDetail({
-                                            ...newScriptDetail,
+                                            ...newScriptData,
                                             version: {
                                                 ...newScriptDetail.version,
                                                 number: this.isCreateScriptRoute()
-                                                    ? 0 : newScriptDetail.version.number + 1,
+                                                    ? 0 : newScriptData.version.number + 1,
                                             },
                                         });
                                         this.setState({ isSaveDialogOpen: false });
@@ -468,12 +470,6 @@ const ScriptDetail = withStyles(styles)(
         }
 
         private updateScript(fieldsToUpdate: Partial<IScript>) {
-            console.log({
-                // eslint-disable-next-line react/no-access-state-in-setstate
-                ...this.state.newScriptDetail,
-                ...fieldsToUpdate,
-            });
-
             this.setState((prevState) => ({
                 newScriptDetail: {
                     ...prevState.newScriptDetail,
