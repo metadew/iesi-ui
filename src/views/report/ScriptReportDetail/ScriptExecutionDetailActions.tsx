@@ -339,6 +339,32 @@ function ScriptExecutionDetailActions<ColumnNames>({
                     <Paper elevation={0}>
                         <Box paddingX={1} paddingY={1}>
                             <Typography variant="subtitle2">
+                                <Translate msg="script_reports.detail.main.action.error_expected" />
+                            </Typography>
+                            <Typography>
+                                <Translate msg={`common.${item.data.errorExpected ? 'yes' : 'no'}`} />
+                            </Typography>
+                        </Box>
+                    </Paper>
+                </Box>
+
+                <Box marginBottom={2}>
+                    <Paper elevation={0}>
+                        <Box paddingX={1} paddingY={1}>
+                            <Typography variant="subtitle2">
+                                <Translate msg="script_reports.detail.main.action.error_stop" />
+                            </Typography>
+                            <Typography>
+                                <Translate msg={`common.${item.data.errorStop ? 'yes' : 'no'}`} />
+                            </Typography>
+                        </Box>
+                    </Paper>
+                </Box>
+
+                <Box marginBottom={2}>
+                    <Paper elevation={0}>
+                        <Box paddingX={1} paddingY={1}>
+                            <Typography variant="subtitle2">
                                 <Translate msg="script_reports.detail.main.action.start_timestamp" />
                             </Typography>
                             <Typography>

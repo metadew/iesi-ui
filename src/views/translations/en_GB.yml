@@ -6,6 +6,8 @@ app_shell:
       scripts: Scripts
     title: iesi
 common:
+  yes: Yes
+  no: No
   action:
     save: Save
   confirmation:
@@ -177,6 +179,9 @@ script_reports:
         input_parameters: Input parameters
         start_timestamp: Start timestamp
         end_timestamp: End timestamp
+        condition: Condition
+        error_expected: Action expected to fail
+        error_stop: Stop if action fails
         output:
           label: Output
           name: Name
