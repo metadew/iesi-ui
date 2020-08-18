@@ -109,7 +109,7 @@ export const checkPollingExecutionRequests = () => createAction<{}>({
                         type: 'info',
                         navigateToRoute: {
                             routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
-                            params: { reportId: id },
+                            params: { executionRequestId: id },
                         },
                     }));
                     dispatch(removePollingExecutionRequest({ id }));

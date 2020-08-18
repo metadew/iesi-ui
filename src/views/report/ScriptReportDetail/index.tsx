@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { parseISO, format as formatDate } from 'date-fns/esm';
-import isEmptyObject from '@snipsonian/core/es/object/isEmptyObject';
 import isSet from '@snipsonian/core/es/is/isSet';
-import { Box, makeStyles } from '@material-ui/core';
+import { Box, makeStyles, Button } from '@material-ui/core';
+import { ChevronLeftRounded } from '@material-ui/icons';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import DescriptionList, { IDescriptionListItem } from 'views/common/list/DescriptionList';
-import { ROUTE_KEYS } from 'views/routes';
+import { ROUTE_KEYS, redirectTo } from 'views/routes';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel/index';
 import { getAsyncExecutionRequestDetail } from 'state/entities/executionRequests/selectors';
 import { observe, IObserveProps } from 'views/observe';
@@ -20,12 +21,9 @@ import { triggerFetchScriptExecutionDetail } from 'state/entities/scriptExecutio
 import { getAsyncScriptExecutionDetail } from 'state/entities/scriptExecutions/selectors';
 import { ListColumns, IListItem, ISortedColumn, SortOrder, SortType } from 'models/list.models';
 import sortListItems from 'utils/list/sortListItems';
-import {
-    isExecutionRequestStatusNewOrSubmitted,
-    isExecutionRequestStatusAbortedOrDeclined,
-} from 'utils/scripts/executionRequests';
 import ScriptExecutionDetailActions from './ScriptExecutionDetailActions';
 import ShowLabels from './ShowLabels';
+import { IExecutionDetailPathParams } from './shared';
 
 interface IColumnNames {
     processId: number;
@@ -51,34 +49,57 @@ const useStyles = makeStyles(({ palette, typography }) => ({
 
 function ExecutionDetail({ state }: IObserveProps) {
     const classes = useStyles();
+    const { executionRequestId, runId, processId } = useParams<IExecutionDetailPathParams>();
 
     const asyncExecutionRequest = getAsyncExecutionRequestDetail(state).fetch;
     const executionRequestDetail = getAsyncExecutionRequestDetail(state).data || {} as IExecutionRequest;
 
+    const asyncScriptExecutionData = getAsyncScriptExecutionDetail(state).fetch;
     const scriptExecutionData = getAsyncScriptExecutionDetail(state).data;
 
-    const isExecutionRequestDataAvailable = !isEmptyObject(executionRequestDetail)
-        && !isExecutionRequestStatusNewOrSubmitted(executionRequestDetail.executionRequestStatus)
-        && !isExecutionRequestStatusAbortedOrDeclined(executionRequestDetail.executionRequestStatus)
-        && executionRequestDetail.scriptExecutionRequests.length > 0
-        && executionRequestDetail.scriptExecutionRequests[0].runId;
-
     useEffect(() => {
-        if (isExecutionRequestDataAvailable) {
-            const currentRunId = executionRequestDetail.scriptExecutionRequests[0].runId;
-            if (!isSet(scriptExecutionData) || scriptExecutionData.runId !== currentRunId) {
-                triggerFetchScriptExecutionDetail({
+        if (
+            !runId
+                && asyncExecutionRequest.status === AsyncStatus.Success
+                && executionRequestDetail.scriptExecutionRequests.length > 0
+                && executionRequestDetail.scriptExecutionRequests[0].runId
+        ) {
+            redirectTo({
+                routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
+                params: {
+                    executionRequestId: executionRequestDetail.executionRequestId,
                     runId: executionRequestDetail.scriptExecutionRequests[0].runId,
-                    processId: -1,
-                });
-            }
+                },
+            });
         }
         return () => {};
-    }, [isExecutionRequestDataAvailable, executionRequestDetail, scriptExecutionData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [asyncExecutionRequest]);
+
+    useEffect(() => {
+        if (
+            asyncExecutionRequest.status === AsyncStatus.Success
+                && asyncScriptExecutionData.status !== AsyncStatus.Busy
+                && (!isSet(scriptExecutionData)
+                    || scriptExecutionData.runId !== runId
+                    || (processId && scriptExecutionData.processId !== parseInt(processId, 10)))
+                && runId
+        ) {
+            triggerFetchScriptExecutionDetail({
+                runId,
+                processId: processId ? parseInt(processId, 10) : -1,
+            });
+        }
+        return () => {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [scriptExecutionData, runId, processId, asyncExecutionRequest]);
+
+    const isLoading = asyncExecutionRequest.status === AsyncStatus.Busy
+        || asyncScriptExecutionData.status === AsyncStatus.Busy;
 
     return (
         <>
-            <Loader show={asyncExecutionRequest.status === AsyncStatus.Busy} />
+            <Loader show={isLoading} />
             <ContentWithSidePanel
                 panel={renderDetailPanel()}
                 content={renderDetailContent()}
@@ -89,7 +110,7 @@ function ExecutionDetail({ state }: IObserveProps) {
     );
 
     function renderDetailContent() {
-        if (asyncExecutionRequest.error) {
+        if (asyncExecutionRequest.error || asyncScriptExecutionData.error) {
             return (
                 <div>
                     <Alert severity="error">
@@ -100,32 +121,18 @@ function ExecutionDetail({ state }: IObserveProps) {
             );
         }
 
-        if (isExecutionRequestStatusNewOrSubmitted(executionRequestDetail.executionRequestStatus)) {
+        if (!runId) {
             return (
                 <div>
                     <Alert severity="info">
-                        <AlertTitle><Translate msg="script_reports.detail.main.execution_pending.title" /></AlertTitle>
-                        <Translate msg="script_reports.detail.main.execution_pending.text" />
+                        <AlertTitle><Translate msg="script_reports.detail.main.no_run_data.title" /></AlertTitle>
+                        <Translate msg="script_reports.detail.main.no_run_data.text" />
                     </Alert>
                 </div>
             );
         }
 
-        if (isExecutionRequestStatusAbortedOrDeclined(executionRequestDetail.executionRequestStatus)) {
-            return (
-                <div>
-                    <Alert severity="info">
-                        <AlertTitle><Translate msg="script_reports.detail.main.execution_failed.title" /></AlertTitle>
-                        <Translate msg="script_reports.detail.main.execution_failed.text" />
-                    </Alert>
-                </div>
-            );
-        }
-
-        if (
-            isExecutionRequestDataAvailable && scriptExecutionData
-            && scriptExecutionData.runId === executionRequestDetail.scriptExecutionRequests[0].runId
-        ) {
+        if (scriptExecutionData && asyncExecutionRequest.status === AsyncStatus.Success) {
             const listItems = mapActionsToListItemsAndSortByProcessId(scriptExecutionData.actions);
             const columns: ListColumns<IColumnNames> = {
                 processId: {
@@ -141,8 +148,32 @@ function ExecutionDetail({ state }: IObserveProps) {
                 },
             };
 
+            const parentProcessId = scriptExecutionData.processId !== scriptExecutionData.parentProcessId
+                ? scriptExecutionData.parentProcessId
+                : undefined;
+
             return (
                 <Box marginY={1}>
+                    <Box marginBottom={3}>
+                        {parentProcessId && (
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                size="small"
+                                startIcon={<ChevronLeftRounded />}
+                                onClick={() => redirectTo({
+                                    routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
+                                    params: {
+                                        executionRequestId,
+                                        runId,
+                                        processId: parentProcessId,
+                                    },
+                                })}
+                            >
+                                <Translate msg="script_reports.detail.main.action.go_to_parent_script_detail" />
+                            </Button>
+                        )}
+                    </Box>
                     <ScriptExecutionDetailActions
                         listItems={listItems}
                         columns={columns}
@@ -151,7 +182,7 @@ function ExecutionDetail({ state }: IObserveProps) {
             );
         }
 
-        return isExecutionRequestDataAvailable ? <Loader show /> : null;
+        return null;
     }
 
     function renderDetailPanel() {
@@ -179,7 +210,7 @@ function ExecutionDetail({ state }: IObserveProps) {
             },
         ];
 
-        if (isExecutionRequestDataAvailable && scriptExecutionData) {
+        if (scriptExecutionData && asyncExecutionRequest.status === AsyncStatus.Success) {
             scriptExecutionListItems.push(
                 {
                     label: translator('script_reports.detail.side.description.script_name'),
@@ -212,7 +243,7 @@ function ExecutionDetail({ state }: IObserveProps) {
                     <DescriptionList
                         items={descriptionListItems}
                     />
-                    {(isExecutionRequestDataAvailable && scriptExecutionData) && (
+                    {(scriptExecutionData && asyncExecutionRequest.status === AsyncStatus.Success) && (
                         <DescriptionList
                             noLineAfterListItem
                             items={[
@@ -247,7 +278,8 @@ function ExecutionDetail({ state }: IObserveProps) {
                 },
                 data: {
                     processId: item.processId,
-                    error: 'error',
+                    runId: item.runId,
+                    status: item.status,
                     inputParameters: item.inputParameters,
                     type: item.type,
                     startTimestamp: item.startTimestamp,

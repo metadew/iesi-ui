@@ -65,14 +65,14 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     component: ScriptReportsOverview,
     childRoutes: [{
         routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
-        path: '/:reportId',
+        path: '/:executionRequestId/:runId?/:processId?',
         component: ScriptReportDetail as React.ComponentType<unknown>,
         executeOnRoute: [{
             // TODO: Fix this typing error so we dont need to cast to () => unknown? Can this be simpler?
             // Maybe pass the routeLocation to the execute so we dont need the executeInputSelector prop?
             execute: triggerFetchExecutionRequestDetail as () => unknown,
             executeInputSelector: ({ routeLocation }) => ({
-                id: routeLocation.params.reportId,
+                id: routeLocation.params.executionRequestId,
             }),
         }],
     }],

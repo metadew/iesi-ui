@@ -169,13 +169,11 @@ script_reports:
       error:
         text: Execution request could not be loaded.
         title: Something went wrong
-      execution_failed:
-        text: Action details are not available for an aborted or declined execution request.
-        title: The execution request was not completed
-      execution_pending:
+      no_run_data:
         text: Action details will be available once the script execution has been completed.
-        title: Execution request pending
+        title: No run data available
       action:
+        error: Error
         input_parameters: Input parameters
         start_timestamp: Start timestamp
         end_timestamp: End timestamp
@@ -183,6 +181,8 @@ script_reports:
           label: Output
           name: Name
           value: Value
+        go_to_script_detail: View script details
+        go_to_parent_script_detail: Back to parent script
     side:
       toggle_button: Details
       description:

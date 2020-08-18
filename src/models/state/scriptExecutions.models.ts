@@ -27,7 +27,7 @@ export interface IScriptExecutionDetailAction {
     condition: string;
     errorStop: boolean;
     errorExpected: boolean;
-    status: string;
+    status: ExecutionActionStatus;
     startTimestamp: string;
     endTimestamp: string;
     inputParameters: IParameterRawValue[];
@@ -37,4 +37,11 @@ export interface IScriptExecutionDetailAction {
 export interface IScriptExecutionByRunIdAndProcessIdPayload {
     runId: string;
     processId: number;
+}
+
+
+export enum ExecutionActionStatus {
+    Success = 'SUCCESS',
+    Error = 'ERROR',
+    Warning = 'WARNING',
 }

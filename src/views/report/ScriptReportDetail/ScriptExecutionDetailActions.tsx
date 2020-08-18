@@ -1,5 +1,5 @@
 import React from 'react';
-import classnames from 'classnames';
+import classNames from 'classnames';
 import { parseISO, format as formatDate } from 'date-fns/esm';
 import {
     Box,
@@ -16,10 +16,14 @@ import {
     TableContainer,
     Paper,
     Typography,
+    Button,
 } from '@material-ui/core';
 import {
     ExpandMore as ExpandMoreIcon,
-    ErrorOutline as ErrorOutlineIcon,
+    ErrorOutline as ErrorIcon,
+    CheckOutlined as SuccessIcon,
+    ReportProblemOutlined as WarningIcon,
+    ChevronRightRounded,
 } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getTranslator } from 'state/i18n/selectors';
@@ -33,7 +37,13 @@ import { THEME_COLORS } from 'config/themes/colors';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { IParameterRawValue, IOutputValue } from 'models/state/iesiGeneric.models';
 import { observe, IObserveProps } from 'views/observe';
+import { ExecutionActionStatus } from 'models/state/scriptExecutions.models';
 import { StateChangeNotification } from 'models/state.models';
+import { useParams } from 'react-router-dom';
+import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { IExecutionDetailPathParams } from './shared';
+
+const ACTION_TYPE_NAME_WITH_CHILD_SCRIPTS = 'fwk.executeScript';
 
 interface IPublicProps<ColumnNames> {
     listItems: IListItem<ColumnNames>[];
@@ -85,8 +95,15 @@ const useStyles = makeStyles(({ typography, palette, shape, spacing }: Theme) =>
         padding: '0 0 0 20px',
         margin: 0,
     },
-    errorCell: {
+    statusCell: {},
+    statusCellError: {
         color: THEME_COLORS.ERROR,
+    },
+    statusCellSuccess: {
+        color: THEME_COLORS.SUCCESS,
+    },
+    statusCellWarning: {
+        color: THEME_COLORS.WARNING,
     },
     details: {
         background: palette.background.default,
@@ -121,6 +138,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
 }: IPublicProps<ColumnNames> & IObserveProps) {
     const classes = useStyles();
     const translator = getTranslator(state);
+    const { executionRequestId } = useParams<IExecutionDetailPathParams>();
 
     return (
         <>
@@ -141,22 +159,32 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                 paddingY={1.1}
                                 boxSizing="content-box"
                                 width={50}
-                                className={classnames(classes.tableCell, classes.index)}
+                                className={classNames(classes.tableCell, classes.index)}
                             >
                                 {item.data?.processId}
                             </Box>
                             {renderDataCols(item)}
-                            {item.data.error && (
-                                <Box
-                                    paddingX={0}
-                                    paddingY={1.1}
-                                    boxSizing="content-box"
-                                    flex="0 0 auto"
-                                    className={classes.errorCell}
-                                >
-                                    <ErrorOutlineIcon />
-                                </Box>
-                            )}
+                            <Box
+                                paddingX={0}
+                                paddingY={1.1}
+                                boxSizing="content-box"
+                                flex="0 0 auto"
+                                className={classNames(classes.statusCell, {
+                                    [classes.statusCellSuccess]: item.data.status === ExecutionActionStatus.Success,
+                                    [classes.statusCellError]: item.data.status === ExecutionActionStatus.Error,
+                                    [classes.statusCellWarning]: item.data.status === ExecutionActionStatus.Warning,
+                                })}
+                            >
+                                {item.data.status === ExecutionActionStatus.Success && (
+                                    <SuccessIcon />
+                                )}
+                                {item.data.status === ExecutionActionStatus.Warning && (
+                                    <WarningIcon />
+                                )}
+                                {item.data.status === ExecutionActionStatus.Error && (
+                                    <ErrorIcon />
+                                )}
+                            </Box>
                         </Box>
 
 
@@ -192,7 +220,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                         paddingX={3}
                         paddingY={1.1}
                         style={{ width: column.fixedWidth }}
-                        className={classnames(classes.tableCell, colClassName)}
+                        className={classNames(classes.tableCell, colClassName)}
                     >
                         {value}
                     </Box>
@@ -218,52 +246,79 @@ function ScriptExecutionDetailActions<ColumnNames>({
             <>
                 {item.data.error && (
                     <Alert severity="error" className={classes.error}>
-                        <AlertTitle>Error</AlertTitle>
-                        {item.data.error}
+                        <AlertTitle>
+                            <Translate msg="script_reports.detail.main.action.error" />
+                        </AlertTitle>
                     </Alert>
                 )}
 
                 <Box marginBottom={2}>
                     <Paper elevation={0}>
                         <Box paddingX={1} paddingY={1}>
-                            <Typography variant="subtitle2">Action Type</Typography>
-                            <Typography>{item.data.type}</Typography>
+                            <Box display="flex" alignItems="center">
+                                <Box flex="1 1 auto">
+                                    <Typography variant="subtitle2">Action Type</Typography>
+                                    <Typography>{item.data.type}</Typography>
+                                </Box>
+                                {(item.data.type === ACTION_TYPE_NAME_WITH_CHILD_SCRIPTS) && (
+                                    <Box flex="0 0 auto" paddingX={1}>
+                                        <Button
+                                            variant="contained"
+                                            color="secondary"
+                                            size="small"
+                                            endIcon={<ChevronRightRounded />}
+                                            onClick={() => redirectTo({
+                                                routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
+                                                params: {
+                                                    executionRequestId,
+                                                    runId: item.data.runId,
+                                                    processId: item.data.processId,
+                                                },
+                                            })}
+                                        >
+                                            <Translate msg="script_reports.detail.main.action.go_to_script_detail" />
+                                        </Button>
+                                    </Box>
+                                )}
+                            </Box>
                         </Box>
                     </Paper>
                 </Box>
 
-                <Box marginBottom={2}>
-                    <TableContainer component={Paper} elevation={0}>
-                        <Box paddingX={1} paddingY={1}>
-                            <Typography variant="subtitle2">
-                                <Translate msg="script_reports.detail.main.action.input_parameters" />
-                            </Typography>
-                        </Box>
-                        <Table
-                            size="small"
-                            aria-label={translator('script_reports.detail.main.action.input_parameters')}
-                        >
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>&nbsp;</TableCell>
-                                    <TableCell>Raw value</TableCell>
-                                    <TableCell>Resolved value</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {item.data.inputParameters.map((parameter: IParameterRawValue) => (
-                                    <TableRow key={`${item.id}-${parameter.name}`}>
-                                        <TableCell component="th" scope="row" className={classes.thCell}>
-                                            {parameter.name}
-                                        </TableCell>
-                                        <TableCell>{parameter.rawValue}</TableCell>
-                                        <TableCell>{parameter.resolvedValue}</TableCell>
+                {item.data.inputParameters.length > 0 && (
+                    <Box marginBottom={2}>
+                        <TableContainer component={Paper} elevation={0}>
+                            <Box paddingX={1} paddingY={1}>
+                                <Typography variant="subtitle2">
+                                    <Translate msg="script_reports.detail.main.action.input_parameters" />
+                                </Typography>
+                            </Box>
+                            <Table
+                                size="small"
+                                aria-label={translator('script_reports.detail.main.action.input_parameters')}
+                            >
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>&nbsp;</TableCell>
+                                        <TableCell>Raw value</TableCell>
+                                        <TableCell>Resolved value</TableCell>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Box>
+                                </TableHead>
+                                <TableBody>
+                                    {item.data.inputParameters.map((parameter: IParameterRawValue) => (
+                                        <TableRow key={`${item.id}-${parameter.name}`}>
+                                            <TableCell component="th" scope="row" className={classes.thCell}>
+                                                {parameter.name}
+                                            </TableCell>
+                                            <TableCell>{parameter.rawValue}</TableCell>
+                                            <TableCell>{parameter.resolvedValue}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Box>
+                )}
 
                 {item.data.condition && (
                     <Box marginBottom={2}>
