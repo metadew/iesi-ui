@@ -183,28 +183,31 @@ script_reports:
           label: Input parameters
           raw_value: Raw value
           resolved_value: Resolved value parameters
-          none: No input parameters given
+          none: '-'
         start_timestamp: Start timestamp
         end_timestamp: End timestamp
         condition:
           label: Condition
-          none: No condition
+          none: '-'
         error_expected: Action expected to fail
         error_stop: Stop if action fails
         output:
           label: Output
           name: Name
           value: Value
-          none: No output
+          none: '-'
         go_to_script_detail: View script details
         go_to_parent_script_detail: Back to parent script
     side:
       toggle_button: Details
       execution:
+        title: Execution data
         name:
           label: Execution name
         description:
           label: Execution description
+        run_id:
+          label: Run ID
         start_timestamp:
           label: Start timestamp
         end_timestamp:
@@ -213,15 +216,19 @@ script_reports:
           label: Status
         labels:
           label: Execution labels
-          none: No labels
+          none: '-'
         output:
           label: Output
-          none: No output
+          none: '-'
       script:
+        title: Script data
         name:
           label: Script name
         version:
           label: version
+        labels:
+          label: Design labels
+          none: '-'
         input_parameters:
           label: Input parameters
-          none: No input parameters given
+          none: '-'

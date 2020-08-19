@@ -211,6 +211,10 @@ function ExecutionDetail({ state }: IObserveProps) {
             },
             ...(scriptExecutionData && asyncExecutionRequest.status === AsyncStatus.Success) ? [
                 {
+                    label: translator('script_reports.detail.side.execution.run_id.label'),
+                    value: scriptExecutionData.runId,
+                },
+                {
                     label: translator('script_reports.detail.side.execution.start_timestamp.label'),
                     value: formatDate(
                         parseISO(scriptExecutionData.startTimestamp.toString()),
@@ -257,17 +261,27 @@ function ExecutionDetail({ state }: IObserveProps) {
                         ? <ShowLabels labels={scriptExecutionData.inputParameters} />
                         : <Translate msg="script_reports.detail.side.script.input_parameters.none" />,
                 },
+                {
+                    label: translator('script_reports.detail.side.script.labels.label'),
+                    value: scriptExecutionData.designLabels.length
+                        ? <ShowLabels labels={scriptExecutionData.designLabels} />
+                        : <Translate msg="script_reports.detail.side.script.labels.none" />,
+                },
             );
         }
 
         return (
             <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
                 <Box flex="1 1 auto" marginBottom={3}>
-                    <Typography variant="h4">Execution data</Typography>
+                    <Typography variant="h4">
+                        <Translate msg="script_reports.detail.side.execution.title" />
+                    </Typography>
                     <DescriptionList items={executionListItems} noLineAfterListItem />
                 </Box>
                 <Box>
-                    <Typography variant="h4">Script data</Typography>
+                    <Typography variant="h4">
+                        <Translate msg="script_reports.detail.side.script.title" />
+                    </Typography>
                     <DescriptionList items={scriptExecutionListItems} noLineAfterListItem />
                 </Box>
             </Box>
