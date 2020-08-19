@@ -83,18 +83,6 @@ const useStyles = makeStyles(({ typography, palette, shape, spacing }: Theme) =>
         border: 'none',
         overflow: 'hidden',
     },
-    childExpandableItem: {
-        overflow: 'hidden',
-        boxShadow: 'none',
-        border: `1px solid ${THEME_COLORS.GREY_LIGHT}`,
-        '&:first-child': {
-            borderTopLeftRadius: shape.borderRadius,
-        },
-    },
-    childExpandableItemSummery: {
-        padding: '0 0 0 20px',
-        margin: 0,
-    },
     statusCell: {},
     statusCellError: {
         color: THEME_COLORS.ERROR,
@@ -111,18 +99,11 @@ const useStyles = makeStyles(({ typography, palette, shape, spacing }: Theme) =>
     error: {
         marginBottom: `${spacing(2)}px`,
     },
-    detailList: {
-        width: '40%',
-    },
-    detailParameterLabel: {
-        fontSize: typography.pxToRem(12),
-        color: palette.grey[500],
-    },
-    descriptionListHolder: {
-        margin: 0,
-
-        '& > dl': {
-            margin: 0,
+    table: {
+        '& > tbody > tr:last-child': {
+            '& > td, & > th': {
+                borderBottom: 0,
+            },
         },
     },
     thCell: {
@@ -254,10 +235,12 @@ function ScriptExecutionDetailActions<ColumnNames>({
 
                 <Box marginBottom={2}>
                     <Paper elevation={0}>
-                        <Box paddingX={1} paddingY={1}>
+                        <Box padding={1.6}>
                             <Box display="flex" alignItems="center">
                                 <Box flex="1 1 auto">
-                                    <Typography variant="subtitle2">Action Type</Typography>
+                                    <Typography variant="subtitle2">
+                                        <Translate msg="script_reports.detail.main.action.type" />
+                                    </Typography>
                                     <Typography>{item.data.type}</Typography>
                                 </Box>
                                 {(item.data.type === ACTION_TYPE_NAME_WITH_CHILD_SCRIPTS) && (
@@ -285,23 +268,35 @@ function ScriptExecutionDetailActions<ColumnNames>({
                     </Paper>
                 </Box>
 
-                {item.data.inputParameters.length > 0 && (
-                    <Box marginBottom={2}>
-                        <TableContainer component={Paper} elevation={0}>
-                            <Box paddingX={1} paddingY={1}>
-                                <Typography variant="subtitle2">
-                                    <Translate msg="script_reports.detail.main.action.input_parameters" />
+                <Box marginBottom={2}>
+                    <TableContainer component={Paper} elevation={0}>
+                        <Box padding={1.6}>
+                            <Typography variant="subtitle2">
+                                <Translate msg="script_reports.detail.main.action.input_parameters.label" />
+                            </Typography>
+                            {item.data.inputParameters.length <= 0 && (
+                                <Typography>
+                                    <Translate msg="script_reports.detail.main.action.input_parameters.none" />
                                 </Typography>
-                            </Box>
+                            )}
+                        </Box>
+                        {item.data.inputParameters.length > 0 && (
                             <Table
                                 size="small"
-                                aria-label={translator('script_reports.detail.main.action.input_parameters')}
+                                aria-label={translator('script_reports.detail.main.action.input_parameters.label')}
+                                className={classes.table}
                             >
                                 <TableHead>
                                     <TableRow>
                                         <TableCell>&nbsp;</TableCell>
-                                        <TableCell>Raw value</TableCell>
-                                        <TableCell>Resolved value</TableCell>
+                                        <TableCell>
+                                            {/* eslint-disable-next-line max-len */}
+                                            <Translate msg="script_reports.detail.main.action.input_parameters.raw_value" />
+                                        </TableCell>
+                                        <TableCell>
+                                            {/* eslint-disable-next-line max-len */}
+                                            <Translate msg="script_reports.detail.main.action.input_parameters.resolved_value" />
+                                        </TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -316,94 +311,93 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                     ))}
                                 </TableBody>
                             </Table>
-                        </TableContainer>
-                    </Box>
-                )}
+                        )}
+                    </TableContainer>
+                </Box>
 
-                {item.data.condition && (
-                    <Box marginBottom={2}>
-                        <Paper elevation={0}>
-                            <Box paddingX={1} paddingY={1}>
+                <Box marginBottom={2}>
+                    <Paper elevation={0}>
+                        <Box padding={1.6}>
+                            <Typography variant="subtitle2">
+                                <Translate msg="script_reports.detail.main.action.condition.label" />
+                            </Typography>
+                            <Typography>
+                                {item.data.condition
+                                    || <Translate msg="script_reports.detail.main.action.condition.none" />}
+                            </Typography>
+                        </Box>
+                    </Paper>
+                </Box>
+
+                <Box marginBottom={2}>
+                    <Paper elevation={0}>
+                        <Box display="flex">
+                            <Box flex="1 1 50%" padding={1}>
                                 <Typography variant="subtitle2">
-                                    <Translate msg="script_reports.detail.main.action.condition" />
+                                    <Translate msg="script_reports.detail.main.action.start_timestamp" />
                                 </Typography>
                                 <Typography>
-                                    {item.data.condition}
+                                    {formatDate(
+                                        parseISO(item.data.startTimestamp.toString()),
+                                        'dd/MM/yyyy HH:mm:ss',
+                                    )}
                                 </Typography>
                             </Box>
-                        </Paper>
-                    </Box>
-                )}
-
-                <Box marginBottom={2}>
-                    <Paper elevation={0}>
-                        <Box paddingX={1} paddingY={1}>
-                            <Typography variant="subtitle2">
-                                <Translate msg="script_reports.detail.main.action.error_expected" />
-                            </Typography>
-                            <Typography>
-                                <Translate msg={`common.${item.data.errorExpected ? 'yes' : 'no'}`} />
-                            </Typography>
-                        </Box>
-                    </Paper>
-                </Box>
-
-                <Box marginBottom={2}>
-                    <Paper elevation={0}>
-                        <Box paddingX={1} paddingY={1}>
-                            <Typography variant="subtitle2">
-                                <Translate msg="script_reports.detail.main.action.error_stop" />
-                            </Typography>
-                            <Typography>
-                                <Translate msg={`common.${item.data.errorStop ? 'yes' : 'no'}`} />
-                            </Typography>
-                        </Box>
-                    </Paper>
-                </Box>
-
-                <Box marginBottom={2}>
-                    <Paper elevation={0}>
-                        <Box paddingX={1} paddingY={1}>
-                            <Typography variant="subtitle2">
-                                <Translate msg="script_reports.detail.main.action.start_timestamp" />
-                            </Typography>
-                            <Typography>
-                                {formatDate(
-                                    parseISO(item.data.startTimestamp.toString()),
-                                    'dd/MM/yyyy HH:mm:ss',
-                                )}
-                            </Typography>
-                        </Box>
-                    </Paper>
-                </Box>
-
-                <Box marginBottom={2}>
-                    <Paper elevation={0}>
-                        <Box paddingX={1} paddingY={1}>
-                            <Typography variant="subtitle2">
-                                <Translate msg="script_reports.detail.main.action.end_timestamp" />
-                            </Typography>
-                            <Typography>
-                                {formatDate(
-                                    parseISO(item.data.endTimestamp.toString()),
-                                    'dd/MM/yyyy HH:mm:ss',
-                                )}
-                            </Typography>
-                        </Box>
-                    </Paper>
-                </Box>
-
-                {item.data.output.length > 0 && (
-                    <Box marginBottom={2}>
-                        <TableContainer component={Paper} elevation={0}>
-                            <Box paddingX={1} paddingY={1}>
+                            <Box flex="1 1 50%" padding={1}>
                                 <Typography variant="subtitle2">
-                                    <Translate msg="script_reports.detail.main.action.output.label" />
+                                    <Translate msg="script_reports.detail.main.action.end_timestamp" />
+                                </Typography>
+                                <Typography>
+                                    {formatDate(
+                                        parseISO(item.data.endTimestamp.toString()),
+                                        'dd/MM/yyyy HH:mm:ss',
+                                    )}
                                 </Typography>
                             </Box>
+                        </Box>
+                    </Paper>
+                </Box>
+
+                <Box marginBottom={2}>
+                    <Paper elevation={0}>
+                        <Box display="flex">
+                            <Box flex="1 1 50%" padding={1}>
+                                <Typography variant="subtitle2">
+                                    <Translate msg="script_reports.detail.main.action.error_expected" />
+                                </Typography>
+                                <Typography>
+                                    <Translate msg={`common.${item.data.errorExpected ? 'yes' : 'no'}`} />
+                                </Typography>
+                            </Box>
+                            <Box flex="1 1 50%" padding={1}>
+                                <Typography variant="subtitle2">
+                                    <Translate msg="script_reports.detail.main.action.error_stop" />
+                                </Typography>
+                                <Typography>
+                                    <Translate msg={`common.${item.data.errorStop ? 'yes' : 'no'}`} />
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </Paper>
+                </Box>
+
+                <Box marginBottom={2}>
+                    <TableContainer component={Paper} elevation={0}>
+                        <Box padding={1.6}>
+                            <Typography variant="subtitle2">
+                                <Translate msg="script_reports.detail.main.action.output.label" />
+                                {item.data.output.length <= 0 && (
+                                    <Typography>
+                                        <Translate msg="script_reports.detail.main.action.output.none" />
+                                    </Typography>
+                                )}
+                            </Typography>
+                        </Box>
+                        {item.data.output.length > 0 && (
                             <Table
                                 size="small"
                                 aria-label={translator('script_reports.detail.main.action.output.label')}
+                                className={classes.table}
                             >
                                 <TableHead>
                                     <TableRow>
@@ -426,9 +420,9 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                     ))}
                                 </TableBody>
                             </Table>
-                        </TableContainer>
-                    </Box>
-                )}
+                        )}
+                    </TableContainer>
+                </Box>
             </>
         );
     }

@@ -178,16 +178,24 @@ script_reports:
         title: No run data available
       action:
         error: Error
-        input_parameters: Input parameters
+        type: Action type
+        input_parameters:
+          label: Input parameters
+          raw_value: Raw value
+          resolved_value: Resolved value parameters
+          none: No input parameters given
         start_timestamp: Start timestamp
         end_timestamp: End timestamp
-        condition: Condition
+        condition:
+          label: Condition
+          none: No condition
         error_expected: Action expected to fail
         error_stop: Stop if action fails
         output:
           label: Output
           name: Name
           value: Value
+          none: No output
         go_to_script_detail: View script details
         go_to_parent_script_detail: Back to parent script
     side:
