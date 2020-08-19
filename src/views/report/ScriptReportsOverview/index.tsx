@@ -161,6 +161,9 @@ const ScriptReportsOverview = withStyles(styles)(
             this.onSort = this.onSort.bind(this);
             this.onFilter = this.onFilter.bind(this);
             this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
+
+            // eslint-disable-next-line max-len
+            this.fetchExecutionRequestsWithFilterAndPagination = this.fetchExecutionRequestsWithFilterAndPagination.bind(this);
         }
 
         public componentDidMount() {
@@ -245,7 +248,7 @@ const ScriptReportsOverview = withStyles(styles)(
 
         private renderContent({ listItems }: { listItems: IListItem<IColumnNames>[] }) {
             const { classes } = this.props;
-            const { sortedColumn, filters } = this.state;
+            const { sortedColumn } = this.state;
             const columns: ListColumns<IColumnNames> = {
                 name: {
                     className: classes.scriptName,
@@ -334,13 +337,12 @@ const ScriptReportsOverview = withStyles(styles)(
                         ]}
                         columns={columns}
                         sortedColumn={sortedColumn}
-                        filters={filters}
                         listItems={listItems}
                         pagination={{
                             pageData,
-                            onChange: ({ page }) => triggerFetchExecutionRequests({
-                                pagination: { page },
-                            }),
+                            onChange: ({ page }) => {
+                                this.fetchExecutionRequestsWithFilterAndPagination({ newPage: page });
+                            },
                         }}
                         isLoading={isFetching}
                     />
@@ -359,7 +361,36 @@ const ScriptReportsOverview = withStyles(styles)(
         }
 
         private onFilter(listFilters: ListFilters<Partial<IColumnNames>>) {
+            this.fetchExecutionRequestsWithFilterAndPagination({ newListFilters: listFilters });
             this.setState({ filters: listFilters });
+        }
+
+        private fetchExecutionRequestsWithFilterAndPagination({
+            newPage,
+            newListFilters,
+        }: {
+            newPage?: number;
+            newListFilters?: ListFilters<Partial<IColumnNames>>;
+        }) {
+            const pageData = getAsyncExecutionRequestsPageData(this.props.state);
+            const { filters: filtersFromState } = this.state;
+
+            const filters = newListFilters || filtersFromState;
+            const page = newPage || pageData.number;
+
+            triggerFetchExecutionRequests({
+                pagination: { page },
+                filter: {
+                    script: filters.name.values.length > 0
+                        && filters.name.values[0].toString(),
+                    version: filters.version.values.length > 0
+                        && filters.version.values[0].toString(),
+                    // TODO: can this be multiple values? Or should we change filter to single value?
+                    environment: filters.environment.values.length > 0
+                        && filters.environment.values[0].toString(),
+                    // TODO: labels
+                },
+            });
         }
     },
 );

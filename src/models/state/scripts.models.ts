@@ -7,6 +7,13 @@ export interface IFetchScriptsOptions {
 
 export interface IFetchScriptsListPayload extends IFetchScriptsOptions {
     pagination?: IPageFilter;
+    filter?: IScriptsListFilter;
+}
+
+interface IScriptsListFilter {
+    script?: string;
+    version?: 'latest';
+    label?: string;
 }
 
 export interface IExpandScriptsResponseWith {

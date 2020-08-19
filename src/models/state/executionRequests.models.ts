@@ -52,6 +52,14 @@ export enum ExecutionRequestStatus {
 
 export interface IFetchExecutionRequestListPayload {
     pagination?: IPageFilter;
+    filter?: IFetchExecutionRequestListFilter;
+}
+
+interface IFetchExecutionRequestListFilter {
+    script?: string;
+    version?: string;
+    label?: string;
+    environment?: string;
 }
 
 export interface IExecutionRequestsEntity {

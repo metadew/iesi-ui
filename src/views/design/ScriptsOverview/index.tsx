@@ -47,6 +47,7 @@ import { Alert } from '@material-ui/lab';
 import { triggerDeleteScriptDetail, triggerFetchScripts } from 'state/entities/scripts/triggers';
 import { getUniqueIdFromScript, getLatestVersionsFromScripts } from 'utils/scripts/scriptUtils';
 import { triggerResetAsyncExecutionRequest } from 'state/entities/executionRequests/triggers';
+import isSet from '@snipsonian/core/es/is/isSet';
 import ExecuteScriptDialog from '../common/ExecuteScriptDialog';
 
 
@@ -134,6 +135,8 @@ const ScriptsOverview = withStyles(styles)(
             this.onDeleteScript = this.onDeleteScript.bind(this);
             // eslint-disable-next-line max-len
             this.closeDeleteScriptDialogAfterSuccessfulDelete = this.closeDeleteScriptDialogAfterSuccessfulDelete.bind(this);
+
+            this.fetchScriptsWithFilterAndPagination = this.fetchScriptsWithFilterAndPagination.bind(this);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
@@ -230,9 +233,17 @@ const ScriptsOverview = withStyles(styles)(
                             control={(
                                 <Switch
                                     checked={this.state.onlyShowLatestVersion}
-                                    onClick={() => this.setState((prevState) => ({
-                                        onlyShowLatestVersion: !prevState.onlyShowLatestVersion,
-                                    }))}
+                                    onClick={() => {
+                                        this.setState((prevState) => {
+                                            this.fetchScriptsWithFilterAndPagination({
+                                                newOnlyShowLatestVersion: !prevState.onlyShowLatestVersion,
+                                            });
+
+                                            return {
+                                                onlyShowLatestVersion: !prevState.onlyShowLatestVersion,
+                                            };
+                                        });
+                                    }}
                                     color="default"
                                 />
                             )}
@@ -245,7 +256,7 @@ const ScriptsOverview = withStyles(styles)(
 
         private renderContent({ listItems }: { listItems: IListItem<IColumnNames>[] }) {
             const { classes } = this.props;
-            const { sortedColumn, filters } = this.state;
+            const { sortedColumn } = this.state;
             const columns: ListColumns<IColumnNames> = {
                 name: {
                     className: classes.scriptName,
@@ -328,13 +339,12 @@ const ScriptsOverview = withStyles(styles)(
                                 ]}
                                 columns={columns}
                                 sortedColumn={sortedColumn}
-                                filters={filters}
                                 listItems={listItems}
                                 pagination={{
                                     pageData,
-                                    onChange: ({ page }) => triggerFetchScripts({
-                                        pagination: { page },
-                                    }),
+                                    onChange: ({ page }) => {
+                                        this.fetchScriptsWithFilterAndPagination({ newPage: page });
+                                    },
                                 }}
                                 isLoading={isFetching}
                             />
@@ -379,7 +389,36 @@ const ScriptsOverview = withStyles(styles)(
         }
 
         private onFilter(listFilters: ListFilters<Partial<IColumnNames>>) {
+            this.fetchScriptsWithFilterAndPagination({ newListFilters: listFilters });
             this.setState({ filters: listFilters });
+        }
+
+        private fetchScriptsWithFilterAndPagination({
+            newPage,
+            newListFilters,
+            newOnlyShowLatestVersion,
+        }: {
+            newPage?: number;
+            newListFilters?: ListFilters<Partial<IColumnNames>>;
+            newOnlyShowLatestVersion?: boolean;
+        }) {
+            const pageData = getAsyncScriptsPageData(this.props.state);
+            const { filters: filtersFromState, onlyShowLatestVersion: onlyShowLatestVersionFromState } = this.state;
+
+            const filters = newListFilters || filtersFromState;
+            const page = newPage || pageData.number;
+            const onlyShowLatestVersion = isSet(newOnlyShowLatestVersion)
+                ? newOnlyShowLatestVersion : onlyShowLatestVersionFromState;
+
+            triggerFetchScripts({
+                pagination: { page },
+                filter: {
+                    script: filters.name.values.length > 0
+                        && filters.name.values[0].toString(),
+                    version: onlyShowLatestVersion ? 'latest' : undefined,
+                    // TODO: labels
+                },
+            });
         }
 
         private clearScriptToDelete() {

@@ -59,6 +59,9 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             expandResponseWith: {
                 scheduling: false, // Default = true
             },
+            filter: {
+                version: 'latest',
+            },
         }),
     }],
 }, {

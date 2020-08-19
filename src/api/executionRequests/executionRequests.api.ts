@@ -9,13 +9,14 @@ import { IListResponse } from 'models/state/iesiGeneric.models';
 import { get, post } from '../requestWrapper';
 import API_URLS from '../apiUrls';
 
-export function fetchExecutionRequests({ pagination }: IFetchExecutionRequestListPayload) {
+export function fetchExecutionRequests({ pagination, filter }: IFetchExecutionRequestListPayload) {
     const pageSize = pagination.size || 20;
     // TODO remove mock, correct ListResponse typing
     return get<IExecutionRequestsEntity, IListResponse<IExecutionRequest>>({
         url: API_URLS.EXECUTION_REQUESTS,
         queryParams: {
             ...pagination,
+            ...filter,
         },
         mapResponse: ({ data }) => ({
             // eslint-disable-next-line no-underscore-dangle
