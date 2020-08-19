@@ -271,6 +271,7 @@ const ScriptDetail = withStyles(styles)(
                                 value={newScriptDetail && newScriptDetail.name
                                     ? newScriptDetail.name : ''}
                                 onChange={(e) => this.updateScript({ name: e.target.value })}
+                                disabled={!this.isCreateScriptRoute()}
                             />
                             <TextInput
                                 id="script-description"
