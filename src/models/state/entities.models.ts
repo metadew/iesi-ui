@@ -1,8 +1,8 @@
 import { IEnvironment } from 'models/state/environments.models';
 import { IAsyncEntity } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { ITraceableApiError } from 'models/api.models';
-import { IScriptBase, IScript } from 'models/state/scripts.models';
-import { IExecutionRequest } from './executionRequests.models';
+import { IScript, IScriptsEntity } from 'models/state/scripts.models';
+import { IExecutionRequest, IExecutionRequestsEntity } from './executionRequests.models';
 import { IActionType } from './constants.models';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -34,9 +34,9 @@ export enum ASYNC_ENTITY_KEYS {
 /* Keep the keys in sync with ASYNC_ENTITY_KEYS !! */
 export interface IEntitiesState {
     actionTypes: ICustomAsyncEntity<IActionType[]>;
-    scripts: ICustomAsyncEntity<IScriptBase[]>;
+    scripts: ICustomAsyncEntity<IScriptsEntity>;
     scriptDetail: ICustomAsyncEntity<IScript>;
-    executionRequests: ICustomAsyncEntity<IExecutionRequest[]>;
+    executionRequests: ICustomAsyncEntity<IExecutionRequestsEntity>;
     executionRequestDetail: ICustomAsyncEntity<IExecutionRequest>;
     environments: ICustomAsyncEntity<IEnvironment[]>;
 }

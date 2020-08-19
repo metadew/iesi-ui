@@ -4,7 +4,7 @@ import {
     IScriptBase,
     IScript,
     IScriptByNamePayload,
-    IScriptByNameAndVersionPayload, IExpandScriptsResponseWith,
+    IScriptByNameAndVersionPayload, IExpandScriptsResponseWith, IFetchScriptsListPayload, IScriptsEntity,
 } from 'models/state/scripts.models';
 import { IListResponse } from 'models/state/iesiGeneric.models';
 import { get, post, put, remove } from '../requestWrapper';
@@ -16,12 +16,27 @@ import API_URLS from '../apiUrls';
  * --> ideally Robbe adds a query param to conditionally get only the latest script versions
  *     otherwise we have to filter them ourselves
  */
-export function fetchScripts({ expandResponseWith }: IFetchScriptsOptions) {
-    return get<IScript[], IListResponse<IScript>>({
+export function fetchScripts({ expandResponseWith, pagination }: IFetchScriptsListPayload) {
+    const pageSize = pagination.size || 20;
+    // TODO remove mock, correct ListResponse typing
+    return get<IScriptsEntity, IListResponse<IScript>>({
         url: API_URLS.SCRIPTS,
-        queryParams: toExpandQueryParam(expandResponseWith),
+        queryParams: {
+            ...toExpandQueryParam(expandResponseWith),
+            ...pagination,
+        },
+        mapResponse: ({ data }) => ({
         // eslint-disable-next-line no-underscore-dangle
-        mapResponse: ({ data }) => data._embedded,
+            scripts: data._embedded.length <= pageSize ? data._embedded : data._embedded.slice(0, pageSize),
+            page: {
+                size: pageSize,
+                // eslint-disable-next-line no-underscore-dangle
+                totalElements: data._embedded.length,
+                // eslint-disable-next-line no-underscore-dangle
+                totalPages: Math.ceil(data._embedded.length / pageSize),
+                number: pagination.page,
+            },
+        }),
     });
 }
 

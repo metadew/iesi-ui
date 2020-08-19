@@ -53,6 +53,9 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     ],
     executeOnRoute: [{
         execute: () => triggerFetchScripts({
+            pagination: {
+                page: 1,
+            },
             expandResponseWith: {
                 scheduling: false, // Default = true
             },
@@ -77,7 +80,11 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
         }],
     }],
     executeOnRoute: [{
-        execute: triggerFetchExecutionRequests,
+        execute: () => triggerFetchExecutionRequests({
+            pagination: {
+                page: 1,
+            },
+        }),
     }],
 }, {
     routeKey: ROUTE_KEYS.R_NOT_FOUND,

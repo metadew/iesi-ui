@@ -31,11 +31,15 @@ import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
-import { getAsyncExecutionRequests } from 'state/entities/executionRequests/selectors';
+import {
+    getAsyncExecutionRequestsEntity,
+    getAsyncExecutionRequests,
+} from 'state/entities/executionRequests/selectors';
 import { IExecutionRequest } from 'models/state/executionRequests.models';
 import { Alert } from '@material-ui/lab';
 import { parseISO, format as formatDate } from 'date-fns/esm';
 import OrderedList from 'views/common/list/OrderedList';
+import { triggerFetchExecutionRequests } from 'state/entities/executionRequests/triggers';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -163,9 +167,9 @@ const ScriptReportsOverview = withStyles(styles)(
             const { classes } = this.props;
             const { sortedColumn } = this.state;
 
-            const executions = getAsyncExecutionRequests(this.props.state).data;
+            const executions = getAsyncExecutionRequests(this.props.state);
             const listItems = executions
-                ? mapExecutionsToListItems(this.props.state.entities.executionRequests.data)
+                ? mapExecutionsToListItems(executions)
                 : [];
 
             return (
@@ -293,9 +297,13 @@ const ScriptReportsOverview = withStyles(styles)(
                 },
             };
 
-            const executionsFetchData = getAsyncExecutionRequests(this.props.state).fetch;
+            const asyncExecutionRequestsEntity = getAsyncExecutionRequestsEntity(this.props.state);
+            const executionsFetchData = asyncExecutionRequestsEntity.fetch;
             const isFetching = executionsFetchData.status === AsyncStatus.Busy;
             const hasError = executionsFetchData.status === AsyncStatus.Error;
+
+            const executionRequestsData = asyncExecutionRequestsEntity.data;
+            const pageData = executionRequestsData ? executionRequestsData.page : null;
 
             return !hasError ? (
                 <Box paddingBottom={5} marginX={2.8}>
@@ -314,7 +322,12 @@ const ScriptReportsOverview = withStyles(styles)(
                         sortedColumn={sortedColumn}
                         filters={filters}
                         listItems={listItems}
-                        enablePagination
+                        pagination={{
+                            pageData,
+                            onChange: ({ page }) => triggerFetchExecutionRequests({
+                                pagination: { page },
+                            }),
+                        }}
                         isLoading={isFetching}
                     />
                 </Box>

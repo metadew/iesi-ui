@@ -35,7 +35,7 @@ import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
-import { getAsyncScripts, getAsyncScriptDetail } from 'state/entities/scripts/selectors';
+import { getAsyncScriptsEntity, getAsyncScriptDetail, getAsyncScripts } from 'state/entities/scripts/selectors';
 import { AsyncStatus, AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import OrderedList from 'views/common/list/OrderedList';
 import { Alert } from '@material-ui/lab';
@@ -139,12 +139,11 @@ const ScriptsOverview = withStyles(styles)(
             const { classes, state } = this.props;
             const { sortedColumn, scriptIdToDelete, scriptIdToExecute, onlyShowLatestVersion } = this.state;
 
-            const scripts = getAsyncScripts(this.props.state).data;
+            const scripts = getAsyncScripts(this.props.state);
             const deleteStatus = getAsyncScriptDetail(this.props.state).remove.status;
 
-            const listItems = scripts
-                ? mapScriptsToListItems(onlyShowLatestVersion ? getLatestVersionsFromScripts(scripts) : scripts)
-                : [];
+            const listItems = mapScriptsToListItems(onlyShowLatestVersion
+                ? getLatestVersionsFromScripts(scripts) : scripts);
 
 
             const translator = getTranslator(state);
@@ -265,9 +264,13 @@ const ScriptsOverview = withStyles(styles)(
                 },
             };
 
-            const scriptsFetchData = getAsyncScripts(this.props.state).fetch;
+            const asyncScriptsEntity = getAsyncScriptsEntity(this.props.state);
+            const scriptsFetchData = asyncScriptsEntity.fetch;
             const isFetching = scriptsFetchData.status === AsyncStatus.Busy;
             const hasError = scriptsFetchData.status === AsyncStatus.Error;
+
+            const scriptsData = asyncScriptsEntity.data;
+            const pageData = scriptsData ? scriptsData.page : null;
 
             return (
                 <>
@@ -284,7 +287,7 @@ const ScriptsOverview = withStyles(styles)(
                                         icon: <Edit />,
                                         label: <Translate msg="scripts.overview.list.actions.edit" />,
                                         onClick: (id) => {
-                                            const scripts = getAsyncScripts(this.props.state).data;
+                                            const scripts = getAsyncScripts(this.props.state);
                                             const selectedScript = scripts.find((item) =>
                                                 getUniqueIdFromScript(item) === id);
 
@@ -300,7 +303,7 @@ const ScriptsOverview = withStyles(styles)(
                                         icon: <ReportIcon />,
                                         label: <Translate msg="scripts.overview.list.actions.report" />,
                                         onClick: (id) => {
-                                            const scripts = getAsyncScripts(this.props.state).data;
+                                            const scripts = getAsyncScripts(this.props.state);
                                             const selectedScript = scripts.find((item) =>
                                                 getUniqueIdFromScript(item) === id);
 
@@ -322,7 +325,12 @@ const ScriptsOverview = withStyles(styles)(
                                 sortedColumn={sortedColumn}
                                 filters={filters}
                                 listItems={listItems}
-                                enablePagination
+                                pagination={{
+                                    pageData,
+                                    onChange: ({ page }) => triggerFetchScripts({
+                                        pagination: { page },
+                                    }),
+                                }}
                                 isLoading={isFetching}
                             />
                         )}
@@ -343,7 +351,7 @@ const ScriptsOverview = withStyles(styles)(
         private onDeleteScript() {
             const { state } = this.props;
             const { scriptIdToDelete } = this.state;
-            const scriptToDelete = getAsyncScripts(state).data.find((item) =>
+            const scriptToDelete = getAsyncScripts(state).find((item) =>
                 getUniqueIdFromScript(item) === scriptIdToDelete);
 
             if (scriptToDelete) {

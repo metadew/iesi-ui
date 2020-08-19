@@ -1,21 +1,20 @@
 import entitiesStateManager from 'state/entities/entitiesStateManager';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import {
-    IFetchScriptsOptions,
     IScriptByNameAndVersionPayload,
     IScriptBase,
+    IFetchScriptsListPayload,
 } from 'models/state/scripts.models';
 import { StateChangeNotification } from 'models/state.models';
-import isSet from '@snipsonian/core/es/is/isSet';
 
-export const triggerFetchScripts = (filter: IFetchScriptsOptions = {}) =>
+export const triggerFetchScripts = (payload: IFetchScriptsListPayload) =>
     entitiesStateManager.triggerAsyncEntityFetch<{}>({
         asyncEntityToFetch: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.scripts,
             refreshMode: 'always',
             resetDataOnTrigger: false,
         },
-        extraInputSelector: () => (isSet(filter) ? filter : {}),
+        extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_LIST],
     });
 

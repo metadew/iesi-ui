@@ -1,13 +1,22 @@
 import { ReactText } from 'react';
-import { ILabel, IParameter } from './iesiGeneric.models';
+import { ILabel, IParameter, IPageFilter, IPageData } from './iesiGeneric.models';
 
 export interface IFetchScriptsOptions {
     expandResponseWith?: IExpandScriptsResponseWith;
 }
 
+export interface IFetchScriptsListPayload extends IFetchScriptsOptions {
+    pagination?: IPageFilter;
+}
+
 export interface IExpandScriptsResponseWith {
     execution?: boolean; // default true
     scheduling?: boolean; // default true
+}
+
+export interface IScriptsEntity {
+    scripts: IScriptBase[];
+    page: IPageData;
 }
 
 export interface IScriptBase {

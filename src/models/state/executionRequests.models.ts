@@ -1,4 +1,4 @@
-import { ILabel, IParameter } from './iesiGeneric.models';
+import { ILabel, IParameter, IPageFilter, IPageData } from './iesiGeneric.models';
 
 export interface IExecutionRequest {
     executionRequestId: string;
@@ -47,4 +47,13 @@ export enum ExecutionRequestStatus {
     Declined = 'DECLINED',
     Accepted = 'ACCEPTED',
     Completed = 'COMPLETED',
+}
+
+export interface IFetchExecutionRequestListPayload {
+    pagination?: IPageFilter;
+}
+
+export interface IExecutionRequestsEntity {
+    executionRequests: IExecutionRequest[];
+    page: IPageData;
 }

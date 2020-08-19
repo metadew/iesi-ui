@@ -22,3 +22,15 @@ export interface IOutputValue {
     name: string;
     value: string;
 }
+
+export interface IPageFilter {
+    page: number;
+    size?: number;
+}
+
+export interface IPageData {
+    size: number;
+    totalElements: number;
+    totalPages: number;
+    number: number;
+}

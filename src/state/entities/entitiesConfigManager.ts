@@ -4,8 +4,16 @@ import { IExtraProcessInput, IState } from 'models/state.models';
 import { ITraceableApiError } from 'models/api.models';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { api } from 'api';
-import { ICreateExecutionRequestPayload, IExecutionRequestByIdPayload } from 'models/state/executionRequests.models';
-import { IScriptByNameAndVersionPayload, IFetchScriptsOptions, IScriptBase } from 'models/state/scripts.models';
+import {
+    ICreateExecutionRequestPayload,
+    IExecutionRequestByIdPayload,
+    IFetchExecutionRequestListPayload,
+} from 'models/state/executionRequests.models';
+import {
+    IScriptByNameAndVersionPayload,
+    IScriptBase,
+    IFetchScriptsListPayload,
+} from 'models/state/scripts.models';
 
 // eslint-disable-next-line max-len
 const entitiesConfigManager = initAsyncEntitiesConfigManager<IState, {}, ITraceableApiError, string, IExtraProcessInput>();
@@ -15,7 +23,7 @@ entitiesConfigManager.register({
     operationsConfig: {
         fetch: {
             api: api.scripts.fetchScripts,
-            apiInputSelector: ({ extraInput }) => extraInput as IFetchScriptsOptions,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchScriptsListPayload,
         },
     },
 });
@@ -62,6 +70,7 @@ entitiesConfigManager.register({
     operationsConfig: {
         fetch: {
             api: api.executionRequests.fetchExecutionRequests,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchExecutionRequestListPayload,
         },
     },
 });

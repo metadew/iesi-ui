@@ -468,12 +468,6 @@ const ScriptDetail = withStyles(styles)(
         }
 
         private updateScript(fieldsToUpdate: Partial<IScript>) {
-            console.log({
-                // eslint-disable-next-line react/no-access-state-in-setstate
-                ...this.state.newScriptDetail,
-                ...fieldsToUpdate,
-            });
-
             this.setState((prevState) => ({
                 newScriptDetail: {
                     ...prevState.newScriptDetail,
