@@ -14,7 +14,9 @@ interface IPublicProps {
 }
 
 const useStyles = makeStyles(({ spacing, typography }) => ({
-    list: {},
+    list: {
+        margin: 0,
+    },
     label: {
         paddingTop: spacing(1),
         fontWeight: typography.fontWeightBold,

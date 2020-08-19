@@ -308,6 +308,7 @@ const ScriptDetail = withStyles(styles)(
                     </Box>
                     <Box>
                         <DescriptionList
+                            noLineAfterListItem
                             items={[
                                 {
                                     label: translator('scripts.detail.side.description.version'),

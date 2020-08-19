@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { parseISO, format as formatDate } from 'date-fns/esm';
 import isSet from '@snipsonian/core/es/is/isSet';
-import { Box, makeStyles, Button } from '@material-ui/core';
+import isEmptyObject from '@snipsonian/core/es/object/isEmptyObject';
+import { Box, makeStyles, Button, Typography } from '@material-ui/core';
 import { ChevronLeftRounded } from '@material-ui/icons';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -189,88 +190,85 @@ function ExecutionDetail({ state }: IObserveProps) {
         const translator = getTranslator(state);
         const scriptExecutionListItems: IDescriptionListItem[] = [];
 
-        if (asyncExecutionRequest.error) {
+        if (asyncExecutionRequest.error || isEmptyObject(executionRequestDetail)) {
             return null;
         }
 
-        const descriptionListItems: IDescriptionListItem[] = [
+        const executionListItems: IDescriptionListItem[] = [
             {
-                label: translator('script_reports.detail.side.description.name'),
+                label: translator('script_reports.detail.side.execution.name.label'),
                 value: executionRequestDetail.scriptExecutionRequests
                     && executionRequestDetail.name,
             },
             {
-                label: translator('script_reports.detail.side.description.description'),
+                label: translator('script_reports.detail.side.execution.description.label'),
                 value: executionRequestDetail.scriptExecutionRequests
                     && executionRequestDetail.description,
             },
             {
-                label: translator('script_reports.detail.side.description.execution_status'),
+                label: translator('script_reports.detail.side.execution.execution_status.label'),
                 value: executionRequestDetail.executionRequestStatus,
             },
-        ];
-
-        if (scriptExecutionData && asyncExecutionRequest.status === AsyncStatus.Success) {
-            scriptExecutionListItems.push(
+            ...(scriptExecutionData && asyncExecutionRequest.status === AsyncStatus.Success) ? [
                 {
-                    label: translator('script_reports.detail.side.description.script_name'),
-                    value: scriptExecutionData && scriptExecutionData.scriptName,
-                },
-                {
-                    label: translator('script_reports.detail.side.description.script_version'),
-                    value: scriptExecutionData && scriptExecutionData.scriptVersion,
-                },
-                {
-                    label: translator('script_reports.detail.side.description.start_timestamp'),
-                    value: scriptExecutionData && formatDate(
+                    label: translator('script_reports.detail.side.execution.start_timestamp.label'),
+                    value: formatDate(
                         parseISO(scriptExecutionData.startTimestamp.toString()),
                         'dd/MM/yyyy HH:mm:ss',
                     ),
                 },
                 {
-                    label: translator('script_reports.detail.side.description.end_timestamp'),
-                    value: scriptExecutionData && formatDate(
+                    label: translator('script_reports.detail.side.execution.end_timestamp.label'),
+                    value: formatDate(
                         parseISO(scriptExecutionData.endTimestamp.toString()),
                         'dd/MM/yyyy HH:mm:ss',
                     ),
                 },
-            );
+            ] : [],
+            {
+                label: translator('script_reports.detail.side.execution.labels.label'),
+                value: executionRequestDetail.executionRequestLabels.length
+                    ? <ShowLabels labels={executionRequestDetail.executionRequestLabels} />
+                    : <Translate msg="script_reports.detail.side.execution.labels.none" />,
+            },
+            ...(scriptExecutionData && asyncExecutionRequest.status === AsyncStatus.Success) ? [
+                {
+                    label: translator('script_reports.detail.side.execution.output.label'),
+                    value: scriptExecutionData.output.length
+                        ? <ShowLabels labels={scriptExecutionData.output} />
+                        : <Translate msg="script_reports.detail.side.execution.output.none" />,
+                },
+            ] : [],
+        ];
 
-            if (scriptExecutionData.designLabels.length > 0) {
-                scriptExecutionListItems.push(
-                    {
-                        label: translator('script_reports.detail.side.description.labels'),
-                        value: <ShowLabels labels={scriptExecutionData.designLabels} />,
-                    },
-                );
-            }
+        if (scriptExecutionData && asyncExecutionRequest.status === AsyncStatus.Success) {
+            scriptExecutionListItems.push(
+                {
+                    label: translator('script_reports.detail.side.script.name.label'),
+                    value: scriptExecutionData && scriptExecutionData.scriptName,
+                },
+                {
+                    label: translator('script_reports.detail.side.script.version.label'),
+                    value: scriptExecutionData && scriptExecutionData.scriptVersion,
+                },
+                {
+                    label: translator('script_reports.detail.side.script.input_parameters.label'),
+                    value: scriptExecutionData.inputParameters.length
+                        ? <ShowLabels labels={scriptExecutionData.inputParameters} />
+                        : <Translate msg="script_reports.detail.side.script.input_parameters.none" />,
+                },
+            );
         }
 
         return (
             <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
-                <Box flex="1 1 auto">
-                    <DescriptionList
-                        items={descriptionListItems}
-                    />
-                    {(scriptExecutionData && asyncExecutionRequest.status === AsyncStatus.Success) && (
-                        <DescriptionList
-                            noLineAfterListItem
-                            items={[
-                                {
-                                    label: <Translate msg="script_reports.detail.side.input_parameters.title" />,
-                                    value: scriptExecutionData.inputParameters.length
-                                        ? <ShowLabels labels={scriptExecutionData.inputParameters} />
-                                        : <Translate msg="script_reports.detail.side.input_parameters.none" />,
-                                },
-                            ]}
-                        />
-                    )}
+                <Box flex="1 1 auto" marginBottom={3}>
+                    <Typography variant="h4">Execution data</Typography>
+                    <DescriptionList items={executionListItems} noLineAfterListItem />
                 </Box>
                 <Box>
-                    <DescriptionList
-                        noLineAfterListItem
-                        items={scriptExecutionListItems}
-                    />
+                    <Typography variant="h4">Script data</Typography>
+                    <DescriptionList items={scriptExecutionListItems} noLineAfterListItem />
                 </Box>
             </Box>
         );

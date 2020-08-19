@@ -190,15 +190,28 @@ script_reports:
         go_to_parent_script_detail: Back to parent script
     side:
       toggle_button: Details
-      description:
-        name: Execution name
-        description: Execution description
-        script_name: Script name
-        script_version: Version
-        start_timestamp: Start timestamp
-        end_timestamp: End timestamp
-        execution_status: Status
-        labels: Design labels
-      input_parameters:
-        title: Input parameters
-        none: No input parameters given
+      execution:
+        name:
+          label: Execution name
+        description:
+          label: Execution description
+        start_timestamp:
+          label: Start timestamp
+        end_timestamp:
+          label: End timestamp
+        execution_status:
+          label: Status
+        labels:
+          label: Execution labels
+          none: No labels
+        output:
+          label: Output
+          none: No output
+      script:
+        name:
+          label: Script name
+        version:
+          label: version
+        input_parameters:
+          label: Input parameters
+          none: No input parameters given
