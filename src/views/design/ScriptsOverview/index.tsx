@@ -26,8 +26,9 @@ import {
     ListFilters,
     FilterConfig,
     IListItem,
+    SortOrder,
 } from 'models/list.models';
-import { IScript } from 'models/state/scripts.models';
+import { IScript, IExpandScriptsResponseWith } from 'models/state/scripts.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
@@ -48,6 +49,7 @@ import { triggerDeleteScriptDetail, triggerFetchScripts } from 'state/entities/s
 import { getUniqueIdFromScript, getLatestVersionsFromScripts } from 'utils/scripts/scriptUtils';
 import { triggerResetAsyncExecutionRequest } from 'state/entities/executionRequests/triggers';
 import isSet from '@snipsonian/core/es/is/isSet';
+import { formatSortQueryParameter } from 'utils/core/string/format';
 import ExecuteScriptDialog from '../common/ExecuteScriptDialog';
 
 
@@ -115,7 +117,11 @@ const ScriptsOverview = withStyles(styles)(
             super(props);
 
             this.state = {
-                sortedColumn: null,
+                sortedColumn: {
+                    name: 'name',
+                    sortOrder: SortOrder.Descending,
+                    sortType: SortType.String,
+                },
                 filters: getIntialFiltersFromFilterConfig(filterConfig),
                 scriptIdToDelete: null,
                 scriptIdToExecute: null,
@@ -256,7 +262,6 @@ const ScriptsOverview = withStyles(styles)(
 
         private renderContent({ listItems }: { listItems: IListItem<IColumnNames>[] }) {
             const { classes } = this.props;
-            const { sortedColumn } = this.state;
             const columns: ListColumns<IColumnNames> = {
                 name: {
                     className: classes.scriptName,
@@ -338,7 +343,6 @@ const ScriptsOverview = withStyles(styles)(
                                     },
                                 ]}
                                 columns={columns}
-                                sortedColumn={sortedColumn}
                                 listItems={listItems}
                                 pagination={{
                                     pageData,
@@ -380,11 +384,12 @@ const ScriptsOverview = withStyles(styles)(
 
             if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
                 this.clearScriptToDelete();
-                triggerFetchScripts({ expandResponseWith: { scheduling: false } });
+                this.fetchScriptsWithFilterAndPagination({ expandResponseWith: { scheduling: false } });
             }
         }
 
         private onSort(sortedColumn: ISortedColumn<IColumnNames>) {
+            this.fetchScriptsWithFilterAndPagination({ newSortedColumn: sortedColumn });
             this.setState({ sortedColumn });
         }
 
@@ -397,27 +402,38 @@ const ScriptsOverview = withStyles(styles)(
             newPage,
             newListFilters,
             newOnlyShowLatestVersion,
+            newSortedColumn,
+            expandResponseWith,
         }: {
             newPage?: number;
             newListFilters?: ListFilters<Partial<IColumnNames>>;
             newOnlyShowLatestVersion?: boolean;
+            newSortedColumn?: ISortedColumn<IColumnNames>;
+            expandResponseWith?: IExpandScriptsResponseWith;
         }) {
             const pageData = getAsyncScriptsPageData(this.props.state);
-            const { filters: filtersFromState, onlyShowLatestVersion: onlyShowLatestVersionFromState } = this.state;
+            const {
+                filters: filtersFromState,
+                onlyShowLatestVersion: onlyShowLatestVersionFromState,
+                sortedColumn: sortedColumnFromState,
+            } = this.state;
 
             const filters = newListFilters || filtersFromState;
             const page = newPage || pageData.number;
             const onlyShowLatestVersion = isSet(newOnlyShowLatestVersion)
                 ? newOnlyShowLatestVersion : onlyShowLatestVersionFromState;
+            const sortedColumn = newSortedColumn || sortedColumnFromState;
 
             triggerFetchScripts({
                 pagination: { page },
                 filter: {
-                    script: filters.name.values.length > 0
+                    name: filters.name.values.length > 0
                         && filters.name.values[0].toString(),
                     version: onlyShowLatestVersion ? 'latest' : undefined,
                     // TODO: labels
                 },
+                sort: formatSortQueryParameter(sortedColumn),
+                expandResponseWith: isSet(expandResponseWith) ? expandResponseWith : {},
             });
         }
 

@@ -5,6 +5,8 @@ import {
     triggerFetchExecutionRequestDetail,
 } from 'state/entities/executionRequests/triggers';
 import { triggerFetchActionTypes } from 'state/entities/constants/triggers';
+import { SortType, SortOrder } from 'models/list.models';
+import { formatSortQueryParameter } from 'utils/core/string/format';
 import { ROUTE_KEYS, registerRoutes } from './routes';
 import NotFound from './appShell/NotFound';
 import Home from './Home';
@@ -62,6 +64,11 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             filter: {
                 version: 'latest',
             },
+            sort: formatSortQueryParameter({
+                name: 'name',
+                sortOrder: SortOrder.Descending,
+                sortType: SortType.String,
+            }),
         }),
     }],
 }, {
@@ -87,6 +94,11 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             pagination: {
                 page: 1,
             },
+            sort: formatSortQueryParameter({
+                name: 'requestTimestamp',
+                sortOrder: SortOrder.Descending,
+                sortType: SortType.String,
+            }),
         }),
     }],
 }, {

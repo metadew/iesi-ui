@@ -16,7 +16,7 @@ import API_URLS from '../apiUrls';
  * --> ideally Robbe adds a query param to conditionally get only the latest script versions
  *     otherwise we have to filter them ourselves
  */
-export function fetchScripts({ expandResponseWith, pagination, filter }: IFetchScriptsListPayload) {
+export function fetchScripts({ expandResponseWith, pagination, filter, sort }: IFetchScriptsListPayload) {
     const pageSize = pagination.size || 20;
     // TODO remove mock, correct ListResponse typing
     return get<IScriptsEntity, IListResponse<IScript>>({
@@ -25,6 +25,7 @@ export function fetchScripts({ expandResponseWith, pagination, filter }: IFetchS
             ...toExpandQueryParam(expandResponseWith),
             ...pagination,
             ...filter,
+            sort,
         },
         mapResponse: ({ data }) => ({
         // eslint-disable-next-line no-underscore-dangle

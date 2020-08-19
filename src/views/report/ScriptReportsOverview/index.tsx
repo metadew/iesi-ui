@@ -45,6 +45,7 @@ import {
     getAsyncExecutionRequestsPageData,
 } from 'state/entities/executionRequests/selectors';
 import { triggerFetchExecutionRequests } from 'state/entities/executionRequests/triggers';
+import { formatSortQueryParameter } from 'utils/core/string/format';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -88,7 +89,7 @@ const styles = ({ palette, typography }: Theme) =>
     });
 
 interface IColumnNames {
-    name: string;
+    script: string;
     version: string;
     environment: string;
     requestTimestamp: string;
@@ -98,7 +99,7 @@ interface IColumnNames {
 }
 
 const filterConfig: FilterConfig<Partial<IColumnNames>> = {
-    name: {
+    script: {
         label: <Translate msg="script_reports.overview.list.filter.script_name" />,
         filterType: FilterType.Search,
     },
@@ -117,7 +118,7 @@ const filterConfig: FilterConfig<Partial<IColumnNames>> = {
 };
 
 const sortActions: SortActions<Partial<IColumnNames>> = {
-    name: {
+    script: {
         label: <Translate msg="script_reports.overview.list.sort.script_name" />,
         sortType: SortType.String,
     },
@@ -167,6 +168,7 @@ const ScriptReportsOverview = withStyles(styles)(
         }
 
         public componentDidMount() {
+            // TODO: Trigger fetch with initial filters
             const initialFilters = this.combineFiltersFromUrlAndCurrentFilters();
             this.setState({ filters: initialFilters, initialFilters });
         }
@@ -248,9 +250,8 @@ const ScriptReportsOverview = withStyles(styles)(
 
         private renderContent({ listItems }: { listItems: IListItem<IColumnNames>[] }) {
             const { classes } = this.props;
-            const { sortedColumn } = this.state;
             const columns: ListColumns<IColumnNames> = {
-                name: {
+                script: {
                     className: classes.scriptName,
                     fixedWidth: '25%',
                 },
@@ -336,7 +337,6 @@ const ScriptReportsOverview = withStyles(styles)(
                             },
                         ]}
                         columns={columns}
-                        sortedColumn={sortedColumn}
                         listItems={listItems}
                         pagination={{
                             pageData,
@@ -357,6 +357,7 @@ const ScriptReportsOverview = withStyles(styles)(
         }
 
         private onSort(sortedColumn: ISortedColumn<IColumnNames>) {
+            this.fetchExecutionRequestsWithFilterAndPagination({ newSortedColumn: sortedColumn });
             this.setState({ sortedColumn });
         }
 
@@ -368,21 +369,24 @@ const ScriptReportsOverview = withStyles(styles)(
         private fetchExecutionRequestsWithFilterAndPagination({
             newPage,
             newListFilters,
+            newSortedColumn,
         }: {
             newPage?: number;
             newListFilters?: ListFilters<Partial<IColumnNames>>;
+            newSortedColumn?: ISortedColumn<IColumnNames>;
         }) {
             const pageData = getAsyncExecutionRequestsPageData(this.props.state);
-            const { filters: filtersFromState } = this.state;
+            const { filters: filtersFromState, sortedColumn: sortedColumnFromState } = this.state;
 
             const filters = newListFilters || filtersFromState;
             const page = newPage || pageData.number;
+            const sortedColumn = newSortedColumn || sortedColumnFromState;
 
             triggerFetchExecutionRequests({
                 pagination: { page },
                 filter: {
-                    script: filters.name.values.length > 0
-                        && filters.name.values[0].toString(),
+                    script: filters.script.values.length > 0
+                        && filters.script.values[0].toString(),
                     version: filters.version.values.length > 0
                         && filters.version.values[0].toString(),
                     // TODO: can this be multiple values? Or should we change filter to single value?
@@ -390,6 +394,7 @@ const ScriptReportsOverview = withStyles(styles)(
                         && filters.environment.values[0].toString(),
                     // TODO: labels
                 },
+                sort: formatSortQueryParameter(sortedColumn),
             });
         }
     },
@@ -403,7 +408,7 @@ function mapExecutionsToListItems(executionRequests: IExecutionRequest[]): IList
                 acc.push({
                     id: scriptExecution.executionRequestId,
                     columns: {
-                        name: scriptExecution.scriptName,
+                        script: scriptExecution.scriptName,
                         version: (scriptExecution.scriptVersion).toString(),
                         environment: scriptExecution.environment,
                         requestTimestamp: {

@@ -53,6 +53,7 @@ export enum ExecutionRequestStatus {
 export interface IFetchExecutionRequestListPayload {
     pagination?: IPageFilter;
     filter?: IFetchExecutionRequestListFilter;
+    sort: string;
 }
 
 interface IFetchExecutionRequestListFilter {

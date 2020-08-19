@@ -8,10 +8,11 @@ export interface IFetchScriptsOptions {
 export interface IFetchScriptsListPayload extends IFetchScriptsOptions {
     pagination?: IPageFilter;
     filter?: IScriptsListFilter;
+    sort: string;
 }
 
 interface IScriptsListFilter {
-    script?: string;
+    name?: string;
     version?: 'latest';
     label?: string;
 }
