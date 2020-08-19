@@ -332,7 +332,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                 <Box marginBottom={2}>
                     <Paper elevation={0}>
                         <Box display="flex">
-                            <Box flex="1 1 50%" padding={1}>
+                            <Box flex="1 1 50%" padding={1.6}>
                                 <Typography variant="subtitle2">
                                     <Translate msg="script_reports.detail.main.action.start_timestamp" />
                                 </Typography>
@@ -343,7 +343,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                     )}
                                 </Typography>
                             </Box>
-                            <Box flex="1 1 50%" padding={1}>
+                            <Box flex="1 1 50%" padding={1.6}>
                                 <Typography variant="subtitle2">
                                     <Translate msg="script_reports.detail.main.action.end_timestamp" />
                                 </Typography>
@@ -361,7 +361,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                 <Box marginBottom={2}>
                     <Paper elevation={0}>
                         <Box display="flex">
-                            <Box flex="1 1 50%" padding={1}>
+                            <Box flex="1 1 50%" padding={1.6}>
                                 <Typography variant="subtitle2">
                                     <Translate msg="script_reports.detail.main.action.error_expected" />
                                 </Typography>
@@ -369,7 +369,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                     <Translate msg={`common.${item.data.errorExpected ? 'yes' : 'no'}`} />
                                 </Typography>
                             </Box>
-                            <Box flex="1 1 50%" padding={1}>
+                            <Box flex="1 1 50%" padding={1.6}>
                                 <Typography variant="subtitle2">
                                     <Translate msg="script_reports.detail.main.action.error_stop" />
                                 </Typography>
