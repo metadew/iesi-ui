@@ -26,6 +26,8 @@ import { filterListItems } from 'utils/list/filters';
 import { TObjectWithProps } from 'models/core.models';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
+import isSet from '@snipsonian/core/es/is/isSet';
+import { IPageData } from 'models/state/iesiGeneric.models';
 import GenericTableRow from '../GenericTableRow';
 import { useListStyles } from '../common';
 
@@ -37,8 +39,11 @@ interface IPublicProps<ColumnNames> {
     listActions?: IListAction[];
     sortedColumn?: ISortedColumn<ColumnNames>;
     filters?: ListFilters<Partial<ColumnNames>>;
-    enablePagination?: boolean;
     isLoading?: boolean;
+    pagination?: {
+        pageData: IPageData;
+        onChange: ({ page }: { page: number }) => void;
+    };
 }
 
 const useStyles = makeStyles(({ palette }: Theme) => ({
@@ -54,10 +59,9 @@ export default function GenericList<ColumnNames>({
     listActions,
     sortedColumn,
     filters,
-    enablePagination,
     isLoading,
+    pagination,
 }: IPublicProps<ColumnNames>) {
-    const [page, setPage] = React.useState(1);
     const classes = useStyles();
     const listClasses = useListStyles();
 
@@ -69,14 +73,7 @@ export default function GenericList<ColumnNames>({
         ? filterListItems(items, filters as TObjectWithProps)
         : items;
 
-    const startIndexToShowBasedOnPage = (page - 1) * ROWS_PER_PAGE;
-    const itemsToDisplay = enablePagination
-        ? filteredItems.slice(startIndexToShowBasedOnPage, startIndexToShowBasedOnPage + ROWS_PER_PAGE)
-        : filteredItems;
-
-    if (isPageHigherThanAmountOfFilteredItems() && page !== 1) {
-        setPage(1);
-    }
+    const itemsToDisplay = filteredItems;
 
     return (
         <>
@@ -118,13 +115,13 @@ export default function GenericList<ColumnNames>({
                     </TableBody>
                 </Table>
             </TableContainer>
-            {(enablePagination && !isLoading) && (
+            {(isSet(pagination) && isSet(pagination.pageData) && !isLoading) && (
                 <AppTemplateContainer>
                     <Pagination
-                        count={Math.ceil(filteredItems.length / ROWS_PER_PAGE)}
+                        count={pagination.pageData.totalPages}
                         shape="rounded"
                         onChange={handleChangePage}
-                        page={page}
+                        page={pagination.pageData.number}
                         showFirstButton
                         showLastButton
                         renderItem={(props) => (
@@ -140,10 +137,6 @@ export default function GenericList<ColumnNames>({
     );
 
     function handleChangePage(event: React.ChangeEvent<unknown> | null, newPage: number) {
-        setPage(newPage);
-    }
-
-    function isPageHigherThanAmountOfFilteredItems() {
-        return startIndexToShowBasedOnPage > filteredItems.length;
+        pagination.onChange({ page: newPage });
     }
 }
