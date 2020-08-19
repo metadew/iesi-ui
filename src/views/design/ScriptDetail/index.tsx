@@ -320,7 +320,7 @@ const ScriptDetail = withStyles(styles)(
                                 },
                                 {
                                     label: translator('scripts.detail.side.description.last_run_date'),
-                                    value: newScriptDetail.execution.mostRecent[0]
+                                    value: newScriptDetail && newScriptDetail.execution.mostRecent[0]
                                         ? newScriptDetail.execution.mostRecent[0]?.startTimestamp
                                         : '-',
                                 },

@@ -143,6 +143,8 @@ scripts:
       no_actions:
         title: No actions yet
         button: Add actions
+    error:
+      save: Failed to save changes
 script_reports:
   overview:
     list:

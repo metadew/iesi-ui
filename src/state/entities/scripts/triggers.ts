@@ -6,6 +6,7 @@ import {
     IFetchScriptsListPayload,
 } from 'models/state/scripts.models';
 import { StateChangeNotification } from 'models/state.models';
+import { triggerFlashMessage } from 'state/ui/actions';
 
 export const triggerFetchScripts = (payload: IFetchScriptsListPayload) =>
     entitiesStateManager.triggerAsyncEntityFetch<{}>({
@@ -36,6 +37,10 @@ export const triggerUpdateScriptDetail = (payload: IScriptBase) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_DETAIL],
+        onFail: ({ dispatch }) => dispatch(triggerFlashMessage({
+            translationKey: 'scripts.detail.error.save',
+            type: 'error',
+        })),
     });
 
 export const triggerCreateScriptDetail = (payload: IScriptBase) =>
