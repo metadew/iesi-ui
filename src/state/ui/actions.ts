@@ -100,7 +100,7 @@ export const checkPollingExecutionRequests = () => createAction<{}>({
             const state = getState();
             await state.ui.pollingExecutionRequestIds.forEach(async (id) => {
                 const executionRequestData = await api.executionRequests.fetchExecutionRequest({ id });
-                if (isExecutionRequestStatusNewOrSubmitted(executionRequestData.executionRequestStatus)) {
+                if (!isExecutionRequestStatusNewOrSubmitted(executionRequestData.executionRequestStatus)) {
                     dispatch(triggerFlashMessage({
                         translationKey: 'flash_messages.execution_request.run_finished',
                         translationPlaceholders: {
