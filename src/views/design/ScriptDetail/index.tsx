@@ -290,6 +290,11 @@ const ScriptDetail = withStyles(styles)(
                             noLineAfterListItem
                             items={[
                                 {
+                                    label: translator('scripts.detail.side.description.version'),
+                                    value: newScriptDetail && newScriptDetail.version
+                                        ? newScriptDetail.version.number : '',
+                                },
+                                {
                                     label: <Translate msg="scripts.detail.side.labels.title" />,
                                     value: <EditLabels
                                         labels={newScriptDetail && newScriptDetail.labels
@@ -306,24 +311,6 @@ const ScriptDetail = withStyles(styles)(
                                 //         onChange={(scheduling) => this.updateScript({ scheduling })}
                                 //     />,
                                 // },
-                            ]}
-                        />
-                    </Box>
-                    <Box>
-                        <DescriptionList
-                            noLineAfterListItem
-                            items={[
-                                {
-                                    label: translator('scripts.detail.side.description.version'),
-                                    value: newScriptDetail && newScriptDetail.version
-                                        ? newScriptDetail.version.number : '',
-                                },
-                                {
-                                    label: translator('scripts.detail.side.description.last_run_date'),
-                                    value: newScriptDetail && newScriptDetail.execution.mostRecent[0]
-                                        ? newScriptDetail.execution.mostRecent[0]?.startTimestamp
-                                        : '-',
-                                },
                             ]}
                         />
                     </Box>
