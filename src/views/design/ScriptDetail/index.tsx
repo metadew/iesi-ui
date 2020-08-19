@@ -265,13 +265,16 @@ const ScriptDetail = withStyles(styles)(
                             <TextInput
                                 id="script-name"
                                 label={translator('scripts.detail.side.script_name')}
-                                required
                                 error={requiredFieldsState.name.showError}
                                 helperText={requiredFieldsState.name.showError && 'Scriptname is a required field'}
                                 value={newScriptDetail && newScriptDetail.name
                                     ? newScriptDetail.name : ''}
                                 onChange={(e) => this.updateScript({ name: e.target.value })}
-                                disabled={!this.isCreateScriptRoute()}
+                                required={this.isCreateScriptRoute()}
+                                InputProps={{
+                                    readOnly: !this.isCreateScriptRoute(),
+                                    disableUnderline: true,
+                                }}
                             />
                             <TextInput
                                 id="script-description"
