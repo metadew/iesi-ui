@@ -31,14 +31,18 @@ import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import { IExecutionRequest, ExecutionRequestStatus } from 'models/state/executionRequests.models';
+import { Alert } from '@material-ui/lab';
+import { parseISO, format as formatDate } from 'date-fns/esm';
+import OrderedList from 'views/common/list/OrderedList';
+import {
+    isExecutionRequestStatusNewOrSubmitted,
+    isExecutionRequestStatusAbortedOrDeclined,
+} from 'utils/scripts/executionRequests';
 import {
     getAsyncExecutionRequestsEntity,
     getAsyncExecutionRequests,
 } from 'state/entities/executionRequests/selectors';
-import { IExecutionRequest } from 'models/state/executionRequests.models';
-import { Alert } from '@material-ui/lab';
-import { parseISO, format as formatDate } from 'date-fns/esm';
-import OrderedList from 'views/common/list/OrderedList';
 import { triggerFetchExecutionRequests } from 'state/entities/executionRequests/triggers';
 
 const styles = ({ palette, typography }: Theme) =>
@@ -269,13 +273,14 @@ const ScriptReportsOverview = withStyles(styles)(
                         <Translate msg="script_reports.overview.list.labels.execution_status" />
                     ),
                     className: (value) => {
-                        if (value.toString().toLowerCase() === 'passed') {
-                            return classes.scriptSuccess;
-                        }
-                        if (value.toString().toLowerCase() === 'new') {
+                        const executionStatus = value as ExecutionRequestStatus;
+                        if (isExecutionRequestStatusNewOrSubmitted(executionStatus)) {
                             return classes.scriptNew;
                         }
-                        return classes.scriptFailed;
+                        if (isExecutionRequestStatusAbortedOrDeclined(executionStatus)) {
+                            return classes.scriptFailed;
+                        }
+                        return classes.scriptSuccess;
                     },
                     hideOnCompactView: true,
                 },
@@ -312,10 +317,17 @@ const ScriptReportsOverview = withStyles(styles)(
                             {
                                 icon: <ReportIcon />,
                                 label: <Translate msg="script_reports.overview.list.actions.report" />,
-                                onClick: (id) => redirectTo({
-                                    routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
-                                    params: { reportId: id },
-                                }),
+                                onClick: (id) => {
+                                    const execution = listItems.find((listItem) => listItem.id === id);
+
+                                    redirectTo({
+                                        routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
+                                        params: {
+                                            executionRequestId: id,
+                                            runId: execution && execution.data.runId,
+                                        },
+                                    });
+                                },
                             },
                         ]}
                         columns={columns}
@@ -393,6 +405,9 @@ function mapExecutionsToListItems(executionRequests: IExecutionRequest[]): IList
                                 </Typography>
                             ),
                         },
+                    },
+                    data: {
+                        runId: scriptExecution.runId,
                     },
                 });
             });

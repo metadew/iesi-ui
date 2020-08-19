@@ -3,6 +3,7 @@ import initAsyncEntitiesConfigManager
 import { IExtraProcessInput, IState } from 'models/state.models';
 import { ITraceableApiError } from 'models/api.models';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
+import { IScriptExecutionByRunIdAndProcessIdPayload } from 'models/state/scriptExecutions.models';
 import { api } from 'api';
 import {
     ICreateExecutionRequestPayload,
@@ -90,6 +91,16 @@ entitiesConfigManager.register({
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
             apiInputSelector: ({ extraInput }) => extraInput as ICreateExecutionRequestPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.scriptExecutionDetail,
+    operationsConfig: {
+        fetch: {
+            api: api.scriptExecutions.fetchScriptExecutionDetail,
+            apiInputSelector: ({ extraInput }) => extraInput as IScriptExecutionByRunIdAndProcessIdPayload,
         },
     },
 });

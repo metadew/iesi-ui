@@ -6,6 +6,8 @@ app_shell:
       scripts: Scripts
     title: iesi
 common:
+  yes: Yes
+  no: No
   action:
     save: Save
   confirmation:
@@ -164,26 +166,52 @@ script_reports:
         version: Version
     header:
       amount: 'You have {amount} script executions'
-    detail:
-      parameter_index: 'Parameter {index}'
   detail:
     main:
       error:
         text: Execution request could not be loaded.
         title: Something went wrong
-      execution_failed:
-        text: Action details are not available for an aborted or declined execution request.
-        title: The execution request was not completed
-      execution_pending:
+      no_run_data:
         text: Action details will be available once the script execution has been completed.
-        title: Execution request pending
+        title: No run data available
+      action:
+        error: Error
+        input_parameters: Input parameters
+        start_timestamp: Start timestamp
+        end_timestamp: End timestamp
+        condition: Condition
+        error_expected: Action expected to fail
+        error_stop: Stop if action fails
+        output:
+          label: Output
+          name: Name
+          value: Value
+        go_to_script_detail: View script details
+        go_to_parent_script_detail: Back to parent script
     side:
       toggle_button: Details
-      description:
-        version: Version
-        request_timestamp: Request timestamp
-        execution_status: Status
-      labels:
-        title: Labels
-      parameters:
-        title: Parameters
+      execution:
+        name:
+          label: Execution name
+        description:
+          label: Execution description
+        start_timestamp:
+          label: Start timestamp
+        end_timestamp:
+          label: End timestamp
+        execution_status:
+          label: Status
+        labels:
+          label: Execution labels
+          none: No labels
+        output:
+          label: Output
+          none: No output
+      script:
+        name:
+          label: Script name
+        version:
+          label: version
+        input_parameters:
+          label: Input parameters
+          none: No input parameters given

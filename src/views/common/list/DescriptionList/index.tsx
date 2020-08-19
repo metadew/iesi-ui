@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { makeStyles } from '@material-ui/core';
 import { THEME_COLORS } from 'config/themes/colors';
 
-interface IDescriptionListItem {
+export interface IDescriptionListItem {
     label: string | ReactNode;
     value: string | ReactNode;
 }
@@ -14,7 +14,9 @@ interface IPublicProps {
 }
 
 const useStyles = makeStyles(({ spacing, typography }) => ({
-    list: {},
+    list: {
+        margin: 0,
+    },
     label: {
         paddingTop: spacing(1),
         fontWeight: typography.fontWeightBold,
