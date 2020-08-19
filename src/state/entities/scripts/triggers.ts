@@ -18,10 +18,6 @@ export const triggerFetchScripts = (filter: IFetchScriptsOptions = {}) =>
         },
         extraInputSelector: () => (isSet(filter) ? filter : {}),
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_LIST],
-        onSuccess: ({ dispatch }) => dispatch(triggerFlashMessage({
-            translationKey: 'Fetched scripts',
-            type: 'success',
-        })),
     });
 
 export const triggerFetchScriptDetail = (payload: IScriptByNameAndVersionPayload) =>
@@ -42,6 +38,10 @@ export const triggerUpdateScriptDetail = (payload: IScriptBase) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_DETAIL],
+        onFail: ({ dispatch }) => dispatch(triggerFlashMessage({
+            translationKey: 'scripts.detail.error.save',
+            type: 'error',
+        })),
     });
 
 export const triggerCreateScriptDetail = (payload: IScriptBase) =>

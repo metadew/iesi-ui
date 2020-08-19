@@ -348,7 +348,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                     });
                 } catch (error) {
                     if (typeof onFail === 'function') {
-                        onSuccess({ dispatch });
+                        onFail({ dispatch });
                     }
 
                     updateAsyncEntityInState(
