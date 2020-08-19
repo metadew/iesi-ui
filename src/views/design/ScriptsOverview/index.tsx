@@ -35,7 +35,12 @@ import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
-import { getAsyncScriptsEntity, getAsyncScriptDetail, getAsyncScripts } from 'state/entities/scripts/selectors';
+import {
+    getAsyncScriptsEntity,
+    getAsyncScriptDetail,
+    getAsyncScripts,
+    getAsyncScriptsPageData,
+} from 'state/entities/scripts/selectors';
 import { AsyncStatus, AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import OrderedList from 'views/common/list/OrderedList';
 import { Alert } from '@material-ui/lab';
@@ -141,10 +146,10 @@ const ScriptsOverview = withStyles(styles)(
 
             const scripts = getAsyncScripts(this.props.state);
             const deleteStatus = getAsyncScriptDetail(this.props.state).remove.status;
+            const pageData = getAsyncScriptsPageData(this.props.state);
 
             const listItems = mapScriptsToListItems(onlyShowLatestVersion
                 ? getLatestVersionsFromScripts(scripts) : scripts);
-
 
             const translator = getTranslator(state);
 
@@ -160,7 +165,7 @@ const ScriptsOverview = withStyles(styles)(
                                 <Typography variant="h6">
                                     <Translate
                                         msg="scripts.overview.header.amount"
-                                        placeholders={{ amount: listItems.length }}
+                                        placeholders={{ amount: pageData ? pageData.totalElements : 0 }}
                                     />
                                 </Typography>
                                 <Box display="flex" alignItems="flex-end">

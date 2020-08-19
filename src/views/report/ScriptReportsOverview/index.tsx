@@ -42,6 +42,7 @@ import {
 import {
     getAsyncExecutionRequestsEntity,
     getAsyncExecutionRequests,
+    getAsyncExecutionRequestsPageData,
 } from 'state/entities/executionRequests/selectors';
 import { triggerFetchExecutionRequests } from 'state/entities/executionRequests/triggers';
 
@@ -171,6 +172,7 @@ const ScriptReportsOverview = withStyles(styles)(
             const { classes } = this.props;
             const { sortedColumn } = this.state;
 
+            const pageData = getAsyncExecutionRequestsPageData(this.props.state);
             const executions = getAsyncExecutionRequests(this.props.state);
             const listItems = executions
                 ? mapExecutionsToListItems(executions)
@@ -188,7 +190,7 @@ const ScriptReportsOverview = withStyles(styles)(
                                 <Typography variant="h6">
                                     <Translate
                                         msg="script_reports.overview.header.amount"
-                                        placeholders={{ amount: listItems.length }}
+                                        placeholders={{ amount: pageData ? pageData.totalElements : 0 }}
                                     />
                                 </Typography>
                                 <Box display="flex" alignItems="flex-end">

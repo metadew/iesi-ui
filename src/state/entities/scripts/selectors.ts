@@ -9,6 +9,11 @@ export const getAsyncScripts = (state: IState) => {
     return scriptsEntity && scriptsEntity.data ? scriptsEntity.data.scripts : [] as IScriptBase[];
 };
 
+export const getAsyncScriptsPageData = (state: IState) => {
+    const scriptsEntity = getAsyncScriptsEntity(state);
+    return scriptsEntity && scriptsEntity.data ? scriptsEntity.data.page : null;
+};
+
 export const getScriptByUniqueId = (state: IState, uniqueId: string) => {
     const asyncData = getAsyncScriptsEntity(state).data;
     const scripts = (asyncData && asyncData.scripts) || [];
