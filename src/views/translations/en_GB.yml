@@ -44,6 +44,7 @@ scripts:
       title: Delete script
     execute_script_dialog:
       confirm: Execute script
+      init_error: Can't execute current script at this time. Please try again later.
       error: Something went wrong during the creation of your execution request.
       success:
         text: Execution request is created.
@@ -60,6 +61,14 @@ scripts:
             title: Add input parameter
           empty: No input params defined yet.
           title: Input parameters
+        labels:
+          add:
+            name: Name
+            value: Value
+            button: Add
+            title: Add label
+          empty: No labels defined yet.
+          title: Execution request labels
       text: Please specify a name and description for your execution request.
     header:
       amount: 'You have {amount} scripts'

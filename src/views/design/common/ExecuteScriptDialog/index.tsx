@@ -25,7 +25,7 @@ import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import { getAsyncEnvironments } from 'state/entities/environments/selectors';
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
-import { IParameter } from 'models/state/iesiGeneric.models';
+import { IParameter, ILabel } from 'models/state/iesiGeneric.models';
 import OrderedList from 'views/common/list/OrderedList';
 import isSet from '@snipsonian/core/es/is/isSet';
 import { IExecutionRequest } from 'models/state/executionRequests.models';
@@ -53,6 +53,7 @@ interface IFormValues {
     description: string;
     environment: string;
     parameters: IParameter[];
+    executionRequestLabels: ILabel[];
 }
 
 function ExecuteScriptDialog({
@@ -68,6 +69,7 @@ function ExecuteScriptDialog({
         description: '',
         environment: '',
         parameters: [],
+        executionRequestLabels: [],
     });
 
     const [newParameter, setNewParameter] = useState<IParameter>({
@@ -75,8 +77,14 @@ function ExecuteScriptDialog({
         value: '',
     });
 
+    const [newLabel, setNewLabel] = useState<ILabel>({
+        name: '',
+        value: '',
+    });
+
     const translator = getTranslator(state);
     const script = getScriptByUniqueId(state, scriptUniqueId);
+    console.log(script, scriptUniqueId);
     const createAsyncInfo = entitiesStateManager.getAsyncEntity({
         asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequestDetail,
     }).create;
@@ -125,6 +133,13 @@ function ExecuteScriptDialog({
                 ) : (
                     <>
                         <Loader show={createAsyncInfo.status === AsyncStatus.Busy} />
+                        {!isSet(script) && (
+                            <Box marginBottom={2}>
+                                <Alert severity="error">
+                                    <Translate msg="scripts.overview.execute_script_dialog.init_error" />
+                                </Alert>
+                            </Box>
+                        )}
                         <Box marginBottom={2}>
                             <Translate msg="scripts.overview.execute_script_dialog.text" />
                         </Box>
@@ -183,7 +198,7 @@ function ExecuteScriptDialog({
                                 ))}
                             </Select>
                         </FormControl>
-                        <Box marginBottom={1}>
+                        <Box marginY={1}>
                             <InputLabel shrink>
                                 <Translate msg="scripts.overview.execute_script_dialog.form.input_param.title" />
                             </InputLabel>
@@ -271,6 +286,94 @@ function ExecuteScriptDialog({
                                 </Box>
                             </Box>
                         </Paper>
+                        <Box marginTop={2} marginBottom={1}>
+                            <InputLabel shrink>
+                                <Translate msg="scripts.overview.execute_script_dialog.form.labels.title" />
+                            </InputLabel>
+                            {formValues.executionRequestLabels.length > 0 ? (
+                                <OrderedList
+                                    items={formValues.executionRequestLabels.map((label) => ({
+                                        content: `${label.name}: ${label.value}`,
+                                        onDelete: () => {
+                                            setFormValues({
+                                                ...formValues,
+                                                executionRequestLabels: formValues.executionRequestLabels.filter((l) =>
+                                                    label.name !== l.name || label.value !== l.value),
+                                            });
+                                        },
+                                    }))}
+                                />
+                            ) : (
+                                <Typography variant="body2">
+                                    <Translate msg="scripts.overview.execute_script_dialog.form.labels.empty" />
+                                </Typography>
+                            )}
+                        </Box>
+                        <Paper variant="outlined">
+                            <Box padding={2}>
+                                <InputLabel shrink>
+                                    {/* eslint-disable-next-line max-len */}
+                                    <Translate msg="scripts.overview.execute_script_dialog.form.labels.add.title" />
+                                </InputLabel>
+                                <Box display="flex" alignItems="center">
+                                    <Box flex="1 1 auto" paddingRight={0.5}>
+                                        <FormControl className={classes.formControl}>
+                                            <TextField
+                                                id="execute-script-label-name"
+                                                type="text"
+                                                // eslint-disable-next-line max-len
+                                                label={translator('scripts.overview.execute_script_dialog.form.labels.add.name')}
+                                                value={newLabel.name}
+                                                onChange={(e) => setNewLabel({
+                                                    ...newLabel,
+                                                    name: e.target.value,
+                                                })}
+                                            />
+                                        </FormControl>
+                                    </Box>
+                                    <Box flex="1 1 auto" paddingRight={0.5}>
+                                        <FormControl className={classes.formControl}>
+                                            <TextField
+                                                id="execute-script-label-value"
+                                                type="text"
+                                                // eslint-disable-next-line max-len
+                                                label={translator('scripts.overview.execute_script_dialog.form.labels.add.value')}
+                                                value={newLabel.value}
+                                                onChange={(e) => setNewLabel({
+                                                    ...newLabel,
+                                                    value: e.target.value,
+                                                })}
+                                            />
+                                        </FormControl>
+                                    </Box>
+                                    <Box flex="1 1 auto">
+                                        <Button
+                                            id="add-execution-request-label"
+                                            variant="contained"
+                                            color="primary"
+                                            size="small"
+                                            disabled={!newLabel.name.trim() || !newLabel.value.trim()}
+                                            onClick={() => {
+                                                setFormValues({
+                                                    ...formValues,
+                                                    executionRequestLabels: [
+                                                        ...formValues.executionRequestLabels,
+                                                        {
+                                                            name: newLabel.name,
+                                                            value: newLabel.value,
+                                                        },
+                                                    ],
+                                                });
+                                                setNewLabel({ name: '', value: '' });
+                                            }}
+                                        >
+                                            {/* eslint-disable-next-line max-len */}
+                                            <Translate msg="scripts.overview.execute_script_dialog.form.labels.add.button" />
+                                        </Button>
+                                    </Box>
+                                </Box>
+                            </Box>
+                        </Paper>
                         {createAsyncInfo.error && (
                             <Box marginTop={2}>
                                 <Alert severity="error">
@@ -288,7 +391,8 @@ function ExecuteScriptDialog({
                                 color="secondary"
                                 onClick={createExecutionRequest}
                                 disabled={
-                                    !formValues.name.trim()
+                                    !isSet(script)
+                                        || !formValues.name.trim()
                                         || !formValues.description.trim()
                                         || !formValues.environment.trim()
                                 }
@@ -307,7 +411,7 @@ function ExecuteScriptDialog({
             context: '', // May be ignored for now
             description: formValues.description.trim(),
             email: null, // May be ignored for now
-            executionRequestLabels: [], // TODO
+            executionRequestLabels: formValues.executionRequestLabels,
             name: formValues.name.trim(),
             scope: '', // May be ignored for now
             scriptExecutionRequests: [
