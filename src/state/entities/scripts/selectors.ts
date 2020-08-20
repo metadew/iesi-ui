@@ -16,8 +16,7 @@ export const getAsyncScriptsPageData = (state: IState) => {
 };
 
 export const getScriptByUniqueId = (state: IState, uniqueId: string) => {
-    const asyncData = getAsyncScriptsEntity(state).data;
-    const scripts = (asyncData && asyncData.scripts) || [];
+    const scripts = getAsyncScripts(state);
     return scripts.find((script) => getUniqueIdFromScript(script) === uniqueId);
 };
 
