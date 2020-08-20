@@ -66,7 +66,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             },
             sort: formatSortQueryParameter({
                 name: 'name',
-                sortOrder: SortOrder.Descending,
+                sortOrder: SortOrder.Ascending,
                 sortType: SortType.String,
             }),
         }),
@@ -96,7 +96,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             },
             sort: formatSortQueryParameter({
                 name: 'requestTimestamp',
-                sortOrder: SortOrder.Descending,
+                sortOrder: SortOrder.Ascending,
                 sortType: SortType.String,
             }),
         }),

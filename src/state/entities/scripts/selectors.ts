@@ -6,7 +6,8 @@ export const getAsyncScriptsEntity = (state: IState) => state.entities.scripts;
 
 export const getAsyncScripts = (state: IState) => {
     const scriptsEntity = getAsyncScriptsEntity(state);
-    return scriptsEntity && scriptsEntity.data ? scriptsEntity.data.scripts : [] as IScriptBase[];
+    return scriptsEntity && scriptsEntity.data && scriptsEntity.data.scripts
+        ? scriptsEntity.data.scripts : [] as IScriptBase[];
 };
 
 export const getAsyncScriptsPageData = (state: IState) => {

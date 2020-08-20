@@ -6,20 +6,19 @@ import {
     IScriptByNamePayload,
     IScriptByNameAndVersionPayload, IExpandScriptsResponseWith, IFetchScriptsListPayload, IScriptsEntity,
 } from 'models/state/scripts.models';
-import { IListResponse } from 'models/state/iesiGeneric.models';
+import { IListResponse, IPageData } from 'models/state/iesiGeneric.models';
 import { get, post, put, remove } from '../requestWrapper';
 import API_URLS from '../apiUrls';
 
-/**
- * TODO This call currently returns a separate item for each version of a script.
- * But in the edit-list we only show the latest version of a script.
- * --> ideally Robbe adds a query param to conditionally get only the latest script versions
- *     otherwise we have to filter them ourselves
- */
+interface IScriptsResponse {
+    _embedded: {
+        scripts: IScript[];
+    };
+    page: IPageData;
+}
+
 export function fetchScripts({ expandResponseWith, pagination, filter, sort }: IFetchScriptsListPayload) {
-    const pageSize = pagination.size || 20;
-    // TODO remove mock, correct ListResponse typing
-    return get<IScriptsEntity, IListResponse<IScript>>({
+    return get<IScriptsEntity, IScriptsResponse>({
         url: API_URLS.SCRIPTS,
         queryParams: {
             ...toExpandQueryParam(expandResponseWith),
@@ -28,16 +27,9 @@ export function fetchScripts({ expandResponseWith, pagination, filter, sort }: I
             sort,
         },
         mapResponse: ({ data }) => ({
-        // eslint-disable-next-line no-underscore-dangle
-            scripts: data._embedded.length <= pageSize ? data._embedded : data._embedded.slice(0, pageSize),
-            page: {
-                size: pageSize,
-                // eslint-disable-next-line no-underscore-dangle
-                totalElements: data._embedded.length,
-                // eslint-disable-next-line no-underscore-dangle
-                totalPages: Math.ceil(data._embedded.length / pageSize),
-                number: pagination.page,
-            },
+            // eslint-disable-next-line no-underscore-dangle
+            scripts: data._embedded.scripts,
+            page: data.page,
         }),
     });
 }

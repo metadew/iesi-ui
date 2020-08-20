@@ -119,7 +119,7 @@ const ScriptsOverview = withStyles(styles)(
             this.state = {
                 sortedColumn: {
                     name: 'name',
-                    sortOrder: SortOrder.Descending,
+                    sortOrder: SortOrder.Ascending,
                     sortType: SortType.String,
                 },
                 filters: getIntialFiltersFromFilterConfig(filterConfig),
