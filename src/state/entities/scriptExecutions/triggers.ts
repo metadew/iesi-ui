@@ -1,3 +1,4 @@
+import { AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { IScriptExecutionByRunIdAndProcessIdPayload } from 'models/state/scriptExecutions.models';
 import entitiesStateManager from 'state/entities/entitiesStateManager';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
@@ -12,4 +13,21 @@ export const triggerFetchScriptExecutionDetail = (payload: IScriptExecutionByRun
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.SCRIPT_EXECUTION_DETAIL],
+    });
+
+export const triggerResetScriptExecutionDetail = ({
+    resetDataOnTrigger,
+    operation,
+}: {
+    resetDataOnTrigger?: boolean;
+    operation: AsyncOperation;
+}) =>
+    entitiesStateManager.triggerAsyncEntityReset({
+        asyncEntityToReset: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.scriptExecutionDetail,
+            resetDataOnTrigger,
+        },
+        extraInputSelector: () => ({}),
+        notificationsToTrigger: [StateChangeNotification.SCRIPT_EXECUTION_DETAIL],
+        operation,
     });

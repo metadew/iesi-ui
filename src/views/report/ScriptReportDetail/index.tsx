@@ -7,18 +7,22 @@ import { Box, makeStyles, Button, Typography } from '@material-ui/core';
 import { ChevronLeftRounded } from '@material-ui/icons';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
+import useExecuteOnUnmount from 'utils/hooks/useExecuteOnUnmount';
 import DescriptionList, { IDescriptionListItem } from 'views/common/list/DescriptionList';
 import { ROUTE_KEYS, redirectTo } from 'views/routes';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel/index';
 import { getAsyncExecutionRequestDetail } from 'state/entities/executionRequests/selectors';
 import { observe, IObserveProps } from 'views/observe';
 import Loader from 'views/common/waiting/Loader';
-import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import { AsyncStatus, AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
 import { IExecutionRequest } from 'models/state/executionRequests.models';
 import { IScriptExecutionDetailAction } from 'models/state/scriptExecutions.models';
-import { triggerFetchScriptExecutionDetail } from 'state/entities/scriptExecutions/triggers';
+import {
+    triggerFetchScriptExecutionDetail,
+    triggerResetScriptExecutionDetail,
+} from 'state/entities/scriptExecutions/triggers';
 import { getAsyncScriptExecutionDetail } from 'state/entities/scriptExecutions/selectors';
 import { ListColumns, IListItem, ISortedColumn, SortOrder, SortType } from 'models/list.models';
 import sortListItems from 'utils/list/sortListItems';
@@ -95,8 +99,16 @@ function ExecutionDetail({ state }: IObserveProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [scriptExecutionData, runId, processId, asyncExecutionRequest]);
 
+    useExecuteOnUnmount({
+        execute: () => {
+            triggerResetScriptExecutionDetail({ operation: AsyncOperation.fetch, resetDataOnTrigger: true });
+        },
+    });
+
     const isLoading = asyncExecutionRequest.status === AsyncStatus.Busy
-        || asyncScriptExecutionData.status === AsyncStatus.Busy;
+        || asyncScriptExecutionData.status === AsyncStatus.Busy
+        || (asyncExecutionRequest.status === AsyncStatus.Success
+                && asyncScriptExecutionData.status === AsyncStatus.Initial);
 
     return (
         <>
