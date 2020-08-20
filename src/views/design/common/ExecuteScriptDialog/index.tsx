@@ -84,7 +84,6 @@ function ExecuteScriptDialog({
 
     const translator = getTranslator(state);
     const script = getScriptByUniqueIdFromDetailOrList(state, scriptUniqueId);
-    console.log(script, scriptUniqueId);
     const createAsyncInfo = entitiesStateManager.getAsyncEntity({
         asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequestDetail,
     }).create;

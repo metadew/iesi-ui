@@ -203,9 +203,9 @@ export default function initAsyncEntitiesStateManager
             asyncEntityToReset,
             notificationsToTrigger,
             nrOfParentNotificationLevelsToTrigger,
+            operation,
         }: ITriggerResetAsyncEntityProps<State, StateChangeNotificationKey>): boolean {
             const { asyncEntityKey, resetDataOnTrigger } = asyncEntityToReset;
-            const operation = AsyncOperation.fetch;
 
             store.dispatch(getAsyncEntityActionCreators().resetAsyncEntityAction({
                 asyncEntityKey,
@@ -213,7 +213,7 @@ export default function initAsyncEntitiesStateManager
                     || getDefaultNotificationsToTrigger({ asyncEntityKey, operation }),
                 nrOfParentNotificationLevelsToTrigger,
                 resetDataOnTrigger,
-                operation: AsyncOperation.create,
+                operation,
             }));
 
             return true;
