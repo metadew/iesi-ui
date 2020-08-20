@@ -1,6 +1,7 @@
 import { ReactElement, ReactText, ReactNode } from 'react';
 import { TTranslatorComponent } from './i18n.models';
 import { TObjectWithProps } from './core.models';
+import { IState } from './state.models';
 
 export interface IColumn<ColumnNames> {
     label?: TTranslatorComponent;
@@ -69,6 +70,7 @@ export enum FilterType {
     Select = 'select',
     FromTo = 'from-to',
     Includes = 'includes',
+    Dropdown = 'dropdown',
 }
 
 export interface IFilter<ColumnNames = TObjectWithProps> {
@@ -84,6 +86,7 @@ export type ListFilters<ColumnNames> = {
 export interface IFilterConfigItem {
     label: TTranslatorComponent;
     filterType: FilterType;
+    dropdownOptions?: (state: IState) => string[];
 }
 
 export type FilterConfig<ColumnNames> = {

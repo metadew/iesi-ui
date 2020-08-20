@@ -46,6 +46,7 @@ import {
 } from 'state/entities/executionRequests/selectors';
 import { triggerFetchExecutionRequests } from 'state/entities/executionRequests/triggers';
 import { formatSortQueryParameter } from 'utils/core/string/format';
+import { getEnvironmentsForDropdown } from 'state/entities/environments/selectors';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -109,7 +110,8 @@ const filterConfig: FilterConfig<Partial<IColumnNames>> = {
     },
     environment: {
         label: <Translate msg="script_reports.overview.list.filter.environment" />,
-        filterType: FilterType.Select,
+        filterType: FilterType.Dropdown,
+        dropdownOptions: getEnvironmentsForDropdown,
     },
     labels: {
         label: <Translate msg="script_reports.overview.list.filter.labels" />,

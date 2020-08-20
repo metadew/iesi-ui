@@ -27,6 +27,7 @@ import isValidDate from 'utils/core/date/isValidDate';
 import Search from './Search';
 import Select from './Select';
 import FromTo from './FromTo';
+import Dropdown from './Dropdown';
 
 interface IPublicProps<ColumnNames> {
     filterConfig: FilterConfig<ColumnNames>;
@@ -209,6 +210,14 @@ function GenericFilter<ColumnNames>({
                                         onFilter={onFilter}
                                         columnName={columnName as string}
                                         filter={filters[columnName] as IFilter}
+                                    />
+                                )}
+                                {configItem.filterType === FilterType.Dropdown && (
+                                    <Dropdown
+                                        onFilter={onFilter}
+                                        columnName={columnName as string}
+                                        filter={filters[columnName] as IFilter}
+                                        listItems={listItems}
                                     />
                                 )}
                             </ExpansionPanelDetails>

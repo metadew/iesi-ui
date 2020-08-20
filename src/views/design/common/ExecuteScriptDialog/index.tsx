@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { observe, IObserveProps } from 'views/observe';
-import { getScriptByUniqueId } from 'state/entities/scripts/selectors';
+import { getScriptByUniqueIdFromDetailOrList } from 'state/entities/scripts/selectors';
 import { triggerCreateExecutionRequest } from 'state/entities/executionRequests/triggers';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
@@ -83,7 +83,7 @@ function ExecuteScriptDialog({
     });
 
     const translator = getTranslator(state);
-    const script = getScriptByUniqueId(state, scriptUniqueId);
+    const script = getScriptByUniqueIdFromDetailOrList(state, scriptUniqueId);
     console.log(script, scriptUniqueId);
     const createAsyncInfo = entitiesStateManager.getAsyncEntity({
         asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequestDetail,

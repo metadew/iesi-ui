@@ -42,6 +42,7 @@ export function filterListItems<LI extends IListItem<TObjectWithProps>>(
                 if (
                     filter.filterType === FilterType.Search
                     || filter.filterType === FilterType.Select
+                    || filter.filterType === FilterType.Dropdown
                 ) {
                     if (!stringMatchFilter({ item, filter, columnName })) {
                         return false;
