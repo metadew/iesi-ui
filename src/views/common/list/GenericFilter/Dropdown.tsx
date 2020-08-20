@@ -45,7 +45,7 @@ function Dropdown({
                 className={classes.formControl}
             >
                 <InputLabel id={`dropdown-${filter.name}-label`}>
-                    <Translate msg="common.filter.dropdown.label" />
+                    <Translate msg="common.list.filter.dropdown" />
                 </InputLabel>
                 <Select
                     labelId={`dropdown-${filter.name}-label`}

@@ -115,7 +115,7 @@ const filterConfig: FilterConfig<Partial<IColumnNames>> = {
     },
     labels: {
         label: <Translate msg="script_reports.overview.list.filter.labels" />,
-        filterType: FilterType.Search,
+        filterType: FilterType.KeyValue,
     },
 };
 
@@ -391,10 +391,10 @@ const ScriptReportsOverview = withStyles(styles)(
                         && filters.script.values[0].toString(),
                     version: filters.version.values.length > 0
                         && filters.version.values[0].toString(),
-                    // TODO: can this be multiple values? Or should we change filter to single value?
                     environment: filters.environment.values.length > 0
                         && filters.environment.values[0].toString(),
-                    // TODO: labels
+                    label: filters.labels.values.length > 0
+                        && filters.labels.values[0].toString(),
                 },
                 sort: formatSortQueryParameter(sortedColumn),
             });

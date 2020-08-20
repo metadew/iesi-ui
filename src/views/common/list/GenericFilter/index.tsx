@@ -28,6 +28,7 @@ import Search from './Search';
 import Select from './Select';
 import FromTo from './FromTo';
 import Dropdown from './Dropdown';
+import KeyValue from './KeyValue';
 
 interface IPublicProps<ColumnNames> {
     filterConfig: FilterConfig<ColumnNames>;
@@ -218,6 +219,13 @@ function GenericFilter<ColumnNames>({
                                         columnName={columnName as string}
                                         filter={filters[columnName] as IFilter}
                                         getDropdownOptions={configItem.getDropdownOptions}
+                                    />
+                                )}
+                                {configItem.filterType === FilterType.KeyValue && (
+                                    <KeyValue
+                                        onFilter={onFilter}
+                                        columnName={columnName as string}
+                                        filter={filters[columnName] as IFilter}
                                     />
                                 )}
                             </ExpansionPanelDetails>

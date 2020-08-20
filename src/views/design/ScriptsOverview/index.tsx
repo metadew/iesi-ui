@@ -90,7 +90,7 @@ const filterConfig: FilterConfig<Partial<IColumnNames>> = {
     },
     labels: {
         label: <Translate msg="scripts.overview.list.filter.script_label" />,
-        filterType: FilterType.Includes,
+        filterType: FilterType.KeyValue,
     },
 };
 
@@ -430,7 +430,8 @@ const ScriptsOverview = withStyles(styles)(
                     name: filters.name.values.length > 0
                         && filters.name.values[0].toString(),
                     version: onlyShowLatestVersion ? 'latest' : undefined,
-                    // TODO: labels
+                    label: filters.labels.values.length > 0
+                        && filters.labels.values[0].toString(),
                 },
                 sort: formatSortQueryParameter(sortedColumn),
                 expandResponseWith: isSet(expandResponseWith) ? expandResponseWith : {},

@@ -13,9 +13,6 @@ common:
   confirmation:
     yes: Yes, I am sure
     no: No, take me back
-  filter:
-    dropdown:
-      label: Select option
   navigation:
     go_back: Back
   list:
@@ -23,8 +20,12 @@ common:
       chip_label:
         from: 'From: '
         to: 'To: '
+      dropdown: Select option
       from: Start date
       header: Narrow results
+      key_value:
+        key: Key
+        value: Value
       search: Search
       select_search: Filter options
       to: End date

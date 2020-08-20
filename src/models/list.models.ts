@@ -71,6 +71,7 @@ export enum FilterType {
     FromTo = 'from-to',
     Includes = 'includes',
     Dropdown = 'dropdown',
+    KeyValue = 'key-value',
 }
 
 export interface IFilter<ColumnNames = TObjectWithProps> {
