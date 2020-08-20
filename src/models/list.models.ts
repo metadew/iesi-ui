@@ -86,7 +86,7 @@ export type ListFilters<ColumnNames> = {
 export interface IFilterConfigItem {
     label: TTranslatorComponent;
     filterType: FilterType;
-    dropdownOptions?: (state: IState) => string[];
+    getDropdownOptions?: (state: IState) => string[];
 }
 
 export type FilterConfig<ColumnNames> = {

@@ -13,6 +13,9 @@ common:
   confirmation:
     yes: Yes, I am sure
     no: No, take me back
+  filter:
+    dropdown:
+      label: Select option
   navigation:
     go_back: Back
   list:

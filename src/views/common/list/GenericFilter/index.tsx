@@ -217,7 +217,7 @@ function GenericFilter<ColumnNames>({
                                         onFilter={onFilter}
                                         columnName={columnName as string}
                                         filter={filters[columnName] as IFilter}
-                                        listItems={listItems}
+                                        getDropdownOptions={configItem.getDropdownOptions}
                                     />
                                 )}
                             </ExpansionPanelDetails>

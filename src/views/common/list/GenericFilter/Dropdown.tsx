@@ -7,16 +7,16 @@ import {
     MenuItem,
     Select,
 } from '@material-ui/core';
-import { IFilter, IListItem, FilterType } from 'models/list.models';
-import { TObjectWithProps } from 'models/core.models';
-import { getUniqueValuesFromListItems } from 'utils/list/list';
+import { IFilter, FilterType } from 'models/list.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
+import { observe, IObserveProps } from 'views/observe';
+import { StateChangeNotification, IState } from 'models/state.models';
 
 interface IPublicProps {
     columnName: string;
     onFilter: (filter: IFilter) => void;
-    listItems: IListItem<TObjectWithProps>[];
     filter: IFilter;
+    getDropdownOptions: (state: IState) => string[];
 }
 
 const useStyles = makeStyles(({ spacing }) => ({
@@ -26,15 +26,16 @@ const useStyles = makeStyles(({ spacing }) => ({
     },
 }));
 
-export default function Dropdown({
-    listItems,
+function Dropdown({
     columnName,
     onFilter,
     filter,
-}: IPublicProps) {
+    getDropdownOptions,
+    state,
+}: IPublicProps & IObserveProps) {
     const classes = useStyles();
 
-    const uniqueValues = getUniqueValuesFromListItems(listItems, columnName);
+    const uniqueValues = getDropdownOptions(state);
 
     return (
         <Box width="100%">
@@ -43,12 +44,12 @@ export default function Dropdown({
                 size="small"
                 className={classes.formControl}
             >
-                <InputLabel id="test">
-                    <Translate msg="test" />
+                <InputLabel id={`dropdown-${filter.name}-label`}>
+                    <Translate msg="common.filter.dropdown.label" />
                 </InputLabel>
                 <Select
-                    labelId="test"
-                    id="test-select"
+                    labelId={`dropdown-${filter.name}-label`}
+                    id={`dropdown-${filter.name}`}
                     disableUnderline
                     value={filter.values[0] || ''}
                     onChange={(event: ChangeEvent<{ value: unknown }>) => {
@@ -73,3 +74,8 @@ export default function Dropdown({
         </Box>
     );
 }
+
+export default observe<IPublicProps>(
+    [StateChangeNotification.ENVIRONMENTS],
+    Dropdown,
+);

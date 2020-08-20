@@ -7,6 +7,7 @@ import {
 import { triggerFetchActionTypes } from 'state/entities/constants/triggers';
 import { SortType, SortOrder } from 'models/list.models';
 import { formatSortQueryParameter } from 'utils/core/string/format';
+import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { ROUTE_KEYS, registerRoutes } from './routes';
 import NotFound from './appShell/NotFound';
 import Home from './Home';
@@ -100,6 +101,8 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
                 sortType: SortType.String,
             }),
         }),
+    }, {
+        execute: triggerFetchEnvironments,
     }],
 }, {
     routeKey: ROUTE_KEYS.R_NOT_FOUND,

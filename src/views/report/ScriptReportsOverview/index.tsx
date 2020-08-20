@@ -111,7 +111,7 @@ const filterConfig: FilterConfig<Partial<IColumnNames>> = {
     environment: {
         label: <Translate msg="script_reports.overview.list.filter.environment" />,
         filterType: FilterType.Dropdown,
-        dropdownOptions: getEnvironmentsForDropdown,
+        getDropdownOptions: getEnvironmentsForDropdown,
     },
     labels: {
         label: <Translate msg="script_reports.overview.list.filter.labels" />,
