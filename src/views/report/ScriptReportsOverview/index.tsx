@@ -381,7 +381,7 @@ const ScriptReportsOverview = withStyles(styles)(
             const { filters: filtersFromState, sortedColumn: sortedColumnFromState } = this.state;
 
             const filters = newListFilters || filtersFromState;
-            const page = newPage || pageData.number;
+            const page = newListFilters ? 1 : newPage || pageData.number;
             const sortedColumn = newSortedColumn || sortedColumnFromState;
 
             triggerFetchExecutionRequests({

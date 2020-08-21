@@ -419,7 +419,7 @@ const ScriptsOverview = withStyles(styles)(
             } = this.state;
 
             const filters = newListFilters || filtersFromState;
-            const page = newPage || pageData.number;
+            const page = newListFilters ? 1 : newPage || pageData.number;
             const onlyShowLatestVersion = isSet(newOnlyShowLatestVersion)
                 ? newOnlyShowLatestVersion : onlyShowLatestVersionFromState;
             const sortedColumn = newSortedColumn || sortedColumnFromState;
