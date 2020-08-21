@@ -112,14 +112,17 @@ export function setBrowserHistory(history: History) {
 
 export function redirectTo({ routeKey, params, queryParams }: INavigateToRoute) {
     if (browserHistory) {
-        browserHistory.push({
-            pathname: replacePathPlaceholders({
-                path: getRoutePath({ routeKey }),
-                placeholders: params,
-            }),
-            search: queryParams
-                ? Object.keys(queryParams).map((key) => `${key}=${queryParams[key]}`).join('&')
-                : '',
+        // Do this on the next frame to make sure everything routeObserverManager has been registered
+        window.requestAnimationFrame(() => {
+            browserHistory.push({
+                pathname: replacePathPlaceholders({
+                    path: getRoutePath({ routeKey }),
+                    placeholders: params,
+                }),
+                search: queryParams
+                    ? Object.keys(queryParams).map((key) => `${key}=${queryParams[key]}`).join('&')
+                    : '',
+            });
         });
     }
 }

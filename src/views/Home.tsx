@@ -1,10 +1,13 @@
-import React from 'react';
-import { Redirect } from 'react-router-dom';
-import { getRoutePath, ROUTE_KEYS } from 'views/routes';
+import React, { useEffect } from 'react';
+import { ROUTE_KEYS, redirectTo } from 'views/routes';
 
 function Home() {
+    useEffect(() => {
+        redirectTo({ routeKey: ROUTE_KEYS.R_SCRIPTS });
+    }, []);
+
     return (
-        <Redirect to={getRoutePath({ routeKey: ROUTE_KEYS.R_SCRIPTS })} />
+        <div />
     );
 }
 
