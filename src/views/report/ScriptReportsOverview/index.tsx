@@ -151,7 +151,7 @@ const ScriptReportsOverview = withStyles(styles)(
             this.state = {
                 sortedColumn: {
                     name: 'requestTimestamp',
-                    sortOrder: SortOrder.Ascending,
+                    sortOrder: SortOrder.Descending,
                     sortType: SortType.String,
                 },
                 filters: getIntialFiltersFromFilterConfig(filterConfig),
