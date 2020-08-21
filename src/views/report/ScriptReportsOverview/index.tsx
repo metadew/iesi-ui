@@ -170,8 +170,8 @@ const ScriptReportsOverview = withStyles(styles)(
         }
 
         public componentDidMount() {
-            // TODO: Trigger fetch with initial filters
             const initialFilters = this.combineFiltersFromUrlAndCurrentFilters();
+            this.fetchExecutionRequestsWithFilterAndPagination({ newListFilters: initialFilters, newPage: 1 });
             this.setState({ filters: initialFilters, initialFilters });
         }
 

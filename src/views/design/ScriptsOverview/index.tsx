@@ -331,7 +331,7 @@ const ScriptsOverview = withStyles(styles)(
                                             redirectTo({
                                                 routeKey: ROUTE_KEYS.R_REPORTS,
                                                 queryParams: {
-                                                    name: selectedScript.name,
+                                                    script: selectedScript.name,
                                                     version: selectedScript.version.number,
                                                 },
                                             });

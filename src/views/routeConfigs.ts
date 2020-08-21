@@ -1,7 +1,6 @@
 import { IRoute } from 'models/router.models';
 import { triggerFetchScripts, triggerFetchScriptDetail } from 'state/entities/scripts/triggers';
 import {
-    triggerFetchExecutionRequests,
     triggerFetchExecutionRequestDetail,
 } from 'state/entities/executionRequests/triggers';
 import { triggerFetchActionTypes } from 'state/entities/constants/triggers';
@@ -91,17 +90,8 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
         }],
     }],
     executeOnRoute: [{
-        execute: () => triggerFetchExecutionRequests({
-            pagination: {
-                page: 1,
-            },
-            sort: formatSortQueryParameter({
-                name: 'requestTimestamp',
-                sortOrder: SortOrder.Ascending,
-                sortType: SortType.String,
-            }),
-        }),
-    }, {
+        // Execution requests are being fetched in the ScriptReportsOverview component on mount.
+        // This way url query parameters can be used for the initial fetch.
         execute: triggerFetchEnvironments,
     }],
 }, {
