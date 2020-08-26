@@ -6,6 +6,7 @@
   "scripts": {
     "start": "craco start",
     "build": "node bin/init/validateEnvConfigForBuild.js --url=$npm_config_url --timeout=$npm_config_timeout && craco build && node bin/init/generateEnvConfigForBuild.js --url=$npm_config_url --timeout=$npm_config_timeout",
+    "build-win": "node bin/init/validateEnvConfigForBuild.js --url=%npm_config_url% --timeout=%npm_config_timeout% && craco build && node bin/init/generateEnvConfigForBuild.js --url=%npm_config_url% --timeout=%npm_config_timeout%",
     "test": "npm run lint && craco test --transformIgnorePatterns \"node_modules/(?!(@snipsonian))\"",
     "eslint": "eslint --ext .js,.ts,.tsx src bin *.js",
     "stylelint": "stylelint src/**/*.scss",
