@@ -51,9 +51,6 @@ const useStyles = makeStyles(({ palette, spacing }) => ({
         paddingLeft: 0,
         paddingRight: 0,
     },
-    filledInput: {
-        minWidth: '250px',
-    },
 }));
 
 export default function ExpandableParameter({ parameter, onChange, constantParameter }: IPublicProps) {
@@ -77,6 +74,7 @@ export default function ExpandableParameter({ parameter, onChange, constantParam
             <ExpansionPanelDetails className={classes.expansionPanelDetail}>
                 <FormControl
                     variant="filled"
+                    fullWidth
                 >
                     <InputLabel htmlFor="filled-adornment-password">
                         <Translate msg="scripts.detail.edit_action.parameter.value" />
@@ -86,7 +84,7 @@ export default function ExpandableParameter({ parameter, onChange, constantParam
                         type="text"
                         value={parameter.value}
                         onChange={(e) => onChange(e.target.value)}
-                        className={classes.filledInput}
+                        multiline
                     />
                 </FormControl>
             </ExpansionPanelDetails>
