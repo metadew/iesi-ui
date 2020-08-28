@@ -6,6 +6,7 @@ import { Box, Typography, Button, withStyles, createStyles, Theme, WithStyles, C
 import {
     AddRounded as AddIcon,
     Edit as EditIcon,
+    Delete as DeleteIcon,
 } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import { IScript, IScriptAction } from 'models/state/scripts.models';
@@ -413,6 +414,15 @@ const ScriptDetail = withStyles(styles)(
                                     label: <Translate msg="scripts.detail.main.list.item.actions.edit" />,
                                     onClick: (id, index) => {
                                         this.setState({ editActionIndex: index });
+                                    },
+                                },
+                                {
+                                    icon: <DeleteIcon />,
+                                    label: <Translate msg="scripts.detail.main.list.item.actions.delete" />,
+                                    onClick: (id, index) => {
+                                        const newActions = [...newScriptDetail.actions];
+                                        newActions.splice(index, 1);
+                                        this.updateScript({ actions: newActions });
                                     },
                                 },
                             ]}

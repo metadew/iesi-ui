@@ -152,6 +152,7 @@ scripts:
       list:
         item:
           actions:
+            delete: Delete
             edit: Edit
       no_actions:
         title: No actions yet
