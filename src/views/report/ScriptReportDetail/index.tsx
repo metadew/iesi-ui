@@ -284,7 +284,7 @@ function ExecutionDetail({ state }: IObserveProps) {
 
         return (
             <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
-                <Box flex="1 1 auto" marginBottom={3}>
+                <Box flex="0 1 auto" marginBottom={3}>
                     <Typography variant="h4">
                         <Translate msg="script_reports.detail.side.execution.title" />
                     </Typography>
