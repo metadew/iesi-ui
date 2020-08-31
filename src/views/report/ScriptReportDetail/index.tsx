@@ -168,7 +168,7 @@ function ExecutionDetail({ state }: IObserveProps) {
             return (
                 <Box marginY={1}>
                     <Box marginBottom={3}>
-                        {parentProcessId && (
+                        {typeof test !== 'undefined' && (
                             <Button
                                 variant="contained"
                                 color="secondary"
