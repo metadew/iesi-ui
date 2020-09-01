@@ -250,7 +250,7 @@ const ScriptsOverview = withStyles(styles)(
                                             };
                                         });
                                     }}
-                                    color="default"
+                                    color="secondary"
                                 />
                             )}
                             label={translator('scripts.overview.list.filter.show_latest')}
