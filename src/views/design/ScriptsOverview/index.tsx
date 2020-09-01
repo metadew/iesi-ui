@@ -265,23 +265,23 @@ const ScriptsOverview = withStyles(styles)(
             const columns: ListColumns<IColumnNames> = {
                 name: {
                     className: classes.scriptName,
-                    fixedWidth: '16%',
+                    fixedWidth: '35%',
                 },
                 version: {
                     className: classes.scriptVersion,
-                    fixedWidth: '7%',
+                    fixedWidth: '5%',
                 },
                 description: {
                     className: classes.scriptDescription,
                     tooltip: (value) => value,
-                    fixedWidth: '26%',
+                    fixedWidth: '55%',
                 },
                 labels: {
                     label: (
                         <Translate msg="scripts.overview.list.labels.labels" />
                     ),
                     className: classes.scriptLabels,
-                    fixedWidth: '8%',
+                    fixedWidth: '5%',
                 },
             };
 
