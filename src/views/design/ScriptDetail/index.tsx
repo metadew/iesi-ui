@@ -222,7 +222,7 @@ const ScriptDetail = withStyles(styles)(
                                             version: {
                                                 ...newScriptDetail.version,
                                                 number: this.isCreateScriptRoute()
-                                                    ? 0 : newScriptData.version.number + 1,
+                                                    ? newScriptData.version.number : newScriptData.version.number + 1,
                                             },
                                         });
                                         this.setState({ isSaveDialogOpen: false });
@@ -286,15 +286,38 @@ const ScriptDetail = withStyles(styles)(
                                     ? newScriptDetail.description : ''}
                                 onChange={(e) => this.updateScript({ description: e.target.value })}
                             />
+                            {this.isCreateScriptRoute() && (
+                                <TextInput
+                                    id="script-version"
+                                    label={translator('scripts.detail.side.script_version')}
+                                    value={newScriptDetail && newScriptDetail.version.number
+                                        ? newScriptDetail.version.number : 0}
+                                    onChange={(e) => this.updateScript({
+                                        version: {
+                                            ...newScriptDetail.version,
+                                            number: parseInt(e.target.value, 10),
+                                        },
+                                    })}
+                                    type="number"
+                                    InputProps={{
+                                        disableUnderline: true,
+                                        inputProps: {
+                                            min: 0,
+                                        },
+                                    }}
+                                />
+                            )}
                         </form>
                         <DescriptionList
                             noLineAfterListItem
                             items={[
-                                {
-                                    label: translator('scripts.detail.side.description.version'),
-                                    value: newScriptDetail && newScriptDetail.version
-                                        ? newScriptDetail.version.number : '',
-                                },
+                                ...(!this.isCreateScriptRoute()) ? [
+                                    {
+                                        label: translator('scripts.detail.side.description.version'),
+                                        value: newScriptDetail && newScriptDetail.version
+                                            ? newScriptDetail.version.number : '',
+                                    },
+                                ] : [],
                                 {
                                     label: <Translate msg="scripts.detail.side.labels.title" />,
                                     value: <EditLabels
@@ -528,7 +551,9 @@ const ScriptDetail = withStyles(styles)(
                     routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
                     params: {
                         name: newScriptDetail.name,
-                        version: this.isCreateScriptRoute() ? 0 : newScriptDetail.version.number + 1,
+                        version: this.isCreateScriptRoute()
+                            ? newScriptDetail.version.number
+                            : newScriptDetail.version.number + 1,
                     },
                 });
             }
