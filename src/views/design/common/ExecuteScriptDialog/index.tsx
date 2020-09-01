@@ -163,7 +163,6 @@ function ExecuteScriptDialog({
                             value={formValues.description}
                             label={translator('scripts.overview.execute_script_dialog.form.description')}
                             className={classes.formControl}
-                            required
                             onChange={(e) => {
                                 setFormValues({
                                     ...formValues,
@@ -392,7 +391,6 @@ function ExecuteScriptDialog({
                                 disabled={
                                     !isSet(script)
                                         || !formValues.name.trim()
-                                        || !formValues.description.trim()
                                         || !formValues.environment.trim()
                                 }
                             >
