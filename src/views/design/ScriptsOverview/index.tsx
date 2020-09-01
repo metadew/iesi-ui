@@ -273,15 +273,15 @@ const ScriptsOverview = withStyles(styles)(
                 },
                 description: {
                     className: classes.scriptDescription,
-                    tooltip: (value) => value,
-                    fixedWidth: '55%',
+                    noWrap: true,
+                    fixedWidth: '50%',
                 },
                 labels: {
                     label: (
                         <Translate msg="scripts.overview.list.labels.labels" />
                     ),
                     className: classes.scriptLabels,
-                    fixedWidth: '5%',
+                    fixedWidth: '10%',
                 },
             };
 

@@ -8,6 +8,7 @@ export interface IColumn<ColumnNames> {
     align?: 'left' | 'center' | 'right';
     className?: string | ((value: ReactText) => string);
     tooltip?: string | ((value: ReactText) => ReactText | ReactNode);
+    noWrap?: boolean;
     fixedWidth?: ReactText;
     hideOnCompactView?: boolean;
     icon?: ReactElement;

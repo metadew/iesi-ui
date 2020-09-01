@@ -31,8 +31,7 @@ import { formatNumberWithTwoDigits } from 'utils/number/format';
 import isSet from '@snipsonian/core/es/is/isSet';
 import Tooltip from 'views/common/Tooltip';
 import DragHandlerIcon from 'views/common/icons/DragHandler';
-
-const SHORTEN_VALUE_FROM_CHARACTERS = 40;
+import TooltipDiv from 'views/common/TooltipDiv';
 
 interface IPublicProps<ColumnNames> {
     index: number;
@@ -293,13 +292,7 @@ export default function GenericTableRow<ColumnNames>({
         return Object.keys(columns).map((untypedColumnName) => {
             const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
             const column = columns[columnName] as IColumn<ColumnNames>;
-
             const value = getListItemValueFromColumn(item, columnName).toString();
-            const shortenedValue = value.length > SHORTEN_VALUE_FROM_CHARACTERS
-                ? `${value.substr(0, SHORTEN_VALUE_FROM_CHARACTERS)}…`
-                : value === ''
-                    ? '-'
-                    : value;
 
             const cellClassName = typeof column.className === 'function'
                 ? column.className(value)
@@ -335,12 +328,16 @@ export default function GenericTableRow<ColumnNames>({
                                 </Typography>
                             )}
                             <Box display="flex" alignItems="center">
-                                <Typography variant="body2" className={cellClassName}>
-                                    {shortenedValue}
-                                    {tooltip && (
-                                        <Tooltip title={tooltip} iconSize="small" />
-                                    )}
-                                </Typography>
+                                {column.noWrap ? (
+                                    <TooltipDiv text={value} className={cellClassName} />
+                                ) : (
+                                    <Typography variant="body2" className={cellClassName}>
+                                        {value}
+                                    </Typography>
+                                )}
+                                {tooltip && (
+                                    <Tooltip title={tooltip} iconSize="small" />
+                                )}
                             </Box>
                         </Box>
                     </Box>
