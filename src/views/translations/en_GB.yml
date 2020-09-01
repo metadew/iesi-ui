@@ -216,33 +216,29 @@ script_reports:
       toggle_button: Details
       execution:
         title: Execution data
-        name:
-          label: Execution name
-        description:
-          label: Execution description
+        script_name:
+          label: Script name
+        script_version:
+          label: Script version
+        environment:
+          label: Environment
         run_id:
           label: Run ID
-        start_timestamp:
-          label: Start timestamp
-        end_timestamp:
-          label: End timestamp
-        execution_status:
+        process_id:
+          label: Process ID
+        timestamps:
+          label: Start - end timestamp
+        script_status:
           label: Status
-        labels:
+        execution_labels:
           label: Execution labels
           none: '-'
-        output:
-          label: Output
-          none: '-'
-      script:
-        title: Script data
-        name:
-          label: Script name
-        version:
-          label: version
-        labels:
+        design_labels:
           label: Design labels
           none: '-'
         input_parameters:
-          label: Input parameters
+          label: Input
+          none: '-'
+        output:
+          label: Output
           none: '-'
