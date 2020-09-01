@@ -201,6 +201,7 @@ function AddAction({ state, onClose, onAdd }: IObserveProps & IPublicProps) {
                         },
                         name: {
                             fixedWidth: '70%',
+                            noWrap: true,
                             className: classes.actionName,
                         },
                     }}

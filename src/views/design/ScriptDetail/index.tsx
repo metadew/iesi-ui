@@ -373,6 +373,7 @@ const ScriptDetail = withStyles(styles)(
                 name: {
                     fixedWidth: '60%',
                     className: classes.scriptName,
+                    noWrap: true,
                 },
             };
 
