@@ -23,6 +23,7 @@ import { FilterType, SortOrder, SortType, IListItem } from 'models/list.models';
 import { getAsyncActionTypes } from 'state/entities/constants/selectors';
 import { IActionType } from 'models/state/constants.models';
 import { IScriptAction } from 'models/state/scripts.models';
+import Tooltip from 'views/common/tooltips/Tooltip';
 
 interface IPublicProps {
     onClose: () => void;
@@ -102,12 +103,19 @@ function AddAction({ state, onClose, onAdd }: IObserveProps & IPublicProps) {
                 alignItems="center"
                 padding={1}
             >
-                <IconButton
-                    className={classes.headerAction}
-                    onClick={() => setIsSearchActive(!isSearchActive)}
+                <Tooltip
+                    title={translator('scripts.detail.main.add_action.search_button')}
+                    enterDelay={1000}
+                    enterNextDelay={1000}
                 >
-                    <Search />
-                </IconButton>
+                    <IconButton
+                        aria-label={translator('scripts.detail.main.add_action.search_button')}
+                        className={classes.headerAction}
+                        onClick={() => setIsSearchActive(!isSearchActive)}
+                    >
+                        <Search />
+                    </IconButton>
+                </Tooltip>
                 {isSearchActive ? (
                     <Input
                         autoFocus

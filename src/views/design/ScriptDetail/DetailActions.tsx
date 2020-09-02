@@ -9,6 +9,10 @@ import {
 import ReportIcon from 'views/common/icons/Report';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { THEME_COLORS } from 'config/themes/colors';
+import Tooltip from 'views/common/tooltips/Tooltip';
+import { observe, IObserveProps } from 'views/observe';
+import { StateChangeNotification } from 'models/state.models';
+import { getTranslator } from 'state/i18n/selectors';
 
 interface IPublicProps {
     onPlay: () => void;
@@ -37,26 +41,35 @@ const useStyles = makeStyles(({ palette, spacing }) => ({
     },
 }));
 
-export default function DetailActions({
+function DetailActions({
     onPlay,
     onDelete,
     onAdd,
     onSave,
     onViewReport,
     isCreateRoute,
-}: IPublicProps) {
+    state,
+}: IPublicProps & IObserveProps) {
     const classes = useStyles();
+    const translator = getTranslator(state);
+
     return (
         <Box display="flex" alignItems="center" justifyContent="space-between" marginX={2.2}>
             <Box flex="0 0 auto">
-                <IconButton
-                    aria-label="add action"
-                    className={classes.addButton}
-                    onClick={onAdd}
-                    color="default"
+                <Tooltip
+                    title={translator('scripts.detail.main.actions.add_action')}
+                    enterDelay={1000}
+                    enterNextDelay={1000}
                 >
-                    <AddIcon />
-                </IconButton>
+                    <IconButton
+                        aria-label={translator('scripts.detail.main.actions.add_action')}
+                        className={classes.addButton}
+                        onClick={onAdd}
+                        color="default"
+                    >
+                        <AddIcon />
+                    </IconButton>
+                </Tooltip>
             </Box>
             <Box flex="0 0 auto">
                 <Paper elevation={0} className={classes.actions}>
@@ -68,20 +81,54 @@ export default function DetailActions({
                             startIcon={<SaveIcon />}
                             onClick={onSave}
                         >
-                            <Translate msg="Save" />
+                            <Translate msg="scripts.detail.main.actions.save" />
                         </Button>
                     </Box>
-                    <IconButton disabled={isCreateRoute} aria-label="delete script" onClick={onDelete}>
-                        <DeleteIcon />
-                    </IconButton>
-                    <IconButton disabled={isCreateRoute} aria-label="view reports" onClick={onViewReport}>
-                        <ReportIcon />
-                    </IconButton>
-                    <IconButton disabled={isCreateRoute} aria-label="execute script" onClick={onPlay}>
-                        <PlayIcon />
-                    </IconButton>
+                    <Tooltip
+                        title={translator('scripts.detail.main.actions.delete')}
+                        enterDelay={1000}
+                        enterNextDelay={1000}
+                    >
+                        <IconButton
+                            disabled={isCreateRoute}
+                            aria-label={translator('scripts.detail.main.actions.delete')}
+                            onClick={onDelete}
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip
+                        title={translator('scripts.detail.main.actions.report')}
+                        enterDelay={1000}
+                        enterNextDelay={1000}
+                    >
+                        <IconButton
+                            disabled={isCreateRoute}
+                            aria-label={translator('scripts.detail.main.actions.report')}
+                            onClick={onViewReport}
+                        >
+                            <ReportIcon />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip
+                        title={translator('scripts.detail.main.actions.execute')}
+                        enterDelay={1000}
+                        enterNextDelay={1000}
+                    >
+                        <IconButton
+                            disabled={isCreateRoute}
+                            aria-label={translator('scripts.detail.main.actions.execute')}
+                            onClick={onPlay}
+                        >
+                            <PlayIcon />
+                        </IconButton>
+                    </Tooltip>
                 </Paper>
             </Box>
         </Box>
     );
 }
+
+export default observe<IPublicProps>([
+    StateChangeNotification.I18N_TRANSLATIONS,
+], DetailActions);

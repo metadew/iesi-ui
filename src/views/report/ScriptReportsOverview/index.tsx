@@ -47,6 +47,7 @@ import {
 import { triggerFetchExecutionRequests } from 'state/entities/executionRequests/triggers';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { getEnvironmentsForDropdown } from 'state/entities/environments/selectors';
+import { getTranslator } from 'state/i18n/selectors';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -251,7 +252,8 @@ const ScriptReportsOverview = withStyles(styles)(
         }
 
         private renderContent({ listItems }: { listItems: IListItem<IColumnNames>[] }) {
-            const { classes } = this.props;
+            const { classes, state } = this.props;
+            const translator = getTranslator(state);
             const columns: ListColumns<IColumnNames> = {
                 script: {
                     className: classes.scriptName,
@@ -324,7 +326,7 @@ const ScriptReportsOverview = withStyles(styles)(
                         listActions={[
                             {
                                 icon: <ReportIcon />,
-                                label: <Translate msg="script_reports.overview.list.actions.report" />,
+                                label: translator('script_reports.overview.list.actions.report'),
                                 onClick: (id) => {
                                     const execution = listItems.find((listItem) => listItem.id === id);
 

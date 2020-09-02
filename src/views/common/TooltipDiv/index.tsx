@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Box, makeStyles } from '@material-ui/core';
 import classNames from 'classnames';
-import Tooltip from '../Tooltip';
+import InfoTooltip from '../tooltips/InfoTooltip';
 
 interface IPublicProps {
     text: string;
@@ -54,7 +54,7 @@ export default function TooltipDiv({
                         {text}
                     </Box>
                     <Box flex="0 0 auto">
-                        <Tooltip title={text} iconSize="small" />
+                        <InfoTooltip title={text} iconSize="small" />
                     </Box>
                 </Box>
             </Box>

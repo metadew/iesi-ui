@@ -3,15 +3,8 @@ import classNames from 'classnames';
 import {
     Tooltip as MuiTooltip,
     TooltipProps,
-    Icon as MuiIcon,
     makeStyles,
 } from '@material-ui/core';
-import { Info } from '@material-ui/icons';
-
-interface IPublicProps extends Omit<TooltipProps, 'children'> {
-    icon?: React.ReactNode;
-    iconSize?: 'inherit' | 'default' | 'small';
-}
 
 const useTooltipStyles = makeStyles(({ palette, spacing, typography }) => ({
     // Theme specific adjustments in src/config/themes/*.theme.ts
@@ -31,23 +24,7 @@ const useTooltipStyles = makeStyles(({ palette, spacing, typography }) => ({
     },
 }));
 
-const useStyles = makeStyles(({ spacing, typography }) => ({
-    tooltipIcon: {
-        position: 'relative',
-        top: '-2px',
-        marginLeft: spacing(0.5),
-        verticalAlign: 'middle',
-        lineHeight: 0,
-        '&.small': {
-            fontSize: typography.pxToRem(17),
-        },
-        '&.inherit': {
-            fontSize: 'inherit',
-        },
-        '& > svg': {
-            fontSize: 'inherit',
-        },
-    },
+const useStyles = makeStyles(({ typography }) => ({
     tooltipContent: {
         fontSize: typography.pxToRem(12),
     },
@@ -57,12 +34,11 @@ const useStyles = makeStyles(({ spacing, typography }) => ({
 }));
 
 export default function Tooltip({
-    iconSize = 'default',
-    icon,
+    children,
     title,
     interactive = true,
     ...restProps
-}: IPublicProps) {
+}: TooltipProps) {
     const toolTipClasses = useTooltipStyles();
     const customClasses = useStyles();
 
@@ -81,9 +57,7 @@ export default function Tooltip({
             )}
             {...restProps}
         >
-            <MuiIcon aria-label="info" className={classNames(customClasses.tooltipIcon, iconSize)}>
-                {icon || <Info />}
-            </MuiIcon>
+            {children}
         </MuiTooltip>
     );
 }

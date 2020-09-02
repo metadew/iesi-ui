@@ -119,6 +119,7 @@ scripts:
     side:
       script_description: Script description
       script_name: Script name
+      script_version: Script version
       description:
         last_run_date: Last run date
         last_run_status: Last run status
@@ -144,11 +145,18 @@ scripts:
         empty: No schedules
         title: Environment schedules
     main:
+      actions:
+        add_action: Add new action
+        delete: Delete script
+        report: Report of script
+        save: Save
+        execute: Execute script
       alert:
         save_changes: You made changes to this script. Don't forget to save them.
       add_action:
         header: Choose the actions you like to add
         select_category: Select a category
+        search_button: Search by action name
       list:
         item:
           actions:

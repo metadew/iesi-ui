@@ -343,8 +343,9 @@ const ScriptDetail = withStyles(styles)(
         }
 
         private renderScriptDetailContent() {
-            const { classes } = this.props;
+            const { classes, state } = this.props;
             const { newScriptDetail, hasChangesToCheck } = this.state;
+            const translator = getTranslator(state);
 
             const listItems = getSortedListItemsFromScriptDetail(newScriptDetail);
             const hasActions = listItems.length > 0;
@@ -435,14 +436,14 @@ const ScriptDetail = withStyles(styles)(
                             listActions={[
                                 {
                                     icon: <EditIcon />,
-                                    label: <Translate msg="scripts.detail.main.list.item.actions.edit" />,
+                                    label: translator('scripts.detail.main.list.item.actions.edit'),
                                     onClick: (id, index) => {
                                         this.setState({ editActionIndex: index });
                                     },
                                 },
                                 {
                                     icon: <DeleteIcon />,
-                                    label: <Translate msg="scripts.detail.main.list.item.actions.delete" />,
+                                    label: translator('scripts.detail.main.list.item.actions.delete'),
                                     onClick: (id, index) => {
                                         const newActions = [...newScriptDetail.actions];
                                         newActions.splice(index, 1);

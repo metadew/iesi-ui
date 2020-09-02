@@ -261,7 +261,8 @@ const ScriptsOverview = withStyles(styles)(
         }
 
         private renderContent({ listItems }: { listItems: IListItem<IColumnNames>[] }) {
-            const { classes } = this.props;
+            const { classes, state } = this.props;
+            const translator = getTranslator(state);
             const columns: ListColumns<IColumnNames> = {
                 name: {
                     className: classes.scriptName,
@@ -301,12 +302,11 @@ const ScriptsOverview = withStyles(styles)(
                                 listActions={[
                                     {
                                         icon: <PlayArrowRounded />,
-                                        label: <Translate msg="scripts.overview.list.actions.execute" />,
-                                        // eslint-disable-next-line no-alert
+                                        label: translator('scripts.overview.list.actions.execute'),
                                         onClick: this.setScriptToExecute,
                                     }, {
                                         icon: <Edit />,
-                                        label: <Translate msg="scripts.overview.list.actions.edit" />,
+                                        label: translator('scripts.overview.list.actions.edit'),
                                         onClick: (id) => {
                                             const scripts = getAsyncScripts(this.props.state);
                                             const selectedScript = scripts.find((item) =>
@@ -322,7 +322,7 @@ const ScriptsOverview = withStyles(styles)(
                                         },
                                     }, {
                                         icon: <ReportIcon />,
-                                        label: <Translate msg="scripts.overview.list.actions.report" />,
+                                        label: translator('scripts.overview.list.actions.report'),
                                         onClick: (id) => {
                                             const scripts = getAsyncScripts(this.props.state);
                                             const selectedScript = scripts.find((item) =>
@@ -338,7 +338,7 @@ const ScriptsOverview = withStyles(styles)(
                                         },
                                     }, {
                                         icon: <Delete />,
-                                        label: <Translate msg="scripts.overview.list.actions.delete" />,
+                                        label: translator('scripts.overview.list.actions.delete'),
                                         onClick: this.setScriptToDelete,
                                     },
                                 ]}

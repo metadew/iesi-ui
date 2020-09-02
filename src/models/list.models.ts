@@ -20,7 +20,7 @@ export type ListColumns<ColumnNames> = {
 
 export interface IListAction {
     icon: ReactElement;
-    label: TTranslatorComponent;
+    label: TTranslatorComponent | string;
     onClick: (id: ReactText, index: number) => void;
 }
 

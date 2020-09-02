@@ -29,7 +29,8 @@ import {
 } from 'react-beautiful-dnd';
 import { formatNumberWithTwoDigits } from 'utils/number/format';
 import isSet from '@snipsonian/core/es/is/isSet';
-import Tooltip from 'views/common/Tooltip';
+import Tooltip from 'views/common/tooltips/Tooltip';
+import InfoTooltip from 'views/common/tooltips/InfoTooltip';
 import DragHandlerIcon from 'views/common/icons/DragHandler';
 import TooltipDiv from 'views/common/TooltipDiv';
 
@@ -216,12 +217,17 @@ export default function GenericTableRow<ColumnNames>({
                                 // eslint-disable-next-line react/no-array-index-key
                                 <div key={listActionIndex} className={classes.actionsItem}>
                                     {!isPlaceholder ? (
-                                        <IconButton
-                                            onClick={() => action.onClick(item.id, rowIndex)}
-                                            className={classes.actionIcon}
-                                        >
-                                            {action.icon}
-                                        </IconButton>
+                                        <>
+                                            <Tooltip title={action.label} enterDelay={1000} enterNextDelay={1000}>
+                                                <IconButton
+                                                    area-label={action.label}
+                                                    onClick={() => action.onClick(item.id, rowIndex)}
+                                                    className={classes.actionIcon}
+                                                >
+                                                    {action.icon}
+                                                </IconButton>
+                                            </Tooltip>
+                                        </>
                                     ) : renderPlaceholderCellContent()}
                                 </div>
                             ))}
@@ -336,7 +342,7 @@ export default function GenericTableRow<ColumnNames>({
                                     </Typography>
                                 )}
                                 {tooltip && (
-                                    <Tooltip title={tooltip} iconSize="small" />
+                                    <InfoTooltip title={tooltip} iconSize="small" />
                                 )}
                             </Box>
                         </Box>
