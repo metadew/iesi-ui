@@ -156,7 +156,6 @@ function AddAction({ state, onClose, onAdd }: IObserveProps & IPublicProps) {
                                     const category = event.target.value as string;
                                     if (category !== selectedCategory) {
                                         setSelectedCategory(category);
-                                        setSelectedIds([]);
                                     }
                                 }}
                             >
@@ -190,7 +189,6 @@ function AddAction({ state, onClose, onAdd }: IObserveProps & IPublicProps) {
                                     onClick={() => {
                                         if (category !== selectedCategory) {
                                             setSelectedCategory(category);
-                                            setSelectedIds([]);
                                         }
                                     }}
                                 >
@@ -251,7 +249,7 @@ function AddAction({ state, onClose, onAdd }: IObserveProps & IPublicProps) {
     }
 
     function onAddItems() {
-        const actionsToAdd = actionTypes.filter((item) => selectedIds.includes(item.name));
+        const actionsToAdd = actionTypes.filter((item) => selectedIds.includes(item.type));
         onAdd(actionsToAdd.map((item) => ({
             component: null,
             condition: '',
@@ -273,7 +271,7 @@ function AddAction({ state, onClose, onAdd }: IObserveProps & IPublicProps) {
     function mapActionTypesToListItems(items: IActionType[]) {
         return items.map((item) => {
             const listItem: IListItem<IColumnNames, IListData> = {
-                id: item.name,
+                id: item.type,
                 columns: {
                     name: item.name,
                     type: item.type,
