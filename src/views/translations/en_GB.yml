@@ -34,7 +34,10 @@ common:
     sort:
       sort_by: Sort by
 error:
-  default: Something when wrong.
+  default:
+    title: OOPS! Something went wrong
+    text: Brace yourself till we get the error fixed. You may alsof refresh the app or try again later.
+    button: Refresh
   unexpected: An unexpected error occurred.
   timeout: The server did not respond in a timely fashion. Please try again.
   fetch_env: Could not fetch ENV
