@@ -102,6 +102,9 @@ scripts:
   detail:
     add_action:
       add_button: 'Add {amount} actions'
+    delete_action_dialog:
+      text: Are you sure you want to delete this action?
+      title: Delete action
     delete_script_dialog:
       text: Are you sure you want to delete this script?
       title: Delete script

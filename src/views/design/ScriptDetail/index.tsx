@@ -77,13 +77,14 @@ type TProps = WithStyles<typeof styles>;
 
 interface IComponentState {
     isAddOpen: boolean;
-    isConfirmDeleteOpen: boolean;
+    isConfirmDeleteScriptOpen: boolean;
     isSaveDialogOpen: boolean;
     editActionIndex: number;
     newScriptDetail: IScript;
     hasChangesToCheck: boolean;
     requiredFieldsState: TRequiredFieldsState<IScript>;
     scriptIdToExecute: string;
+    actionIdToDelete: number;
 }
 
 const ScriptDetail = withStyles(styles)(
@@ -93,7 +94,8 @@ const ScriptDetail = withStyles(styles)(
 
             this.state = {
                 isAddOpen: false,
-                isConfirmDeleteOpen: false,
+                isConfirmDeleteScriptOpen: false,
+                actionIdToDelete: null,
                 isSaveDialogOpen: false,
                 editActionIndex: -1,
                 newScriptDetail: {
@@ -138,6 +140,7 @@ const ScriptDetail = withStyles(styles)(
             this.navigateToScriptAfterDeletion = this.navigateToScriptAfterDeletion.bind(this);
 
             this.onDeleteScript = this.onDeleteScript.bind(this);
+            this.onDeleteAction = this.onDeleteAction.bind(this);
             this.onCloseExecuteDialog = this.onCloseExecuteDialog.bind(this);
         }
 
@@ -149,7 +152,14 @@ const ScriptDetail = withStyles(styles)(
 
         public render() {
             const { state } = this.props;
-            const { isAddOpen, isConfirmDeleteOpen, isSaveDialogOpen, newScriptDetail, scriptIdToExecute } = this.state;
+            const {
+                isAddOpen,
+                isConfirmDeleteScriptOpen,
+                isSaveDialogOpen,
+                newScriptDetail,
+                scriptIdToExecute,
+                actionIdToDelete,
+            } = this.state;
 
             // State
             const scriptDetailAsyncStatus = getAsyncScriptDetail(state).fetch.status;
@@ -178,10 +188,17 @@ const ScriptDetail = withStyles(styles)(
                     <ConfirmationDialog
                         title={translator('scripts.detail.delete_script_dialog.title')}
                         text={translator('scripts.detail.delete_script_dialog.text')}
-                        open={isConfirmDeleteOpen}
-                        onClose={() => this.setState({ isConfirmDeleteOpen: false })}
+                        open={isConfirmDeleteScriptOpen}
+                        onClose={() => this.setState({ isConfirmDeleteScriptOpen: false })}
                         onConfirm={this.onDeleteScript}
                         showLoader={deleteStatus === AsyncStatus.Busy}
+                    />
+                    <ConfirmationDialog
+                        title={translator('scripts.detail.delete_action_dialog.title')}
+                        text={translator('scripts.detail.delete_action_dialog.text')}
+                        open={actionIdToDelete !== null}
+                        onClose={() => this.setState({ actionIdToDelete: null })}
+                        onConfirm={this.onDeleteAction}
                     />
                     <ExecuteScriptDialog
                         scriptUniqueId={getUniqueIdFromScript(newScriptDetail)}
@@ -413,7 +430,7 @@ const ScriptDetail = withStyles(styles)(
                         </Collapse>
                         <DetailActions
                             onSave={handleSaveAction}
-                            onDelete={() => this.setState({ isConfirmDeleteOpen: true })}
+                            onDelete={() => this.setState({ isConfirmDeleteScriptOpen: true })}
                             onAdd={() => this.setState({ isAddOpen: true })}
                             onPlay={() => this.setScriptToExecute(getUniqueIdFromScript(newScriptDetail))}
                             onViewReport={() => {
@@ -445,9 +462,7 @@ const ScriptDetail = withStyles(styles)(
                                     icon: <DeleteIcon />,
                                     label: translator('scripts.detail.main.list.item.actions.delete'),
                                     onClick: (id, index) => {
-                                        const newActions = [...newScriptDetail.actions];
-                                        newActions.splice(index, 1);
-                                        this.updateScript({ actions: newActions });
+                                        this.setState({ actionIdToDelete: index });
                                     },
                                 },
                             ]}
@@ -512,6 +527,17 @@ const ScriptDetail = withStyles(styles)(
             const detail = getAsyncScriptDetail(state).data;
             if (detail) {
                 triggerDeleteScriptDetail({ name: detail.name, version: detail.version.number });
+            }
+        }
+
+        private onDeleteAction() {
+            const { newScriptDetail, actionIdToDelete } = this.state;
+            const newActions = [...newScriptDetail.actions];
+
+            if (actionIdToDelete !== null) {
+                newActions.splice(actionIdToDelete, 1);
+                this.updateScript({ actions: newActions });
+                this.setState({ actionIdToDelete: null });
             }
         }
 
