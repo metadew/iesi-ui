@@ -337,10 +337,10 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                     <Translate msg="script_reports.detail.main.action.start_timestamp" />
                                 </Typography>
                                 <Typography>
-                                    {formatDate(
+                                    {item.data.startTimestamp ? formatDate(
                                         parseISO(item.data.startTimestamp.toString()),
                                         'dd/MM/yyyy HH:mm:ss',
-                                    )}
+                                    ) : '?'}
                                 </Typography>
                             </Box>
                             <Box flex="1 1 50%" padding={1.6}>
@@ -348,10 +348,10 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                     <Translate msg="script_reports.detail.main.action.end_timestamp" />
                                 </Typography>
                                 <Typography>
-                                    {formatDate(
+                                    {item.data.endTimestamp ? formatDate(
                                         parseISO(item.data.endTimestamp.toString()),
                                         'dd/MM/yyyy HH:mm:ss',
-                                    )}
+                                    ) : '?'}
                                 </Typography>
                             </Box>
                         </Box>
