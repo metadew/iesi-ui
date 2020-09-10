@@ -9,7 +9,7 @@ export function getListItemValueFromColumn<ColumnNames>(
     let value: ReactText = '';
     if (isObject(item.columns[columnName])) {
         const columnData = item.columns[columnName] as IListItemValueWithSortValue;
-        value = columnData.value;
+        value = columnData ? columnData.value : undefined;
     } else {
         value = item.columns[columnName] as ReactText;
     }
@@ -23,7 +23,7 @@ export function getListItemSortValueFromColumn<ColumnNames>(
     let value: ReactText = '';
     if (isObject(item.columns[columnName])) {
         const columnData = item.columns[columnName] as IListItemValueWithSortValue;
-        value = columnData.sortValue;
+        value = columnData ? columnData.sortValue : undefined;
     } else {
         value = item.columns[columnName] as ReactText;
     }
@@ -37,7 +37,7 @@ export function getListItemTooltipFromColumn<ColumnNames>(
     let tooltip: string | ReactNode = null;
     if (isObject(item.columns[columnName])) {
         const columnData = item.columns[columnName] as IListItemValueWithSortValue;
-        tooltip = columnData.tooltip;
+        tooltip = columnData ? columnData.tooltip : undefined;
     }
     return typeof tooltip !== 'undefined' ? tooltip : '';
 }
