@@ -338,6 +338,10 @@ const ScriptReportsOverview = withStyles(styles)(
                                         },
                                     });
                                 },
+                                hideAction: (id) => {
+                                    const execution = listItems.find((listItem) => listItem.id === id);
+                                    return execution.columns.executionStatus !== ExecutionRequestStatus.Completed;
+                                },
                             },
                         ]}
                         columns={columns}

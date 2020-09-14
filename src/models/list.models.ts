@@ -22,6 +22,7 @@ export interface IListAction {
     icon: ReactElement;
     label: TTranslatorComponent | string;
     onClick: (id: ReactText, index: number) => void;
+    hideAction?: (id: ReactText, index: number) => boolean;
 }
 
 export interface IListItemValueWithSortValue {

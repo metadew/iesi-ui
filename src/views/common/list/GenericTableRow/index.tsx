@@ -227,7 +227,7 @@ export default function GenericTableRow<ColumnNames>({
                                 // eslint-disable-next-line react/no-array-index-key
                                 <div key={listActionIndex} className={classes.actionsItem}>
                                     {!isPlaceholder ? (
-                                        <>
+                                        (!action.hideAction || !action.hideAction(item.id, rowIndex)) && (
                                             <Tooltip title={action.label} enterDelay={1000} enterNextDelay={1000}>
                                                 <IconButton
                                                     area-label={action.label}
@@ -237,7 +237,7 @@ export default function GenericTableRow<ColumnNames>({
                                                     {action.icon}
                                                 </IconButton>
                                             </Tooltip>
-                                        </>
+                                        )
                                     ) : renderPlaceholderCellContent()}
                                 </div>
                             ))}
@@ -269,21 +269,23 @@ export default function GenericTableRow<ColumnNames>({
                                 }}
                             >
                                 {listActions.map((action, listActionIndex) => (
-                                    <MenuItem
-                                        // eslint-disable-next-line react/no-array-index-key
-                                        key={listActionIndex}
-                                        onClick={() => {
-                                            handleClose();
-                                            action.onClick(item.id, rowIndex);
-                                        }}
-                                        dense
-                                        className={classes.actionsMenuItem}
-                                    >
-                                        <ListItemIcon>
-                                            {action.icon}
-                                        </ListItemIcon>
-                                        <Typography variant="inherit" noWrap>{action.label}</Typography>
-                                    </MenuItem>
+                                    (!action.hideAction || !action.hideAction(item.id, rowIndex)) && (
+                                        <MenuItem
+                                            // eslint-disable-next-line react/no-array-index-key
+                                            key={listActionIndex}
+                                            onClick={() => {
+                                                handleClose();
+                                                action.onClick(item.id, rowIndex);
+                                            }}
+                                            dense
+                                            className={classes.actionsMenuItem}
+                                        >
+                                            <ListItemIcon>
+                                                {action.icon}
+                                            </ListItemIcon>
+                                            <Typography variant="inherit" noWrap>{action.label}</Typography>
+                                        </MenuItem>
+                                    )
                                 ))}
                             </Menu>
                         </TableCell>
