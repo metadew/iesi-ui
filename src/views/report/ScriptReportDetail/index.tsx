@@ -298,20 +298,23 @@ function ExecutionDetail({ state }: IObserveProps) {
                 {
                     label: translator('script_reports.detail.side.execution.output.label'),
                     value: scriptExecutionData.output.length
-                        ? <ShowLabels labels={scriptExecutionData.output} />
-                        : <Translate msg="script_reports.detail.side.execution.output.none" />,
+                        ? (
+                            <ShowLabels
+                                labels={scriptExecutionData.output.sort((a, b) => a.name.localeCompare(b.name))}
+                            />
+                        ) : <Translate msg="script_reports.detail.side.execution.output.none" />,
                 },
                 {
                     label: translator('script_reports.detail.side.execution.execution_labels.label'),
                     value: scriptExecutionData.executionLabels.length
                         ? <ShowLabels labels={scriptExecutionData.executionLabels} />
-                        : <Translate msg="script_reports.detail.side.execution.output.none" />,
+                        : <Translate msg="script_reports.detail.side.execution.execution_labels.none" />,
                 },
                 {
                     label: translator('script_reports.detail.side.execution.design_labels.label'),
                     value: scriptExecutionData.designLabels.length
                         ? <ShowLabels labels={scriptExecutionData.designLabels} />
-                        : <Translate msg="script_reports.detail.side.execution.output.none" />,
+                        : <Translate msg="script_reports.detail.side.execution.design_labels.none" />,
                 },
             ] : [],
         ];
@@ -348,7 +351,7 @@ function ExecutionDetail({ state }: IObserveProps) {
                     errorExpected: item.errorExpected,
                     errorStop: item.errorStop,
                     condition: item.condition,
-                    output: item.output,
+                    output: item.output.sort((a, b) => a.name.localeCompare(b.name)),
                 },
             };
             return listItem;
