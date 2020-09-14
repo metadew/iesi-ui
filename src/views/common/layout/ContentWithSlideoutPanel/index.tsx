@@ -5,17 +5,19 @@ import { TTranslatorComponent } from 'models/i18n.models';
 import { PlayArrowSharp } from '@material-ui/icons';
 
 const SIDE_PANEL_WIDTH = 350;
+const TRANSITION_DURATION = 200; // ms
 
 const useStyles = makeStyles(({ palette, typography }) => ({
     panel: {
         background: palette.background.paper,
     },
     container: {
-        width: `calc(100% + ${SIDE_PANEL_WIDTH}px)`,
-        transition: 'transform .2s',
+        width: '100%',
+        transition: `transform ${TRANSITION_DURATION}ms, width ${TRANSITION_DURATION}ms`,
     },
     closed: {
         transform: `translateX(-${SIDE_PANEL_WIDTH}px)`,
+        width: `calc(100% + ${SIDE_PANEL_WIDTH}px)`,
     },
     open: {
         transform: 'translateX(0)',
@@ -23,6 +25,12 @@ const useStyles = makeStyles(({ palette, typography }) => ({
     toggle: {
         transform: 'rotate(-90deg)',
         transformOrigin: 'top right',
+    },
+    content: {
+        maxWidth: '100vw',
+    },
+    contentSidePanelOpen: {
+        maxWidth: `calc(100vw - ${SIDE_PANEL_WIDTH}px)`,
     },
     toggleButton: {
         borderTopLeftRadius: 0,
@@ -61,6 +69,9 @@ export default function ContentWithSlideoutPanel({
         [classes.open]: isOpen,
     });
 
+    const contentClasses = classNames(classes.content, {
+        [classes.contentSidePanelOpen]: isOpen,
+    });
 
     return (
         <Box display="flex" flex="1 1 auto" className={containerClasses}>
@@ -87,7 +98,7 @@ export default function ContentWithSlideoutPanel({
                     </Button>
                 </Box>
             </Box>
-            <Box flex="1 1 auto" position="relative" maxWidth="100vw">
+            <Box flex="1 1 auto" position="relative" className={contentClasses}>
                 {content}
             </Box>
         </Box>
@@ -95,5 +106,9 @@ export default function ContentWithSlideoutPanel({
 
     function togglePanel() {
         setIsOpen(!isOpen);
+
+        setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+        }, TRANSITION_DURATION);
     }
 }

@@ -1,4 +1,4 @@
-import React, { ReactText, useState } from 'react';
+import React, { ReactText, useState, useEffect } from 'react';
 import { THEME_COLORS } from 'config/themes/colors';
 import classNames from 'classnames';
 import { getListItemValueFromColumn, getListItemTooltipFromColumn } from 'utils/list/list';
@@ -44,6 +44,7 @@ interface IPublicProps<ColumnNames> {
     };
     showIndex?: boolean;
     isDragging?: boolean;
+    compactView?: boolean;
     disableElevation?: boolean;
     selectable?: {
         onSelect: (id: ReactText) => void;
@@ -56,7 +57,7 @@ interface IPublicProps<ColumnNames> {
     };
 }
 
-const useStyles = makeStyles(({ breakpoints, palette, shape, typography, spacing }: Theme) => ({
+const useStyles = makeStyles(({ palette, shape, typography, spacing }: Theme) => ({
     tableRow: {
         background: palette.background.paper,
         height: '100%',
@@ -68,17 +69,19 @@ const useStyles = makeStyles(({ breakpoints, palette, shape, typography, spacing
     tableRowIsDragging: {
         borderSpacing: 0,
     },
+    tableRowCompactView: {},
     tableCell: {
         height: '100%',
     },
     hideOnCompactView: {
-        [breakpoints.down('sm')]: {
+        '.compact > &': {
             display: 'none',
         },
     },
     label: {
         fontSize: typography.pxToRem(12),
         color: palette.grey[500],
+        whiteSpace: 'nowrap',
     },
     cellIcon: {
         '& > .MuiSvgIcon-root': {
@@ -96,14 +99,14 @@ const useStyles = makeStyles(({ breakpoints, palette, shape, typography, spacing
                 content: 'normal !important',
             },
         },
-        [breakpoints.down('md')]: {
-            width: '5%',
+        '.compact > &': {
+            display: 'none',
         },
     },
     actionsCellCompact: {
-        width: '5%',
-        [breakpoints.up('md')]: {
-            display: 'none',
+        display: 'none',
+        '.compact > &': {
+            display: 'table-cell',
         },
     },
     actionsWrapper: {
@@ -163,6 +166,7 @@ export default function GenericTableRow<ColumnNames>({
     draggableProps,
     showIndex,
     isDragging,
+    compactView,
     disableElevation,
     selectable,
     className,
@@ -171,6 +175,7 @@ export default function GenericTableRow<ColumnNames>({
 }: IPublicProps<ColumnNames>) {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = useState(null);
+    const [compactViewActive, setCompactViewActive] = useState(compactView);
     const open = Boolean(anchorEl);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -183,11 +188,16 @@ export default function GenericTableRow<ColumnNames>({
 
     const isPlaceholder = placeholderProps || typeof item === 'undefined';
 
+    useEffect(() => {
+        setCompactViewActive(!!compactView);
+    }, [compactView]);
+
     return (
         <TableRow
             className={classNames(classes.tableRow, className, {
                 [classes.tableRowElevated]: !disableElevation,
                 [classes.tableRowIsDragging]: !!isDragging,
+                compact: !!compactViewActive,
             })}
             {...draggableProps}
         >

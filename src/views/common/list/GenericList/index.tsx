@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import debounce from 'lodash/debounce';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -31,7 +32,8 @@ import { IPageData } from 'models/state/iesiGeneric.models';
 import GenericTableRow from '../GenericTableRow';
 import { useListStyles } from '../common';
 
-const ROWS_PER_PAGE = 5;
+const ROWS_PER_PAGE = 20;
+const MAX_TABLE_WIDTH_FOR_COMPACT_VIEW = 800; // in px
 
 interface IPublicProps<ColumnNames> {
     columns: ListColumns<ColumnNames>;
@@ -64,6 +66,8 @@ export default function GenericList<ColumnNames>({
 }: IPublicProps<ColumnNames>) {
     const classes = useStyles();
     const listClasses = useListStyles();
+    const ref = useRef<HTMLTableElement>();
+    const [compactView, setCompactView] = useState(false);
 
     const items = sortedColumn
         ? sortListItems(listItems, sortedColumn as ISortedColumn<{}>)
@@ -75,10 +79,27 @@ export default function GenericList<ColumnNames>({
 
     const itemsToDisplay = filteredItems;
 
+    useEffect(() => {
+        const checkIfCompactView = () => {
+            if (ref.current) {
+                setCompactView(ref.current.offsetWidth <= MAX_TABLE_WIDTH_FOR_COMPACT_VIEW);
+            }
+        };
+
+        const debouncedHandleResize = debounce(checkIfCompactView, 200);
+
+        checkIfCompactView();
+        window.addEventListener('resize', debouncedHandleResize);
+
+        return () => {
+            window.removeEventListener('resize', debouncedHandleResize);
+        };
+    }, []);
+
     return (
         <>
             <TableContainer elevation={0} component={Paper} className={listClasses.tableContainer}>
-                <Table className={listClasses.table} aria-label="simple table">
+                <Table className={listClasses.table} aria-label="simple table" ref={ref}>
                     <TableBody>
                         {isLoading ? (
                             [...Array(ROWS_PER_PAGE)].map((placeholder, key) => (
@@ -88,6 +109,7 @@ export default function GenericList<ColumnNames>({
                                     index={key}
                                     listActions={listActions}
                                     columns={columns}
+                                    compactView={compactView}
                                 />
                             ))
                         ) : (
@@ -108,6 +130,7 @@ export default function GenericList<ColumnNames>({
                                         item={item}
                                         listActions={listActions}
                                         columns={columns}
+                                        compactView={compactView}
                                     />
                                 ))}
                             </>
