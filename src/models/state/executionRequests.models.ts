@@ -44,10 +44,12 @@ export interface IExecutionRequestByIdPayload {
 export enum ExecutionRequestStatus {
     New = 'NEW',
     Submitted = 'SUBMITTED',
-    Aborted = 'ABORTED',
-    Declined = 'DECLINED',
     Accepted = 'ACCEPTED',
+    Declined = 'DECLINED',
+    Stopped = 'STOPPED',
     Completed = 'COMPLETED',
+    Killed = 'KILLED',
+    Unknown = 'UNKNOWN',
 }
 
 export interface IFetchExecutionRequestListPayload {
