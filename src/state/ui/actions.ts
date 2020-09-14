@@ -2,7 +2,7 @@ import { createAction, getStore } from 'state';
 import { StateChangeNotification } from 'models/state.models';
 import { ITriggerFlashMessagePayload } from 'models/state/ui.models';
 import { SnackbarKey } from 'notistack';
-import { isExecutionRequestStatusNewOrSubmitted } from 'utils/scripts/executionRequests';
+import { isExecutionRequestStatusPending } from 'utils/scripts/executionRequests';
 import { ROUTE_KEYS } from 'views/routes';
 
 export const triggerFlashMessage = (payload: ITriggerFlashMessagePayload) => createAction<ITriggerFlashMessagePayload>({
@@ -100,7 +100,7 @@ export const checkPollingExecutionRequests = () => createAction<{}>({
             const state = getState();
             await state.ui.pollingExecutionRequestIds.forEach(async (id) => {
                 const executionRequestData = await api.executionRequests.fetchExecutionRequest({ id });
-                if (!isExecutionRequestStatusNewOrSubmitted(executionRequestData.executionRequestStatus)) {
+                if (!isExecutionRequestStatusPending(executionRequestData.executionRequestStatus)) {
                     dispatch(triggerFlashMessage({
                         translationKey: 'flash_messages.execution_request.run_finished',
                         translationPlaceholders: {

@@ -36,10 +36,6 @@ import { Alert } from '@material-ui/lab';
 import { parseISO, format as formatDate } from 'date-fns/esm';
 import OrderedList from 'views/common/list/OrderedList';
 import {
-    isExecutionRequestStatusNewOrSubmitted,
-    isExecutionRequestStatusAbortedOrDeclined,
-} from 'utils/scripts/executionRequests';
-import {
     getAsyncExecutionRequestsEntity,
     getAsyncExecutionRequests,
     getAsyncExecutionRequestsPageData,
@@ -63,30 +59,30 @@ const styles = ({ palette, typography }: Theme) =>
         scriptVersion: {
             fontWeight: typography.fontWeightBold,
         },
-        scriptDescription: {
-            fontWeight: typography.fontWeightBold,
-            fontSize: typography.pxToRem(12),
-        },
-        scriptSchedules: {
+        executionLabels: {
             fontWeight: typography.fontWeightBold,
         },
-        scriptLabels: {
+        executionParameters: {
             fontWeight: typography.fontWeightBold,
         },
-        scriptParameters: {
+        executionStatus: {
             fontWeight: typography.fontWeightBold,
-        },
-        scriptSuccess: {
-            fontWeight: typography.fontWeightBold,
-            color: palette.secondary.main,
-        },
-        scriptFailed: {
-            fontWeight: typography.fontWeightBold,
-            color: palette.error.main,
-        },
-        scriptNew: {
-            fontWeight: typography.fontWeightBold,
-            color: palette.primary.main,
+            [`&.${ExecutionRequestStatus.New},
+                &.${ExecutionRequestStatus.Submitted}`]: {
+                color: palette.primary.main,
+            },
+            [`&.${ExecutionRequestStatus.Declined},
+                &.${ExecutionRequestStatus.Stopped},
+                &.${ExecutionRequestStatus.Killed},
+                &.${ExecutionRequestStatus.Unknown}`]: {
+                color: palette.error.main,
+            },
+            [`&.${ExecutionRequestStatus.Accepted}`]: {
+                color: palette.secondary.main,
+            },
+            [`&.${ExecutionRequestStatus.Completed}`]: {
+                color: palette.secondary.dark,
+            },
         },
     });
 
@@ -284,13 +280,7 @@ const ScriptReportsOverview = withStyles(styles)(
                     ),
                     className: (value) => {
                         const executionStatus = value as ExecutionRequestStatus;
-                        if (isExecutionRequestStatusNewOrSubmitted(executionStatus)) {
-                            return classes.scriptNew;
-                        }
-                        if (isExecutionRequestStatusAbortedOrDeclined(executionStatus)) {
-                            return classes.scriptFailed;
-                        }
-                        return classes.scriptSuccess;
+                        return `${classes.executionStatus} ${executionStatus}`;
                     },
                     hideOnCompactView: true,
                 },
@@ -298,7 +288,7 @@ const ScriptReportsOverview = withStyles(styles)(
                     label: (
                         <Translate msg="script_reports.overview.list.labels.labels" />
                     ),
-                    className: classes.scriptLabels,
+                    className: classes.executionLabels,
                     hideOnCompactView: true,
                     fixedWidth: '8%',
                 },
@@ -306,7 +296,7 @@ const ScriptReportsOverview = withStyles(styles)(
                     label: (
                         <Translate msg="script_reports.overview.list.labels.parameters" />
                     ),
-                    className: classes.scriptParameters,
+                    className: classes.executionParameters,
                     hideOnCompactView: true,
                     fixedWidth: '10%',
                 },
