@@ -241,14 +241,12 @@ function GenericFilter<ColumnNames>({
             const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
             const filter = filters[columnName] as IFilter<ColumnNames>;
 
-            const newFilterValues = filters[columnName].values;
+            let newFilterValues = filters[columnName].values;
 
             if (filter.name === singleFilterValue.columnName) {
-                if (filter.values.includes(singleFilterValue.value)) {
-                    const indexOfValue = filter.values.indexOf(singleFilterValue.value);
-                    filter.values.splice(indexOfValue, 1);
-                }
+                newFilterValues = newFilterValues.filter((value) => value !== singleFilterValue.value);
             }
+
             acc[columnName] = {
                 ...filters[columnName],
                 values: newFilterValues,

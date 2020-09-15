@@ -7,6 +7,9 @@ import { triggerFetchActionTypes } from 'state/entities/constants/triggers';
 import { SortType, SortOrder } from 'models/list.models';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
+import { getStore } from 'state';
+import { getScriptsListFilter } from 'state/ui/selectors';
+import { IFetchScriptsListPayload } from 'models/state/scripts.models';
 import { ROUTE_KEYS, registerRoutes } from './routes';
 import NotFound from './appShell/NotFound';
 import Home from './Home';
@@ -54,22 +57,41 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
         },
     ],
     executeOnRoute: [{
-        execute: () => triggerFetchScripts({
-            pagination: {
-                page: 1,
-            },
-            expandResponseWith: {
-                scheduling: false, // Default = true
-            },
-            filter: {
-                version: 'latest',
-            },
-            sort: formatSortQueryParameter({
+        execute: () => {
+            const { getState } = getStore();
+            const { filters, onlyShowLatestVersion, page, sortedColumn } = getScriptsListFilter(getState());
+
+            const sort = sortedColumn || {
                 name: 'name',
                 sortOrder: SortOrder.Ascending,
                 sortType: SortType.String,
-            }),
-        }),
+            };
+
+            const payload: IFetchScriptsListPayload = {
+                sort: formatSortQueryParameter(sort),
+                filter: {
+                    version: onlyShowLatestVersion ? 'latest' : undefined,
+                    ...(filters && {
+                        name:
+                            filters.name.values.length > 0
+                                && filters.name.values[0].toString(),
+                        label:
+                            filters.labels.values.length > 0
+                                && filters.labels.values[0].toString(),
+                    }),
+                },
+                pagination: {
+                    page,
+                },
+            };
+
+            triggerFetchScripts({
+                expandResponseWith: {
+                    scheduling: false, // Default = true
+                },
+                ...payload,
+            });
+        },
     }],
 }, {
     routeKey: ROUTE_KEYS.R_REPORTS,

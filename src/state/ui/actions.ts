@@ -1,9 +1,11 @@
 import { createAction, getStore } from 'state';
 import { StateChangeNotification } from 'models/state.models';
+import { ListFilters, ISortedColumn } from 'models/list.models';
 import { ITriggerFlashMessagePayload } from 'models/state/ui.models';
 import { SnackbarKey } from 'notistack';
 import { isExecutionRequestStatusPending } from 'utils/scripts/executionRequests';
 import { ROUTE_KEYS } from 'views/routes';
+import { IColumnNames } from 'models/state/scripts.models';
 
 export const triggerFlashMessage = (payload: ITriggerFlashMessagePayload) => createAction<ITriggerFlashMessagePayload>({
     type: 'TRIGGER_FLASH_MESSAGE',
@@ -118,5 +120,36 @@ export const checkPollingExecutionRequests = () => createAction<{}>({
         } catch (error) {
             dispatch(triggerFlashMessage({ translationKey: 'error.fetch_env', type: 'error' }));
         }
+    },
+});
+
+export const setScriptsListFilter = (payload: {
+    filters?: ListFilters<Partial<IColumnNames>>;
+    onlyShowLatestVersion?: boolean;
+    page?: number;
+    sortedColumn?: ISortedColumn<IColumnNames>;
+}) => createAction<{
+    filters?: ListFilters<Partial<IColumnNames>>;
+    onlyShowLatestVersion?: boolean;
+    page?: number;
+    sortedColumn?: ISortedColumn<IColumnNames>;
+}>({
+    type: 'UPDATE_DESIGN_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.scripts = {
+                    filters: payload.filters || draftState.ui.listFilters.scripts.filters,
+                    onlyShowLatestVersion: typeof payload.onlyShowLatestVersion !== 'undefined'
+                        ? payload.onlyShowLatestVersion
+                        : draftState.ui.listFilters.scripts.onlyShowLatestVersion,
+                    page: payload.page || draftState.ui.listFilters.scripts.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.scripts.sortedColumn,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_SCRIPTS],
+        });
     },
 });
