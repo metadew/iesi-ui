@@ -15,6 +15,7 @@ import RouteLink from 'views/common/navigation/RouteLink';
 import { TThemeName } from 'config/theme.config';
 import { ROUTE_KEYS } from 'views/routes';
 import { useDocumentScrollThrottled } from 'utils/document/throttledEvents';
+import { APP_HEADER_ID } from 'config/dom.config';
 import packageJson from '../../../../package.json';
 import NavigationMenu from './NavigationMenu';
 import { ReactComponent as IesiLogo } from './logo.svg';
@@ -26,6 +27,7 @@ interface IPublicProps {
 }
 
 const MINIMUM_SCROLL = 80;
+export const APP_HEADER_HEIGHT = 65;
 
 const useStyles = makeStyles(({ palette, spacing, transitions, shadows, typography }: Theme) => ({
     appBar: {
@@ -79,7 +81,7 @@ const useStyles = makeStyles(({ palette, spacing, transitions, shadows, typograp
     },
 }));
 
-function AppHeader({
+export default function AppHeader({
     toggleTheme,
     forwardRef,
 }: IPublicProps) {
@@ -92,12 +94,15 @@ function AppHeader({
         const isScrolledDown = previousScrollTop < currentScrollTop;
         const isMinimumScrolled = currentScrollTop > MINIMUM_SCROLL;
 
-        setShouldShowShadow(currentScrollTop > 2);
-        setShouldHideHeader(isScrolledDown && isMinimumScrolled);
+        if (document.body.style.overflow !== 'hidden') {
+            setShouldShowShadow(currentScrollTop > 2);
+            setShouldHideHeader(isScrolledDown && isMinimumScrolled);
+        }
     });
 
     return (
         <AppBar
+            id={APP_HEADER_ID}
             position="fixed"
             className={classNames(classes.appBar, {
                 [classes.appBarHidden]: !!shouldHideHeader,
@@ -146,4 +151,7 @@ function AppHeader({
     );
 }
 
-export default AppHeader;
+export function isAppHeaderVisible() {
+    const headerElement = document.getElementById(APP_HEADER_ID);
+    return headerElement.getBoundingClientRect().top >= 0;
+}

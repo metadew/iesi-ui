@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 import { Box, makeStyles, Button } from '@material-ui/core';
 import GoBack from 'views/common/navigation/GoBack';
@@ -7,6 +7,10 @@ import { TTranslatorComponent } from 'models/i18n.models';
 import { PlayArrowSharp } from '@material-ui/icons';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import Loader from 'views/common/waiting/Loader';
+import {
+    APP_HEADER_HEIGHT,
+    isAppHeaderVisible as checkVisbilityAppHeader,
+} from 'views/appShell/AppHeader';
 
 interface IPublicProps {
     panel: React.ReactNode;
@@ -53,7 +57,6 @@ const useStyles = makeStyles(({ spacing, breakpoints, palette, typography }) => 
         backgroundColor: 'rgba(51, 65, 85, 0.9)',
     },
     contentOverlayInner: {
-        maxHeight: 'calc(100vh - 65px)', // headerHeight
         overflow: 'auto',
     },
     toggle: {
@@ -88,6 +91,13 @@ export default function ContentWithSidePanel({
 }: IPublicProps) {
     const classes = useStyles();
     const [isOpen, setIsOpen] = useState(false);
+    const [isAppHeaderVisible, setIsAppHeaderVisible] = useState(true);
+    const [scrollPos, setScrollPos] = useState(0);
+
+    useEffect(() => {
+        updateBodyElementOverflow(contentOverlayOpen);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [contentOverlayOpen]);
 
     return (
         <>
@@ -168,7 +178,7 @@ export default function ContentWithSidePanel({
                             className={classes.contentOverlay}
                             position="absolute"
                             display="flex"
-                            top="0"
+                            top={isAppHeaderVisible ? scrollPos : scrollPos - APP_HEADER_HEIGHT}
                             bottom="0"
                             left="0"
                             right="0"
@@ -178,6 +188,7 @@ export default function ContentWithSidePanel({
                                 paddingX={4}
                                 paddingY={8}
                                 width="100%"
+                                maxHeight={isAppHeaderVisible ? `calc(100vh - ${APP_HEADER_HEIGHT})` : '100vh'}
                             >
                                 {contentOverlay}
                             </Box>
@@ -190,5 +201,24 @@ export default function ContentWithSidePanel({
 
     function togglePanel() {
         setIsOpen(!isOpen);
+    }
+
+    function updateBodyElementOverflow(disableOverflow: boolean) {
+        const currentScrollPos = window.scrollY;
+
+        if (disableOverflow) {
+            setScrollPos(currentScrollPos);
+            setIsAppHeaderVisible(checkVisbilityAppHeader());
+
+            document.body.style.position = 'fixed';
+            document.body.style.top = `-${currentScrollPos}px`;
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.overflow = '';
+
+            window.scrollTo(0, scrollPos);
+        }
     }
 }
