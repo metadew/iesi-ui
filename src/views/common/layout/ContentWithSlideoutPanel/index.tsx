@@ -54,14 +54,16 @@ interface IPublicProps {
     toggleLabel: TTranslatorComponent;
     panel: React.ReactNode;
     content: React.ReactNode;
+    initialIsOpenState?: boolean;
 }
 
 export default function ContentWithSlideoutPanel({
     panel,
     content,
     toggleLabel,
+    initialIsOpenState = false,
 }: IPublicProps) {
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(initialIsOpenState);
     const classes = useStyles();
 
     const containerClasses = classNames(classes.container, {

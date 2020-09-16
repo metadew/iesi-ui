@@ -14,12 +14,14 @@ import {
 import { AddRounded, RemoveRounded, CloseRounded } from '@material-ui/icons';
 import {
     IFilter,
-    FilterConfig,
-    IFilterConfigItem,
     FilterType,
-    IListItem,
+    FilterConfig,
     ListFilters,
+    IListItem,
 } from 'models/list.models';
+import {
+    IFilterConfigItem,
+} from 'models/filterConfig.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import { parseISO, format as formatDate } from 'date-fns/esm';
@@ -241,14 +243,12 @@ function GenericFilter<ColumnNames>({
             const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
             const filter = filters[columnName] as IFilter<ColumnNames>;
 
-            const newFilterValues = filters[columnName].values;
+            let newFilterValues = filters[columnName].values;
 
             if (filter.name === singleFilterValue.columnName) {
-                if (filter.values.includes(singleFilterValue.value)) {
-                    const indexOfValue = filter.values.indexOf(singleFilterValue.value);
-                    filter.values.splice(indexOfValue, 1);
-                }
+                newFilterValues = newFilterValues.filter((value) => value !== singleFilterValue.value);
             }
+
             acc[columnName] = {
                 ...filters[columnName],
                 values: newFilterValues,

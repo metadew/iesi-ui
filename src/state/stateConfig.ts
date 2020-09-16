@@ -1,6 +1,7 @@
 import { AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
-import { createAsyncEntityInitialState }
-    from 'snipsonian/observable-state/src/actionableStore/entities/createAsyncEntityInitialState';
+import {
+    createAsyncEntityInitialState,
+} from 'snipsonian/observable-state/src/actionableStore/entities/createAsyncEntityInitialState';
 import { IStateStorageConfig } from '@snipsonian/observable-state/es/store/stateStorage';
 import { IState } from 'models/state.models';
 import { DEFAULT_LOCALE } from 'config/i18n.config';
@@ -18,6 +19,19 @@ export const initialState: IState = {
     ui: {
         flashMessages: [],
         pollingExecutionRequestIds: [],
+        listFilters: {
+            scripts: {
+                filters: null,
+                onlyShowLatestVersion: true,
+                page: 1,
+                sortedColumn: null,
+            },
+            executions: {
+                filters: null,
+                page: 1,
+                sortedColumn: null,
+            },
+        },
     },
     auth: {
         // Dummy auth

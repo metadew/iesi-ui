@@ -11,6 +11,13 @@ export interface IFetchScriptsListPayload extends IFetchScriptsOptions {
     sort: string;
 }
 
+export interface IColumnNames {
+    name: string;
+    version: string;
+    description: string;
+    labels: number;
+}
+
 interface IScriptsListFilter {
     name?: string;
     version?: 'latest';

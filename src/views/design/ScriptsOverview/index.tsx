@@ -28,7 +28,7 @@ import {
     IListItem,
     SortOrder,
 } from 'models/list.models';
-import { IScript, IExpandScriptsResponseWith } from 'models/state/scripts.models';
+import { IScript, IExpandScriptsResponseWith, IColumnNames } from 'models/state/scripts.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
@@ -50,8 +50,9 @@ import { getUniqueIdFromScript, getLatestVersionsFromScripts } from 'utils/scrip
 import { triggerResetAsyncExecutionRequest } from 'state/entities/executionRequests/triggers';
 import isSet from '@snipsonian/core/es/is/isSet';
 import { formatSortQueryParameter } from 'utils/core/string/format';
-import ExecuteScriptDialog from '../common/ExecuteScriptDialog';
-
+import { getScriptsListFilter } from 'state/ui/selectors';
+import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
+import { setScriptsListFilter } from 'state/ui/actions';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -76,14 +77,7 @@ const styles = ({ palette, typography }: Theme) =>
         },
     });
 
-interface IColumnNames {
-    name: string;
-    version: string;
-    description: string;
-    labels: number;
-}
-
-const filterConfig: FilterConfig<Partial<IColumnNames>> = {
+export const filterConfig: FilterConfig<Partial<IColumnNames>> = {
     name: {
         label: <Translate msg="scripts.overview.list.filter.script_name" />,
         filterType: FilterType.Search,
@@ -102,11 +96,8 @@ const sortActions: SortActions<Partial<IColumnNames>> = {
 };
 
 interface IComponentState {
-    sortedColumn: ISortedColumn<IColumnNames>;
-    filters: ListFilters<Partial<IColumnNames>>;
     scriptIdToDelete: string;
     scriptIdToExecute: string;
-    onlyShowLatestVersion: boolean;
 }
 
 type TProps = WithStyles<typeof styles>;
@@ -117,15 +108,8 @@ const ScriptsOverview = withStyles(styles)(
             super(props);
 
             this.state = {
-                sortedColumn: {
-                    name: 'name',
-                    sortOrder: SortOrder.Ascending,
-                    sortType: SortType.String,
-                },
-                filters: getIntialFiltersFromFilterConfig(filterConfig),
                 scriptIdToDelete: null,
                 scriptIdToExecute: null,
-                onlyShowLatestVersion: true,
             };
 
             this.renderPanel = this.renderPanel.bind(this);
@@ -146,18 +130,33 @@ const ScriptsOverview = withStyles(styles)(
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
+            const { state, dispatch } = prevProps;
+            const filterFromState = getScriptsListFilter(state);
+
+            if (filterFromState.filters === null || filterFromState.sortedColumn === null) {
+                dispatch(setScriptsListFilter({
+                    filters: filterFromState.filters === null && getIntialFiltersFromFilterConfig(filterConfig),
+                    sortedColumn: filterFromState.sortedColumn === null && {
+                        name: 'name',
+                        sortOrder: SortOrder.Ascending,
+                        sortType: SortType.String,
+                    },
+                }));
+            }
+
             this.closeDeleteScriptDialogAfterSuccessfulDelete(prevProps);
         }
 
         public render() {
             const { classes, state } = this.props;
-            const { sortedColumn, scriptIdToDelete, scriptIdToExecute, onlyShowLatestVersion } = this.state;
+            const { scriptIdToDelete, scriptIdToExecute } = this.state;
+            const filterFromState = getScriptsListFilter(state);
 
             const scripts = getAsyncScripts(this.props.state);
             const deleteStatus = getAsyncScriptDetail(this.props.state).remove.status;
             const pageData = getAsyncScriptsPageData(this.props.state);
 
-            const listItems = mapScriptsToListItems(onlyShowLatestVersion
+            const listItems = mapScriptsToListItems(filterFromState.onlyShowLatestVersion
                 ? getLatestVersionsFromScripts(scripts) : scripts);
 
             const translator = getTranslator(state);
@@ -182,7 +181,7 @@ const ScriptsOverview = withStyles(styles)(
                                         <GenericSort
                                             sortActions={sortActions}
                                             onSort={this.onSort}
-                                            sortedColumn={sortedColumn as ISortedColumn<{}>}
+                                            sortedColumn={filterFromState.sortedColumn as ISortedColumn<{}>}
                                         />
                                     </Box>
                                     <Box flex="0 0 auto">
@@ -205,6 +204,12 @@ const ScriptsOverview = withStyles(styles)(
                             }
                             panel={this.renderPanel({ listItems })}
                             content={this.renderContent({ listItems })}
+                            initialIsOpenState={
+                                (filterFromState.filters
+                                    && (filterFromState.filters.name.values.length > 0
+                                        || filterFromState.filters.labels.values.length > 0)
+                                )
+                            }
                         />
                     </Box>
                     <ConfirmationDialog
@@ -225,30 +230,30 @@ const ScriptsOverview = withStyles(styles)(
         }
 
         private renderPanel({ listItems }: { listItems: IListItem<IColumnNames>[] }) {
-            const { state } = this.props;
+            const { state, dispatch } = this.props;
             const translator = getTranslator(state);
+            const filterFromState = getScriptsListFilter(state);
+
             return (
                 <>
                     <GenericFilter
                         filterConfig={filterConfig}
                         onFilterChange={this.onFilter}
                         listItems={listItems}
+                        initialFilters={filterFromState.filters}
                     />
                     <Box paddingX={5} paddingY={3}>
                         <FormControlLabel
                             control={(
                                 <Switch
-                                    checked={this.state.onlyShowLatestVersion}
+                                    checked={filterFromState.onlyShowLatestVersion}
                                     onClick={() => {
-                                        this.setState((prevState) => {
-                                            this.fetchScriptsWithFilterAndPagination({
-                                                newOnlyShowLatestVersion: !prevState.onlyShowLatestVersion,
-                                            });
-
-                                            return {
-                                                onlyShowLatestVersion: !prevState.onlyShowLatestVersion,
-                                            };
+                                        this.fetchScriptsWithFilterAndPagination({
+                                            newOnlyShowLatestVersion: !filterFromState.onlyShowLatestVersion,
                                         });
+                                        dispatch(setScriptsListFilter({
+                                            onlyShowLatestVersion: !filterFromState.onlyShowLatestVersion,
+                                        }));
                                     }}
                                     color="secondary"
                                 />
@@ -261,7 +266,7 @@ const ScriptsOverview = withStyles(styles)(
         }
 
         private renderContent({ listItems }: { listItems: IListItem<IColumnNames>[] }) {
-            const { classes, state } = this.props;
+            const { classes, state, dispatch } = this.props;
             const translator = getTranslator(state);
             const columns: ListColumns<IColumnNames> = {
                 name: {
@@ -348,6 +353,7 @@ const ScriptsOverview = withStyles(styles)(
                                     pageData,
                                     onChange: ({ page }) => {
                                         this.fetchScriptsWithFilterAndPagination({ newPage: page });
+                                        dispatch(setScriptsListFilter({ page }));
                                     },
                                 }}
                                 isLoading={isFetching}
@@ -389,13 +395,15 @@ const ScriptsOverview = withStyles(styles)(
         }
 
         private onSort(sortedColumn: ISortedColumn<IColumnNames>) {
+            const { dispatch } = this.props;
             this.fetchScriptsWithFilterAndPagination({ newSortedColumn: sortedColumn });
-            this.setState({ sortedColumn });
+            dispatch(setScriptsListFilter({ sortedColumn }));
         }
 
         private onFilter(listFilters: ListFilters<Partial<IColumnNames>>) {
+            const { dispatch } = this.props;
             this.fetchScriptsWithFilterAndPagination({ newListFilters: listFilters });
-            this.setState({ filters: listFilters });
+            dispatch(setScriptsListFilter({ filters: listFilters }));
         }
 
         private fetchScriptsWithFilterAndPagination({
@@ -411,18 +419,16 @@ const ScriptsOverview = withStyles(styles)(
             newSortedColumn?: ISortedColumn<IColumnNames>;
             expandResponseWith?: IExpandScriptsResponseWith;
         }) {
+            const { state } = this.props;
             const pageData = getAsyncScriptsPageData(this.props.state);
-            const {
-                filters: filtersFromState,
-                onlyShowLatestVersion: onlyShowLatestVersionFromState,
-                sortedColumn: sortedColumnFromState,
-            } = this.state;
 
-            const filters = newListFilters || filtersFromState;
+            const filtersFromState = getScriptsListFilter(state);
+
+            const filters = newListFilters || filtersFromState.filters;
             const page = newListFilters ? 1 : newPage || pageData.number;
             const onlyShowLatestVersion = isSet(newOnlyShowLatestVersion)
-                ? newOnlyShowLatestVersion : onlyShowLatestVersionFromState;
-            const sortedColumn = newSortedColumn || sortedColumnFromState;
+                ? newOnlyShowLatestVersion : filtersFromState.onlyShowLatestVersion;
+            const sortedColumn = newSortedColumn || filtersFromState.sortedColumn;
 
             triggerFetchScripts({
                 pagination: { page },
@@ -485,4 +491,5 @@ export default observe<TProps>([
     StateChangeNotification.DESIGN_SCRIPTS_LIST,
     StateChangeNotification.DESIGN_SCRIPTS_DETAIL,
     StateChangeNotification.I18N_TRANSLATIONS,
+    StateChangeNotification.LIST_FILTER_SCRIPTS,
 ], ScriptsOverview);

@@ -25,6 +25,19 @@ export default function getMockState({
         ui: {
             flashMessages: [],
             pollingExecutionRequestIds: [],
+            listFilters: {
+                scripts: {
+                    filters: null,
+                    onlyShowLatestVersion: true,
+                    page: 1,
+                    sortedColumn: null,
+                },
+                executions: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                },
+            },
         },
         auth: {
             username: 'mocked-test-user',

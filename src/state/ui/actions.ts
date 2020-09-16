@@ -1,9 +1,12 @@
 import { createAction, getStore } from 'state';
 import { StateChangeNotification } from 'models/state.models';
+import { ListFilters, ISortedColumn } from 'models/list.models';
 import { ITriggerFlashMessagePayload } from 'models/state/ui.models';
 import { SnackbarKey } from 'notistack';
 import { isExecutionRequestStatusPending } from 'utils/scripts/executionRequests';
 import { ROUTE_KEYS } from 'views/routes';
+import { IColumnNames as IScriptsColumnNames } from 'models/state/scripts.models';
+import { IColumnNames as IExecutionsColumnNames } from 'models/state/executionRequests.models';
 
 export const triggerFlashMessage = (payload: ITriggerFlashMessagePayload) => createAction<ITriggerFlashMessagePayload>({
     type: 'TRIGGER_FLASH_MESSAGE',
@@ -118,5 +121,62 @@ export const checkPollingExecutionRequests = () => createAction<{}>({
         } catch (error) {
             dispatch(triggerFlashMessage({ translationKey: 'error.fetch_env', type: 'error' }));
         }
+    },
+});
+
+export const setScriptsListFilter = (payload: {
+    filters?: ListFilters<Partial<IScriptsColumnNames>>;
+    onlyShowLatestVersion?: boolean;
+    page?: number;
+    sortedColumn?: ISortedColumn<IScriptsColumnNames>;
+}) => createAction<{
+    filters?: ListFilters<Partial<IScriptsColumnNames>>;
+    onlyShowLatestVersion?: boolean;
+    page?: number;
+    sortedColumn?: ISortedColumn<IScriptsColumnNames>;
+}>({
+    type: 'UPDATE_SCRIPTS_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.scripts = {
+                    filters: payload.filters || draftState.ui.listFilters.scripts.filters,
+                    onlyShowLatestVersion: typeof payload.onlyShowLatestVersion !== 'undefined'
+                        ? payload.onlyShowLatestVersion
+                        : draftState.ui.listFilters.scripts.onlyShowLatestVersion,
+                    page: payload.page || draftState.ui.listFilters.scripts.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.scripts.sortedColumn,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_SCRIPTS],
+        });
+    },
+});
+
+export const setExecutionsListFilter = (payload: {
+    filters?: ListFilters<Partial<IExecutionsColumnNames>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<IExecutionsColumnNames>;
+}) => createAction<{
+    filters?: ListFilters<Partial<IExecutionsColumnNames>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<IExecutionsColumnNames>;
+}>({
+    type: 'UPDATE_EXECUTIONS_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.executions = {
+                    filters: payload.filters || draftState.ui.listFilters.executions.filters,
+                    page: payload.page || draftState.ui.listFilters.executions.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.executions.sortedColumn,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_EXECUTIONS],
+        });
     },
 });
