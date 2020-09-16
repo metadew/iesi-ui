@@ -5,6 +5,7 @@ const paths = require('../paths');
 const { logStatus, logProgress, logSuccess, logError, log } = require('../consoleLogger');
 
 const ENV_CONFIG_FILE_NAME = 'env-config.json';
+const WINDOWS_TIMEOUT_IF_NOT_FILLED_IN = '%npm_config_timeout%';
 
 const argv = parseArgs(process.argv.slice(2));
 
@@ -26,7 +27,8 @@ function initEnvConfigFileIfItDoesNotExistYet() {
      */
     const config = {
         iesi_api_base_url: argv.url,
-        iesi_api_timeout_in_seconds: argv.timeout || 10,
+        iesi_api_timeout_in_seconds: (argv.timeout && argv.timeout !== WINDOWS_TIMEOUT_IF_NOT_FILLED_IN)
+            ? argv.timeout : 10,
         translation_label_overrides: {
             en_GB: {},
         },
