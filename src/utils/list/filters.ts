@@ -1,12 +1,14 @@
 import {
     FilterConfig,
     ListFilters,
-    IFilterConfigItem,
-    IListItem,
     IFilter,
     FilterType,
+    IListItem,
     IListItemValueWithSortValue,
 } from 'models/list.models';
+import {
+    IFilterConfigItem,
+} from 'models/filterConfig.models';
 import { TObjectWithProps } from 'models/core.models';
 import { ReactText } from 'react';
 import { parseISO } from 'date-fns/esm';

@@ -14,12 +14,14 @@ import {
 import { AddRounded, RemoveRounded, CloseRounded } from '@material-ui/icons';
 import {
     IFilter,
-    FilterConfig,
-    IFilterConfigItem,
     FilterType,
-    IListItem,
+    FilterConfig,
     ListFilters,
+    IListItem,
 } from 'models/list.models';
+import {
+    IFilterConfigItem,
+} from 'models/filterConfig.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import { parseISO, format as formatDate } from 'date-fns/esm';
