@@ -5,7 +5,8 @@ import { ITriggerFlashMessagePayload } from 'models/state/ui.models';
 import { SnackbarKey } from 'notistack';
 import { isExecutionRequestStatusPending } from 'utils/scripts/executionRequests';
 import { ROUTE_KEYS } from 'views/routes';
-import { IColumnNames } from 'models/state/scripts.models';
+import { IColumnNames as IScriptsColumnNames } from 'models/state/scripts.models';
+import { IColumnNames as IExecutionsColumnNames } from 'models/state/executionRequests.models';
 
 export const triggerFlashMessage = (payload: ITriggerFlashMessagePayload) => createAction<ITriggerFlashMessagePayload>({
     type: 'TRIGGER_FLASH_MESSAGE',
@@ -124,17 +125,17 @@ export const checkPollingExecutionRequests = () => createAction<{}>({
 });
 
 export const setScriptsListFilter = (payload: {
-    filters?: ListFilters<Partial<IColumnNames>>;
+    filters?: ListFilters<Partial<IScriptsColumnNames>>;
     onlyShowLatestVersion?: boolean;
     page?: number;
-    sortedColumn?: ISortedColumn<IColumnNames>;
+    sortedColumn?: ISortedColumn<IScriptsColumnNames>;
 }) => createAction<{
-    filters?: ListFilters<Partial<IColumnNames>>;
+    filters?: ListFilters<Partial<IScriptsColumnNames>>;
     onlyShowLatestVersion?: boolean;
     page?: number;
-    sortedColumn?: ISortedColumn<IColumnNames>;
+    sortedColumn?: ISortedColumn<IScriptsColumnNames>;
 }>({
-    type: 'UPDATE_DESIGN_LIST_FILTER',
+    type: 'UPDATE_SCRIPTS_LIST_FILTER',
     payload,
     process({ setStateImmutable }) {
         setStateImmutable({
@@ -150,6 +151,32 @@ export const setScriptsListFilter = (payload: {
                 };
             },
             notificationsToTrigger: [StateChangeNotification.LIST_FILTER_SCRIPTS],
+        });
+    },
+});
+
+export const setExecutionsListFilter = (payload: {
+    filters?: ListFilters<Partial<IExecutionsColumnNames>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<IExecutionsColumnNames>;
+}) => createAction<{
+    filters?: ListFilters<Partial<IExecutionsColumnNames>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<IExecutionsColumnNames>;
+}>({
+    type: 'UPDATE_EXECUTIONS_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.executions = {
+                    filters: payload.filters || draftState.ui.listFilters.executions.filters,
+                    page: payload.page || draftState.ui.listFilters.executions.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.executions.sortedColumn,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_EXECUTIONS],
         });
     },
 });

@@ -26,6 +26,11 @@ export const initialState: IState = {
                 page: 1,
                 sortedColumn: null,
             },
+            executions: {
+                filters: null,
+                page: 1,
+                sortedColumn: null,
+            },
         },
     },
     auth: {

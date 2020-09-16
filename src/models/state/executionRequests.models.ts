@@ -1,5 +1,15 @@
 import { ILabel, IParameter, IPageFilter, IPageData } from './iesiGeneric.models';
 
+export interface IColumnNames {
+    script: string;
+    version: string;
+    environment: string;
+    requestTimestamp: string;
+    executionStatus: string;
+    labels: number;
+    parameters: number;
+}
+
 export interface IExecutionRequest {
     executionRequestId: string;
     requestTimestamp: Date; // format 2020-05-04T10:01:13.923Z
