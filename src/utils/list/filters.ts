@@ -5,10 +5,8 @@ import {
     FilterType,
     IListItem,
     IListItemValueWithSortValue,
-} from 'models/list.models';
-import {
     IFilterConfigItem,
-} from 'models/filterConfig.models';
+} from 'models/list.models';
 import { TObjectWithProps } from 'models/core.models';
 import { ReactText } from 'react';
 import { parseISO } from 'date-fns/esm';
