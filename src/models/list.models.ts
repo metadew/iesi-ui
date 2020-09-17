@@ -1,7 +1,6 @@
 import { ReactElement, ReactText, ReactNode } from 'react';
 import { TTranslatorComponent } from './i18n.models';
 import { TObjectWithProps } from './core.models';
-import { IFilterConfigItem } from './filterConfig.models';
 
 export interface IColumn<ColumnNames> {
     label?: TTranslatorComponent;
@@ -85,6 +84,15 @@ export interface IFilter<ColumnNames = TObjectWithProps> {
 export type ListFilters<ColumnNames> = {
     [key in keyof ColumnNames]: IFilter<ColumnNames>
 };
+
+export interface IFilterConfigItem {
+    label: TTranslatorComponent;
+    filterType: FilterType;
+    // Explicit 'any' here because of circular dependency with state.models.
+    // You can get auto-completion by typing 'state: IState' in the selector passed to getDropdownOptions
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    getDropdownOptions?: (state: any) => string[];
+}
 
 export type FilterConfig<ColumnNames> = {
     [key in keyof ColumnNames]: IFilterConfigItem;
