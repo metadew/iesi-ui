@@ -53,6 +53,36 @@ function DetailActions({
     const classes = useStyles();
     const translator = getTranslator(state);
 
+    const DeleteButton = (
+        <IconButton
+            disabled={isCreateRoute}
+            aria-label={translator('scripts.detail.main.actions.delete')}
+            onClick={onDelete}
+        >
+            <DeleteIcon />
+        </IconButton>
+    );
+
+    const ReportButton = (
+        <IconButton
+            disabled={isCreateRoute}
+            aria-label={translator('scripts.detail.main.actions.report')}
+            onClick={onViewReport}
+        >
+            <ReportIcon />
+        </IconButton>
+    );
+
+    const ExecuteButton = (
+        <IconButton
+            disabled={isCreateRoute}
+            aria-label={translator('scripts.detail.main.actions.execute')}
+            onClick={onPlay}
+        >
+            <PlayIcon />
+        </IconButton>
+    );
+
     return (
         <Box display="flex" alignItems="center" justifyContent="space-between" marginX={2.2}>
             <Box flex="0 0 auto">
@@ -84,45 +114,37 @@ function DetailActions({
                             <Translate msg="scripts.detail.main.actions.save" />
                         </Button>
                     </Box>
-                    <Tooltip
-                        title={translator('scripts.detail.main.actions.delete')}
-                        enterDelay={1000}
-                        enterNextDelay={1000}
-                    >
-                        <IconButton
-                            disabled={isCreateRoute}
-                            aria-label={translator('scripts.detail.main.actions.delete')}
-                            onClick={onDelete}
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip
-                        title={translator('scripts.detail.main.actions.report')}
-                        enterDelay={1000}
-                        enterNextDelay={1000}
-                    >
-                        <IconButton
-                            disabled={isCreateRoute}
-                            aria-label={translator('scripts.detail.main.actions.report')}
-                            onClick={onViewReport}
-                        >
-                            <ReportIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip
-                        title={translator('scripts.detail.main.actions.execute')}
-                        enterDelay={1000}
-                        enterNextDelay={1000}
-                    >
-                        <IconButton
-                            disabled={isCreateRoute}
-                            aria-label={translator('scripts.detail.main.actions.execute')}
-                            onClick={onPlay}
-                        >
-                            <PlayIcon />
-                        </IconButton>
-                    </Tooltip>
+                    {isCreateRoute ? (
+                        <>
+                            {DeleteButton}
+                            {ReportButton}
+                            {ExecuteButton}
+                        </>
+                    ) : (
+                        <>
+                            <Tooltip
+                                title={translator('scripts.detail.main.actions.delete')}
+                                enterDelay={1000}
+                                enterNextDelay={1000}
+                            >
+                                {DeleteButton}
+                            </Tooltip>
+                            <Tooltip
+                                title={translator('scripts.detail.main.actions.report')}
+                                enterDelay={1000}
+                                enterNextDelay={1000}
+                            >
+                                {ReportButton}
+                            </Tooltip>
+                            <Tooltip
+                                title={translator('scripts.detail.main.actions.execute')}
+                                enterDelay={1000}
+                                enterNextDelay={1000}
+                            >
+                                {ExecuteButton}
+                            </Tooltip>
+                        </>
+                    )}
                 </Paper>
             </Box>
         </Box>
