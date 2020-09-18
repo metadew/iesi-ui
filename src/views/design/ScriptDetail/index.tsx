@@ -172,8 +172,6 @@ const ScriptDetail = withStyles(styles)(
 
             const editAction = this.getEditAction();
 
-            console.log(newScriptDetail);
-
             return (
                 <>
                     <Loader
