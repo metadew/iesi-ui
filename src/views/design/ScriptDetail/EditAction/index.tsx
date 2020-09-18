@@ -9,6 +9,7 @@ import {
     Button,
     ButtonGroup,
     Paper,
+    TextField,
 } from '@material-ui/core';
 import { IScriptAction } from 'models/state/scripts.models';
 import { formatNumberWithTwoDigits } from 'utils/number/format';
@@ -56,6 +57,9 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
             background: palette.background.paper,
         },
     },
+    nameTextField: {
+        width: '100%',
+    },
     footerAction: {
         fontSize: '.8rem',
         fontWeight: typography.fontWeightBold,
@@ -81,6 +85,7 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
     const [errorExpectedChecked, setErrorExpectedChecked] = useState<boolean>(action.errorExpected);
     const [parameters, setParameters] = useState(action.parameters);
     const [description, setDescription] = useState(action.description);
+    const [name, setName] = useState(action.name);
 
     const actionTypes = getAsyncActionTypes(state).data || [];
     const matchingActionType = actionTypes.find((item) => action.type === item.type);
@@ -104,7 +109,13 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                 </Box>
                 {/* eslint-disable-next-line max-len */}
                 <Box paddingX={3} paddingY={1.1} className={classnames(classes.actionName)} width="60%">
-                    {action.name}
+                    <TextField
+                        id="action-name"
+                        label={translator('scripts.detail.edit_action.name')}
+                        defaultValue={name}
+                        onBlur={(e) => setName(e.target.value)}
+                        className={classes.nameTextField}
+                    />
                 </Box>
             </Box>
             <Box padding={2}>
@@ -191,6 +202,7 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
     function updateAction() {
         onEdit({
             ...action,
+            name,
             parameters,
             description,
             errorStop: errorStopChecked,

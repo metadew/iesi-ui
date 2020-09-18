@@ -56,6 +56,10 @@ const useStyles = makeStyles(({ palette, spacing }) => ({
 export default function ExpandableParameter({ parameter, onChange, constantParameter }: IPublicProps) {
     const classes = useStyles();
 
+    if (!constantParameter) {
+        return null;
+    }
+
     return (
         <ExpansionPanel className={classes.expansionPanel}>
             <ExpansionPanelSummary

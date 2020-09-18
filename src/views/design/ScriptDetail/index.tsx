@@ -28,6 +28,7 @@ import { getAsyncActionTypes } from 'state/entities/constants/selectors';
 import { triggerResetAsyncExecutionRequest } from 'state/entities/executionRequests/triggers';
 import { AsyncStatus, AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import Loader from 'views/common/waiting/Loader';
+import uniqueActionNamesCheck from 'utils/form/uniqueActionNamesCheck';
 import {
     triggerUpdateScriptDetail,
     triggerCreateScriptDetail,
@@ -82,9 +83,10 @@ interface IComponentState {
     editActionIndex: number;
     newScriptDetail: IScript;
     hasChangesToCheck: boolean;
+    hasActionsWithDuplicateNames: boolean;
     requiredFieldsState: TRequiredFieldsState<IScript>;
     scriptIdToExecute: string;
-    actionIdToDelete: number;
+    actionIndexToDelete: number;
 }
 
 const ScriptDetail = withStyles(styles)(
@@ -95,7 +97,7 @@ const ScriptDetail = withStyles(styles)(
             this.state = {
                 isAddOpen: false,
                 isConfirmDeleteScriptOpen: false,
-                actionIdToDelete: null,
+                actionIndexToDelete: null,
                 isSaveDialogOpen: false,
                 editActionIndex: -1,
                 newScriptDetail: {
@@ -115,6 +117,7 @@ const ScriptDetail = withStyles(styles)(
                     },
                 },
                 hasChangesToCheck: false,
+                hasActionsWithDuplicateNames: false,
                 requiredFieldsState: {
                     name: {
                         showError: false,
@@ -158,7 +161,7 @@ const ScriptDetail = withStyles(styles)(
                 isSaveDialogOpen,
                 newScriptDetail,
                 scriptIdToExecute,
-                actionIdToDelete,
+                actionIndexToDelete,
             } = this.state;
 
             // State
@@ -168,6 +171,8 @@ const ScriptDetail = withStyles(styles)(
             const deleteStatus = getAsyncScriptDetail(this.props.state).remove.status;
 
             const editAction = this.getEditAction();
+
+            console.log(newScriptDetail);
 
             return (
                 <>
@@ -196,8 +201,8 @@ const ScriptDetail = withStyles(styles)(
                     <ConfirmationDialog
                         title={translator('scripts.detail.delete_action_dialog.title')}
                         text={translator('scripts.detail.delete_action_dialog.text')}
-                        open={actionIdToDelete !== null}
-                        onClose={() => this.setState({ actionIdToDelete: null })}
+                        open={actionIndexToDelete !== null}
+                        onClose={() => this.setState({ actionIndexToDelete: null })}
                         onConfirm={this.onDeleteAction}
                     />
                     <ExecuteScriptDialog
@@ -361,20 +366,27 @@ const ScriptDetail = withStyles(styles)(
 
         private renderScriptDetailContent() {
             const { classes, state } = this.props;
-            const { newScriptDetail, hasChangesToCheck } = this.state;
+            const { newScriptDetail, hasChangesToCheck, hasActionsWithDuplicateNames } = this.state;
             const translator = getTranslator(state);
 
             const listItems = getSortedListItemsFromScriptDetail(newScriptDetail);
             const hasActions = listItems.length > 0;
 
             const handleSaveAction = () => {
-                const { passed, requiredFieldsState } = requiredFieldsCheck({
+                const { passed: passedRequired, requiredFieldsState } = requiredFieldsCheck({
                     data: newScriptDetail,
                     requiredFields: ['name'],
                 });
-                this.setState({ requiredFieldsState });
+                const { passed: passedUniqueActionNames } = uniqueActionNamesCheck({
+                    actions: newScriptDetail.actions,
+                });
 
-                if (passed) {
+                this.setState({
+                    requiredFieldsState,
+                    hasActionsWithDuplicateNames: !passedUniqueActionNames,
+                });
+
+                if (passedRequired && passedUniqueActionNames) {
                     this.setState({ hasChangesToCheck: false });
                     this.setState({ isSaveDialogOpen: true });
                 }
@@ -428,6 +440,13 @@ const ScriptDetail = withStyles(styles)(
                                 </Alert>
                             </Box>
                         </Collapse>
+                        <Collapse in={hasActionsWithDuplicateNames}>
+                            <Box marginX={2} marginBottom={2}>
+                                <Alert severity="error">
+                                    <Translate msg="scripts.detail.main.alert.unique_action_names" />
+                                </Alert>
+                            </Box>
+                        </Collapse>
                         <DetailActions
                             onSave={handleSaveAction}
                             onDelete={() => this.setState({ isConfirmDeleteScriptOpen: true })}
@@ -462,7 +481,7 @@ const ScriptDetail = withStyles(styles)(
                                     icon: <DeleteIcon />,
                                     label: translator('scripts.detail.main.list.item.actions.delete'),
                                     onClick: (id, index) => {
-                                        this.setState({ actionIdToDelete: index });
+                                        this.setState({ actionIndexToDelete: index });
                                     },
                                 },
                             ]}
@@ -471,7 +490,7 @@ const ScriptDetail = withStyles(styles)(
                                     actions: list.map((item, index) => {
                                         const typedItem = item as IListItem<IColumnNames, IData>;
                                         const action = newScriptDetail.actions.find((a) => (
-                                            a.name === typedItem.id && a.number === typedItem.data.number
+                                            a.number === typedItem.data.number
                                         ));
                                         return {
                                             ...action,
@@ -531,13 +550,13 @@ const ScriptDetail = withStyles(styles)(
         }
 
         private onDeleteAction() {
-            const { newScriptDetail, actionIdToDelete } = this.state;
+            const { newScriptDetail, actionIndexToDelete } = this.state;
             const newActions = [...newScriptDetail.actions];
 
-            if (actionIdToDelete !== null) {
-                newActions.splice(actionIdToDelete, 1);
+            if (actionIndexToDelete !== null) {
+                newActions.splice(actionIndexToDelete, 1);
                 this.updateScript({ actions: newActions });
-                this.setState({ actionIdToDelete: null });
+                this.setState({ actionIndexToDelete: null });
             }
         }
 
@@ -608,8 +627,8 @@ function getSortedListItemsFromScriptDetail(detail: IScript) {
     const newListItems: IListItem<IColumnNames, IData>[] = detail && detail.actions
         ? detail.actions
             .sort((a, b) => (a.number < b.number ? -1 : a.number > b.number ? 1 : 0))
-            .map((action) => ({
-                id: action.name,
+            .map((action, index) => ({
+                id: index,
                 columns: {
                     type: action.type,
                     name: action.name,
