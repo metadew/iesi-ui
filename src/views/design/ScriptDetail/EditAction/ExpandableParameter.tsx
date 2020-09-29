@@ -69,6 +69,7 @@ export default function ExpandableParameter({ parameter, onChange, constantParam
                 <Box>
                     <Typography className={classes.expansionPanelLabel}>
                         {constantParameter.name}
+                        {constantParameter.mandatory && <span>&nbsp;*</span>}
                     </Typography>
                     <Typography className={classes.expansionPanelTitle}>
                         {constantParameter.description}

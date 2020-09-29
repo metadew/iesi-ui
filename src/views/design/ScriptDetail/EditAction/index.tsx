@@ -99,16 +99,32 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                 alignItems="center"
                 padding={1}
             >
-                {/* eslint-disable-next-line max-len */}
-                <Box paddingX={3} paddingY={1.1} boxSizing="content-box" width={50} className={classnames(classes.tableCell, classes.index)}>
+                <Box
+                    paddingX={3}
+                    paddingY={1.1}
+                    boxSizing="content-box"
+                    width={50}
+                    className={classnames(classes.tableCell, classes.index)}
+                >
                     {formatNumberWithTwoDigits(action.number)}
                 </Box>
-                {/* eslint-disable-next-line max-len */}
-                <Box paddingX={3} paddingY={1.1} className={classnames(classes.tableCell, classes.actionType)} width="40%">
+                <Box
+                    paddingX={3}
+                    paddingY={1.1}
+                    className={classnames(
+                        classes.tableCell,
+                        classes.actionType,
+                    )}
+                    width="40%"
+                >
                     {action.type}
                 </Box>
-                {/* eslint-disable-next-line max-len */}
-                <Box paddingX={3} paddingY={1.1} className={classnames(classes.actionName)} width="60%">
+                <Box
+                    paddingX={3}
+                    paddingY={1.1}
+                    className={classnames(classes.actionName)}
+                    width="60%"
+                >
                     <TextField
                         id="action-name"
                         label={translator('scripts.detail.edit_action.name')}
@@ -123,7 +139,9 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                     <Paper>
                         <TextInput
                             id="action-description"
-                            label={translator('scripts.detail.edit_action.description')}
+                            label={translator(
+                                'scripts.detail.edit_action.description',
+                            )}
                             multiline
                             rows={3}
                             className={classes.descriptionTextField}
@@ -134,21 +152,24 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                 </Box>
                 <Box>
                     {parameters.map((parameter) => {
-                        // eslint-disable-next-line max-len
-                        const constantParameter = matchingActionType.parameters.find((item) => item.name === parameter.name);
+                        const constantParameter = matchingActionType.parameters.find(
+                            (item) => item.name === parameter.name,
+                        );
                         return (
                             <ExpandableParameter
                                 key={parameter.name}
                                 onChange={(value) => {
-                                    const newParameters = parameters.map((item) => {
-                                        if (item.name === parameter.name) {
-                                            return {
-                                                ...item,
-                                                value,
-                                            };
-                                        }
-                                        return item;
-                                    });
+                                    const newParameters = parameters.map(
+                                        (item) => {
+                                            if (item.name === parameter.name) {
+                                                return {
+                                                    ...item,
+                                                    value,
+                                                };
+                                            }
+                                            return item;
+                                        },
+                                    );
 
                                     setParameters(newParameters);
                                 }}
@@ -158,7 +179,12 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                         );
                     })}
                 </Box>
-                <Box display="flex" justifyContent="flex-end" marginTop={2} alignItems="center">
+                <Box
+                    display="flex"
+                    justifyContent="flex-end"
+                    marginTop={2}
+                    alignItems="center"
+                >
                     <Box display="flex" alignItems="center">
                         <Typography className={classes.footerAction}>
                             <Translate msg="scripts.detail.edit_action.footer.continue_on_fail" />
@@ -186,10 +212,19 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
 
                     <Box marginLeft={2}>
                         <ButtonGroup size="small">
-                            <Button color="default" variant="outlined" onClick={onClose}>
+                            <Button
+                                color="default"
+                                variant="outlined"
+                                onClick={onClose}
+                            >
                                 <Translate msg="scripts.detail.edit_action.footer.cancel" />
                             </Button>
-                            <Button variant="contained" color="secondary" disableElevation onClick={updateAction}>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                disableElevation
+                                onClick={updateAction}
+                            >
                                 <Translate msg="scripts.detail.edit_action.footer.save" />
                             </Button>
                         </ButtonGroup>
