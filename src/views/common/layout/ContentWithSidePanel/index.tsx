@@ -11,6 +11,7 @@ import {
     APP_HEADER_HEIGHT,
     isAppHeaderVisible as checkVisbilityAppHeader,
 } from 'views/appShell/AppHeader';
+import useExecuteOnUnmount from 'utils/hooks/useExecuteOnUnmount';
 
 interface IPublicProps {
     panel: React.ReactNode;
@@ -98,6 +99,12 @@ export default function ContentWithSidePanel({
         updateBodyElementOverflow(contentOverlayOpen);
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [contentOverlayOpen]);
+
+    useExecuteOnUnmount({
+        execute: () => {
+            updateBodyElementOverflow(false);
+        },
+    });
 
     return (
         <>
@@ -188,7 +195,7 @@ export default function ContentWithSidePanel({
                                 paddingX={4}
                                 paddingY={8}
                                 width="100%"
-                                maxHeight={isAppHeaderVisible ? `calc(100vh - ${APP_HEADER_HEIGHT})` : '100vh'}
+                                maxHeight={isAppHeaderVisible ? `calc(100vh - ${APP_HEADER_HEIGHT}px)` : '100vh'}
                             >
                                 {contentOverlay}
                             </Box>
