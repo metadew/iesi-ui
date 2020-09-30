@@ -259,11 +259,7 @@ function AddAction({ state, onClose, onAdd }: IObserveProps & IPublicProps) {
             iteration: null,
             name: item.name,
             number: null,
-            parameters: item.parameters.map((parameter) => ({
-                name: parameter.name,
-                value: '',
-                mandatory: parameter.mandatory,
-            })),
+            parameters: [],
             retries: 0,
             type: item.type,
         })));

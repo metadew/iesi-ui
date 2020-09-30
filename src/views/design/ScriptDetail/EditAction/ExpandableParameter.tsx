@@ -85,9 +85,9 @@ export default function ExpandableParameter({ parameter, onChange, constantParam
                         <Translate msg="scripts.detail.edit_action.parameter.value" />
                     </InputLabel>
                     <FilledInput
-                        id={`${parameter.name}-input`}
+                        id={`${constantParameter.name}-input`}
                         type="text"
-                        value={parameter.value}
+                        value={parameter ? parameter.value : ''}
                         onChange={(e) => onChange(e.target.value)}
                         multiline
                     />

@@ -151,26 +151,24 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                     </Paper>
                 </Box>
                 <Box>
-                    {parameters.map((parameter) => {
-                        const constantParameter = matchingActionType.parameters.find(
-                            (item) => item.name === parameter.name,
-                        );
+                    {matchingActionType.parameters.map((constantParameter) => {
+                        const parameter = parameters.find((p) => p.name === constantParameter.name);
+
                         return (
                             <ExpandableParameter
-                                key={parameter.name}
+                                key={constantParameter.name}
                                 onChange={(value) => {
-                                    const newParameters = parameters.map(
-                                        (item) => {
-                                            if (item.name === parameter.name) {
-                                                return {
-                                                    ...item,
-                                                    value,
-                                                };
-                                            }
-                                            return item;
-                                        },
-                                    );
+                                    const index = parameters.findIndex((p) => p.name === constantParameter.name);
+                                    const newParameters = [...parameters];
 
+                                    if (index === -1) {
+                                        newParameters.push({
+                                            name: constantParameter.name,
+                                            value,
+                                        });
+                                    } else {
+                                        newParameters[index].value = value;
+                                    }
                                     setParameters(newParameters);
                                 }}
                                 parameter={parameter}
