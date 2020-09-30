@@ -20,9 +20,6 @@ import {
 } from '@material-ui/core';
 import {
     ExpandMore as ExpandMoreIcon,
-    ErrorOutline as ErrorIcon,
-    CheckOutlined as SuccessIcon,
-    ReportProblemOutlined as WarningIcon,
     ChevronRightRounded,
 } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -37,10 +34,10 @@ import { THEME_COLORS } from 'config/themes/colors';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import { IParameterRawValue, IOutputValue } from 'models/state/iesiGeneric.models';
 import { observe, IObserveProps } from 'views/observe';
-import { ExecutionActionStatus } from 'models/state/scriptExecutions.models';
 import { StateChangeNotification } from 'models/state.models';
 import { useParams } from 'react-router-dom';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import StatusIcon from 'views/common/icons/StatusIcon';
 import { IExecutionDetailPathParams } from './shared';
 
 const ACTION_TYPE_NAME_WITH_CHILD_SCRIPTS = 'fwk.executeScript';
@@ -82,16 +79,6 @@ const useStyles = makeStyles(({ typography, palette, shape, spacing }: Theme) =>
         borderRadius: shape.borderRadius,
         border: 'none',
         overflow: 'hidden',
-    },
-    statusCell: {},
-    statusCellError: {
-        color: THEME_COLORS.ERROR,
-    },
-    statusCellSuccess: {
-        color: THEME_COLORS.SUCCESS,
-    },
-    statusCellWarning: {
-        color: THEME_COLORS.WARNING,
     },
     details: {
         background: palette.background.default,
@@ -150,21 +137,11 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                 paddingY={1.1}
                                 boxSizing="content-box"
                                 flex="0 0 auto"
-                                className={classNames(classes.statusCell, {
-                                    [classes.statusCellSuccess]: item.data.status === ExecutionActionStatus.Success,
-                                    [classes.statusCellError]: item.data.status === ExecutionActionStatus.Error,
-                                    [classes.statusCellWarning]: item.data.status === ExecutionActionStatus.Warning,
-                                })}
                             >
-                                {item.data.status === ExecutionActionStatus.Success && (
-                                    <SuccessIcon />
-                                )}
-                                {item.data.status === ExecutionActionStatus.Warning && (
-                                    <WarningIcon />
-                                )}
-                                {item.data.status === ExecutionActionStatus.Error && (
-                                    <ErrorIcon />
-                                )}
+                                <StatusIcon
+                                    status={item.data.status}
+                                    tooltipLabel={item.data.status}
+                                />
                             </Box>
                         </Box>
 

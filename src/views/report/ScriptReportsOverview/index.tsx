@@ -35,6 +35,7 @@ import { IColumnNames, IExecutionRequest, ExecutionRequestStatus } from 'models/
 import { Alert } from '@material-ui/lab';
 import { parseISO, format as formatDate } from 'date-fns/esm';
 import OrderedList from 'views/common/list/OrderedList';
+import { statusColorAndIconMap, StatusColors } from 'config/statusColorsAndIcons.config';
 import {
     getAsyncExecutionRequestsEntity,
     getAsyncExecutionRequests,
@@ -69,21 +70,20 @@ const styles = ({ palette, typography }: Theme) =>
         },
         executionStatus: {
             fontWeight: typography.fontWeightBold,
-            [`&.${ExecutionRequestStatus.New},
-                &.${ExecutionRequestStatus.Submitted}`]: {
-                color: palette.primary.main,
+            [`&.${StatusColors.Success}`]: {
+                color: palette.success.main,
             },
-            [`&.${ExecutionRequestStatus.Declined},
-                &.${ExecutionRequestStatus.Stopped},
-                &.${ExecutionRequestStatus.Killed},
-                &.${ExecutionRequestStatus.Unknown}`]: {
+            [`&.${StatusColors.SuccessDark}`]: {
+                color: palette.success.dark,
+            },
+            [`&.${StatusColors.Warning}`]: {
+                color: palette.warning.main,
+            },
+            [`&.${StatusColors.Error}`]: {
                 color: palette.error.main,
             },
-            [`&.${ExecutionRequestStatus.Accepted}`]: {
-                color: palette.secondary.main,
-            },
-            [`&.${ExecutionRequestStatus.Completed}`]: {
-                color: palette.secondary.dark,
+            [`&.${StatusColors.Primary}`]: {
+                color: palette.primary.main,
             },
         },
     });
@@ -299,7 +299,9 @@ const ScriptReportsOverview = withStyles(styles)(
                     ),
                     className: (value) => {
                         const executionStatus = value as ExecutionRequestStatus;
-                        return `${classes.executionStatus} ${executionStatus}`;
+                        const currentStatus = statusColorAndIconMap[executionStatus];
+
+                        return `${classes.executionStatus} ${currentStatus && currentStatus.color}`;
                     },
                     hideOnCompactView: true,
                 },

@@ -1,22 +1,17 @@
 import React, { useEffect } from 'react';
-import classNames from 'classnames';
 import { useParams } from 'react-router-dom';
 import { parseISO, format as formatDate } from 'date-fns/esm';
 import isSet from '@snipsonian/core/es/is/isSet';
 import isEmptyObject from '@snipsonian/core/es/object/isEmptyObject';
 import { Box, makeStyles, Button, Typography } from '@material-ui/core';
-import {
-    ErrorOutline as ErrorIcon,
-    CheckOutlined as SuccessIcon,
-    ReportProblemOutlined as WarningIcon,
-    ChevronLeftRounded,
-} from '@material-ui/icons';
+import { ChevronLeftRounded } from '@material-ui/icons';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import useExecuteOnUnmount from 'utils/hooks/useExecuteOnUnmount';
 import DescriptionList, { IDescriptionListItem } from 'views/common/list/DescriptionList';
 import { ROUTE_KEYS, redirectTo } from 'views/routes';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel/index';
+import StatusIcon from 'views/common/icons/StatusIcon';
 import { getAsyncExecutionRequestDetail } from 'state/entities/executionRequests/selectors';
 import { observe, IObserveProps } from 'views/observe';
 import Loader from 'views/common/waiting/Loader';
@@ -24,7 +19,7 @@ import { AsyncStatus, AsyncOperation } from 'snipsonian/observable-state/src/act
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
 import { IExecutionRequest } from 'models/state/executionRequests.models';
-import { IScriptExecutionDetailAction, ExecutionActionStatus } from 'models/state/scriptExecutions.models';
+import { IScriptExecutionDetailAction } from 'models/state/scriptExecutions.models';
 import {
     triggerFetchScriptExecutionDetail,
     triggerResetScriptExecutionDetail,
@@ -249,26 +244,10 @@ function ExecutionDetail({ state }: IObserveProps) {
                 {
                     label: translator('script_reports.detail.side.execution.script_status.label'),
                     value: (
-                        <Box
-                            display="flex"
-                            alignItems="center"
-                            className={classNames(classes.status, {
-                                [classes.statusSuccess]: scriptExecutionData.status === ExecutionActionStatus.Success,
-                                [classes.statusError]: scriptExecutionData.status === ExecutionActionStatus.Error,
-                                [classes.statusWarning]: scriptExecutionData.status === ExecutionActionStatus.Warning,
-                            })}
-                        >
-                            {scriptExecutionData.status === ExecutionActionStatus.Success && (
-                                <SuccessIcon />
-                            )}
-                            {scriptExecutionData.status === ExecutionActionStatus.Warning && (
-                                <WarningIcon />
-                            )}
-                            {scriptExecutionData.status === ExecutionActionStatus.Error && (
-                                <ErrorIcon />
-                            )}
-                            <Box flex="1 1 auto" paddingLeft={0.5}>{scriptExecutionData.status}</Box>
-                        </Box>
+                        <StatusIcon
+                            status={scriptExecutionData.status}
+                            label={scriptExecutionData.status}
+                        />
                     ),
                 },
                 {

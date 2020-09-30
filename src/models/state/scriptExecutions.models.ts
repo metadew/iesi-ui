@@ -1,3 +1,4 @@
+import { ExecutionRequestStatus } from './executionRequests.models';
 import { IParameter, IParameterRawValue, ILabel, IOutputValue } from './iesiGeneric.models';
 
 export interface IScriptExecutionDetail {
@@ -8,7 +9,7 @@ export interface IScriptExecutionDetail {
     scriptName: string;
     scriptVersion: number;
     environment: string;
-    status: string;
+    status: ExecutionRequestStatus | ExecutionActionStatus;
     startTimestamp: string;
     endTimestamp: string;
     inputParameters: IParameter[];
@@ -39,9 +40,10 @@ export interface IScriptExecutionByRunIdAndProcessIdPayload {
     processId: number;
 }
 
-
 export enum ExecutionActionStatus {
     Success = 'SUCCESS',
     Error = 'ERROR',
     Warning = 'WARNING',
+    Stopped = 'STOPPED',
+    Skipped = 'SKIPPED',
 }
