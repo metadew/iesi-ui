@@ -37,7 +37,6 @@ export interface IScriptsEntity {
 export interface IScriptBase {
     name: string;
     description: string;
-    condition: string;
     version: IScriptVersion;
     parameters: IParameter[];
     actions: IScriptAction[];
