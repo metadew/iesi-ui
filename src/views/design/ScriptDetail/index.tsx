@@ -105,6 +105,7 @@ const ScriptDetail = withStyles(styles)(
                     description: '',
                     labels: [],
                     name: '',
+                    condition: '',
                     parameters: [],
                     version: {
                         description: '',
@@ -305,6 +306,13 @@ const ScriptDetail = withStyles(styles)(
                                 value={newScriptDetail && newScriptDetail.description
                                     ? newScriptDetail.description : ''}
                                 onChange={(e) => this.updateScript({ description: e.target.value })}
+                            />
+                            <TextInput
+                                id="script-condition"
+                                label={translator('scripts.detail.side.script_condition')}
+                                value={newScriptDetail && newScriptDetail.condition
+                                    ? newScriptDetail.condition : ''}
+                                onChange={(e) => this.updateScript({ name: e.target.value })}
                             />
                             {this.isCreateScriptRoute() && (
                                 <TextInput

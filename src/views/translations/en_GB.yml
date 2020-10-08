@@ -126,6 +126,7 @@ scripts:
     side:
       script_description: Script description
       script_name: Script name
+      script_condition: Script condition
       script_version: Script version
       description:
         last_run_date: Last run date
