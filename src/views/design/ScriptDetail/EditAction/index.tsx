@@ -60,6 +60,13 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
     nameTextField: {
         width: '100%',
     },
+    conditionTextField: {
+        width: '100%',
+        marginTop: 0,
+        '& .MuiFilledInput-root': {
+            background: palette.background.paper,
+        },
+    },
     footerAction: {
         fontSize: '.8rem',
         fontWeight: typography.fontWeightBold,
@@ -86,6 +93,7 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
     const [parameters, setParameters] = useState(action.parameters);
     const [description, setDescription] = useState(action.description);
     const [name, setName] = useState(action.name);
+    const [condition, setCondition] = useState(action.condition);
 
     const actionTypes = getAsyncActionTypes(state).data || [];
     const matchingActionType = actionTypes.find((item) => action.type === item.type);
@@ -147,6 +155,19 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                             className={classes.descriptionTextField}
                             defaultValue={description}
                             onBlur={(e) => setDescription(e.target.value)}
+                        />
+                    </Paper>
+                </Box>
+                <Box marginBottom={2}>
+                    <Paper>
+                        <TextInput
+                            id="action-condition"
+                            label={translator(
+                                'scripts.detail.edit_action.condition',
+                            )}
+                            className={classes.conditionTextField}
+                            defaultValue={condition}
+                            onBlur={(e) => setCondition(e.target.value)}
                         />
                     </Paper>
                 </Box>
@@ -238,6 +259,7 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
             name,
             parameters,
             description,
+            condition,
             errorStop: errorStopChecked,
             errorExpected: errorExpectedChecked,
         });

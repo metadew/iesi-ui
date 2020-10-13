@@ -116,6 +116,7 @@ scripts:
     edit_action:
       description: Action description
       name: Action name
+      condition: Action condition
       parameter:
         value: Value
       footer:
