@@ -5,7 +5,12 @@ import { IEnvConfig } from 'models/state/envConfig.models';
 import { overrideTranslationsIfAny } from 'views/translations';
 import { triggerFlashMessage } from 'state/ui/actions';
 import { getStore } from 'state/index';
-import { setIesiApiBaseUrl, setIesiApiTimeoutInSeconds } from 'api/requestWrapper';
+import {
+    setIesiApiBaseUrl,
+    setIesiApiUsername,
+    setIesiApiPassword,
+    setIesiApiTimeoutInSeconds,
+} from 'api/requestWrapper';
 import { getAsyncEnvConfig, getTranslationLabelOverrides } from './selectors';
 import { createAction } from '../index';
 
@@ -62,5 +67,7 @@ export const fetchEnvConfig = () => createAction<{}>({
 
 function configureIesiApi(envConfig: IEnvConfig) {
     setIesiApiBaseUrl(envConfig.iesi_api_base_url);
+    setIesiApiUsername(envConfig.iesi_api_username);
+    setIesiApiPassword(envConfig.iesi_api_password);
     setIesiApiTimeoutInSeconds(envConfig.iesi_api_timeout_in_seconds);
 }

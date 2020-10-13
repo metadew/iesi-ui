@@ -5,6 +5,7 @@ import API_URLS from '../apiUrls';
 
 export function fetchEnvironments() {
     return get<IEnvironment[], IListResponse<IEnvironment>>({
+        isIesiApi: true,
         url: API_URLS.ENVIRONMENTS,
         // eslint-disable-next-line no-underscore-dangle
         mapResponse: ({ data }) => data._embedded,
@@ -13,6 +14,7 @@ export function fetchEnvironments() {
 
 export function fetchEnvironment({ name }: { name: string }) {
     return get<IEnvironment>({
+        isIesiApi: true,
         url: API_URLS.ENVIRONMENT_BY_NAME,
         pathParams: {
             name,
@@ -22,6 +24,7 @@ export function fetchEnvironment({ name }: { name: string }) {
 
 export function createEnvironment(environment: IEnvironment) {
     return post<IEnvironment>({
+        isIesiApi: true,
         url: API_URLS.ENVIRONMENTS,
         body: environment,
     });
@@ -29,6 +32,7 @@ export function createEnvironment(environment: IEnvironment) {
 
 export function updateEnvironment(environment: IEnvironment) {
     return put<IEnvironment>({
+        isIesiApi: true,
         url: API_URLS.ENVIRONMENT_BY_NAME,
         pathParams: {
             name: environment.name,
@@ -39,6 +43,7 @@ export function updateEnvironment(environment: IEnvironment) {
 
 export function deleteEnvironment({ name }: IEnvironment) {
     return remove<{}>({
+        isIesiApi: true,
         url: API_URLS.ENVIRONMENT_BY_NAME,
         pathParams: {
             name,

@@ -10,6 +10,8 @@ export type TEnvConfigState = ICustomAsyncEntity<IEnvConfig>;
 export interface IEnvConfig {
     /* eslint-disable camelcase */
     iesi_api_base_url: string;
+    iesi_api_username: string;
+    iesi_api_password: string;
     iesi_api_timeout_in_seconds: number;
     translation_label_overrides: ITranslationsPerLocale;
     /* eslint-enable camelcase */

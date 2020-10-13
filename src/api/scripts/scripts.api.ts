@@ -19,6 +19,7 @@ interface IScriptsResponse {
 
 export function fetchScripts({ expandResponseWith, pagination, filter, sort }: IFetchScriptsListPayload) {
     return get<IScriptsEntity, IScriptsResponse>({
+        isIesiApi: true,
         url: API_URLS.SCRIPTS,
         queryParams: {
             ...toExpandQueryParam(expandResponseWith),
@@ -39,6 +40,7 @@ export function fetchScriptVersions({
     expandResponseWith,
 }: IScriptByNamePayload & IFetchScriptsOptions) {
     return get<IScript[], IListResponse<IScript>>({
+        isIesiApi: true,
         url: API_URLS.SCRIPT_BY_NAME,
         pathParams: {
             name,
@@ -55,6 +57,7 @@ export function fetchScriptVersion({
     expandResponseWith,
 }: IScriptByNameAndVersionPayload & IFetchScriptsOptions) {
     return get<IScript>({
+        isIesiApi: true,
         url: API_URLS.SCRIPT_BY_NAME_VERSION,
         pathParams: {
             name,
@@ -70,6 +73,7 @@ export function fetchScriptVersion({
  */
 export function createScriptVersion(script: IScriptBase) {
     return post<IScriptBase>({
+        isIesiApi: true,
         url: API_URLS.SCRIPTS,
         body: script,
     });
@@ -81,6 +85,7 @@ export function createScriptVersion(script: IScriptBase) {
  */
 export function updateScriptVersion(script: IScriptBase) {
     return put<IScriptBase>({
+        isIesiApi: true,
         url: API_URLS.SCRIPT_BY_NAME_VERSION,
         pathParams: {
             name: script.name,
@@ -92,6 +97,7 @@ export function updateScriptVersion(script: IScriptBase) {
 
 export function deleteScriptVersions({ name }: IScriptByNamePayload) {
     return remove<{}>({
+        isIesiApi: true,
         url: API_URLS.SCRIPT_BY_NAME,
         pathParams: {
             name,
@@ -101,6 +107,7 @@ export function deleteScriptVersions({ name }: IScriptByNamePayload) {
 
 export function deleteScriptVersion({ name, version }: IScriptByNameAndVersionPayload) {
     return remove<{}>({
+        isIesiApi: true,
         url: API_URLS.SCRIPT_BY_NAME_VERSION,
         pathParams: {
             name,

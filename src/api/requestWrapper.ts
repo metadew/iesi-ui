@@ -12,6 +12,13 @@ import {
 import { DEFAULT_TIMEOUT_IN_MILLIS } from 'config/api.config';
 import { isApiLoggingEnabled } from 'config/develop.config';
 
+
+interface IAuthenticationResponse {
+    accessToken: string;
+    expiresIn: number;
+}
+
+
 const apiLogger = isApiLoggingEnabled
     ? getApiLogger({ groupLogger: consoleGroupLogger })
     : undefined;
@@ -24,9 +31,19 @@ export const registerErrorHandler = (handler: IErrorHandler) => {
 
 let iesiApiBaseUrl: string = null;
 let iesiApiTimeoutInSeconds: number = null;
+let iesiApiUsername: string = null;
+let iesiApiPassword: string = null;
 
 export function setIesiApiBaseUrl(baseUrl: string) {
     iesiApiBaseUrl = baseUrl;
+}
+
+export function setIesiApiUsername(username: string) {
+    iesiApiUsername = username;
+}
+
+export function setIesiApiPassword(password: string) {
+    iesiApiPassword = password;
 }
 
 export function setIesiApiTimeoutInSeconds(timeoutInSeconds: number) {
@@ -69,26 +86,125 @@ export const requestWrapper = getRequestWrapper<ICustomApiConfig, ITraceableApiE
     },
 });
 
+// TODO: add authorization call before requestWrapper.XXXX
+//  add authorization header to call
+//  to be removed
 export function get<Result, ResponseData = Result>(
     config: IGetRequestConfig<Result, ResponseData> & ICustomApiConfig,
 ): Promise<Result> {
+    if (config.isIesiApi) {
+        const authConfig: IBodyRequestConfig<IAuthenticationResponse, IAuthenticationResponse> & ICustomApiConfig = {
+            isIesiApi: true,
+            url: '/users/login',
+            body: {
+                username: iesiApiUsername,
+                password: iesiApiPassword,
+            },
+            mapResponse: ({ data }) => ({
+                // eslint-disable-next-line no-underscore-dangle
+                accessToken: data.accessToken,
+                expiresIn: data.expiresIn,
+            }),
+        };
+        return requestWrapper.post<IAuthenticationResponse>(authConfig)
+            .then((response) => requestWrapper.get({
+                ...config,
+                headers: {
+                    ...config.headers,
+                    Authorization: `Bearer ${response.accessToken}`,
+                },
+            }))
+            .catch();
+    }
     return requestWrapper.get(config);
 }
 
 export function post<Result, ResponseData = Result>(
     config: IBodyRequestConfig<Result, ResponseData> & ICustomApiConfig,
 ): Promise<Result> {
+    if (config.isIesiApi) {
+        const authConfig: IBodyRequestConfig<IAuthenticationResponse, IAuthenticationResponse> & ICustomApiConfig = {
+            isIesiApi: true,
+            url: '/users/login',
+            body: {
+                username: iesiApiUsername,
+                password: iesiApiPassword,
+            },
+            mapResponse: ({ data }) => ({
+                // eslint-disable-next-line no-underscore-dangle
+                accessToken: data.accessToken,
+                expiresIn: data.expiresIn,
+            }),
+        };
+        return requestWrapper.post<IAuthenticationResponse>(authConfig)
+            .then((response) => requestWrapper.post({
+                ...config,
+                headers: {
+                    ...config.headers,
+                    Authorization: `Bearer ${response.accessToken}`,
+                },
+            }))
+            .catch();
+    }
     return requestWrapper.post(config);
 }
 
 export function put<Result, ResponseData = Result>(
     config: IBodyRequestConfig<Result, ResponseData> & ICustomApiConfig,
 ): Promise<Result> {
+    if (config.isIesiApi) {
+        const authConfig: IBodyRequestConfig<IAuthenticationResponse, IAuthenticationResponse> & ICustomApiConfig = {
+            isIesiApi: true,
+            url: '/users/login',
+            body: {
+                username: iesiApiUsername,
+                password: iesiApiPassword,
+            },
+            mapResponse: ({ data }) => ({
+                // eslint-disable-next-line no-underscore-dangle
+                accessToken: data.accessToken,
+                expiresIn: data.expiresIn,
+            }),
+        };
+        return requestWrapper.post<IAuthenticationResponse>(authConfig)
+            .then((response) => requestWrapper.put({
+                ...config,
+                headers: {
+                    ...config.headers,
+                    Authorization: `Bearer ${response.accessToken}`,
+                },
+            }))
+            .catch();
+    }
     return requestWrapper.put(config);
 }
 
 export function remove<Result, ResponseData = Result>(
     config: IBodyRequestConfig<Result, ResponseData> & ICustomApiConfig,
 ): Promise<Result> {
+    if (config.isIesiApi) {
+        const authConfig: IBodyRequestConfig<IAuthenticationResponse, IAuthenticationResponse> & ICustomApiConfig = {
+            isIesiApi: true,
+            url: '/users/login',
+            body: {
+                username: iesiApiUsername,
+                password: iesiApiPassword,
+            },
+            mapResponse: ({ data }) => ({
+                // eslint-disable-next-line no-underscore-dangle
+                accessToken: data.accessToken,
+                expiresIn: data.expiresIn,
+            }),
+        };
+        return requestWrapper.post<IAuthenticationResponse>(authConfig)
+            .then((response) => requestWrapper.remove({
+                ...config,
+                headers: {
+                    ...config.headers,
+                    Authorization: `Bearer ${response.accessToken}`,
+                },
+            }))
+            .catch();
+    }
     return requestWrapper.remove(config);
 }

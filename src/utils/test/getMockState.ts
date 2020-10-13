@@ -108,6 +108,8 @@ function getDefaultEnvConfig(): ICustomAsyncEntity<IEnvConfig> {
     return {
         data: {
             iesi_api_base_url: 'https://some.iesi-api.be',
+            iesi_api_username: 'username',
+            iesi_api_password: 'password',
             iesi_api_timeout_in_seconds: 1,
             translation_label_overrides: {
                 en_GB: {},
