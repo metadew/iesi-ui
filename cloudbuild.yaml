@@ -10,7 +10,7 @@ steps:
 #  args: ['test']
 - name: node
   entrypoint: npm
-  args: ['run', 'build', '--url', '""', '--timeout', '10']
+  args: ['run', 'build', '--url=http://iesi.com/api', '--timeout=10']
 - name: gcr.io/google.com/cloudsdktool/cloud-sdk
   entrypoint: 'bash'
   args:
