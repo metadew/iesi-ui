@@ -27,6 +27,8 @@ function initEnvConfigFileIfItDoesNotExistYet() {
      */
     const config = {
         iesi_api_base_url: argv.url,
+        iesi_api_username: '',
+        iesi_api_password: '',
         iesi_api_timeout_in_seconds: (argv.timeout && argv.timeout !== WINDOWS_TIMEOUT_IF_NOT_FILLED_IN)
             ? argv.timeout : 10,
         translation_label_overrides: {

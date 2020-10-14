@@ -5,9 +5,9 @@ steps:
 - name: node
   entrypoint: npm
   args: ['run', 'init-env-config']
-- name: node
-  entrypoint: npm
-  args: ['test']
+#- name: node
+#  entrypoint: npm
+#  args: ['test']
 - name: node
   entrypoint: npm
   args: ['run', 'build']
