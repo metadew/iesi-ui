@@ -18,7 +18,9 @@ steps:
   - |
     apt-get install -y zip
     zip -r build.zip build
+- name: 'gcr.io/cloud-builders/gsutil'
+  args: ['-m', 'cp', '-r', 'build/', 'gs://iesi-frontend-artifacts/$BRANCH_NAME/$BUILD_ID']
 artifacts:
   objects:
     location: 'gs://iesi-frontend-artifacts/$BRANCH_NAME/$BUILD_ID'
-    paths: ['build.zip', 'build/**']
+    paths: ['build.zip']
