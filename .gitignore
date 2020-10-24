@@ -27,3 +27,7 @@ npm-debug.log*
 proxy.log
 yarn-debug.log*
 yarn-error.log*
+
+# jenkins
+.scannerwork/
+
