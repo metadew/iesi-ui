@@ -1,6 +1,6 @@
 import React, { ReactText } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-import clone from 'ramda/es/clone';
+import { clone } from 'ramda';
 import { getTranslator } from 'state/i18n/selectors';
 import { Box, Typography, Button, withStyles, createStyles, Theme, WithStyles, Collapse } from '@material-ui/core';
 import {

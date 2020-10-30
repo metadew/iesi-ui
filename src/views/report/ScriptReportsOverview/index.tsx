@@ -33,7 +33,7 @@ import { StateChangeNotification } from 'models/state.models';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { IColumnNames, IExecutionRequest, ExecutionRequestStatus } from 'models/state/executionRequests.models';
 import { Alert } from '@material-ui/lab';
-import { parseISO, format as formatDate } from 'date-fns/esm';
+import { parseISO, format as formatDate } from 'date-fns';
 import OrderedList from 'views/common/list/OrderedList';
 import { statusColorAndIconMap, StatusColors } from 'config/statusColorsAndIcons.config';
 import {

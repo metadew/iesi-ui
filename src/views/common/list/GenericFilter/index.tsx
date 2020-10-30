@@ -22,7 +22,7 @@ import {
 } from 'models/list.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
-import { parseISO, format as formatDate } from 'date-fns/esm';
+import { parseISO, format as formatDate } from 'date-fns';
 import isValidDate from 'utils/core/date/isValidDate';
 import Search from './Search';
 import Select from './Select';
