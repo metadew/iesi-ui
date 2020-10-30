@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { parseISO, format as formatDate } from 'date-fns/esm';
+import { parseISO, format as formatDate } from 'date-fns';
 import {
     Box,
     makeStyles,
