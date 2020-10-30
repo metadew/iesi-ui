@@ -186,13 +186,14 @@ script_reports:
         script_name: Script name
         script_version: Script version
         environment: Environment
-        labels: Label
+        labels: Labels
       labels:
         environment: Environment
         labels: Labels
         parameters: Parameters
         request_timestamp: Request timestamp
-        execution_status: Status
+        execution_status: Progress
+        execution_status2: Status
       sort:
         request_timestamp: Request timestamp
         script_name: Script name

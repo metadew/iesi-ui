@@ -106,6 +106,7 @@ const ScriptDetail = withStyles(styles)(
                     labels: [],
                     name: '',
                     parameters: [],
+                    runStatus: '',
                     version: {
                         description: '',
                         number: 0,

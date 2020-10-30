@@ -41,6 +41,7 @@ export interface IScriptBase {
     parameters: IParameter[];
     actions: IScriptAction[];
     labels: ILabel[];
+    runStatus: string;
 }
 
 export interface IScript extends IScriptBase {

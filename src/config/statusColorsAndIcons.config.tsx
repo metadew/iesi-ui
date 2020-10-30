@@ -9,8 +9,9 @@ import {
     TimerOutlined as AcceptedIcon,
     CancelOutlined as DeclinedIcon,
 } from '@material-ui/icons';
-import { ExecutionActionStatus } from 'models/state/scriptExecutions.models';
-import { ExecutionRequestStatus } from 'models/state/executionRequests.models';
+import { ExecutionActionStatus, ExecutionRequestStatus } from 'models/state/executionenumstatus';
+// import { ExecutionRequestStatus } from 'models/state/executionRequests.models';
+// import { ExecutionActionStatus } from 'models/state/scriptExecutions.models';
 
 export enum StatusColors {
     Success = 'SUCCESS',

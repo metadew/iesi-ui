@@ -1,4 +1,7 @@
+import { ExecutionRequestStatus, ExecutionActionStatus } from './executionenumstatus';
 import { ILabel, IParameter, IPageFilter, IPageData } from './iesiGeneric.models';
+// import { ExecutionActionStatus } from './scriptExecutions.models';
+
 
 export interface IColumnNames {
     script: string;
@@ -8,6 +11,7 @@ export interface IColumnNames {
     executionStatus: string;
     labels: number;
     parameters: number;
+    runStatus: string;
 }
 
 export interface IExecutionRequest {
@@ -30,7 +34,7 @@ export interface ICreateExecutionRequestPayload {
     context: string;
     email: string;
     // eslint-disable-next-line max-len
-    scriptExecutionRequests: Omit<IScriptExecutionRequest, 'executionRequestId' | 'scriptExecutionRequestId' | 'scriptExecutionRequestStatus'>[];
+    scriptExecutionRequests: Omit<IScriptExecutionRequest, 'executionRequestId' | 'scriptExecutionRequestId' | 'scriptExecutionRequestStatus' | 'runStatus'>[];
     executionRequestLabels: ILabel[];
 }
 
@@ -45,13 +49,14 @@ interface IScriptExecutionRequest {
     scriptName: string;
     scriptVersion: number;
     runId?: string;
+    runStatus: ExecutionActionStatus;
 }
 
 export interface IExecutionRequestByIdPayload {
     id: string;
 }
 
-export enum ExecutionRequestStatus {
+/* export enum ExecutionRequestStatus {
     New = 'NEW',
     Submitted = 'SUBMITTED',
     Accepted = 'ACCEPTED',
@@ -60,7 +65,7 @@ export enum ExecutionRequestStatus {
     Completed = 'COMPLETED',
     Killed = 'KILLED',
     Unknown = 'UNKNOWN',
-}
+} */
 
 export interface IFetchExecutionRequestListPayload {
     pagination?: IPageFilter;

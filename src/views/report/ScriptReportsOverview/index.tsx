@@ -31,7 +31,7 @@ import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
-import { IColumnNames, IExecutionRequest, ExecutionRequestStatus } from 'models/state/executionRequests.models';
+import { IColumnNames, IExecutionRequest } from 'models/state/executionRequests.models';
 import { Alert } from '@material-ui/lab';
 import { parseISO, format as formatDate } from 'date-fns/esm';
 import OrderedList from 'views/common/list/OrderedList';
@@ -47,6 +47,8 @@ import { getEnvironmentsForDropdown } from 'state/entities/environments/selector
 import { getTranslator } from 'state/i18n/selectors';
 import { getExecutionsListFilter } from 'state/ui/selectors';
 import { setExecutionsListFilter } from 'state/ui/actions';
+import { ExecutionActionStatus, ExecutionRequestStatus } from 'models/state/executionenumstatus';
+
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -84,6 +86,30 @@ const styles = ({ palette, typography }: Theme) =>
             },
             [`&.${StatusColors.Primary}`]: {
                 color: palette.primary.main,
+            },
+        },
+        runStatus: {
+            fontWeight: typography.fontWeightBold,
+            [`&.${StatusColors.Success}`]: {
+                color: palette.success.main,
+            },
+            [`&.${StatusColors.Error}`]: {
+                color: palette.error.main,
+            },
+            [`&.${StatusColors.Warning}`]: {
+                color: palette.warning.main,
+            },
+            [`&.${StatusColors.Error}`]: {
+                color: palette.error.main,
+            },
+            [`&.${StatusColors.Primary}`]: {
+                color: palette.primary.main,
+            },
+        },
+        unknownValue: {
+            fontWeight: typography.fontWeightBold,
+            [`&.${StatusColors.Error}`]: {
+                color: palette.error.main,
             },
         },
     });
@@ -300,8 +326,20 @@ const ScriptReportsOverview = withStyles(styles)(
                     className: (value) => {
                         const executionStatus = value as ExecutionRequestStatus;
                         const currentStatus = statusColorAndIconMap[executionStatus];
-
                         return `${classes.executionStatus} ${currentStatus && currentStatus.color}`;
+                    },
+                    hideOnCompactView: true,
+                },
+                /* eslint no-trailing-spaces: ["error", { "ignoreComments": true }] */
+                runStatus: {
+                    fixedWidth: '10%',
+                    label: (
+                        <Translate msg="script_reports.overview.list.labels.execution_status2" />
+                    ),
+                    className: (value) => {
+                        const runStatus = value as ExecutionActionStatus;
+                        const currentRunStatus = statusColorAndIconMap[runStatus];
+                        return `${classes.runStatus} ${currentRunStatus && currentRunStatus.color}`;
                     },
                     hideOnCompactView: true,
                 },
@@ -442,6 +480,7 @@ function mapExecutionsToListItems(executionRequests: IExecutionRequest[]): IList
                             sortValue: new Date(executionRequest.requestTimestamp).toISOString(),
                         },
                         executionStatus: executionRequest.executionRequestStatus,
+                        runStatus: scriptExecution.runStatus ? scriptExecution.runStatus : 'UNKNOWN',
                         labels: {
                             value: executionRequest.executionRequestLabels.length,
                             tooltip: executionRequest.executionRequestLabels.length > 0 && (
