@@ -1,7 +1,9 @@
 import { ExecutionRequestStatus } from 'models/state/executionRequests.models';
 
 export function isExecutionRequestStatusPending(status: ExecutionRequestStatus) {
-    return status === ExecutionRequestStatus.New || status === ExecutionRequestStatus.Submitted;
+    return status === ExecutionRequestStatus.New
+        || status === ExecutionRequestStatus.Submitted
+        || status === ExecutionRequestStatus.Running;
 }
 
 export function isExecutionRequestStatusFailed(status: ExecutionRequestStatus) {

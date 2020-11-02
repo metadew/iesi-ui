@@ -56,6 +56,10 @@ export const statusColorAndIconMap: TStatusColorsAndIcons = {
         icon: <SubmittedIcon />,
         color: StatusColors.Primary,
     },
+    RUNNING: {
+        icon: <SubmittedIcon />,
+        color: StatusColors.Primary,
+    },
     ACCEPTED: {
         icon: <AcceptedIcon />,
         color: StatusColors.Success,
