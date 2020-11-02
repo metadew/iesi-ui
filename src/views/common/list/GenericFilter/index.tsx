@@ -8,10 +8,9 @@ import {
     ExpansionPanelDetails,
     makeStyles,
     Typography,
-    Chip,
     IconButton,
 } from '@material-ui/core';
-import { AddRounded, RemoveRounded, CloseRounded } from '@material-ui/icons';
+import { AddRounded, RemoveRounded } from '@material-ui/icons';
 import {
     IFilter,
     FilterType,
@@ -29,6 +28,7 @@ import Select from './Select';
 import FromTo from './FromTo';
 import Dropdown from './Dropdown';
 import KeyValue from './KeyValue';
+import RemovableChip from './RemovableChip';
 
 interface IPublicProps<ColumnNames> {
     filterConfig: FilterConfig<ColumnNames>;
@@ -37,27 +37,10 @@ interface IPublicProps<ColumnNames> {
     initialFilters?: ListFilters<ColumnNames>;
 }
 
-const useStyles = makeStyles(({ spacing, palette, typography, shape }) => ({
+const useStyles = makeStyles(({ spacing, palette, typography }) => ({
     title: {
         marginTop: spacing(1),
         marginBottom: spacing(1),
-    },
-    chip: {
-        marginRight: spacing(1),
-        marginBottom: spacing(1),
-        borderRadius: shape.borderRadius,
-        fontWeight: typography.fontWeightBold,
-        '&.MuiChip-sizeSmall': {
-            height: typography.pxToRem(18),
-            fontSize: typography.pxToRem(10),
-            '& .MuiSvgIcon-root': {
-                width: typography.pxToRem(13),
-                height: typography.pxToRem(13),
-            },
-        },
-        '& .MuiSvgIcon-root': {
-            color: 'currentColor',
-        },
     },
     expansionPanelWrapper: {
         borderBottom: '2px solid',
@@ -147,19 +130,12 @@ function GenericFilter<ColumnNames>({
                                 : item.value;
 
                             return (
-                                <Chip
+                                <RemovableChip
                                     // eslint-disable-next-line react/no-array-index-key
                                     key={`${itemValue}${index}`}
-                                    label={(
-                                        <>
-                                            <span>{item.chipLabel}</span>
-                                            <span>{formattedValue}</span>
-                                        </>
-                                    )}
+                                    text={`${item.chipLabel ? item.chipLabel : ''}${formattedValue}`}
                                     onDelete={() => clearFilter(item)}
-                                    className={classes.chip}
-                                    size="small"
-                                    deleteIcon={<CloseRounded />}
+                                    truncateLength={30}
                                 />
                             );
                         })}
