@@ -252,7 +252,7 @@ const ScriptReportsOverview = withStyles(styles)(
             return defaultFilters;
         }
 
-        private renderPanel({ listItems }: { listItems: IListItem<IColumnNames>[] }) {
+        private renderPanel({ listItems }: { listItems: IListItem<IColumnNames, { runId: string }>[] }) {
             const { state } = this.props;
             const filterFromState = getExecutionsListFilter(state);
 
@@ -266,7 +266,7 @@ const ScriptReportsOverview = withStyles(styles)(
             );
         }
 
-        private renderContent({ listItems }: { listItems: IListItem<IColumnNames>[] }) {
+        private renderContent({ listItems }: { listItems: IListItem<IColumnNames, { runId: string }>[] }) {
             const { classes, state, dispatch } = this.props;
             const translator = getTranslator(state);
             const columns: ListColumns<IColumnNames> = {
@@ -351,7 +351,7 @@ const ScriptReportsOverview = withStyles(styles)(
                                 },
                                 hideAction: (id) => {
                                     const execution = listItems.find((listItem) => listItem.id === id);
-                                    return execution.columns.executionStatus !== ExecutionRequestStatus.Completed;
+                                    return execution.data.runId === null;
                                 },
                             },
                         ]}
@@ -423,7 +423,9 @@ const ScriptReportsOverview = withStyles(styles)(
     },
 );
 
-function mapExecutionsToListItems(executionRequests: IExecutionRequest[]): IListItem<IColumnNames>[] {
+function mapExecutionsToListItems(
+    executionRequests: IExecutionRequest[],
+): IListItem<IColumnNames, { runId: string }>[] {
     return executionRequests.reduce(
         (acc, executionRequest) => {
             const { scriptExecutionRequests } = executionRequest;
@@ -474,7 +476,7 @@ function mapExecutionsToListItems(executionRequests: IExecutionRequest[]): IList
             });
             return acc;
         },
-        [] as IListItem<IColumnNames>[],
+        [] as IListItem<IColumnNames, { runId: string }>[],
     );
 }
 
