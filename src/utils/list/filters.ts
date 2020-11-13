@@ -9,7 +9,7 @@ import {
 } from 'models/list.models';
 import { TObjectWithProps } from 'models/core.models';
 import { ReactText } from 'react';
-import { parseISO } from 'date-fns/esm';
+import { parseISO } from 'date-fns';
 import { isDateBeforeOrEqual, isDateAfterOrEqual } from 'utils/core/date/compare';
 import { getListItemSortValueFromColumn } from './list';
 

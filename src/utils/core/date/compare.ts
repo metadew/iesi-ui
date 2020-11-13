@@ -1,4 +1,4 @@
-import { isSameDay, isBefore, isAfter } from 'date-fns/esm';
+import { isSameDay, isBefore, isAfter } from 'date-fns';
 
 
 export function isDateBeforeOrEqual(date: Date, otherDate: Date) {

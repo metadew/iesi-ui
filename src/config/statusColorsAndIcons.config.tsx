@@ -76,4 +76,8 @@ export const statusColorAndIconMap: TStatusColorsAndIcons = {
         icon: <ErrorIcon />,
         color: StatusColors.Error,
     },
+    RUNNING: {
+        icon: <AcceptedIcon />,
+        color: StatusColors.Success,
+    },
 };

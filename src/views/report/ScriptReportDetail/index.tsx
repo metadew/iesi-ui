@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { parseISO, format as formatDate } from 'date-fns/esm';
+import { parseISO, format as formatDate } from 'date-fns';
 import isSet from '@snipsonian/core/es/is/isSet';
 import isEmptyObject from '@snipsonian/core/es/object/isEmptyObject';
 import { Box, makeStyles, Button, Typography } from '@material-ui/core';
