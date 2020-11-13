@@ -49,23 +49,25 @@ export default function StatusIcon({
             display="flex"
             alignItems="center"
         >
-            <Box
-                flex="0 0 auto"
-                className={classNames(classes.statusIcon, {
-                    [classes.statusSuccessDark]: currentStatus.color === StatusColors.SuccessDark,
-                    [classes.statusSuccess]: currentStatus.color === StatusColors.Success,
-                    [classes.statusWarning]: currentStatus.color === StatusColors.Warning,
-                    [classes.statusError]: currentStatus.color === StatusColors.Error,
-                    [classes.statusPrimary]: currentStatus.color === StatusColors.Primary,
-                })}
-            >
-                {tooltipLabel ? (
-                    <Tooltip title={tooltipLabel} enterDelay={1000} enterNextDelay={1000}>
-                        {currentStatus.icon}
-                    </Tooltip>
-                ) : currentStatus.icon}
-            </Box>
-            {label && <Box flex="1 1 auto" paddingLeft={0.5}>{label}</Box>}
+            {currentStatus && (
+                <Box
+                    flex="0 0 auto"
+                    className={classNames(classes.statusIcon, {
+                        [classes.statusSuccessDark]: currentStatus.color === StatusColors.SuccessDark,
+                        [classes.statusSuccess]: currentStatus.color === StatusColors.Success,
+                        [classes.statusWarning]: currentStatus.color === StatusColors.Warning,
+                        [classes.statusError]: currentStatus.color === StatusColors.Error,
+                        [classes.statusPrimary]: currentStatus.color === StatusColors.Primary,
+                    })}
+                >
+                    {tooltipLabel ? (
+                        <Tooltip title={tooltipLabel} enterDelay={1000} enterNextDelay={1000}>
+                            {currentStatus.icon}
+                        </Tooltip>
+                    ) : currentStatus.icon}
+                </Box>
+            )}
+            {label && <Box flex="1 1 auto" paddingLeft={currentStatus ? 0.5 : 0}>{label}</Box>}
         </Box>
     );
 }
