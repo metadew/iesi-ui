@@ -31,7 +31,9 @@ import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
-import { IColumnNames, IExecutionRequest, ExecutionRequestStatus } from 'models/state/executionRequests.models';
+import { IColumnNames, IExecutionRequest } from 'models/state/executionRequests.models';
+import { ExecutionRequestStatus } from 'models/state/executionRequestStatus.models';
+import { ExecutionActionStatus } from 'models/state/executionActionStatus.models';
 import { Alert } from '@material-ui/lab';
 import { parseISO, format as formatDate } from 'date-fns';
 import OrderedList from 'views/common/list/OrderedList';
@@ -75,6 +77,24 @@ const styles = ({ palette, typography }: Theme) =>
             },
             [`&.${StatusColors.SuccessDark}`]: {
                 color: palette.success.dark,
+            },
+            [`&.${StatusColors.Warning}`]: {
+                color: palette.warning.main,
+            },
+            [`&.${StatusColors.Error}`]: {
+                color: palette.error.main,
+            },
+            [`&.${StatusColors.Primary}`]: {
+                color: palette.primary.main,
+            },
+        },
+        runStatus: {
+            fontWeight: typography.fontWeightBold,
+            [`&.${StatusColors.Success}`]: {
+                color: palette.success.main,
+            },
+            [`&.${StatusColors.Error}`]: {
+                color: palette.error.main,
             },
             [`&.${StatusColors.Warning}`]: {
                 color: palette.warning.main,
@@ -276,13 +296,13 @@ const ScriptReportsOverview = withStyles(styles)(
                 },
                 version: {
                     className: classes.scriptVersion,
-                    fixedWidth: '7%',
+                    fixedWidth: '5%',
                 },
                 environment: {
                     label: (
                         <Translate msg="script_reports.overview.list.labels.environment" />
                     ),
-                    fixedWidth: '20%',
+                    fixedWidth: '15%',
                 },
                 requestTimestamp: {
                     label: (
@@ -305,13 +325,26 @@ const ScriptReportsOverview = withStyles(styles)(
                     },
                     hideOnCompactView: true,
                 },
+                runStatus: {
+                    fixedWidth: '10%',
+                    label: (
+                        <Translate msg="script_reports.overview.list.labels.run_status" />
+                    ),
+                    className: (value) => {
+                        const executionStatus = value as ExecutionRequestStatus;
+                        const currentStatus = statusColorAndIconMap[executionStatus];
+
+                        return `${classes.executionStatus} ${currentStatus && currentStatus.color}`;
+                    },
+                    hideOnCompactView: true,
+                },
                 labels: {
                     label: (
                         <Translate msg="script_reports.overview.list.labels.labels" />
                     ),
                     className: classes.executionLabels,
                     hideOnCompactView: true,
-                    fixedWidth: '8%',
+                    fixedWidth: '5%',
                 },
                 parameters: {
                     label: (
@@ -444,6 +477,8 @@ function mapExecutionsToListItems(
                             sortValue: new Date(executionRequest.requestTimestamp).toISOString(),
                         },
                         executionStatus: executionRequest.executionRequestStatus,
+                        runStatus: scriptExecution.runStatus
+                            ? scriptExecution.runStatus : ExecutionActionStatus.Unknown,
                         labels: {
                             value: executionRequest.executionRequestLabels.length,
                             tooltip: executionRequest.executionRequestLabels.length > 0 && (

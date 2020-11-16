@@ -1,4 +1,5 @@
-import { ExecutionRequestStatus } from './executionRequests.models';
+import { ExecutionRequestStatus } from './executionRequestStatus.models';
+import { ExecutionActionStatus } from './executionActionStatus.models';
 import { IParameter, IParameterRawValue, ILabel, IOutputValue } from './iesiGeneric.models';
 
 export interface IScriptExecutionDetail {
@@ -38,12 +39,4 @@ export interface IScriptExecutionDetailAction {
 export interface IScriptExecutionByRunIdAndProcessIdPayload {
     runId: string;
     processId: number;
-}
-
-export enum ExecutionActionStatus {
-    Success = 'SUCCESS',
-    Error = 'ERROR',
-    Warning = 'WARNING',
-    Stopped = 'STOPPED',
-    Skipped = 'SKIPPED',
 }

@@ -1,4 +1,6 @@
 import { ILabel, IParameter, IPageFilter, IPageData } from './iesiGeneric.models';
+import { ExecutionRequestStatus } from './executionRequestStatus.models';
+import { ExecutionActionStatus } from './executionActionStatus.models';
 
 export interface IColumnNames {
     script: string;
@@ -6,6 +8,7 @@ export interface IColumnNames {
     environment: string;
     requestTimestamp: string;
     executionStatus: string;
+    runStatus: string;
     labels: number;
     parameters: number;
 }
@@ -45,23 +48,11 @@ interface IScriptExecutionRequest {
     scriptName: string;
     scriptVersion: number;
     runId?: string;
+    runStatus?: ExecutionActionStatus;
 }
 
 export interface IExecutionRequestByIdPayload {
     id: string;
-}
-
-export enum ExecutionRequestStatus {
-    New = 'NEW',
-    Submitted = 'SUBMITTED',
-    Accepted = 'ACCEPTED',
-    Declined = 'DECLINED',
-    Stopped = 'STOPPED',
-    Completed = 'COMPLETED',
-    Killed = 'KILLED',
-    Unknown = 'UNKNOWN',
-    Running = 'RUNNING',
-    Aborted = 'ABORTED',
 }
 
 export interface IFetchExecutionRequestListPayload {

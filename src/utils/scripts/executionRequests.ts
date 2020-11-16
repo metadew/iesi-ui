@@ -1,4 +1,4 @@
-import { ExecutionRequestStatus } from 'models/state/executionRequests.models';
+import { ExecutionRequestStatus } from 'models/state/executionRequestStatus.models';
 
 export function isExecutionRequestStatusPending(status: ExecutionRequestStatus) {
     return (
