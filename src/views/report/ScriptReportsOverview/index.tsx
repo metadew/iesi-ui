@@ -331,10 +331,10 @@ const ScriptReportsOverview = withStyles(styles)(
                         <Translate msg="script_reports.overview.list.labels.run_status" />
                     ),
                     className: (value) => {
-                        const executionStatus = value as ExecutionRequestStatus;
-                        const currentStatus = statusColorAndIconMap[executionStatus];
+                        const runStatus = value as ExecutionActionStatus;
+                        const currentStatus = statusColorAndIconMap[runStatus];
 
-                        return `${classes.executionStatus} ${currentStatus && currentStatus.color}`;
+                        return `${classes.runStatus} ${currentStatus && currentStatus.color}`;
                     },
                     hideOnCompactView: true,
                 },
