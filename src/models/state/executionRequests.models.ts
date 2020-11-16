@@ -61,6 +61,7 @@ export enum ExecutionRequestStatus {
     Killed = 'KILLED',
     Unknown = 'UNKNOWN',
     Running = 'RUNNING',
+    Aborted = 'ABORTED',
 }
 
 export interface IFetchExecutionRequestListPayload {
