@@ -2,8 +2,8 @@ import React from 'react';
 import classNames from 'classnames';
 import { makeStyles, Box } from '@material-ui/core';
 import { StatusColors, statusColorAndIconMap } from 'config/statusColorsAndIcons.config';
-import { ExecutionActionStatus } from 'models/state/scriptExecutions.models';
-import { ExecutionRequestStatus } from 'models/state/executionRequests.models';
+import { ExecutionActionStatus } from 'models/state/executionActionStatus.models';
+import { ExecutionRequestStatus } from 'models/state/executionRequestStatus.models';
 import Tooltip from 'views/common/tooltips/Tooltip';
 
 interface IPublicProps {
