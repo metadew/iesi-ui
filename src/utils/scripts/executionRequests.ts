@@ -1,7 +1,11 @@
-import { ExecutionRequestStatus } from 'models/state/executionRequests.models';
+import { ExecutionRequestStatus } from 'models/state/executionRequestStatus.models';
 
 export function isExecutionRequestStatusPending(status: ExecutionRequestStatus) {
-    return status === ExecutionRequestStatus.New || status === ExecutionRequestStatus.Submitted;
+    return (
+        status !== ExecutionRequestStatus.Declined
+        && status !== ExecutionRequestStatus.Completed
+        && status !== ExecutionRequestStatus.Aborted
+    );
 }
 
 export function isExecutionRequestStatusFailed(status: ExecutionRequestStatus) {
