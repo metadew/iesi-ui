@@ -192,7 +192,8 @@ script_reports:
         labels: Labels
         parameters: Parameters
         request_timestamp: Request timestamp
-        execution_status: Status
+        execution_status: Progress
+        run_status: Status
       sort:
         request_timestamp: Request timestamp
         script_name: Script name
