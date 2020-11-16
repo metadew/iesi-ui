@@ -73,6 +73,10 @@ export const statusColorAndIconMap: TStatusColorsAndIcons = {
         icon: <ErrorIcon />,
         color: StatusColors.Error,
     },
+    ABORTED: {
+        icon: <ErrorIcon />,
+        color: StatusColors.Error,
+    },
     UNKNOWN: {
         icon: <ErrorIcon />,
         color: StatusColors.Primary,
