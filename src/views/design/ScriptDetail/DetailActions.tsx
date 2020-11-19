@@ -5,6 +5,7 @@ import {
     Save as SaveIcon,
     Delete as DeleteIcon,
     PlayArrowRounded as PlayIcon,
+    ImportExport as ExportIcon,
 } from '@material-ui/icons';
 import ReportIcon from 'views/common/icons/Report';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -83,6 +84,16 @@ function DetailActions({
         </IconButton>
     );
 
+    const ExportButton = (
+        <IconButton
+            disabled={isCreateRoute}
+            aria-label={translator('scripts.detail.main.actions.export')}
+            onClick={onDelete}
+        >
+            <ExportIcon />
+        </IconButton>
+    );
+
     return (
         <Box display="flex" alignItems="center" justifyContent="space-between" marginX={2.2}>
             <Box flex="0 0 auto">
@@ -142,6 +153,13 @@ function DetailActions({
                                 enterNextDelay={1000}
                             >
                                 {ExecuteButton}
+                            </Tooltip>
+                            <Tooltip
+                                title={translator('scripts.detail.main.actions.export')}
+                                enterDelay={1000}
+                                enterNextDelay={1000}
+                            >
+                                {ExportButton}
                             </Tooltip>
                         </>
                     )}
