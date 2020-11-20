@@ -5,7 +5,7 @@ import {
     Save as SaveIcon,
     Delete as DeleteIcon,
     PlayArrowRounded as PlayIcon,
-    ImportExport as ExportIcon,
+    ImportExportRounded as ExportIcon,
 } from '@material-ui/icons';
 import ReportIcon from 'views/common/icons/Report';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -21,6 +21,7 @@ interface IPublicProps {
     onAdd: () => void;
     onSave: () => void;
     onViewReport: () => void;
+    onExport: () => void;
     isCreateRoute?: boolean;
 }
 
@@ -48,6 +49,7 @@ function DetailActions({
     onAdd,
     onSave,
     onViewReport,
+    onExport,
     isCreateRoute,
     state,
 }: IPublicProps & IObserveProps) {
@@ -88,7 +90,7 @@ function DetailActions({
         <IconButton
             disabled={isCreateRoute}
             aria-label={translator('scripts.detail.main.actions.export')}
-            onClick={onDelete}
+            onClick={onExport}
         >
             <ExportIcon />
         </IconButton>
@@ -130,6 +132,7 @@ function DetailActions({
                             {DeleteButton}
                             {ReportButton}
                             {ExecuteButton}
+                            {ExportButton}
                         </>
                     ) : (
                         <>

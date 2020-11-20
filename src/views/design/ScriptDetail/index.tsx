@@ -450,6 +450,7 @@ const ScriptDetail = withStyles(styles)(
                             onDelete={() => this.setState({ isConfirmDeleteScriptOpen: true })}
                             onAdd={() => this.setState({ isAddOpen: true })}
                             onPlay={() => this.setScriptToExecute(getUniqueIdFromScript(newScriptDetail))}
+                            onExport={() => console.log('test')}
                             onViewReport={() => {
                                 redirectTo({
                                     routeKey: ROUTE_KEYS.R_REPORTS,

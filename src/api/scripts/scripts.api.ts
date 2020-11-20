@@ -64,6 +64,21 @@ export function fetchScriptVersion({
     });
 }
 
+export function fetchScriptByNameAndVersionDownload({
+    name,
+    version,
+    expandResponseWith,
+}: IScriptByNameAndVersionPayload & IFetchScriptsOptions) {
+    return get<IScript>({
+        url: API_URLS.SCRIPT_BY_NAME_VERSION_DOWNLOAD,
+        pathParams: {
+            name,
+            version,
+        },
+        queryParams: toExpandQueryParam(expandResponseWith),
+    });
+}
+
 /**
  * Makes a new 'script-version-combo', which can either be the first version of a totally new script,
  * OR an extra version of an existing script.
