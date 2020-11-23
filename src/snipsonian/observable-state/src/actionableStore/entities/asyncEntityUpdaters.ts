@@ -20,6 +20,7 @@ export const asyncEntityFetch = initAsyncEntityUpdaters(AsyncOperation.fetch);
 export const asyncEntityCreate = initAsyncEntityUpdaters(AsyncOperation.create);
 export const asyncEntityUpdate = initAsyncEntityUpdaters(AsyncOperation.update);
 export const asyncEntityRemove = initAsyncEntityUpdaters(AsyncOperation.remove);
+export const asyncEntityDownload = initAsyncEntityUpdaters(AsyncOperation.download);
 
 function initAsyncEntityUpdaters(operation: AsyncOperation): IAsyncEntityUpdater {
     return {

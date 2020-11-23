@@ -16,6 +16,7 @@ export enum AsyncOperation {
     create = 'create',
     update = 'update',
     remove = 'remove',
+    download = 'download',
 }
 
 export interface IAsyncEntity<Data, Error = ITraceableApiErrorBase<{}>> {
@@ -24,6 +25,7 @@ export interface IAsyncEntity<Data, Error = ITraceableApiErrorBase<{}>> {
     create?: IAsyncEntityOperation<Error>;
     update?: IAsyncEntityOperation<Error>;
     remove?: IAsyncEntityOperation<Error>;
+    download?: IAsyncEntityOperation<Error>;
 }
 
 export interface IAsyncEntityOperation<Error = ITraceableApiErrorBase<{}>> {
@@ -56,6 +58,7 @@ export interface IAsyncEntityKeyOperationConfig<State, ApiInput, ApiResult, ApiR
     create?: IAsyncEntityApiConfig<State, ExtraInput, ApiInput, ApiResult, ApiResponse>;
     update?: IAsyncEntityApiConfig<State, ExtraInput, ApiInput, ApiResult, ApiResponse>;
     remove?: IAsyncEntityApiConfig<State, ExtraInput, ApiInput, ApiResult, ApiResponse>;
+    download?: IAsyncEntityApiConfig<State, ExtraInput, ApiInput, ApiResult, ApiResponse>;
 }
 
 // eslint-disable-next-line max-len
@@ -94,6 +97,7 @@ export interface IAsyncEntitiesStateManager<State, StateChangeNotificationKey, C
     triggerAsyncEntityUpdate<ExtraInput extends object, ApiResult = {}, ApiResponse = ApiResult>(props: ITriggerAsyncEntityUpdateProps<State, ExtraInput, StateChangeNotificationKey>): boolean;
     triggerAsyncEntityRemove<ExtraInput extends object, ApiResult = {}, ApiResponse = ApiResult>(props: ITriggerAsyncEntityRemoveProps<State, ExtraInput, StateChangeNotificationKey>): boolean;
     triggerAsyncEntityFetch<ExtraInput extends object, ApiResult = {}, ApiResponse = ApiResult>(props: ITriggerAsyncEntityFetchProps<State, ExtraInput, StateChangeNotificationKey>): boolean;
+    triggerAsyncEntityDownload<ExtraInput extends object, ApiResult = {}, ApiResponse = ApiResult>(props: ITriggerAsyncEntityDownloadProps<State, ExtraInput, StateChangeNotificationKey>): boolean;
     triggerAsyncEntityReset(props: ITriggerResetAsyncEntityProps<State, StateChangeNotificationKey>): boolean;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -135,6 +139,11 @@ export interface ITriggerAsyncEntityFetchProps<State, ExtraInput extends object,
     asyncEntityToFetch: IAsyncEntityToFetch<State, ExtraInput>;
 }
 
+export interface ITriggerAsyncEntityDownloadProps<State, ExtraInput extends object, StateChangeNotificationKey>
+    extends ITriggerAsyncEntityOperationBaseProps<State, ExtraInput, StateChangeNotificationKey>{
+    asyncEntityToDownload: IAsyncEntityToDownload<State, ExtraInput>;
+}
+
 export interface ITriggerResetAsyncEntityProps<State, StateChangeNotificationKey>
     extends ITriggerAsyncEntityOperationBaseProps<State, object, StateChangeNotificationKey>{
     asyncEntityToReset: IAsyncEntityToReset;
@@ -152,6 +161,10 @@ export interface IAsyncEntityToReset {
 
 export interface IAsyncEntityToUpdate extends IAsyncEntityToOperationBase {
     updateDataOnSuccess?: boolean; // default false
+}
+
+export interface IAsyncEntityToDownload<State, ExtraInput extends object> extends IAsyncEntityToOperationBase {
+    asyncEntityKey: TEntityKey;
 }
 
 export interface IAsyncEntityToFetch<State, ExtraInput extends object> extends IAsyncEntityToOperationBase {
