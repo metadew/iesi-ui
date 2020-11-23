@@ -62,11 +62,9 @@ export const triggerDeleteScriptDetail = (payload: IScriptByNameAndVersionPayloa
     });
 
 export const triggerExportScriptDetail = (payload: IScriptByNameAndVersionPayload) =>
-    entitiesStateManager.triggerAsyncEntityFetch<{}>({
-        asyncEntityToFetch: {
+    entitiesStateManager.triggerAsyncEntityDownload<{}>({
+        asyncEntityToDownload: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetail,
-            refreshMode: 'always',
-            resetDataOnTrigger: true,
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_DETAIL],
