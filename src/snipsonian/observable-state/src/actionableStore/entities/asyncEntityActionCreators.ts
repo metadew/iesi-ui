@@ -251,7 +251,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                 nrOfParentNotificationLevelsToTrigger,
                 operation: AsyncOperation.download,
                 resetDataOnTrigger: null,
-                updateDataOnSuccess: true,
+                updateDataOnSuccess: false,
                 dispatch,
                 onFail,
                 onSuccess,
