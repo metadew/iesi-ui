@@ -69,13 +69,23 @@ export function fetchScriptByNameAndVersionDownload({
     version,
     expandResponseWith,
 }: IScriptByNameAndVersionPayload & IFetchScriptsOptions) {
-    return get<IScript>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return get<any>({
         url: API_URLS.SCRIPT_BY_NAME_VERSION_DOWNLOAD,
+        responseType: 'blob',
         pathParams: {
             name,
             version,
         },
         queryParams: toExpandQueryParam(expandResponseWith),
+    }).then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response]));
+        const link = document.createElement('a');
+        link.href = url;
+        // eslint-disable-next-line
+        link.setAttribute('download', 'script_' + name + '_' + version + '.json');
+        document.body.appendChild(link);
+        link.click();
     });
 }
 

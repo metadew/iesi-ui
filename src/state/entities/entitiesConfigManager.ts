@@ -33,6 +33,8 @@ entitiesConfigManager.register({
     asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetail,
     operationsConfig: {
         download: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             api: api.scripts.fetchScriptByNameAndVersionDownload,
             apiInputSelector: ({ extraInput }) => extraInput as IScriptByNameAndVersionPayload,
         },
