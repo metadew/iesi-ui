@@ -64,7 +64,7 @@ export function fetchScriptVersion({
     });
 }
 
-export function fetchScriptByNameAndVersionDownload({
+export async function fetchScriptByNameAndVersionDownload({
     name,
     version,
     expandResponseWith,
