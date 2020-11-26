@@ -5,7 +5,7 @@ import {
     Save as SaveIcon,
     Delete as DeleteIcon,
     PlayArrowRounded as PlayIcon,
-    ImportExport as ExportIcon,
+    SystemUpdateAlt as ExportIcon,
 } from '@material-ui/icons';
 import ReportIcon from 'views/common/icons/Report';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
