@@ -7,6 +7,7 @@ import {
     IScriptByNameAndVersionPayload, IExpandScriptsResponseWith, IFetchScriptsListPayload, IScriptsEntity,
 } from 'models/state/scripts.models';
 import { IListResponse, IPageData } from 'models/state/iesiGeneric.models';
+import FileSaver from 'file-saver';
 import { get, post, put, remove } from '../requestWrapper';
 import API_URLS from '../apiUrls';
 
@@ -79,13 +80,9 @@ export async function fetchScriptByNameAndVersionDownload({
         },
         queryParams: toExpandQueryParam(expandResponseWith),
     }).then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response]));
-        const link = document.createElement('a');
-        link.href = url;
+        const blob = new Blob([response]);
         // eslint-disable-next-line
-        link.setAttribute('download', 'script_' + name + '_' + version + '.json');
-        document.body.appendChild(link);
-        link.click();
+        FileSaver.saveAs(blob, 'script_' + name + '_' + version + '.json');
     });
 }
 
