@@ -7,6 +7,7 @@ import {
     IScriptByNameAndVersionPayload, IExpandScriptsResponseWith, IFetchScriptsListPayload, IScriptsEntity,
 } from 'models/state/scripts.models';
 import { IListResponse, IPageData } from 'models/state/iesiGeneric.models';
+import FileSaver from 'file-saver';
 import { get, post, put, remove } from '../requestWrapper';
 import API_URLS from '../apiUrls';
 
@@ -64,6 +65,28 @@ export function fetchScriptVersion({
             version,
         },
         queryParams: toExpandQueryParam(expandResponseWith),
+    });
+}
+
+export async function fetchScriptByNameAndVersionDownload({
+    name,
+    version,
+    expandResponseWith,
+}: IScriptByNameAndVersionPayload & IFetchScriptsOptions) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return get<any>({
+        isIesiApi: true,
+        url: API_URLS.SCRIPT_BY_NAME_VERSION_DOWNLOAD,
+        responseType: 'blob',
+        pathParams: {
+            name,
+            version,
+        },
+        queryParams: toExpandQueryParam(expandResponseWith),
+    }).then((response) => {
+        const blob = new Blob([response]);
+        // eslint-disable-next-line
+        FileSaver.saveAs(blob, 'script_' + name + '_' + version + '.json');
     });
 }
 

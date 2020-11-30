@@ -33,6 +33,7 @@ import {
     triggerUpdateScriptDetail,
     triggerCreateScriptDetail,
     triggerDeleteScriptDetail,
+    triggerExportScriptDetail,
 } from 'state/entities/scripts/triggers';
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
@@ -142,6 +143,8 @@ const ScriptDetail = withStyles(styles)(
             this.updateScriptInStateIfNewScriptWasLoaded = this.updateScriptInStateIfNewScriptWasLoaded.bind(this);
             this.navigateToScriptAfterCreation = this.navigateToScriptAfterCreation.bind(this);
             this.navigateToScriptAfterDeletion = this.navigateToScriptAfterDeletion.bind(this);
+
+            this.onExportScript = this.onExportScript.bind(this);
 
             this.onDeleteScript = this.onDeleteScript.bind(this);
             this.onDeleteAction = this.onDeleteAction.bind(this);
@@ -451,6 +454,7 @@ const ScriptDetail = withStyles(styles)(
                             onDelete={() => this.setState({ isConfirmDeleteScriptOpen: true })}
                             onAdd={() => this.setState({ isAddOpen: true })}
                             onPlay={() => this.setScriptToExecute(getUniqueIdFromScript(newScriptDetail))}
+                            onExport={() => this.onExportScript()}
                             onViewReport={() => {
                                 redirectTo({
                                     routeKey: ROUTE_KEYS.R_REPORTS,
@@ -545,6 +549,14 @@ const ScriptDetail = withStyles(styles)(
             const detail = getAsyncScriptDetail(state).data;
             if (detail) {
                 triggerDeleteScriptDetail({ name: detail.name, version: detail.version.number });
+            }
+        }
+
+        private onExportScript() {
+            const { state } = this.props;
+            const detail = getAsyncScriptDetail(state).data;
+            if (detail) {
+                triggerExportScriptDetail({ name: detail.name, version: detail.version.number });
             }
         }
 

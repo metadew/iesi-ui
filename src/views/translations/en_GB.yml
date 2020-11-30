@@ -159,6 +159,7 @@ scripts:
         report: Report of script
         save: Save
         execute: Execute script
+        export: Export script
       alert:
         save_changes: You made changes to this script. Don't forget to save them.
         unique_action_names: All actions must have a unique name. Edit an action name by clicking on the pencil icon.
