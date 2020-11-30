@@ -13,7 +13,7 @@ import {
 } from './types';
 
 // eslint-disable-next-line max-len
-import { asyncEntityFetch, asyncEntityCreate, asyncEntityRemove, asyncEntityUpdate, asyncEntityDownload } from './asyncEntityUpdaters';
+import { asyncEntityFetch, asyncEntityCreate, asyncEntityRemove, asyncEntityUpdate } from './asyncEntityUpdaters';
 
 export interface IAsyncEntityActionCreators<ActionType, State, ExtraProcessInput, StateChangeNotificationKey> {
     createAsyncEntityAction<ExtraInput extends object, ApiInput, ApiResult, ApiResponse = ApiResult>(
@@ -40,11 +40,6 @@ export interface IAsyncEntityActionCreators<ActionType, State, ExtraProcessInput
         // eslint-disable-next-line max-len
     ): IObservableStateAction<ActionType, IAsyncEntityActionPayload, State, ExtraProcessInput, StateChangeNotificationKey>;
 
-    downloadAsyncEntityAction<ExtraInput extends object, ApiInput, ApiResult, ApiResponse = ApiResult>(
-        // eslint-disable-next-line max-len
-        props: ICreateAsyncEntityActionPropsBase<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse>
-        // eslint-disable-next-line max-len
-    ): IObservableStateAction<ActionType, IAsyncEntityActionPayload, State, ExtraProcessInput, StateChangeNotificationKey>;
 
     resetAsyncEntityAction(
         props: ICReateResetAsyncEntityActionProps<State, StateChangeNotificationKey>
@@ -228,35 +223,6 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                 onSuccess,
             }),
 
-        downloadAsyncEntityAction: <ExtraInput extends object, ApiInput, ApiResult, ApiResponse = ApiResult>({
-            asyncEntityKey,
-            extraInput = ({} as ExtraInput),
-            api,
-            apiInputSelector,
-            mapApiResponse,
-            notificationsToTrigger,
-            nrOfParentNotificationLevelsToTrigger,
-            dispatch,
-            onFail,
-            onSuccess,
-            // eslint-disable-next-line max-len
-        }: ICreateAsyncEntityActionPropsBase<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse>) =>
-            createAsyncEntityActionBase({
-                asyncEntityKey,
-                extraInput,
-                api,
-                apiInputSelector,
-                mapApiResponse,
-                notificationsToTrigger,
-                nrOfParentNotificationLevelsToTrigger,
-                operation: AsyncOperation.download,
-                resetDataOnTrigger: null,
-                updateDataOnSuccess: false,
-                dispatch,
-                onFail,
-                onSuccess,
-            }),
-
         resetAsyncEntityAction: ({
             asyncEntityKey,
             operation,
@@ -425,7 +391,6 @@ function getAsyncEntityUpdaterFromOperation(currentOperation: AsyncOperation) {
         [AsyncOperation.fetch]: asyncEntityFetch,
         [AsyncOperation.remove]: asyncEntityRemove,
         [AsyncOperation.update]: asyncEntityUpdate,
-        [AsyncOperation.download]: asyncEntityDownload,
     };
     return map[currentOperation];
 }
