@@ -24,7 +24,6 @@ export interface IAsyncEntity<Data, Error = ITraceableApiErrorBase<{}>> {
     create?: IAsyncEntityOperation<Error>;
     update?: IAsyncEntityOperation<Error>;
     remove?: IAsyncEntityOperation<Error>;
-    download?: IAsyncEntityOperation<Error>;
 }
 
 export interface IAsyncEntityOperation<Error = ITraceableApiErrorBase<{}>> {
@@ -57,7 +56,6 @@ export interface IAsyncEntityKeyOperationConfig<State, ApiInput, ApiResult, ApiR
     create?: IAsyncEntityApiConfig<State, ExtraInput, ApiInput, ApiResult, ApiResponse>;
     update?: IAsyncEntityApiConfig<State, ExtraInput, ApiInput, ApiResult, ApiResponse>;
     remove?: IAsyncEntityApiConfig<State, ExtraInput, ApiInput, ApiResult, ApiResponse>;
-    download?: IAsyncEntityApiConfig<State, ExtraInput, ApiInput, ApiResult, ApiResponse>;
 }
 
 // eslint-disable-next-line max-len
@@ -154,10 +152,6 @@ export interface IAsyncEntityToReset {
 
 export interface IAsyncEntityToUpdate extends IAsyncEntityToOperationBase {
     updateDataOnSuccess?: boolean; // default false
-}
-
-export interface IAsyncEntityToDownload<State, ExtraInput extends object> extends IAsyncEntityToOperationBase {
-    asyncEntityKey: TEntityKey;
 }
 
 export interface IAsyncEntityToFetch<State, ExtraInput extends object> extends IAsyncEntityToOperationBase {
