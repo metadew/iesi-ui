@@ -105,6 +105,7 @@ const ScriptDetail = withStyles(styles)(
                     description: '',
                     labels: [],
                     name: '',
+                    securityGroupName: 'PUBLIC',
                     parameters: [],
                     version: {
                         description: '',

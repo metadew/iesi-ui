@@ -36,6 +36,7 @@ export interface IScriptsEntity {
 
 export interface IScriptBase {
     name: string;
+    securityGroupName: string;
     description: string;
     version: IScriptVersion;
     parameters: IParameter[];
