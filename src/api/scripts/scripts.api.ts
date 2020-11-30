@@ -72,6 +72,7 @@ export async function fetchScriptByNameAndVersionDownload({
 }: IScriptByNameAndVersionPayload & IFetchScriptsOptions) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return get<any>({
+        isIesiApi: true,
         url: API_URLS.SCRIPT_BY_NAME_VERSION_DOWNLOAD,
         responseType: 'blob',
         pathParams: {
