@@ -73,6 +73,16 @@ entitiesConfigManager.register({
 });
 
 entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetailExport,
+    operationsConfig: {
+        fetch: {
+            api: api.scripts.fetchScriptByNameAndVersionDownload,
+            apiInputSelector: ({ extraInput }) => extraInput as IScriptByNameAndVersionPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
     asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequests,
     operationsConfig: {
         fetch: {

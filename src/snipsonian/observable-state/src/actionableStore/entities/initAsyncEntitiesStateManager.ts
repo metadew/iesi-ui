@@ -20,7 +20,6 @@ import {
     ITriggerAsyncEntityRemoveProps,
     ITriggerAsyncEntityFetchProps,
     ITriggerResetAsyncEntityProps,
-    ITriggerAsyncEntityDownloadProps,
 } from './types';
 import { IAsyncEntityActionCreators, initAsyncEntityActionCreators } from './asyncEntityActionCreators';
 
@@ -192,44 +191,6 @@ export default function initAsyncEntitiesStateManager
                     || getDefaultNotificationsToTrigger({ asyncEntityKey, operation }),
                 nrOfParentNotificationLevelsToTrigger,
                 resetDataOnTrigger,
-                dispatch: store.dispatch,
-                onSuccess,
-                onFail,
-            }));
-
-            return true;
-        },
-
-        triggerAsyncEntityDownload<ExtraInput extends object, ApiInput = {}, ApiResult = {}, ApiResponse = ApiResult>({
-            asyncEntityToDownload,
-            extraInputSelector,
-            notificationsToTrigger,
-            nrOfParentNotificationLevelsToTrigger,
-            onSuccess,
-            onFail,
-        }: ITriggerAsyncEntityDownloadProps<State, ExtraInput, StateChangeNotificationKey>): boolean {
-            const { asyncEntityKey } = asyncEntityToDownload;
-            const operation = AsyncOperation.download;
-            const operationConfig = (asyncEntitiesConfigManager.getAsyncEntityOperationConfig({
-                asyncEntityKey,
-                operation,
-            })) as unknown as IAsyncEntityApiConfig<State, ExtraInput, ApiInput, ApiResult, ApiResponse>;
-            if (!operationConfig) {
-                return false;
-            }
-
-            const extraInput = extraInputSelector({ state: store.getState() });
-
-            // eslint-disable-next-line max-len
-            store.dispatch(getAsyncEntityActionCreators().downloadAsyncEntityAction<ExtraInput, ApiInput, ApiResult, ApiResponse>({
-                asyncEntityKey,
-                extraInput,
-                api: operationConfig.api,
-                apiInputSelector: operationConfig.apiInputSelector,
-                mapApiResponse: operationConfig.mapApiResponse,
-                notificationsToTrigger: notificationsToTrigger
-                    || getDefaultNotificationsToTrigger({ asyncEntityKey, operation }),
-                nrOfParentNotificationLevelsToTrigger,
                 dispatch: store.dispatch,
                 onSuccess,
                 onFail,
