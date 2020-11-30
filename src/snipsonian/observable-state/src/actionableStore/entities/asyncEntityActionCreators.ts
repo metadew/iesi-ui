@@ -11,6 +11,8 @@ import {
     IEntitiesInitialState,
     IWithKeyIndex,
 } from './types';
+
+// eslint-disable-next-line max-len
 import { asyncEntityFetch, asyncEntityCreate, asyncEntityRemove, asyncEntityUpdate } from './asyncEntityUpdaters';
 
 export interface IAsyncEntityActionCreators<ActionType, State, ExtraProcessInput, StateChangeNotificationKey> {
@@ -37,6 +39,8 @@ export interface IAsyncEntityActionCreators<ActionType, State, ExtraProcessInput
         props: ICreateFetchAsyncEntityActionProps<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse>
         // eslint-disable-next-line max-len
     ): IObservableStateAction<ActionType, IAsyncEntityActionPayload, State, ExtraProcessInput, StateChangeNotificationKey>;
+
+
     resetAsyncEntityAction(
         props: ICReateResetAsyncEntityActionProps<State, StateChangeNotificationKey>
         // eslint-disable-next-line max-len
