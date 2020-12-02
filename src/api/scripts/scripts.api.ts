@@ -7,7 +7,7 @@ import {
     IScriptByNameAndVersionPayload, IExpandScriptsResponseWith, IFetchScriptsListPayload, IScriptsEntity,
 } from 'models/state/scripts.models';
 import { IListResponse, IPageData } from 'models/state/iesiGeneric.models';
-import FileSaver from 'file-saver';
+import { saveAs } from 'file-saver';
 import { get, post, put, remove } from '../requestWrapper';
 import API_URLS from '../apiUrls';
 
@@ -86,7 +86,7 @@ export async function fetchScriptByNameAndVersionDownload({
     }).then((response) => {
         const blob = new Blob([response]);
         // eslint-disable-next-line
-        FileSaver.saveAs(blob, 'script_' + name + '_' + version + '.json');
+        saveAs(blob, 'script_' + name + '_' + version + '.json');
     });
 }
 
