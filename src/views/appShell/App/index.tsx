@@ -8,7 +8,7 @@ import initApp from 'state/initApp';
 import { StoreProvider } from 'views/observe';
 import ErrorBoundary from 'views/common/error/ErrorBoundary';
 import I18nAware from '../I18nAware';
-import SignInDirectory from '../AppSignIn/SignInDirectory';
+import SignInDirectoryClass from '../AppSignIn/SignInDirectory';
 
 function App() {
     return (
@@ -17,7 +17,7 @@ function App() {
                 <Router>
                     <I18nAware>
                         <ErrorBoundary>
-                            <SignInDirectory />
+                            <SignInDirectoryClass />
                         </ErrorBoundary>
                     </I18nAware>
                 </Router>
