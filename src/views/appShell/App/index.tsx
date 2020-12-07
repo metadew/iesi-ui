@@ -16,7 +16,7 @@ import Login from '../AppSignIn/Login';
 const theme = createMuiTheme({
     palette: {
         primary: {
-            main: '#c30045',
+            main: '#1E90FF',
         },
         secondary: {
             main: '#ffffff',

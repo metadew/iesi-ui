@@ -2,11 +2,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useContext } from 'react';
 // eslint-disable-next-line max-len
-import { TextField, Button, Container, Typography, FormGroup, FormControlLabel, Checkbox, Box, makeStyles, createStyles, Theme, createMuiTheme } from '@material-ui/core';
+import { TextField, Button, Container, Typography, FormGroup, FormControlLabel, Checkbox, Box, makeStyles, createStyles, Theme } from '@material-ui/core';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import blue from '@material-ui/core/colors/blue';
 import { UserSessionContext } from './contexts/UserSessionContext';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -17,12 +16,6 @@ const useStyles = makeStyles((theme: Theme) =>
             padding: 10,
         },
     }));
-const useTheme = createMuiTheme({
-    palette: {
-        primary: blue,
-
-    },
-});
 
 function Login() {
     const history = useHistory();
@@ -38,8 +31,6 @@ function Login() {
     };
 
     const classes = useStyles();
-    const theme = useTheme;
-
     return (
         <Container component="main" maxWidth="xs">
             <Box
@@ -122,7 +113,7 @@ function Login() {
                             required
                             autoComplete="username"
                             fullWidth
-                            color="secondary"
+                            color="primary"
                         />
                         <TextField
                             id="password"
@@ -137,13 +128,13 @@ function Login() {
                             required
                             autoComplete="password"
                             fullWidth
-                            color="secondary"
+                            color="primary"
                         />
                         <Button
                             type="submit"
                             disabled={isSubmitting}
                             variant="contained"
-                            color="secondary"
+                            color="primary"
                             fullWidth
                         >
                             Log in
@@ -163,7 +154,7 @@ function Login() {
                                 checked={checked}
                                 onChange={handleChange}
                                 name="keepSignedIn"
-                                color="secondary"
+                                color="primary"
                             />
                         )}
                         label="Keep me signed in"
