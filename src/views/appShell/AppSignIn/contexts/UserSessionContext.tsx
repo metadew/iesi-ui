@@ -37,12 +37,16 @@ export function UserSessionProvider({ children }: IUserSessionContextProps) {
 
     // eslint-disable-next-line no-shadow
     function setAuthenticated(token: string) {
+        sessionStorage.setItem('token', token);
         setToken(token);
         console.log(token);
 
         const decoded: any = jwt.decode(token);
         // eslint-disable-next-line eqeqeq
         if (decoded != undefined) {
+            sessionStorage.setItem('userName', decoded.sub);
+            sessionStorage.setItem('role', decoded.role);
+            sessionStorage.setItem('isAuthenticated', 'true');
             setUsername(decoded.sub);
             setRole(decoded.role);
             console.log(decoded.sub);
