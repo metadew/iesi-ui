@@ -6,6 +6,7 @@ import { TextField, Button, Container, Typography, FormGroup, FormControlLabel, 
 import { useHistory, useLocation } from 'react-router-dom';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import { ReactComponent as IesiLogo } from './logo.svg';
 import { UserSessionContext } from './contexts/UserSessionContext';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -40,8 +41,8 @@ function Login() {
                 flexDirection="column"
                 marginTop="85px"
             >
-                <img src="./iesiLogo.svg" alt="iesiLogo" />
                 <Typography component="h1" variant="h6">
+                    <IesiLogo title="iesiLogo" />
                     IESI Automation
                 </Typography>
             </Box>
@@ -77,7 +78,7 @@ function Login() {
                                 }
                                 console.log(from);
                                 userSession.setAuthenticated(data.accessToken);
-                                history.replace(from);
+                                history.replace('/scripts');
                             })
                             .catch((error) => {
                                 // this.setState({ errorMessage: error });
