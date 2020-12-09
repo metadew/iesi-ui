@@ -19,12 +19,18 @@ import ScriptDetail from './design/ScriptDetail';
 import ScriptReportsTemplate from './report/ScriptReportsTemplate';
 import ScriptReportsOverview from './report/ScriptReportsOverview';
 import ScriptReportDetail from './report/ScriptReportDetail';
+import Login from './appShell/AppSignIn/Login';
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
     path: '/',
     exact: true,
     component: Home,
+}, {
+    routeKey: ROUTE_KEYS.R_LOGIN,
+    path: '/login',
+    exact: true,
+    component: Login,
 }, {
     routeKey: ROUTE_KEYS.R_SCRIPTS,
     path: '/scripts',
