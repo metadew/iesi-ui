@@ -5,7 +5,7 @@ import API_URLS from '../apiUrls';
 export function fetchEnvironmentConfig() {
     return get<IEnvConfig>({
         url: API_URLS.ENV_CONFIG,
-        isIesiApi: true,
+        isIesiApi: false,
         addCacheBuster: true,
     });
 }

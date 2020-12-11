@@ -45,12 +45,10 @@ export function UserSessionProvider({ children }: IUserSessionContextProps) {
         // eslint-disable-next-line eqeqeq
         if (decoded != undefined) {
             sessionStorage.setItem('userName', decoded.sub);
-            sessionStorage.setItem('role', decoded.role);
+            sessionStorage.setItem('role', JSON.stringify(decoded.authorities));
             sessionStorage.setItem('isAuthenticated', 'true');
             setUsername(decoded.sub);
-            setRole(decoded.role);
-            console.log(decoded.sub);
-            console.log(decoded);
+            setRole(decoded.authorities);
         }
         console.log('Authentication has been set!');
     }

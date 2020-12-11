@@ -8,7 +8,7 @@ import FlashMessages from '../FlashMessages';
 import AppHeader from '../AppHeader';
 import AppBody from '../AppBody';
 
-export default function AppTemplate(props: unknown) {
+export default function AppTemplate() {
     const [height, setHeight] = useState(0);
 
     const measuredRef = useCallback((node) => {

@@ -74,6 +74,7 @@ function Login() {
                                 if (!response.ok) {
                                     // get error message from body or default to response status
                                     const error = (data && data.message) || response.status;
+                                    // add FlashMessage to tell user incorrect pwd or username
                                     return Promise.reject(error);
                                 }
                                 console.log(from);
@@ -92,8 +93,6 @@ function Login() {
             >
                 {({
                     values,
-                    errors,
-                    touched,
                     // eslint-disable-next-line no-shadow
                     handleChange,
                     handleBlur,
@@ -143,25 +142,6 @@ function Login() {
                     </form>
                 )}
             </Formik>
-            <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="center"
-            >
-                <FormGroup row>
-                    <FormControlLabel
-                        control={(
-                            <Checkbox
-                                checked={checked}
-                                onChange={handleChange}
-                                name="keepSignedIn"
-                                color="primary"
-                            />
-                        )}
-                        label="Keep me signed in"
-                    />
-                </FormGroup>
-            </Box>
         </Container>
     );
 }
