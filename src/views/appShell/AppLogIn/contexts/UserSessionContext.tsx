@@ -36,7 +36,8 @@ export function UserSessionProvider({ children }: IUserSessionContextProps) {
 
         if (decoded !== undefined) {
             sessionStorage.setItem('userName', decoded.sub);
-            sessionStorage.setItem('role', JSON.stringify(decoded.authorities));
+            sessionStorage.setItem('authorities', JSON.stringify(decoded.authorities));
+            console.log(JSON.parse(sessionStorage.getItem('authorities')));
             setUsername(decoded.sub);
             setRole(decoded.authorities);
         }
