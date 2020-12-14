@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import jwt from 'jsonwebtoken';
 
@@ -21,13 +20,6 @@ type UserSession = {
 };
 
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const initialUser: User = {
-    id: '',
-    firstName: '',
-    lastName: '',
-};
-
 export const UserSessionContext = React.createContext<Partial<UserSession>>({});
 
 export function UserSessionProvider({ children }: IUserSessionContextProps) {
@@ -39,18 +31,20 @@ export function UserSessionProvider({ children }: IUserSessionContextProps) {
     function setAuthenticated(token: string) {
         sessionStorage.setItem('token', token);
         setToken(token);
-        console.log(token);
 
         const decoded: any = jwt.decode(token);
-        // eslint-disable-next-line eqeqeq
-        if (decoded != undefined) {
+
+        if (decoded !== undefined) {
             sessionStorage.setItem('userName', decoded.sub);
             sessionStorage.setItem('role', JSON.stringify(decoded.authorities));
-            sessionStorage.setItem('isAuthenticated', 'true');
             setUsername(decoded.sub);
             setRole(decoded.authorities);
         }
-        console.log('Authentication has been set!');
+        if (decoded.sub !== '' && token !== '') {
+            sessionStorage.setItem('isAuthenticated', 'true');
+        } else {
+            sessionStorage.setItem('isAuthenticated', 'false');
+        }
     }
 
     function isAuthenticated() {

@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useCallback } from 'react';
 import { Box } from '@material-ui/core';
 import ShowAfterEnvConfigKnown from '../ShowAfterEnvConfigKnown';

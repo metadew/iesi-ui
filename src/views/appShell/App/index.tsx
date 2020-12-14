@@ -8,7 +8,7 @@ import initApp from 'state/initApp';
 import { StoreProvider } from 'views/observe';
 import ErrorBoundary from 'views/common/error/ErrorBoundary';
 import I18nAware from '../I18nAware';
-import { UserSessionProvider } from '../AppSignIn/contexts/UserSessionContext';
+import { UserSessionProvider } from '../AppLogIn/contexts/UserSessionContext';
 import AppTemplate from '../AppTemplate';
 
 const theme = createMuiTheme({

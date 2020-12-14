@@ -7,8 +7,8 @@ import { getRoute } from 'views/routes';
 import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAllowedParentRouteKeys } from 'state/auth/selectors';
-import PrivateRoute from '../AppSignIn/components/PrivateRoute';
-import Login from '../AppSignIn/Login';
+import PrivateRoute from '../AppLogIn/components/PrivateRoute';
+import Login from '../AppLogIn/LoginPage';
 
 interface IPublicProps {
     offsetTop: number;

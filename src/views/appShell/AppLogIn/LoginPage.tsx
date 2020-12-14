@@ -1,22 +1,12 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useContext } from 'react';
-// eslint-disable-next-line max-len
-import { TextField, Button, Container, Typography, FormGroup, FormControlLabel, Checkbox, Box, makeStyles, createStyles, Theme } from '@material-ui/core';
+import { TextField, Button, Container, Typography, Box } from '@material-ui/core';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import { triggerFlashMessage } from 'state/ui/actions';
 import { ReactComponent as IesiLogo } from './logo.svg';
 import { UserSessionContext } from './contexts/UserSessionContext';
 
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        logo: {
-            height: 65,
-            width: 65,
-            padding: 10,
-        },
-    }));
 
 function Login() {
     const history = useHistory();
@@ -26,12 +16,6 @@ function Login() {
     const { from } = useLocation().state as any || { from: { pathname: '/' } };
     const userSession = useContext(UserSessionContext);
 
-    const [checked, setChecked] = React.useState(false);
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setChecked(event.target.checked);
-    };
-
-    const classes = useStyles();
     return (
         <Container component="main" maxWidth="xs">
             <Box
@@ -69,12 +53,13 @@ function Login() {
                             // eslint-disable-next-line consistent-return
                             .then(async (response) => {
                                 const data = await response.json();
-
+                                // eslint-disable-next-line max-len
+                                triggerFlashMessage({ translationKey: 'username or/and password incorrect !' });
+                                console.log(process.env.PUBLIC_URL);
                                 // check for error response
                                 if (!response.ok) {
                                     // get error message from body or default to response status
                                     const error = (data && data.message) || response.status;
-                                    // add FlashMessage to tell user incorrect pwd or username
                                     return Promise.reject(error);
                                 }
                                 console.log(from);

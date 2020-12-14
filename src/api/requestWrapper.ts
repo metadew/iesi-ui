@@ -74,17 +74,13 @@ export const requestWrapper = getRequestWrapper<ICustomApiConfig, ITraceableApiE
 export function get<Result, ResponseData = Result>(
     config: IGetRequestConfig<Result, ResponseData> & ICustomApiConfig,
 ): Promise<Result> {
-    console.log('EXECUTING GET');
-    console.log(sessionStorage.getItem('isAuthenticated') === 'true');
     if (config.isIesiApi && sessionStorage.getItem('isAuthenticated') === 'true') {
-        console.log('EXECUTING AUTHENTICATED GET');
         return requestWrapper.get({ ...config,
             headers: {
                 ...config.headers,
                 Authorization: `Bearer ${sessionStorage.getItem('token')}`,
             } });
     }
-    console.log('EXECUTING NON AUTHENTICATED GETS');
     return requestWrapper.get(config);
 }
 
@@ -92,14 +88,12 @@ export function post<Result, ResponseData = Result>(
     config: IBodyRequestConfig<Result, ResponseData> & ICustomApiConfig,
 ): Promise<Result> {
     if (config.isIesiApi && sessionStorage.getItem('isAuthenticated') === 'true') {
-        console.log('EXECUTING AUTHENTICATED POSTS');
         return requestWrapper.post({ ...config,
             headers: {
                 ...config.headers,
                 Authorization: `Bearer ${sessionStorage.getItem('token')}`,
             } });
     }
-    console.log('EXECUTING NON AUTHENTICATED POSTS');
     return requestWrapper.post(config);
 }
 
