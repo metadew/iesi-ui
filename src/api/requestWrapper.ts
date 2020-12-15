@@ -74,7 +74,7 @@ export const requestWrapper = getRequestWrapper<ICustomApiConfig, ITraceableApiE
 export function get<Result, ResponseData = Result>(
     config: IGetRequestConfig<Result, ResponseData> & ICustomApiConfig,
 ): Promise<Result> {
-    if (config.isIesiApi && sessionStorage.getItem('isAuthenticated') === 'true') {
+    if (config.isIesiApi && config.needsAuthentication) {
         return requestWrapper.get({ ...config,
             headers: {
                 ...config.headers,
@@ -87,7 +87,7 @@ export function get<Result, ResponseData = Result>(
 export function post<Result, ResponseData = Result>(
     config: IBodyRequestConfig<Result, ResponseData> & ICustomApiConfig,
 ): Promise<Result> {
-    if (config.isIesiApi && sessionStorage.getItem('isAuthenticated') === 'true') {
+    if (config.isIesiApi && config.needsAuthentication) {
         return requestWrapper.post({ ...config,
             headers: {
                 ...config.headers,
@@ -100,7 +100,7 @@ export function post<Result, ResponseData = Result>(
 export function put<Result, ResponseData = Result>(
     config: IBodyRequestConfig<Result, ResponseData> & ICustomApiConfig,
 ): Promise<Result> {
-    if (config.isIesiApi && sessionStorage.getItem('isAuthenticated') === 'true') {
+    if (config.isIesiApi && config.needsAuthentication) {
         return requestWrapper.put({ ...config,
             headers: {
                 ...config.headers,
@@ -113,7 +113,7 @@ export function put<Result, ResponseData = Result>(
 export function remove<Result, ResponseData = Result>(
     config: IBodyRequestConfig<Result, ResponseData> & ICustomApiConfig,
 ): Promise<Result> {
-    if (config.isIesiApi && sessionStorage.getItem('isAuthenticated') === 'true') {
+    if (config.isIesiApi && config.needsAuthentication) {
         return requestWrapper.remove({ ...config,
             headers: {
                 ...config.headers,

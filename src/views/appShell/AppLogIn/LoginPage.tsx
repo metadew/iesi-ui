@@ -2,10 +2,12 @@ import React, { useContext } from 'react';
 import { TextField, Button, Container, Typography, Box } from '@material-ui/core';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Formik } from 'formik';
-import * as Yup from 'yup';
+import { object, string } from 'yup';
+// import * as Yup from 'yup';
 import { triggerFlashMessage } from 'state/ui/actions';
 import { ReactComponent as IesiLogo } from './logo.svg';
 import { UserSessionContext } from './contexts/UserSessionContext';
+import { logon } from '../../../api/security/security.api';
 
 
 function Login() {
@@ -32,47 +34,62 @@ function Login() {
             </Box>
             <Formik
                 initialValues={{ username: '', password: '' }}
-                validationSchema={Yup.object({
-                    username: Yup.string()
+                validationSchema={object({
+                    username: string()
                         .max(15, 'Must be 15 characters or less')
                         .required('Required'),
-                    password: Yup.string()
+                    password: string()
                         .required('Required'),
                 })}
                 onSubmit={(values, { setSubmitting }) => {
                     setTimeout(() => {
-                        const requestOptions = {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(values, null, 2),
-                        };
-
-                        const { protocol } = window.location;
-
-                        fetch(`${protocol}//localhost:8080/api/users/login`, requestOptions)
-                            // eslint-disable-next-line consistent-return
+                        logon({
+                            username: values.username,
+                            password: values.password,
+                        })
                             .then(async (response) => {
-                                const data = await response.json();
                                 // eslint-disable-next-line max-len
                                 triggerFlashMessage({ translationKey: 'username or/and password incorrect !' });
-                                console.log(process.env.PUBLIC_URL);
                                 // check for error response
-                                if (!response.ok) {
-                                    // get error message from body or default to response status
-                                    const error = (data && data.message) || response.status;
-                                    return Promise.reject(error);
+                                console.log(response);
+                                if (response.accessToken) {
+                                    console.log(from);
+                                    userSession.setAuthenticated(response.accessToken);
+                                    history.replace(from.pathname);
                                 }
-                                console.log(from);
-                                userSession.setAuthenticated(data.accessToken);
-                                history.replace('/scripts');
                             })
                             .catch((error) => {
                                 // this.setState({ errorMessage: error });
                                 console.error('There was an error!', error);
+                                triggerFlashMessage({ translationKey: 'username or/and password incorrect !' });
                             })
                             .finally(() => {
                                 setSubmitting(false);
                             });
+                        // fetch(`${iesiApiBaseUrl}//localhost:8080/api/users/login`, requestOptions)
+                        //     // eslint-disable-next-line consistent-return
+                        //     .then(async (response) => {
+                        //         const data = await response.json();
+                        //         // eslint-disable-next-line max-len
+                        //         triggerFlashMessage({ translationKey: 'username or/and password incorrect !' });
+                        //         console.log(process.env.PUBLIC_URL);
+                        //         // check for error response
+                        //         if (!response.ok) {
+                        //             // get error message from body or default to response status
+                        //             const error = (data && data.message) || response.status;
+                        //             return Promise.reject(error);
+                        //         }
+                        //         console.log(from);
+                        //         userSession.setAuthenticated(data.accessToken);
+                        //         history.replace('/scripts');
+                        //     })
+                        //     .catch((error) => {
+                        //         // this.setState({ errorMessage: error });
+                        //         console.error('There was an error!', error);
+                        //     })
+                        //     .finally(() => {
+                        //         setSubmitting(false);
+                        //     });
                     }, 400);
                 }}
             >

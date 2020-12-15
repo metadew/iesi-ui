@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import jwt from 'jsonwebtoken';
+import { decode } from 'jsonwebtoken';
 
 interface IUserSessionContextProps {
     children?: any;
@@ -32,7 +32,7 @@ export function UserSessionProvider({ children }: IUserSessionContextProps) {
         sessionStorage.setItem('token', token);
         setToken(token);
 
-        const decoded: any = jwt.decode(token);
+        const decoded: any = decode(token);
 
         if (decoded !== undefined) {
             sessionStorage.setItem('userName', decoded.sub);
