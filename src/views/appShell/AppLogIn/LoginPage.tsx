@@ -1,9 +1,10 @@
 import React, { useContext } from 'react';
 import { TextField, Button, Container, Typography, Box } from '@material-ui/core';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { triggerFlashMessage } from 'state/ui/actions';
+import API_URLS from 'api/apiUrls';
 import { ReactComponent as IesiLogo } from './logo.svg';
 import { UserSessionContext } from './contexts/UserSessionContext';
 
@@ -11,9 +12,6 @@ import { UserSessionContext } from './contexts/UserSessionContext';
 function Login() {
     const history = useHistory();
 
-    // Cast to any is required due to
-    // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/41674
-    const { from } = useLocation().state as any || { from: { pathname: '/' } };
     const userSession = useContext(UserSessionContext);
 
     return (
@@ -55,16 +53,15 @@ function Login() {
                                 const data = await response.json();
                                 // eslint-disable-next-line max-len
                                 triggerFlashMessage({ translationKey: 'username or/and password incorrect !' });
-                                console.log(process.env.PUBLIC_URL);
+
                                 // check for error response
                                 if (!response.ok) {
                                     // get error message from body or default to response status
                                     const error = (data && data.message) || response.status;
                                     return Promise.reject(error);
                                 }
-                                console.log(from);
                                 userSession.setAuthenticated(data.accessToken);
-                                history.replace('/scripts');
+                                history.replace(API_URLS.SCRIPTS);
                             })
                             .catch((error) => {
                                 // this.setState({ errorMessage: error });

@@ -78,7 +78,8 @@ function DetailActions({
 
     const ExecuteButton = (
         <IconButton
-            disabled={isCreateRoute || sessionStorage.getItem('authorities').includes('USERS_READ@PUBLIC')}
+            disabled={isCreateRoute || sessionStorage.getItem('authorities')
+                .includes('SCRIPT_EXECUTIONS_READ@PUBLIC')}
             aria-label={translator('scripts.detail.main.actions.execute')}
             onClick={onPlay}
         >
