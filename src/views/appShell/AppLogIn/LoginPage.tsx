@@ -69,6 +69,7 @@ function Login() {
             <TextInput
                 id="password"
                 label="password"
+                type="password"
                 required
                 error={hasSubmitErrors && password === ''}
                 value={password}
