@@ -11,7 +11,6 @@ import I18nAware from '../I18nAware';
 import { UserSessionProvider } from '../AppLogIn/contexts/UserSessionContext';
 import AppTemplate from '../AppTemplate';
 
-
 function App() {
     return (
         <UserSessionProvider>
