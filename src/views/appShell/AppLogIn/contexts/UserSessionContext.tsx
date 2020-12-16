@@ -19,7 +19,6 @@ type UserSession = {
     isAdmin: any;
 };
 
-
 export const UserSessionContext = React.createContext<Partial<UserSession>>({});
 
 export function UserSessionProvider({ children }: IUserSessionContextProps) {

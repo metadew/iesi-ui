@@ -7,7 +7,6 @@ import { ReactComponent as IesiLogo } from './logo.svg';
 import { UserSessionContext } from './contexts/UserSessionContext';
 import { logon } from '../../../api/security/security.api';
 
-
 function Login() {
     const history = useHistory();
     const [username, setUsername] = useState('');
@@ -16,7 +15,6 @@ function Login() {
     // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/41674
     const { from } = useLocation().state as any || { from: { pathname: '/' } };
     const userSession = useContext(UserSessionContext);
-
 
     const handleSubmit = () => {
         if (username !== '' && password !== '') {

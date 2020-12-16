@@ -70,7 +70,6 @@ export const requestWrapper = getRequestWrapper<ICustomApiConfig, ITraceableApiE
     },
 });
 
-
 export function get<Result, ResponseData = Result>(
     config: IGetRequestConfig<Result, ResponseData> & ICustomApiConfig,
 ): Promise<Result> {
