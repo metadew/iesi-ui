@@ -16,6 +16,7 @@ export interface IErrorResponseData {
 
 export interface ICustomApiConfig {
     isIesiApi?: boolean; // default true
+    needsAuthentication?: boolean; 
     // TODO add e.g. addAuthorizationHeader boolean once authentication needed
 }
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/indent */
 import isSet from '@snipsonian/core/es/is/isSet';
 import { ONE_SECOND_IN_MILLIS } from '@snipsonian/core/es/time/periodsInMillis';
 import consoleGroupLogger from '@snipsonian/browser/es/logging/consoleGroupLogger';
@@ -72,23 +73,51 @@ export const requestWrapper = getRequestWrapper<ICustomApiConfig, ITraceableApiE
 export function get<Result, ResponseData = Result>(
     config: IGetRequestConfig<Result, ResponseData> & ICustomApiConfig,
 ): Promise<Result> {
+    if (config.isIesiApi && config.needsAuthentication) {
+        return requestWrapper.get({ ...config,
+            headers: {
+                ...config.headers,
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            } });
+    }
     return requestWrapper.get(config);
 }
 
 export function post<Result, ResponseData = Result>(
     config: IBodyRequestConfig<Result, ResponseData> & ICustomApiConfig,
 ): Promise<Result> {
+    if (config.isIesiApi && config.needsAuthentication) {
+        return requestWrapper.post({ ...config,
+            headers: {
+                ...config.headers,
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            } });
+    }
     return requestWrapper.post(config);
 }
 
 export function put<Result, ResponseData = Result>(
     config: IBodyRequestConfig<Result, ResponseData> & ICustomApiConfig,
 ): Promise<Result> {
+    if (config.isIesiApi && config.needsAuthentication) {
+        return requestWrapper.put({ ...config,
+            headers: {
+                ...config.headers,
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            } });
+    }
     return requestWrapper.put(config);
 }
 
 export function remove<Result, ResponseData = Result>(
     config: IBodyRequestConfig<Result, ResponseData> & ICustomApiConfig,
 ): Promise<Result> {
+    if (config.isIesiApi && config.needsAuthentication) {
+        return requestWrapper.remove({ ...config,
+            headers: {
+                ...config.headers,
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+            } });
+    }
     return requestWrapper.remove(config);
 }

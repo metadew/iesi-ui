@@ -29,7 +29,6 @@ export default function FromTo({
     const [isFromOpen, setIsFromOpen] = useState(false);
     const [isToOpen, setIsToOpen] = useState(false);
 
-
     const fromDate = filter.values[0] ? new Date(filter.values[0]) : null;
     const toDate = filter.values[1] ? new Date(filter.values[1]) : null;
 

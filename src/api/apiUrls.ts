@@ -19,6 +19,8 @@ const API_URLS = {
 
     SCRIPT_EXECUTION_BY_RUN_AND_PROCESS_ID: '/script-executions/{runId}/{processId}',
 
+    SECURITY_LOGON: '/users/login',
+
     /* eslint-enable max-len */
 };
 

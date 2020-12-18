@@ -12,6 +12,8 @@ interface IActionTypeResponse {
 
 export function fetchActionTypes() {
     return get<IActionType[], IActionTypeResponse[]>({
+        isIesiApi: true,
+        needsAuthentication: true,
         url: API_URLS.ACTION_TYPES,
         // eslint-disable-next-line arrow-body-style
         mapResponse: ({ data }) => {
@@ -28,6 +30,8 @@ export function fetchActionTypes() {
 
 export function fetchConnectionTypes() {
     return get<IConnectionType[], IListResponse<IConnectionType>>({
+        isIesiApi: true,
+        needsAuthentication: true,
         url: API_URLS.CONNECTION_TYPES,
         // eslint-disable-next-line no-underscore-dangle
         mapResponse: ({ data }) => data._embedded,

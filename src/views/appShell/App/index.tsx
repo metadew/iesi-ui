@@ -8,21 +8,24 @@ import initApp from 'state/initApp';
 import { StoreProvider } from 'views/observe';
 import ErrorBoundary from 'views/common/error/ErrorBoundary';
 import I18nAware from '../I18nAware';
+import { UserSessionProvider } from '../AppLogIn/contexts/UserSessionContext';
 import AppTemplate from '../AppTemplate';
 
 function App() {
     return (
-        <Box height="100%">
-            <StoreProvider value={configuredStore}>
-                <Router>
+        <UserSessionProvider>
+            <Box height="100%">
+                <StoreProvider value={configuredStore}>
                     <I18nAware>
                         <ErrorBoundary>
-                            <AppTemplate />
+                            <Router>
+                                <AppTemplate />
+                            </Router>
                         </ErrorBoundary>
                     </I18nAware>
-                </Router>
-            </StoreProvider>
-        </Box>
+                </StoreProvider>
+            </Box>
+        </UserSessionProvider>
     );
 }
 

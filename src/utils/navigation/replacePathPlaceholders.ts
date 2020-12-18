@@ -25,7 +25,6 @@ export default function replacePathPlaceholders({
     return removeOptionalPathPlaceholdersIfNotSet({ path: updatedPath });
 }
 
-
 function removeOptionalPathPlaceholdersIfNotSet({ path }: {
     path: string;
 }): string {
