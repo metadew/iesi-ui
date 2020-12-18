@@ -2,11 +2,13 @@ import React from 'react';
 import { Box, makeStyles, IconButton, darken } from '@material-ui/core';
 import AccentureIcon from 'views/common/icons/Accenture';
 import { THEME_COLORS } from 'config/themes/colors';
-import { Route, Switch } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import { getRoute } from 'views/routes';
 import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAllowedParentRouteKeys } from 'state/auth/selectors';
+import PrivateRoute from '../AppLogIn/components/PrivateRoute';
+import Login from '../AppLogIn/LoginPage';
 
 interface IPublicProps {
     offsetTop: number;
@@ -42,6 +44,8 @@ function AppBody({ state, offsetTop }: IObserveProps & IPublicProps) {
             overflow="hidden"
         >
             <Switch>
+                <Route path="/login" component={Login} />
+                ;
                 {getAllowedParentRouteKeys(state).map((routeKey) => {
                     const { path, exact, component, template } = getRoute({
                         routeKey,
@@ -53,7 +57,7 @@ function AppBody({ state, offsetTop }: IObserveProps & IPublicProps) {
                         : component;
 
                     return (
-                        <Route
+                        <PrivateRoute
                             key={routeKey}
                             path={path}
                             exact={exact}

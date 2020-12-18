@@ -6,16 +6,14 @@ import replacePathPlaceholders from 'utils/navigation/replacePathPlaceholders';
 
 export enum ROUTE_KEYS {
     R_HOME = 'R_HOME',
-
+    R_LOGIN = 'R_LOGIN',
     /* design */
     R_SCRIPTS = 'R_SCRIPTS',
     R_SCRIPT_DETAIL = 'R_SCRIPT_DETAIL',
     R_SCRIPT_NEW = 'R_SCRIPT_NEW',
-
     /* reporting */
     R_REPORTS = 'R_REPORTS',
     R_REPORT_DETAIL = 'R_REPORT_DETAIL',
-
     R_NOT_FOUND = 'R_NOT_FOUND',
 }
 

@@ -14,7 +14,6 @@ export default function AppTemplate() {
             setHeight(node.getBoundingClientRect().height);
         }
     }, []);
-
     return (
         <ShowAfterEnvConfigKnown>
             <ThemeProvider

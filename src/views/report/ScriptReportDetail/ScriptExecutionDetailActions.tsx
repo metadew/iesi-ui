@@ -145,7 +145,6 @@ function ScriptExecutionDetailActions<ColumnNames>({
                             </Box>
                         </Box>
 
-
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails className={classes.details}>
                         <Box
