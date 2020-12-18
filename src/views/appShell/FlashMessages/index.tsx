@@ -6,7 +6,6 @@ import {
 } from '@material-ui/core';
 import FlashMessageManager from './FlashMessageManager';
 
-
 const useSnackbarStyles = makeStyles(({ palette }) => createStyles({
     variantSuccess: {
         background: palette.success.main,

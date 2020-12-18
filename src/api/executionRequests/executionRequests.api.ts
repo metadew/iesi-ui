@@ -6,7 +6,7 @@ import {
     IExecutionRequestsEntity,
 } from 'models/state/executionRequests.models';
 import { IPageData } from 'models/state/iesiGeneric.models';
-import { get, post } from '../requestWrapper';
+import { get, post } from 'api/requestWrapper';
 import API_URLS from '../apiUrls';
 
 interface IExecutionRequestsResponse {
@@ -20,6 +20,7 @@ interface IExecutionRequestsResponse {
 export function fetchExecutionRequests({ pagination, filter, sort }: IFetchExecutionRequestListPayload) {
     return get<IExecutionRequestsEntity, IExecutionRequestsResponse>({
         isIesiApi: true,
+        needsAuthentication: true,
         url: API_URLS.EXECUTION_REQUESTS,
         queryParams: {
             ...pagination,
@@ -37,6 +38,7 @@ export function fetchExecutionRequests({ pagination, filter, sort }: IFetchExecu
 export function fetchExecutionRequest({ id }: IExecutionRequestByIdPayload) {
     return get<IExecutionRequest>({
         isIesiApi: true,
+        needsAuthentication: true,
         url: API_URLS.EXECUTION_REQUEST_BY_ID,
         pathParams: {
             id,
@@ -47,6 +49,7 @@ export function fetchExecutionRequest({ id }: IExecutionRequestByIdPayload) {
 export function createExecutionRequest(executionRequest: ICreateExecutionRequestPayload) {
     return post<IExecutionRequest>({
         isIesiApi: true,
+        needsAuthentication: true,
         url: API_URLS.EXECUTION_REQUESTS,
         body: executionRequest,
     });

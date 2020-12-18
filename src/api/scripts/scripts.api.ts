@@ -8,7 +8,7 @@ import {
 } from 'models/state/scripts.models';
 import { IListResponse, IPageData } from 'models/state/iesiGeneric.models';
 import FileSaver from 'file-saver';
-import { get, post, put, remove } from '../requestWrapper';
+import { get, post, put, remove } from 'api/requestWrapper';
 import API_URLS from '../apiUrls';
 
 interface IScriptsResponse {
@@ -21,6 +21,7 @@ interface IScriptsResponse {
 export function fetchScripts({ expandResponseWith, pagination, filter, sort }: IFetchScriptsListPayload) {
     return get<IScriptsEntity, IScriptsResponse>({
         isIesiApi: true,
+        needsAuthentication: true,
         url: API_URLS.SCRIPTS,
         queryParams: {
             ...toExpandQueryParam(expandResponseWith),
@@ -42,6 +43,7 @@ export function fetchScriptVersions({
 }: IScriptByNamePayload & IFetchScriptsOptions) {
     return get<IScript[], IListResponse<IScript>>({
         isIesiApi: true,
+        needsAuthentication: true,
         url: API_URLS.SCRIPT_BY_NAME,
         pathParams: {
             name,
@@ -59,6 +61,7 @@ export function fetchScriptVersion({
 }: IScriptByNameAndVersionPayload & IFetchScriptsOptions) {
     return get<IScript>({
         isIesiApi: true,
+        needsAuthentication: true,
         url: API_URLS.SCRIPT_BY_NAME_VERSION,
         pathParams: {
             name,
@@ -75,6 +78,7 @@ export async function fetchScriptByNameAndVersionDownload({
 }: IScriptByNameAndVersionPayload & IFetchScriptsOptions) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return get<any>({
+        needsAuthentication: true,
         isIesiApi: true,
         url: API_URLS.SCRIPT_BY_NAME_VERSION_DOWNLOAD,
         responseType: 'blob',
@@ -96,6 +100,7 @@ export async function fetchScriptByNameAndVersionDownload({
  */
 export function createScriptVersion(script: IScriptBase) {
     return post<IScriptBase>({
+        needsAuthentication: true,
         isIesiApi: true,
         url: API_URLS.SCRIPTS,
         body: script,
@@ -108,6 +113,7 @@ export function createScriptVersion(script: IScriptBase) {
  */
 export function updateScriptVersion(script: IScriptBase) {
     return put<IScriptBase>({
+        needsAuthentication: true,
         isIesiApi: true,
         url: API_URLS.SCRIPT_BY_NAME_VERSION,
         pathParams: {
@@ -120,6 +126,7 @@ export function updateScriptVersion(script: IScriptBase) {
 
 export function deleteScriptVersions({ name }: IScriptByNamePayload) {
     return remove<{}>({
+        needsAuthentication: true,
         isIesiApi: true,
         url: API_URLS.SCRIPT_BY_NAME,
         pathParams: {
@@ -130,6 +137,7 @@ export function deleteScriptVersions({ name }: IScriptByNamePayload) {
 
 export function deleteScriptVersion({ name, version }: IScriptByNameAndVersionPayload) {
     return remove<{}>({
+        needsAuthentication: true,
         isIesiApi: true,
         url: API_URLS.SCRIPT_BY_NAME_VERSION,
         pathParams: {

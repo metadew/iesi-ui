@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import jwt from 'jsonwebtoken';
+import { decode } from 'jsonwebtoken';
 
 interface IUserSessionContextProps {
     children?: any;
@@ -19,7 +19,6 @@ type UserSession = {
     isAdmin: any;
 };
 
-
 export const UserSessionContext = React.createContext<Partial<UserSession>>({});
 
 export function UserSessionProvider({ children }: IUserSessionContextProps) {
@@ -32,12 +31,11 @@ export function UserSessionProvider({ children }: IUserSessionContextProps) {
         sessionStorage.setItem('token', token);
         setToken(token);
 
-        const decoded: any = jwt.decode(token);
+        const decoded: any = decode(token);
 
         if (decoded !== undefined) {
             sessionStorage.setItem('userName', decoded.sub);
-            sessionStorage.setItem('authorities', JSON.stringify(decoded.authorities));
-            console.log(JSON.parse(sessionStorage.getItem('authorities')));
+            sessionStorage.setItem('role', JSON.stringify(decoded.authorities));
             setUsername(decoded.sub);
             setRole(decoded.authorities);
         }

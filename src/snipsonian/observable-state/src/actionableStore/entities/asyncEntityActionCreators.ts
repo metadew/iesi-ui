@@ -40,7 +40,6 @@ export interface IAsyncEntityActionCreators<ActionType, State, ExtraProcessInput
         // eslint-disable-next-line max-len
     ): IObservableStateAction<ActionType, IAsyncEntityActionPayload, State, ExtraProcessInput, StateChangeNotificationKey>;
 
-
     resetAsyncEntityAction(
         props: ICReateResetAsyncEntityActionProps<State, StateChangeNotificationKey>
         // eslint-disable-next-line max-len

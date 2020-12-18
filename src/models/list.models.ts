@@ -31,7 +31,6 @@ export interface IListItemValueWithSortValue {
     tooltip?: ReactText | ReactNode;
 }
 
-
 export interface IListItem<ColumnNames, Data = TObjectWithProps> {
     id: ReactText;
     columns: {

@@ -35,7 +35,6 @@ const useStyles = makeStyles(({ palette }) => ({
     },
 }));
 
-
 export default function StatusIcon({
     label,
     status,

@@ -103,7 +103,6 @@ export function filterListItems<LI extends IListItem<TObjectWithProps>>(
         const startDate = filter.values[0] ? parseISO(filter.values[0] as string) : null;
         const endDate = filter.values[1] ? parseISO(filter.values[1] as string) : null;
 
-
         if (startDate && endDate) {
             return isDateAfterOrEqual(itemDate, startDate) && isDateBeforeOrEqual(itemDate, endDate);
         }
