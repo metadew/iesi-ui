@@ -4,8 +4,8 @@ import { useHistory, useLocation } from 'react-router-dom';
 import TextInput from 'views/common/input/TextInput';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { ReactComponent as IesiLogo } from './logo.svg';
-import { logon } from '../../../api/security/security.api';
 import { UserSessionContext } from './contexts/UserSessionContext';
+import { logon } from '../../../api/security/security.api';
 
 function Login() {
     const history = useHistory();
