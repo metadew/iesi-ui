@@ -78,8 +78,7 @@ function DetailActions({
 
     const ExecuteButton = (
         <IconButton
-            disabled={isCreateRoute || sessionStorage.getItem('authorities')
-                .includes('SCRIPT_EXECUTIONS_READ@PUBLIC')}
+            disabled={isCreateRoute}
             aria-label={translator('scripts.detail.main.actions.execute')}
             onClick={onPlay}
         >
@@ -137,6 +136,17 @@ function DetailActions({
                         </>
                     ) : (
                         <>
+                            {!sessionStorage.getItem('authorities')
+                                .includes('SCRIPT_EXECUTIONS_READ@PUBLIC')
+                                ? (
+                                    <Tooltip
+                                        title={translator('scripts.detail.main.actions.execute')}
+                                        enterDelay={1000}
+                                        enterNextDelay={1000}
+                                    >
+                                        {ExecuteButton}
+                                    </Tooltip>
+                                ) : null}
                             <Tooltip
                                 title={translator('scripts.detail.main.actions.delete')}
                                 enterDelay={1000}
@@ -150,13 +160,6 @@ function DetailActions({
                                 enterNextDelay={1000}
                             >
                                 {ReportButton}
-                            </Tooltip>
-                            <Tooltip
-                                title={translator('scripts.detail.main.actions.execute')}
-                                enterDelay={1000}
-                                enterNextDelay={1000}
-                            >
-                                {ExecuteButton}
                             </Tooltip>
                             <Tooltip
                                 title={translator('scripts.detail.main.actions.export')}
