@@ -137,7 +137,7 @@ function DetailActions({
                     ) : (
                         <>
                             {sessionStorage.getItem('authorities')
-                                .includes('SCRIPT_EXECUTIONS_READ@PUBLIC')
+                                .includes('SCRIPT_EXECUTIONS_WRITE@PUBLIC')
                                 ? (
                                     <Tooltip
                                         title={translator('scripts.detail.main.actions.execute')}
@@ -157,7 +157,7 @@ function DetailActions({
                                         {DeleteButton}
                                     </Tooltip>
                                 ) : null}
-                            {sessionStorage.getItem('authorities').includes('SCRIPTS_READ@PUBLIC') ? (
+                            {sessionStorage.getItem('authorities').includes('SCRIPT_EXECUTIONS_READ@PUBLIC') ? (
                                 <Tooltip
                                     title={translator('scripts.detail.main.actions.report')}
                                     enterDelay={1000}
