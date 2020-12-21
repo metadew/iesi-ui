@@ -15,8 +15,7 @@ import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
 import { getTranslator } from 'state/i18n/selectors';
-import { Edit, Delete, PlayArrowRounded, AddRounded } from '@material-ui/icons';
-import ReportIcon from 'views/common/icons/Report';
+import { Edit, PlayArrowRounded, AddRounded, Delete } from '@material-ui/icons';
 import {
     ListColumns,
     ISortedColumn,
@@ -53,6 +52,7 @@ import { formatSortQueryParameter } from 'utils/core/string/format';
 import { getScriptsListFilter } from 'state/ui/selectors';
 import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
 import { setScriptsListFilter } from 'state/ui/actions';
+import ReportIcon from 'views/common/icons/Report';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -184,17 +184,22 @@ const ScriptsOverview = withStyles(styles)(
                                             sortedColumn={filterFromState.sortedColumn as ISortedColumn<{}>}
                                         />
                                     </Box>
-                                    <Box flex="0 0 auto">
-                                        <Button
-                                            variant="contained"
-                                            color="secondary"
-                                            size="small"
-                                            startIcon={<AddRounded />}
-                                            onClick={() => redirectTo({ routeKey: ROUTE_KEYS.R_SCRIPT_NEW })}
-                                        >
-                                            <Translate msg="scripts.overview.header.add_button" />
-                                        </Button>
-                                    </Box>
+                                    {sessionStorage.getItem('authorities')
+                                        .includes('SCRIPTS_WRITE@PUBLIC')
+                                        ? (
+                                            <Box flex="0 0 auto">
+                                                <Button
+                                                    variant="contained"
+                                                    color="secondary"
+                                                    size="small"
+                                                    startIcon={<AddRounded />}
+                                                    onClick={() => redirectTo({ routeKey: ROUTE_KEYS.R_SCRIPT_NEW })}
+                                                >
+                                                    <Translate msg="scripts.overview.header.add_button" />
+                                                </Button>
+                                            </Box>
+                                        ) : null}
+
                                 </Box>
                             </AppTemplateContainer>
                         </Box>
@@ -304,49 +309,58 @@ const ScriptsOverview = withStyles(styles)(
                     <Box paddingBottom={5} marginX={2.8}>
                         { !hasError && (
                             <GenericList
-                                listActions={[
-                                    {
-                                        icon: <PlayArrowRounded />,
-                                        label: translator('scripts.overview.list.actions.execute'),
-                                        onClick: this.setScriptToExecute,
-                                    }, {
-                                        icon: <Edit />,
-                                        label: translator('scripts.overview.list.actions.edit'),
-                                        onClick: (id) => {
-                                            const scripts = getAsyncScripts(this.props.state);
-                                            const selectedScript = scripts.find((item) =>
-                                                getUniqueIdFromScript(item) === id);
+                                listActions={[].concat(
+                                    sessionStorage.getItem('authorities')
+                                        .includes('SCRIPT_EXECUTIONS_WRITE@PUBLIC') ? {
+                                            icon: <PlayArrowRounded />,
+                                            label: translator('scripts.overview.list.actions.execute'),
+                                            onClick: this.setScriptToExecute,
+                                        } : [],
+                                    sessionStorage.getItem('authorities')
+                                        .includes('SCRIPTS_WRITE@PUBLIC') ? {
+                                            icon: <Edit />,
+                                            label: translator('scripts.overview.list.actions.edit'),
+                                            onClick: (id: string) => {
+                                                const scripts = getAsyncScripts(this.props.state);
+                                                const selectedScript = scripts.find((item) =>
+                                                    getUniqueIdFromScript(item) === id);
 
-                                            redirectTo({
-                                                routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                                params: {
-                                                    name: selectedScript.name,
-                                                    version: selectedScript.version.number,
-                                                },
-                                            });
-                                        },
-                                    }, {
-                                        icon: <ReportIcon />,
-                                        label: translator('scripts.overview.list.actions.report'),
-                                        onClick: (id) => {
-                                            const scripts = getAsyncScripts(this.props.state);
-                                            const selectedScript = scripts.find((item) =>
-                                                getUniqueIdFromScript(item) === id);
+                                                redirectTo({
+                                                    routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                                    params: {
+                                                        name: selectedScript.name,
+                                                        version: selectedScript.version.number,
+                                                    },
+                                                });
+                                            },
+                                        } : [],
+                                    sessionStorage.getItem('authorities')
+                                        .includes('SCRIPT_EXECUTIONS_READ@PUBLIC')
+                                        ? {
+                                            icon: <ReportIcon />,
+                                            label: translator('scripts.overview.list.actions.report'),
+                                            onClick: (id: string) => {
+                                                const scripts = getAsyncScripts(this.props.state);
+                                                const selectedScript = scripts.find((item) =>
+                                                    getUniqueIdFromScript(item) === id);
 
-                                            redirectTo({
-                                                routeKey: ROUTE_KEYS.R_REPORTS,
-                                                queryParams: {
-                                                    script: selectedScript.name,
-                                                    version: selectedScript.version.number,
-                                                },
-                                            });
-                                        },
-                                    }, {
-                                        icon: <Delete />,
-                                        label: translator('scripts.overview.list.actions.delete'),
-                                        onClick: this.setScriptToDelete,
-                                    },
-                                ]}
+                                                redirectTo({
+                                                    routeKey: ROUTE_KEYS.R_REPORTS,
+                                                    queryParams: {
+                                                        script: selectedScript.name,
+                                                        version: selectedScript.version.number,
+                                                    },
+                                                });
+                                            },
+                                        } : [],
+                                    sessionStorage.getItem('authorities')
+                                        .includes('SCRIPTS_WRITE@PUBLIC')
+                                        ? {
+                                            icon: <Delete />,
+                                            label: translator('scripts.overview.list.actions.delete'),
+                                            onClick: this.setScriptToDelete,
+                                        } : [],
+                                )}
                                 columns={columns}
                                 listItems={listItems}
                                 pagination={{

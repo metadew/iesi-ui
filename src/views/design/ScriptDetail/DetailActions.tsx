@@ -136,7 +136,7 @@ function DetailActions({
                         </>
                     ) : (
                         <>
-                            {!sessionStorage.getItem('authorities')
+                            {sessionStorage.getItem('authorities')
                                 .includes('SCRIPT_EXECUTIONS_READ@PUBLIC')
                                 ? (
                                     <Tooltip
@@ -147,27 +147,35 @@ function DetailActions({
                                         {ExecuteButton}
                                     </Tooltip>
                                 ) : null}
-                            <Tooltip
-                                title={translator('scripts.detail.main.actions.delete')}
-                                enterDelay={1000}
-                                enterNextDelay={1000}
-                            >
-                                {DeleteButton}
-                            </Tooltip>
-                            <Tooltip
-                                title={translator('scripts.detail.main.actions.report')}
-                                enterDelay={1000}
-                                enterNextDelay={1000}
-                            >
-                                {ReportButton}
-                            </Tooltip>
-                            <Tooltip
-                                title={translator('scripts.detail.main.actions.export')}
-                                enterDelay={1000}
-                                enterNextDelay={1000}
-                            >
-                                {ExportButton}
-                            </Tooltip>
+                            {sessionStorage.getItem('authorities').includes('SCRIPTS_WRITE@PUBLIC')
+                                ? (
+                                    <Tooltip
+                                        title={translator('scripts.detail.main.actions.delete')}
+                                        enterDelay={1000}
+                                        enterNextDelay={1000}
+                                    >
+                                        {DeleteButton}
+                                    </Tooltip>
+                                ) : null}
+                            {sessionStorage.getItem('authorities').includes('SCRIPTS_READ@PUBLIC') ? (
+                                <Tooltip
+                                    title={translator('scripts.detail.main.actions.report')}
+                                    enterDelay={1000}
+                                    enterNextDelay={1000}
+                                >
+                                    {ReportButton}
+                                </Tooltip>
+                            ) : null}
+                            {sessionStorage.getItem('authorities').includes('SCRIPTS_READ@PUBLIC') ? (
+                                <Tooltip
+                                    title={translator('scripts.detail.main.actions.export')}
+                                    enterDelay={1000}
+                                    enterNextDelay={1000}
+                                >
+                                    {ExportButton}
+                                </Tooltip>
+                            ) : null}
+
                         </>
                     )}
                 </Paper>
