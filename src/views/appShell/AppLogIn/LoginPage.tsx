@@ -3,6 +3,7 @@ import { Button, Container, Typography, Box } from '@material-ui/core';
 import { useHistory, useLocation } from 'react-router-dom';
 import TextInput from 'views/common/input/TextInput';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
+import { Alert } from '@material-ui/lab';
 import { ReactComponent as IesiLogo } from './logo.svg';
 import { UserSessionContext } from './contexts/UserSessionContext';
 import { logon } from '../../../api/security/security.api';
@@ -19,7 +20,6 @@ function Login() {
     const handleSubmit = () => {
         if (username !== '' && password !== '') {
             setHasSubmitErrors(false);
-            // TODO: perform logic
             logon({
                 username,
                 password,
@@ -37,12 +37,21 @@ function Login() {
                     console.error('There was an error!', error);
                 })
                 .finally(() => {
-                    console.log('finally');
+                    setPassword('');
+                    setHasSubmitErrors(true);
                 });
-        } else {
-            setHasSubmitErrors(true);
         }
     };
+
+    const renderAlert = () => {
+        if (!hasSubmitErrors) return null;
+        return (
+            <Alert severity="error">
+                <Translate msg="Username and/or password is incorrect !" />
+            </Alert>
+        );
+    };
+
     return (
         <Container component="main" maxWidth="xs">
             <Box
@@ -75,6 +84,7 @@ function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
+            {renderAlert()}
             <Box textAlign="center" marginTop={5}>
                 <Button
                     variant="contained"
