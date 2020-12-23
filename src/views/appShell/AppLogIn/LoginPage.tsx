@@ -40,6 +40,8 @@ function Login() {
                     setPassword('');
                     setHasSubmitErrors(true);
                 });
+        } else {
+            setHasSubmitErrors(true);
         }
     };
 
