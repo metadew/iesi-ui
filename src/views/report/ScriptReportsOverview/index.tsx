@@ -227,23 +227,27 @@ const ScriptReportsOverview = withStyles(styles)(
                                             sortedColumn={filterFromState.sortedColumn as ISortedColumn<{}>}
                                         />
                                     </Box>
-                                    <Box flex="0 0 auto">
-                                        <Button
-                                            variant="contained"
-                                            color="primary"
-                                            size="small"
-                                            startIcon={<RedirectTo />}
-                                            onClick={() => redirectTo({
-                                                routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                                params: {
-                                                    name: filterFromState.filters.script.values[0],
-                                                    version: filterFromState.filters.version.values[0],
-                                                },
-                                            })}
-                                        >
-                                            <Translate msg="script_reports.overview.header.redirect_to" />
-                                        </Button>
-                                    </Box>
+                                    {sessionStorage.getItem('authorities').includes('SCRIPTS_WRITE@PUBLIC')
+                                        ? (
+                                            <Box flex="0 0 auto">
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    size="small"
+                                                    startIcon={<RedirectTo />}
+                                                    onClick={() => redirectTo({
+                                                        routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                                        params: {
+                                                            name: filterFromState.filters.script.values[0],
+                                                            version: filterFromState.filters.version.values[0],
+                                                        },
+                                                    })}
+                                                >
+                                                    <Translate msg="script_reports.overview.header.redirect_to" />
+                                                </Button>
+                                            </Box>
+                                        ) : null}
+
                                 </Box>
 
                             </AppTemplateContainer>
