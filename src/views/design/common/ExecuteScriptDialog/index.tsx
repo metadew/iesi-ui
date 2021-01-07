@@ -414,6 +414,7 @@ function ExecuteScriptDialog({
             scriptExecutionRequests: [
                 {
                     scriptName: script.name,
+                    securityGroupName: script.securityGroupName,
                     environment: formValues.environment,
                     exit: false,
                     impersonations: [], // TODO

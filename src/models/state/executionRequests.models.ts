@@ -1,3 +1,4 @@
+import { IListItemValueWithSortValue } from 'models/list.models';
 import { ILabel, IParameter, IPageFilter, IPageData } from './iesiGeneric.models';
 import { ExecutionRequestStatus } from './executionRequestStatus.models';
 import { ExecutionActionStatus } from './executionActionStatus.models';
@@ -11,6 +12,7 @@ export interface IColumnNames {
     runStatus: string;
     labels: number;
     parameters: number;
+    securityGroupName: string;
 }
 
 export interface IExecutionRequest {
@@ -38,6 +40,7 @@ export interface ICreateExecutionRequestPayload {
 }
 
 interface IScriptExecutionRequest {
+    securityGroupName: string | number | IListItemValueWithSortValue;
     scriptExecutionRequestId: string;
     executionRequestId: string;
     environment: string;
