@@ -227,7 +227,6 @@ const ScriptReportsOverview = withStyles(styles)(
                                         />
                                     </Box>
                                 </Box>
-
                             </AppTemplateContainer>
                         </Box>
                         <ContentWithSlideoutPanel
