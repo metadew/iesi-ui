@@ -302,7 +302,7 @@ const ScriptDetail = withStyles(styles)(
                                 }}
                             />
                             <TextInput
-                                id="script-securityGroup"
+                                id="script-security-group"
                                 label={translator('scripts.detail.side.script_security')}
                                 value={newScriptDetail && newScriptDetail.securityGroupName
                                     ? newScriptDetail.securityGroupName : ''}
