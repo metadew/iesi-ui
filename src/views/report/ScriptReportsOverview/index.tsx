@@ -6,13 +6,12 @@ import {
     createStyles,
     withStyles,
     WithStyles,
-    Button,
 } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
-import { WatchLater, ArrowForward as RedirectTo } from '@material-ui/icons';
+import { WatchLater } from '@material-ui/icons';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import ReportIcon from 'views/common/icons/Report';
 import {
@@ -227,27 +226,6 @@ const ScriptReportsOverview = withStyles(styles)(
                                             sortedColumn={filterFromState.sortedColumn as ISortedColumn<{}>}
                                         />
                                     </Box>
-                                    {sessionStorage.getItem('authorities').includes('SCRIPTS_WRITE@PUBLIC')
-                                        ? (
-                                            <Box flex="0 0 auto">
-                                                <Button
-                                                    variant="contained"
-                                                    color="primary"
-                                                    size="small"
-                                                    startIcon={<RedirectTo />}
-                                                    onClick={() => redirectTo({
-                                                        routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                                        params: {
-                                                            name: filterFromState.filters.script.values[0],
-                                                            version: filterFromState.filters.version.values[0],
-                                                        },
-                                                    })}
-                                                >
-                                                    <Translate msg="script_reports.overview.header.redirect_to" />
-                                                </Button>
-                                            </Box>
-                                        ) : null}
-
                                 </Box>
 
                             </AppTemplateContainer>
