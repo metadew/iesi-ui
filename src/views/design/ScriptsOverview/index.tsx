@@ -288,7 +288,7 @@ const ScriptsOverview = withStyles(styles)(
                 description: {
                     className: classes.scriptDescription,
                     noWrap: true,
-                    fixedWidth: '50%',
+                    fixedWidth: '40%',
                 },
                 labels: {
                     label: (
