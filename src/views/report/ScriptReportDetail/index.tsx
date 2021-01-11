@@ -208,23 +208,27 @@ function ExecutionDetail({ state }: IObserveProps) {
                                 <Translate msg="script_reports.detail.main.action.go_to_parent_script_detail" />
                             </Button>
                         )}
-                        <Box flex="0 0 auto">
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                size="small"
-                                startIcon={<ArrowForward />}
-                                onClick={() => redirectTo({
-                                    routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                    params: {
-                                        name: scriptExecutionData.scriptName,
-                                        version: scriptExecutionData.scriptVersion,
-                                    },
-                                })}
-                            >
-                                <Translate msg="script_reports.overview.header.redirect_to" />
-                            </Button>
-                        </Box>
+                        {sessionStorage.getItem('authorities').includes('SCRIPTS_READ@PUBLIC')
+                            ? (
+                                <Box flex="0 0 auto">
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        size="small"
+                                        startIcon={<ArrowForward />}
+                                        onClick={() => redirectTo({
+                                            routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                            params: {
+                                                name: scriptExecutionData.scriptName,
+                                                version: scriptExecutionData.scriptVersion,
+                                            },
+                                        })}
+                                    >
+                                        <Translate msg="script_reports.overview.header.redirect_to" />
+                                    </Button>
+                                </Box>
+                            ) : null}
+
                     </Box>
                     <ScriptExecutionDetailActions
                         listItems={listItems}
