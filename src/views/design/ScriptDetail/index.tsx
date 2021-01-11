@@ -302,6 +302,18 @@ const ScriptDetail = withStyles(styles)(
                                 }}
                             />
                             <TextInput
+                                id="script-securityGroup"
+                                label={translator('scripts.detail.side.script_security')}
+                                value={newScriptDetail && newScriptDetail.securityGroupName
+                                    ? newScriptDetail.securityGroupName : ''}
+                                onChange={(e) => this.updateScript({ name: e.target.value })}
+                                required={this.isCreateScriptRoute()}
+                                InputProps={{
+                                    readOnly: !this.isCreateScriptRoute(),
+                                    disableUnderline: true,
+                                }}
+                            />
+                            <TextInput
                                 id="script-description"
                                 label={translator('scripts.detail.side.script_description')}
                                 multiline

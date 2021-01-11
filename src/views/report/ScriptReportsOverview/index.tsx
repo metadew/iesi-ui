@@ -61,10 +61,6 @@ const styles = ({ palette, typography }: Theme) =>
             fontWeight: typography.fontWeightBold,
             color: palette.primary.main,
         },
-        securityGroupName: {
-            fontWeight: typography.fontWeightBold,
-            fontSize: typography.pxToRem(12),
-        },
         scriptVersion: {
             fontWeight: typography.fontWeightBold,
         },
@@ -298,10 +294,6 @@ const ScriptReportsOverview = withStyles(styles)(
                     className: classes.scriptName,
                     fixedWidth: '25%',
                 },
-                securityGroupName: {
-                    className: classes.securityGroupName,
-                    fixedWidth: '10%',
-                },
                 version: {
                     className: classes.scriptVersion,
                     fixedWidth: '5%',
@@ -511,7 +503,6 @@ function mapExecutionsToListItems(
                                 </Typography>
                             ),
                         },
-                        securityGroupName: scriptExecution.securityGroupName,
                     },
                     data: {
                         runId: scriptExecution.runId,
