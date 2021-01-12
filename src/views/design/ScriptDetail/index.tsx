@@ -230,7 +230,9 @@ const ScriptDetail = withStyles(styles)(
                                     }}
                                     variant="contained"
                                     color="secondary"
-                                    disabled={this.isCreateScriptRoute()}
+                                    disabled={this.isCreateScriptRoute() || (!sessionStorage.getItem('authorities')
+                                        .includes('SCRIPTS_WRITE@PUBLIC') && sessionStorage.getItem('authorities')
+                                        .includes('SCRIPTS_READ@PUBLIC'))}
                                 >
                                     <Translate msg="scripts.detail.save_script_dialog.update_current_version" />
                                 </Button>
@@ -252,6 +254,9 @@ const ScriptDetail = withStyles(styles)(
                                     }}
                                     color="secondary"
                                     variant="outlined"
+                                    disabled={!sessionStorage.getItem('authorities')
+                                        .includes('SCRIPTS_WRITE@PUBLIC') && sessionStorage.getItem('authorities')
+                                        .includes('SCRIPTS_READ@PUBLIC')}
                                 >
                                     <Translate msg="scripts.detail.save_script_dialog.save_as_new_version" />
                                 </Button>

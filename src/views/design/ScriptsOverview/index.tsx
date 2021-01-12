@@ -15,7 +15,7 @@ import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
 import { getTranslator } from 'state/i18n/selectors';
-import { Edit, PlayArrowRounded, AddRounded, Delete } from '@material-ui/icons';
+import { Edit, PlayArrowRounded, AddRounded, Delete, Visibility } from '@material-ui/icons';
 import {
     ListColumns,
     ISortedColumn,
@@ -319,6 +319,26 @@ const ScriptsOverview = withStyles(styles)(
                                     sessionStorage.getItem('authorities')
                                         .includes('SCRIPTS_WRITE@PUBLIC') ? {
                                             icon: <Edit />,
+                                            label: translator('scripts.overview.list.actions.edit'),
+                                            onClick: (id: string) => {
+                                                const scripts = getAsyncScripts(this.props.state);
+                                                const selectedScript = scripts.find((item) =>
+                                                    getUniqueIdFromScript(item) === id);
+
+                                                redirectTo({
+                                                    routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                                    params: {
+                                                        name: selectedScript.name,
+                                                        version: selectedScript.version.number,
+                                                    },
+                                                });
+                                            },
+                                        } : [],
+                                    !sessionStorage.getItem('authorities')
+                                        .includes('SCRIPTS_WRITE@PUBLIC')
+                                        && sessionStorage.getItem('authorities')
+                                            .includes('SCRIPTS_READ@PUBLIC') ? {
+                                            icon: <Visibility />,
                                             label: translator('scripts.overview.list.actions.edit'),
                                             onClick: (id: string) => {
                                                 const scripts = getAsyncScripts(this.props.state);
