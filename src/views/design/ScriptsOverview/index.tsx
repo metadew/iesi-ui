@@ -277,10 +277,6 @@ const ScriptsOverview = withStyles(styles)(
                     className: classes.scriptName,
                     fixedWidth: '35%',
                 },
-                securityGroupName: {
-                    className: classes.scriptSecurityGroupName,
-                    fixedWidth: '10%',
-                },
                 version: {
                     className: classes.scriptVersion,
                     fixedWidth: '5%',
@@ -289,6 +285,10 @@ const ScriptsOverview = withStyles(styles)(
                     className: classes.scriptDescription,
                     noWrap: true,
                     fixedWidth: '40%',
+                },
+                securityGroupName: {
+                    className: classes.scriptSecurityGroupName,
+                    fixedWidth: '10%',
                 },
                 labels: {
                     label: (
