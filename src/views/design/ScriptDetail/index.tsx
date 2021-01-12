@@ -302,18 +302,6 @@ const ScriptDetail = withStyles(styles)(
                                 }}
                             />
                             <TextInput
-                                id="script-security-group"
-                                label={translator('scripts.detail.side.script_security')}
-                                value={newScriptDetail && newScriptDetail.securityGroupName
-                                    ? newScriptDetail.securityGroupName : ''}
-                                onChange={(e) => this.updateScript({ name: e.target.value })}
-                                required={this.isCreateScriptRoute()}
-                                InputProps={{
-                                    readOnly: !this.isCreateScriptRoute(),
-                                    disableUnderline: true,
-                                }}
-                            />
-                            <TextInput
                                 id="script-description"
                                 label={translator('scripts.detail.side.script_description')}
                                 multiline
@@ -323,25 +311,40 @@ const ScriptDetail = withStyles(styles)(
                                 onChange={(e) => this.updateScript({ description: e.target.value })}
                             />
                             {this.isCreateScriptRoute() && (
-                                <TextInput
-                                    id="script-version"
-                                    label={translator('scripts.detail.side.script_version')}
-                                    value={newScriptDetail && newScriptDetail.version.number
-                                        ? newScriptDetail.version.number : 0}
-                                    onChange={(e) => this.updateScript({
-                                        version: {
-                                            ...newScriptDetail.version,
-                                            number: parseInt(e.target.value, 10),
-                                        },
-                                    })}
-                                    type="number"
-                                    InputProps={{
-                                        disableUnderline: true,
-                                        inputProps: {
-                                            min: 0,
-                                        },
-                                    }}
-                                />
+                                <>
+                                    <TextInput
+                                        id="script-version"
+                                        label={translator('scripts.detail.side.script_version')}
+                                        value={newScriptDetail && newScriptDetail.version.number
+                                            ? newScriptDetail.version.number : 0}
+                                        onChange={(e) => this.updateScript({
+                                            version: {
+                                                ...newScriptDetail.version,
+                                                number: parseInt(e.target.value, 10),
+                                            },
+                                        })}
+                                        type="number"
+                                        InputProps={{
+                                            disableUnderline: true,
+                                            inputProps: {
+                                                min: 0,
+                                            },
+                                        }}
+                                    />
+                                    <TextInput
+                                        id="script-security-group"
+                                        label={translator('scripts.detail.side.script_security')}
+                                        value={newScriptDetail && newScriptDetail.securityGroupName
+                                            ? newScriptDetail.securityGroupName : ''}
+                                        onChange={(e) => this.updateScript({
+                                            securityGroupName: e.target.value,
+                                        })}
+                                        InputProps={{
+                                            disableUnderline: true,
+                                        }}
+                                        required
+                                    />
+                                </>
                             )}
                         </form>
                         <DescriptionList
@@ -352,6 +355,11 @@ const ScriptDetail = withStyles(styles)(
                                         label: translator('scripts.detail.side.description.version'),
                                         value: newScriptDetail && newScriptDetail.version
                                             ? newScriptDetail.version.number : '',
+                                    },
+                                    {
+                                        label: translator('scripts.detail.side.script_security'),
+                                        value: newScriptDetail && newScriptDetail.securityGroupName
+                                            ? newScriptDetail.securityGroupName : '',
                                     },
                                 ] : [],
                                 {
