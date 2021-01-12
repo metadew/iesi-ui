@@ -35,8 +35,10 @@ function Login() {
                 })
                 .catch((error) => {
                     console.error('There was an error!', error);
-                    setPassword('');
                     setHasSubmitErrors(true);
+                })
+                .finally(() => {
+                    setPassword('');
                 });
         } else {
             setHasSubmitErrors(true);
