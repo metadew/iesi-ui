@@ -7,18 +7,17 @@ export interface IMenuItem {
     translationKey: string;
 }
 
-export const MAIN_NAV_ITEMS: IMenuItem[] = [].concat(
-    sessionStorage.getItem('authorities').includes('SCRIPTS_READ@PUBLIC')
-        ? toMenuItem({
-            routeKey: ROUTE_KEYS.R_SCRIPTS,
-            translationKeySuffix: 'scripts',
-        }) : [],
-    sessionStorage.getItem('authorities').includes('SCRIPT_EXECUTIONS_READ@PUBLIC')
-        ? toMenuItem({
-            routeKey: ROUTE_KEYS.R_REPORTS,
-            translationKeySuffix: 'reports',
-        }) : [],
-);
+export const MAIN_NAV_ITEMS: IMenuItem[] = [
+
+    toMenuItem({
+        routeKey: ROUTE_KEYS.R_SCRIPTS,
+        translationKeySuffix: 'scripts',
+    }),
+    toMenuItem({
+        routeKey: ROUTE_KEYS.R_REPORTS,
+        translationKeySuffix: 'reports',
+    }),
+];
 
 function toMenuItem({
     routeKey,
