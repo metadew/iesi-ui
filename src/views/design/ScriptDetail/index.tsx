@@ -106,7 +106,7 @@ const ScriptDetail = withStyles(styles)(
                     description: '',
                     labels: [],
                     name: '',
-                    securityGroupName: 'PUBLIC',
+                    securityGroupName: '',
                     parameters: [],
                     version: {
                         description: '',
@@ -122,6 +122,9 @@ const ScriptDetail = withStyles(styles)(
                 hasActionsWithDuplicateNames: false,
                 requiredFieldsState: {
                     name: {
+                        showError: false,
+                    },
+                    securityGroupName: {
                         showError: false,
                     },
                 },
@@ -334,6 +337,9 @@ const ScriptDetail = withStyles(styles)(
                                     <TextInput
                                         id="script-security-group"
                                         label={translator('scripts.detail.side.script_security')}
+                                        error={requiredFieldsState.securityGroupName.showError}
+                                        // eslint-disable-next-line max-len
+                                        helperText={requiredFieldsState.securityGroupName.showError && 'Security group is a required field'}
                                         value={newScriptDetail && newScriptDetail.securityGroupName
                                             ? newScriptDetail.securityGroupName : ''}
                                         onChange={(e) => this.updateScript({
@@ -343,7 +349,6 @@ const ScriptDetail = withStyles(styles)(
                                             disableUnderline: true,
                                         }}
                                         required
-                                        disabled
                                     />
                                 </>
                             )}
@@ -398,7 +403,7 @@ const ScriptDetail = withStyles(styles)(
             const handleSaveAction = () => {
                 const { passed: passedRequired, requiredFieldsState } = requiredFieldsCheck({
                     data: newScriptDetail,
-                    requiredFields: ['name'],
+                    requiredFields: ['name', 'securityGroupName'],
                 });
                 const { passed: passedUniqueActionNames } = uniqueActionNamesCheck({
                     actions: newScriptDetail.actions,
