@@ -53,6 +53,7 @@ import { getScriptsListFilter } from 'state/ui/selectors';
 import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
 import { setScriptsListFilter } from 'state/ui/actions';
 import ReportIcon from 'views/common/icons/Report';
+import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -184,8 +185,7 @@ const ScriptsOverview = withStyles(styles)(
                                             sortedColumn={filterFromState.sortedColumn as ISortedColumn<{}>}
                                         />
                                     </Box>
-                                    {sessionStorage.getItem('authorities')
-                                        .includes('SCRIPTS_WRITE@PUBLIC')
+                                    {checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
                                         ? (
                                             <Box flex="0 0 auto">
                                                 <Button
@@ -310,34 +310,30 @@ const ScriptsOverview = withStyles(styles)(
                         { !hasError && (
                             <GenericList
                                 listActions={[].concat(
-                                    sessionStorage.getItem('authorities')
-                                        .includes('SCRIPT_EXECUTIONS_WRITE@PUBLIC') ? {
-                                            icon: <PlayArrowRounded />,
-                                            label: translator('scripts.overview.list.actions.execute'),
-                                            onClick: this.setScriptToExecute,
-                                        } : [],
-                                    sessionStorage.getItem('authorities')
-                                        .includes('SCRIPTS_WRITE@PUBLIC') ? {
-                                            icon: <Edit />,
-                                            label: translator('scripts.overview.list.actions.edit'),
-                                            onClick: (id: string) => {
-                                                const scripts = getAsyncScripts(this.props.state);
-                                                const selectedScript = scripts.find((item) =>
-                                                    getUniqueIdFromScript(item) === id);
+                                    checkAuthority(SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_WRITE, 'PUBLIC') ? {
+                                        icon: <PlayArrowRounded />,
+                                        label: translator('scripts.overview.list.actions.execute'),
+                                        onClick: this.setScriptToExecute,
+                                    } : [],
+                                    checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC') ? {
+                                        icon: <Edit />,
+                                        label: translator('scripts.overview.list.actions.edit'),
+                                        onClick: (id: string) => {
+                                            const scripts = getAsyncScripts(this.props.state);
+                                            const selectedScript = scripts.find((item) =>
+                                                getUniqueIdFromScript(item) === id);
 
-                                                redirectTo({
-                                                    routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                                    params: {
-                                                        name: selectedScript.name,
-                                                        version: selectedScript.version.number,
-                                                    },
-                                                });
-                                            },
-                                        } : [],
-                                    !sessionStorage.getItem('authorities')
-                                        .includes('SCRIPTS_WRITE@PUBLIC')
-                                        && sessionStorage.getItem('authorities')
-                                            .includes('SCRIPTS_READ@PUBLIC') ? {
+                                            redirectTo({
+                                                routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                                params: {
+                                                    name: selectedScript.name,
+                                                    version: selectedScript.version.number,
+                                                },
+                                            });
+                                        },
+                                    } : [],
+                                    !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
+                                        && checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, 'PUBLIC') ? {
                                             icon: <Visibility />,
                                             label: translator('scripts.overview.list.actions.edit'),
                                             onClick: (id: string) => {
@@ -354,8 +350,7 @@ const ScriptsOverview = withStyles(styles)(
                                                 });
                                             },
                                         } : [],
-                                    sessionStorage.getItem('authorities')
-                                        .includes('SCRIPT_EXECUTIONS_READ@PUBLIC')
+                                    checkAuthority(SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_READ, 'PUBLIC')
                                         ? {
                                             icon: <ReportIcon />,
                                             label: translator('scripts.overview.list.actions.report'),
@@ -373,8 +368,7 @@ const ScriptsOverview = withStyles(styles)(
                                                 });
                                             },
                                         } : [],
-                                    sessionStorage.getItem('authorities')
-                                        .includes('SCRIPTS_WRITE@PUBLIC')
+                                    checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
                                         ? {
                                             icon: <Delete />,
                                             label: translator('scripts.overview.list.actions.delete'),

@@ -14,6 +14,7 @@ import Tooltip from 'views/common/tooltips/Tooltip';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
+import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 
 interface IPublicProps {
     onPlay: () => void;
@@ -123,6 +124,8 @@ function DetailActions({
                             size="small"
                             startIcon={<SaveIcon />}
                             onClick={onSave}
+                            disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
+                            && checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, 'PUBLIC')}
                         >
                             <Translate msg="scripts.detail.main.actions.save" />
                         </Button>
@@ -136,8 +139,7 @@ function DetailActions({
                         </>
                     ) : (
                         <>
-                            {sessionStorage.getItem('authorities')
-                                .includes('SCRIPT_EXECUTIONS_WRITE@PUBLIC')
+                            {checkAuthority(SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_WRITE, 'PUBLIC')
                                 ? (
                                     <Tooltip
                                         title={translator('scripts.detail.main.actions.execute')}
@@ -147,7 +149,7 @@ function DetailActions({
                                         {ExecuteButton}
                                     </Tooltip>
                                 ) : null}
-                            {sessionStorage.getItem('authorities').includes('SCRIPTS_WRITE@PUBLIC')
+                            {checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
                                 ? (
                                     <Tooltip
                                         title={translator('scripts.detail.main.actions.delete')}
@@ -157,7 +159,7 @@ function DetailActions({
                                         {DeleteButton}
                                     </Tooltip>
                                 ) : null}
-                            {sessionStorage.getItem('authorities').includes('SCRIPT_EXECUTIONS_READ@PUBLIC') ? (
+                            {checkAuthority(SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_READ, 'PUBLIC') ? (
                                 <Tooltip
                                     title={translator('scripts.detail.main.actions.report')}
                                     enterDelay={1000}
@@ -166,7 +168,7 @@ function DetailActions({
                                     {ReportButton}
                                 </Tooltip>
                             ) : null}
-                            {sessionStorage.getItem('authorities').includes('SCRIPTS_READ@PUBLIC') ? (
+                            {checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, 'PUBLIC') ? (
                                 <Tooltip
                                     title={translator('scripts.detail.main.actions.export')}
                                     enterDelay={1000}

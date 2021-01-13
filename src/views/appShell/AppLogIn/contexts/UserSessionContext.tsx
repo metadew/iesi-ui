@@ -60,3 +60,13 @@ export function UserSessionProvider({ children }: IUserSessionContextProps) {
         </UserSessionContext.Provider>
     );
 }
+
+export function getSecurityGroupNamesExisting(): Set<string> {
+    const securityGroupNames = new Set<string>();
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const item of JSON.parse(sessionStorage.getItem('authorities'))) {
+        securityGroupNames.add(JSON.stringify(item).split('@')[1].slice(0, -1));
+    }
+    return securityGroupNames;
+}

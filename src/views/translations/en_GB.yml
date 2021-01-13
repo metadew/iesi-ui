@@ -85,7 +85,7 @@ scripts:
       actions:
         delete: Delete
         edit: Edit
-        look: Look script details
+        look: Script details
         execute: Run script
         report: Reporting
       filter:

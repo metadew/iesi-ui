@@ -37,6 +37,7 @@ import {
 } from 'state/entities/scripts/triggers';
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
+import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import ExecuteScriptDialog from '../common/ExecuteScriptDialog';
 
 import DetailActions from './DetailActions';
@@ -230,9 +231,9 @@ const ScriptDetail = withStyles(styles)(
                                     }}
                                     variant="contained"
                                     color="secondary"
-                                    disabled={this.isCreateScriptRoute() || (!sessionStorage.getItem('authorities')
-                                        .includes('SCRIPTS_WRITE@PUBLIC') && sessionStorage.getItem('authorities')
-                                        .includes('SCRIPTS_READ@PUBLIC'))}
+                                    disabled={this.isCreateScriptRoute()
+                                        || (!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
+                                        && checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, 'PUBLIC'))}
                                 >
                                     <Translate msg="scripts.detail.save_script_dialog.update_current_version" />
                                 </Button>
@@ -254,9 +255,8 @@ const ScriptDetail = withStyles(styles)(
                                     }}
                                     color="secondary"
                                     variant="outlined"
-                                    disabled={!sessionStorage.getItem('authorities')
-                                        .includes('SCRIPTS_WRITE@PUBLIC') && sessionStorage.getItem('authorities')
-                                        .includes('SCRIPTS_READ@PUBLIC')}
+                                    disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
+                                    && checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, 'PUBLIC')}
                                 >
                                     <Translate msg="scripts.detail.save_script_dialog.save_as_new_version" />
                                 </Button>
