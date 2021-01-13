@@ -75,6 +75,10 @@ const styles = ({ palette, typography }: Theme) =>
         scriptLabels: {
             fontWeight: typography.fontWeightBold,
         },
+        scriptSecurityGroupName: {
+            fontWeight: typography.fontWeightBold,
+            fontSize: typography.pxToRem(12),
+        },
     });
 
 export const filterConfig: FilterConfig<Partial<IColumnNames>> = {
@@ -280,7 +284,11 @@ const ScriptsOverview = withStyles(styles)(
                 description: {
                     className: classes.scriptDescription,
                     noWrap: true,
-                    fixedWidth: '50%',
+                    fixedWidth: '40%',
+                },
+                securityGroupName: {
+                    className: classes.scriptSecurityGroupName,
+                    fixedWidth: '10%',
                 },
                 labels: {
                     label: (
@@ -468,6 +476,7 @@ function mapScriptsToListItems(scripts: IScript[]): IListItem<IColumnNames>[] {
         id: getUniqueIdFromScript(script),
         columns: {
             name: script.name,
+            securityGroupName: script.securityGroupName,
             description: script.description,
             version: (script.version.number).toString(),
             labels: {

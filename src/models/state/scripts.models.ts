@@ -13,6 +13,7 @@ export interface IFetchScriptsListPayload extends IFetchScriptsOptions {
 
 export interface IColumnNames {
     name: string;
+    securityGroupName: string;
     version: string;
     description: string;
     labels: number;
@@ -37,6 +38,7 @@ export interface IScriptsEntity {
 export interface IScriptBase {
     name: string;
     description: string;
+    securityGroupName: string;
     version: IScriptVersion;
     parameters: IParameter[];
     actions: IScriptAction[];
