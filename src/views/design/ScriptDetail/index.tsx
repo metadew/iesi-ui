@@ -106,7 +106,7 @@ const ScriptDetail = withStyles(styles)(
                     description: '',
                     labels: [],
                     name: '',
-                    securityGroupName: '',
+                    securityGroupName: 'PUBLIC',
                     parameters: [],
                     version: {
                         description: '',
@@ -343,6 +343,7 @@ const ScriptDetail = withStyles(styles)(
                                             disableUnderline: true,
                                         }}
                                         required
+                                        disabled
                                     />
                                 </>
                             )}
