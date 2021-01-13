@@ -124,6 +124,9 @@ const ScriptDetail = withStyles(styles)(
                     name: {
                         showError: false,
                     },
+                    securityGroupName: {
+                        showError: false,
+                    },
                 },
                 scriptIdToExecute: null,
             };
@@ -311,25 +314,43 @@ const ScriptDetail = withStyles(styles)(
                                 onChange={(e) => this.updateScript({ description: e.target.value })}
                             />
                             {this.isCreateScriptRoute() && (
-                                <TextInput
-                                    id="script-version"
-                                    label={translator('scripts.detail.side.script_version')}
-                                    value={newScriptDetail && newScriptDetail.version.number
-                                        ? newScriptDetail.version.number : 0}
-                                    onChange={(e) => this.updateScript({
-                                        version: {
-                                            ...newScriptDetail.version,
-                                            number: parseInt(e.target.value, 10),
-                                        },
-                                    })}
-                                    type="number"
-                                    InputProps={{
-                                        disableUnderline: true,
-                                        inputProps: {
-                                            min: 0,
-                                        },
-                                    }}
-                                />
+                                <>
+                                    <TextInput
+                                        id="script-version"
+                                        label={translator('scripts.detail.side.script_version')}
+                                        value={newScriptDetail && newScriptDetail.version.number
+                                            ? newScriptDetail.version.number : 0}
+                                        onChange={(e) => this.updateScript({
+                                            version: {
+                                                ...newScriptDetail.version,
+                                                number: parseInt(e.target.value, 10),
+                                            },
+                                        })}
+                                        type="number"
+                                        InputProps={{
+                                            disableUnderline: true,
+                                            inputProps: {
+                                                min: 0,
+                                            },
+                                        }}
+                                    />
+                                    <TextInput
+                                        id="script-security-group"
+                                        label={translator('scripts.detail.side.script_security')}
+                                        error={requiredFieldsState.securityGroupName.showError}
+                                        // eslint-disable-next-line max-len
+                                        helperText={requiredFieldsState.securityGroupName.showError && 'Security group is a required field'}
+                                        value={newScriptDetail && newScriptDetail.securityGroupName
+                                            ? newScriptDetail.securityGroupName : ''}
+                                        onChange={(e) => this.updateScript({
+                                            securityGroupName: e.target.value,
+                                        })}
+                                        InputProps={{
+                                            disableUnderline: true,
+                                        }}
+                                        required
+                                    />
+                                </>
                             )}
                         </form>
                         <DescriptionList
@@ -340,6 +361,11 @@ const ScriptDetail = withStyles(styles)(
                                         label: translator('scripts.detail.side.description.version'),
                                         value: newScriptDetail && newScriptDetail.version
                                             ? newScriptDetail.version.number : '',
+                                    },
+                                    {
+                                        label: translator('scripts.detail.side.script_security'),
+                                        value: newScriptDetail && newScriptDetail.securityGroupName
+                                            ? newScriptDetail.securityGroupName : '',
                                     },
                                 ] : [],
                                 {
@@ -377,7 +403,7 @@ const ScriptDetail = withStyles(styles)(
             const handleSaveAction = () => {
                 const { passed: passedRequired, requiredFieldsState } = requiredFieldsCheck({
                     data: newScriptDetail,
-                    requiredFields: ['name'],
+                    requiredFields: ['name', 'securityGroupName'],
                 });
                 const { passed: passedUniqueActionNames } = uniqueActionNamesCheck({
                     actions: newScriptDetail.actions,
