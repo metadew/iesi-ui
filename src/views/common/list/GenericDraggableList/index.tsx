@@ -16,6 +16,7 @@ import {
     Typography,
 } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
+import { checkAuthority, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import GenericTableRow from '../GenericTableRow';
 import { useListStyles } from '../common';
 
@@ -36,7 +37,10 @@ export default function GenericDraggableList<ColumnNames>({
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId="droppable">
+            <Droppable
+                droppableId="droppable"
+                isDropDisabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
+            >
                 {(droppableProvided, droppableSnapshot) => (
                     <TableContainer
                         ref={droppableProvided.innerRef}

@@ -233,8 +233,7 @@ const ScriptDetail = withStyles(styles)(
                                     variant="contained"
                                     color="secondary"
                                     disabled={this.isCreateScriptRoute()
-                                        || (!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
-                                        && checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, 'PUBLIC'))}
+                                        || !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
                                 >
                                     <Translate msg="scripts.detail.save_script_dialog.update_current_version" />
                                 </Button>
@@ -256,8 +255,7 @@ const ScriptDetail = withStyles(styles)(
                                     }}
                                     color="secondary"
                                     variant="outlined"
-                                    disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
-                                    && checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, 'PUBLIC')}
+                                    disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
                                 >
                                     <Translate msg="scripts.detail.save_script_dialog.save_as_new_version" />
                                 </Button>
@@ -305,6 +303,7 @@ const ScriptDetail = withStyles(styles)(
                                     readOnly: !this.isCreateScriptRoute(),
                                     disableUnderline: true,
                                 }}
+                                disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
                             />
                             <TextInput
                                 id="script-description"
@@ -314,6 +313,7 @@ const ScriptDetail = withStyles(styles)(
                                 value={newScriptDetail && newScriptDetail.description
                                     ? newScriptDetail.description : ''}
                                 onChange={(e) => this.updateScript({ description: e.target.value })}
+                                disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
                             />
                             {this.isCreateScriptRoute() && (
                                 <TextInput
@@ -334,12 +334,13 @@ const ScriptDetail = withStyles(styles)(
                                             min: 0,
                                         },
                                     }}
+                                    disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
                                 />
                             )}
                         </form>
                         <DescriptionList
                             noLineAfterListItem
-                            items={[
+                            items={[].concat(
                                 ...(!this.isCreateScriptRoute()) ? [
                                     {
                                         label: translator('scripts.detail.side.description.version'),
@@ -347,24 +348,25 @@ const ScriptDetail = withStyles(styles)(
                                             ? newScriptDetail.version.number : '',
                                     },
                                 ] : [],
-                                {
-                                    label: <Translate msg="scripts.detail.side.labels.title" />,
-                                    value: <EditLabels
-                                        labels={newScriptDetail && newScriptDetail.labels
-                                            ? newScriptDetail.labels : []}
-                                        onChange={(labels) => this.updateScript({ labels })}
-                                    />,
-                                },
-                                // Hide schedules for now
-                                // {
-                                //     label: <Translate msg="scripts.detail.side.schedules.title" />,
-                                //     value: <EditSchedules
-                                //         schedules={newScriptDetail && newScriptDetail.scheduling
-                                //             ? newScriptDetail.scheduling : []}
-                                //         onChange={(scheduling) => this.updateScript({ scheduling })}
-                                //     />,
-                                // },
-                            ]}
+                                checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
+                                    ? {
+                                        label: <Translate msg="scripts.detail.side.labels.title" />,
+                                        value: <EditLabels
+                                            labels={newScriptDetail && newScriptDetail.labels
+                                                ? newScriptDetail.labels : []}
+                                            onChange={(labels) => this.updateScript({ labels })}
+                                        />,
+                                    } : [],
+                            )}
+                            // Hide schedules for now
+                            // {
+                            //     label: <Translate msg="scripts.detail.side.schedules.title" />,
+                            //     value: <EditSchedules
+                            //         schedules={newScriptDetail && newScriptDetail.scheduling
+                            //             ? newScriptDetail.scheduling : []}
+                            //         onChange={(scheduling) => this.updateScript({ scheduling })}
+                            //     />,
+                            // },
                         />
                     </Box>
                 </Box>

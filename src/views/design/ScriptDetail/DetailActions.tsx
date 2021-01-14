@@ -100,36 +100,41 @@ function DetailActions({
     return (
         <Box display="flex" alignItems="center" justifyContent="space-between" marginX={2.2}>
             <Box flex="0 0 auto">
-                <Tooltip
-                    title={translator('scripts.detail.main.actions.add_action')}
-                    enterDelay={1000}
-                    enterNextDelay={1000}
-                >
-                    <IconButton
-                        disabled={checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
-                        aria-label={translator('scripts.detail.main.actions.add_action')}
-                        className={classes.addButton}
-                        onClick={onAdd}
-                        color="default"
-                    >
-                        <AddIcon />
-                    </IconButton>
-                </Tooltip>
+                {checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
+                    ? (
+                        <Tooltip
+                            title={translator('scripts.detail.main.actions.add_action')}
+                            enterDelay={1000}
+                            enterNextDelay={1000}
+                        >
+                            <IconButton
+                                aria-label={translator('scripts.detail.main.actions.add_action')}
+                                className={classes.addButton}
+                                onClick={onAdd}
+                                color="default"
+                            >
+                                <AddIcon />
+                            </IconButton>
+                        </Tooltip>
+                    )
+                    : null}
             </Box>
             <Box flex="0 0 auto">
                 <Paper elevation={0} className={classes.actions}>
                     <Box display="inline" marginRight={1}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            size="small"
-                            startIcon={<SaveIcon />}
-                            onClick={onSave}
-                            disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
-                            && checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, 'PUBLIC')}
-                        >
-                            <Translate msg="scripts.detail.main.actions.save" />
-                        </Button>
+                        {checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
+                            ? (
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    size="small"
+                                    startIcon={<SaveIcon />}
+                                    onClick={onSave}
+                                >
+                                    <Translate msg="scripts.detail.main.actions.save" />
+                                </Button>
+                            )
+                            : null}
                     </Box>
                     {isCreateRoute ? (
                         <>
