@@ -70,17 +70,20 @@ function NavigationMenu({ state }: IObserveProps) {
 
         const isAllowedToRoute = hasRequiredAccessLevels(state, requiredAccessLevels);
 
-        return isAllowedToRoute
-            ? (
-                <MenuItem
-                    className={currentRoute.routeKey === routeKey ? classes.selected : ''}
-                    onClick={() => handleNavigation(routeKey)}
-                    key={`main-nav_${routeKey}`}
-                >
-                    <Translate msg={translationKey} />
-                </MenuItem>
-            )
-            : null;
+        if (location.pathname !== '/login') {
+            return isAllowedToRoute
+                ? (
+                    <MenuItem
+                        className={currentRoute.routeKey === routeKey ? classes.selected : ''}
+                        onClick={() => handleNavigation(routeKey)}
+                        key={`main-nav_${routeKey}`}
+                    >
+                        <Translate msg={translationKey} />
+                    </MenuItem>
+                )
+                : null;
+        }
+        return null;
     }
 }
 
