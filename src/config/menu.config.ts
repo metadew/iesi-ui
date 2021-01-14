@@ -9,7 +9,7 @@ export interface IMenuItem {
 }
 
 export const MAIN_NAV_ITEMS: IMenuItem[] = [].concat(
-    checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, 'PUBLIC')
+    checkAuthority(SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_READ, 'PUBLIC')
         ? toMenuItem({
             routeKey: ROUTE_KEYS.R_SCRIPTS,
             translationKeySuffix: 'scripts',

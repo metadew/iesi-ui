@@ -19,6 +19,7 @@ import { IObserveProps, observe } from 'views/observe';
 import { getAsyncActionTypes } from 'state/entities/constants/selectors';
 import { getTranslator } from 'state/i18n/selectors';
 import { StateChangeNotification } from 'models/state.models';
+import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import ExpandableParameter from './ExpandableParameter';
 
 interface IPublicProps {
@@ -139,6 +140,7 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                         defaultValue={name}
                         onBlur={(e) => setName(e.target.value)}
                         className={classes.nameTextField}
+                        disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
                     />
                 </Box>
             </Box>
@@ -155,6 +157,7 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                             className={classes.descriptionTextField}
                             defaultValue={description}
                             onBlur={(e) => setDescription(e.target.value)}
+                            disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
                         />
                     </Paper>
                 </Box>
@@ -168,6 +171,7 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                             className={classes.conditionTextField}
                             defaultValue={condition}
                             onBlur={(e) => setCondition(e.target.value)}
+                            disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
                         />
                     </Paper>
                 </Box>
@@ -214,6 +218,7 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                             onChange={() => {
                                 setErrorStopChecked(!errorStopChecked);
                             }}
+                            disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
                         />
                     </Box>
                     <Box display="flex" alignItems="center" marginLeft={2}>
@@ -226,23 +231,39 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                             onChange={() => {
                                 setErrorExpectedChecked(!errorExpectedChecked);
                             }}
+                            disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
                         />
                     </Box>
 
                     <Box marginLeft={2}>
                         <ButtonGroup size="small">
-                            <Button
-                                color="default"
-                                variant="outlined"
-                                onClick={onClose}
-                            >
-                                <Translate msg="scripts.detail.edit_action.footer.cancel" />
-                            </Button>
+                            {!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
+                            && checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, 'PUBLIC')
+                                ? (
+                                    <Button
+                                        color="default"
+                                        variant="outlined"
+                                        onClick={onClose}
+                                    >
+                                        <Translate msg="scripts.detail.edit_action.footer.go_back" />
+                                    </Button>
+                                )
+                                : (
+                                    <Button
+                                        color="default"
+                                        variant="outlined"
+                                        onClick={onClose}
+                                    >
+                                        <Translate msg="scripts.detail.edit_action.footer.cancel" />
+                                    </Button>
+                                )}
+
                             <Button
                                 variant="contained"
                                 color="secondary"
                                 disableElevation
                                 onClick={updateAction}
+                                disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
                             >
                                 <Translate msg="scripts.detail.edit_action.footer.save" />
                             </Button>

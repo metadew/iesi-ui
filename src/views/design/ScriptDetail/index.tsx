@@ -7,6 +7,7 @@ import {
     AddRounded as AddIcon,
     Edit as EditIcon,
     Delete as DeleteIcon,
+    Visibility,
 } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import { IScript, IScriptAction } from 'models/state/scripts.models';
@@ -476,22 +477,31 @@ const ScriptDetail = withStyles(styles)(
                         <GenericDraggableList
                             listItems={listItems}
                             columns={columns}
-                            listActions={[
-                                {
-                                    icon: <EditIcon />,
-                                    label: translator('scripts.detail.main.list.item.actions.edit'),
-                                    onClick: (id, index) => {
-                                        this.setState({ editActionIndex: index });
+                            listActions={[].concat(
+                                !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
+                                && checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, 'PUBLIC')
+                                    ? {
+                                        icon: <Visibility />,
+                                        label: translator('scripts.detail.main.list.item.actions.edit'),
+                                        onClick: (index: number) => {
+                                            this.setState({ editActionIndex: index });
+                                        },
+                                    } : {
+                                        icon: <EditIcon />,
+                                        label: translator('scripts.detail.main.list.item.actions.edit'),
+                                        onClick: (index: number) => {
+                                            this.setState({ editActionIndex: index });
+                                        },
                                     },
-                                },
-                                {
-                                    icon: <DeleteIcon />,
-                                    label: translator('scripts.detail.main.list.item.actions.delete'),
-                                    onClick: (id, index) => {
-                                        this.setState({ actionIndexToDelete: index });
-                                    },
-                                },
-                            ]}
+                                checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
+                                    ? {
+                                        icon: <DeleteIcon />,
+                                        label: translator('scripts.detail.main.list.item.actions.delete'),
+                                        onClick: (index: number) => {
+                                            this.setState({ actionIndexToDelete: index });
+                                        },
+                                    } : [],
+                            )}
                             onOrder={(list) => {
                                 this.updateScript({
                                     actions: list.map((item, index) => {

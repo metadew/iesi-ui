@@ -106,6 +106,7 @@ function DetailActions({
                     enterNextDelay={1000}
                 >
                     <IconButton
+                        disabled={checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
                         aria-label={translator('scripts.detail.main.actions.add_action')}
                         className={classes.addButton}
                         onClick={onAdd}

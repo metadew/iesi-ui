@@ -125,6 +125,7 @@ scripts:
         expected_to_fail: Action expected to fail
         cancel: Discard changes
         save: Update action
+        go_back: Go back
     side:
       script_description: Script description
       script_name: Script name
