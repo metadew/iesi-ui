@@ -49,6 +49,7 @@ import { getEnvironmentsForDropdown } from 'state/entities/environments/selector
 import { getTranslator } from 'state/i18n/selectors';
 import { getExecutionsListFilter } from 'state/ui/selectors';
 import { setExecutionsListFilter } from 'state/ui/actions';
+import { checkAuthority, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -367,27 +368,28 @@ const ScriptReportsOverview = withStyles(styles)(
             return !hasError ? (
                 <Box paddingBottom={5} marginX={2.8}>
                     <GenericList
-                        listActions={[
-                            {
-                                icon: <ReportIcon />,
-                                label: translator('script_reports.overview.list.actions.report'),
-                                onClick: (id) => {
-                                    const execution = listItems.find((listItem) => listItem.id === id);
+                        listActions={[].concat(
+                            checkAuthority(SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_READ, 'PUBLIC')
+                                ? {
+                                    icon: <ReportIcon />,
+                                    label: translator('script_reports.overview.list.actions.report'),
+                                    onClick: (id: number) => {
+                                        const execution = listItems.find((listItem) => listItem.id === id);
 
-                                    redirectTo({
-                                        routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
-                                        params: {
-                                            executionRequestId: id,
-                                            runId: execution && execution.data.runId,
-                                        },
-                                    });
-                                },
-                                hideAction: (id) => {
-                                    const execution = listItems.find((listItem) => listItem.id === id);
-                                    return execution.data.runId === null;
-                                },
-                            },
-                        ]}
+                                        redirectTo({
+                                            routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
+                                            params: {
+                                                executionRequestId: id,
+                                                runId: execution && execution.data.runId,
+                                            },
+                                        });
+                                    },
+                                    hideAction: (id: number) => {
+                                        const execution = listItems.find((listItem) => listItem.id === id);
+                                        return execution.data.runId === null;
+                                    },
+                                } : [],
+                        )}
                         columns={columns}
                         listItems={listItems}
                         pagination={{
