@@ -300,10 +300,11 @@ const ScriptDetail = withStyles(styles)(
                                 onChange={(e) => this.updateScript({ name: e.target.value })}
                                 required={this.isCreateScriptRoute()}
                                 InputProps={{
-                                    readOnly: !this.isCreateScriptRoute(),
+                                    readOnly: !this.isCreateScriptRoute()
+                                    || !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC'),
                                     disableUnderline: true,
                                 }}
-                                disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
+
                             />
                             <TextInput
                                 id="script-description"
@@ -313,7 +314,11 @@ const ScriptDetail = withStyles(styles)(
                                 value={newScriptDetail && newScriptDetail.description
                                     ? newScriptDetail.description : ''}
                                 onChange={(e) => this.updateScript({ description: e.target.value })}
-                                disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
+                                InputProps={{
+                                    readOnly: !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC'),
+                                    disableUnderline: true,
+                                }}
+
                             />
                             {this.isCreateScriptRoute() && (
                                 <TextInput
@@ -348,15 +353,14 @@ const ScriptDetail = withStyles(styles)(
                                             ? newScriptDetail.version.number : '',
                                     },
                                 ] : [],
-                                checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
-                                    ? {
-                                        label: <Translate msg="scripts.detail.side.labels.title" />,
-                                        value: <EditLabels
-                                            labels={newScriptDetail && newScriptDetail.labels
-                                                ? newScriptDetail.labels : []}
-                                            onChange={(labels) => this.updateScript({ labels })}
-                                        />,
-                                    } : [],
+                                {
+                                    label: <Translate msg="scripts.detail.side.labels.title" />,
+                                    value: <EditLabels
+                                        labels={newScriptDetail && newScriptDetail.labels
+                                            ? newScriptDetail.labels : []}
+                                        onChange={(labels) => this.updateScript({ labels })}
+                                    />,
+                                },
                             )}
                             // Hide schedules for now
                             // {

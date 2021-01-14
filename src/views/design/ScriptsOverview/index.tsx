@@ -310,7 +310,7 @@ const ScriptsOverview = withStyles(styles)(
                         { !hasError && (
                             <GenericList
                                 listActions={[].concat(
-                                    checkAuthority(SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_WRITE, 'PUBLIC') ? {
+                                    checkAuthority(SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_WRITE, 'PUBLIC') ? {
                                         icon: <PlayArrowRounded />,
                                         label: translator('scripts.overview.list.actions.execute'),
                                         onClick: this.setScriptToExecute,

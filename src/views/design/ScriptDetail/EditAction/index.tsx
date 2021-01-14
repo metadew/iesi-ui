@@ -140,7 +140,10 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                         defaultValue={name}
                         onBlur={(e) => setName(e.target.value)}
                         className={classes.nameTextField}
-                        disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
+                        InputProps={{
+                            readOnly: !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC'),
+                            disableUnderline: true,
+                        }}
                     />
                 </Box>
             </Box>
@@ -157,7 +160,10 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                             className={classes.descriptionTextField}
                             defaultValue={description}
                             onBlur={(e) => setDescription(e.target.value)}
-                            disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
+                            InputProps={{
+                                readOnly: !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC'),
+                                disableUnderline: true,
+                            }}
                         />
                     </Paper>
                 </Box>
@@ -171,7 +177,10 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                             className={classes.conditionTextField}
                             defaultValue={condition}
                             onBlur={(e) => setCondition(e.target.value)}
-                            disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
+                            InputProps={{
+                                readOnly: !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC'),
+                                disableUnderline: true,
+                            }}
                         />
                     </Paper>
                 </Box>
@@ -257,16 +266,18 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                                         <Translate msg="scripts.detail.edit_action.footer.cancel" />
                                     </Button>
                                 )}
-
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                disableElevation
-                                onClick={updateAction}
-                                disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
-                            >
-                                <Translate msg="scripts.detail.edit_action.footer.save" />
-                            </Button>
+                            {checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
+                                ? (
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        disableElevation
+                                        onClick={updateAction}
+                                    >
+                                        <Translate msg="scripts.detail.edit_action.footer.save" />
+                                    </Button>
+                                )
+                                : null}
                         </ButtonGroup>
                     </Box>
                 </Box>

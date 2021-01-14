@@ -145,7 +145,7 @@ function DetailActions({
                         </>
                     ) : (
                         <>
-                            {checkAuthority(SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_WRITE, 'PUBLIC')
+                            {checkAuthority(SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_WRITE, 'PUBLIC')
                                 ? (
                                     <Tooltip
                                         title={translator('scripts.detail.main.actions.execute')}
