@@ -14,7 +14,6 @@ import { ExpandMore } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { IParameter } from 'models/state/iesiGeneric.models';
 import { IConstantParameter } from 'models/state/constants.models';
-import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 
 interface IPublicProps {
     onChange: (value: string) => void;
@@ -78,27 +77,21 @@ export default function ExpandableParameter({ parameter, onChange, constantParam
                 </Box>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails className={classes.expansionPanelDetail}>
-
-                {checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
-                    ? (
-                        <FormControl
-                            variant="filled"
-                            fullWidth
-                        >
-                            <InputLabel htmlFor="filled-adornment-password">
-                                <Translate msg="scripts.detail.edit_action.parameter.value" />
-                            </InputLabel>
-                            <FilledInput
-                                id={`${constantParameter.name}-input`}
-                                type="text"
-                                value={parameter ? parameter.value : ''}
-                                onChange={(e) => onChange(e.target.value)}
-                                multiline
-                            />
-                        </FormControl>
-                    )
-                    : null}
-
+                <FormControl
+                    variant="filled"
+                    fullWidth
+                >
+                    <InputLabel htmlFor="filled-adornment-password">
+                        <Translate msg="scripts.detail.edit_action.parameter.value" />
+                    </InputLabel>
+                    <FilledInput
+                        id={`${constantParameter.name}-input`}
+                        type="text"
+                        value={parameter ? parameter.value : ''}
+                        onChange={(e) => onChange(e.target.value)}
+                        multiline
+                    />
+                </FormControl>
             </ExpansionPanelDetails>
         </ExpansionPanel>
     );
