@@ -8,12 +8,12 @@ import {
     ExpansionPanelDetails,
     FormControl,
     InputLabel,
+    FilledInput,
 } from '@material-ui/core';
 import { ExpandMore } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { IParameter } from 'models/state/iesiGeneric.models';
 import { IConstantParameter } from 'models/state/constants.models';
-import TextInput from 'views/common/input/TextInput';
 import { checkAuthority, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 
 interface IPublicProps {
@@ -85,16 +85,13 @@ export default function ExpandableParameter({ parameter, onChange, constantParam
                     <InputLabel htmlFor="filled-adornment-password">
                         <Translate msg="scripts.detail.edit_action.parameter.value" />
                     </InputLabel>
-                    <TextInput
+                    <FilledInput
                         id={`${constantParameter.name}-input`}
                         type="text"
                         value={parameter ? parameter.value : ''}
                         onChange={(e) => onChange(e.target.value)}
                         multiline
-                        InputProps={{
-                            readOnly: !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC'),
-                            disableUnderline: true,
-                        }}
+                        readOnly={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
                     />
                 </FormControl>
             </ExpansionPanelDetails>
