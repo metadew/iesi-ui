@@ -318,11 +318,16 @@ const ScriptsOverview = withStyles(styles)(
                         { !hasError && (
                             <GenericList
                                 listActions={[].concat(
-                                    checkAuthority(SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_WRITE, 'PUBLIC') ? {
+                                    {
                                         icon: <PlayArrowRounded />,
                                         label: translator('scripts.overview.list.actions.execute'),
                                         onClick: this.setScriptToExecute,
-                                    } : [],
+                                        hideAction: (item: IListItem<IColumnNames>) =>
+                                            !checkAuthority(
+                                                SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_WRITE,
+                                                item.columns.securityGroupName.toString(),
+                                            ),
+                                    },
                                     checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC') ? {
                                         icon: <Edit />,
                                         label: translator('scripts.overview.list.actions.edit'),

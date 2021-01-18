@@ -384,8 +384,9 @@ const ScriptReportsOverview = withStyles(styles)(
                                             },
                                         });
                                     },
-                                    hideAction: (id: number) => {
-                                        const execution = listItems.find((listItem) => listItem.id === id);
+                                    hideAction: (item: IListItem<IColumnNames>) => {
+                                        const execution = listItems.find((listItem) =>
+                                            listItem.id === item.id);
                                         return execution.data.runId === null;
                                     },
                                 } : [],

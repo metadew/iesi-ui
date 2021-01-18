@@ -23,7 +23,7 @@ import { useListStyles } from '../common';
 interface IPublicProps<ColumnNames> {
     columns: ListColumns<ColumnNames>;
     listItems: IListItem<ColumnNames>[];
-    listActions?: IListAction[];
+    listActions?: IListAction<ColumnNames>[];
     onOrder: (newListItems: IListItem<ColumnNames>[]) => void;
 }
 

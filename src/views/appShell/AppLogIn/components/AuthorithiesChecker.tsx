@@ -4,7 +4,6 @@ export function checkAuthority(privilege: SECURITY_PRIVILEGES, securityGroupName
     return sessionStorage.getItem('authorities').includes(`${privilege}@${securityGroupName}`);
 }
 
-
 export enum SECURITY_PRIVILEGES {
 
     S_SCRIPTS_READ = 'SCRIPTS_READ',
@@ -13,7 +12,7 @@ export enum SECURITY_PRIVILEGES {
     S_SCRIPT_EXECUTIONS_READ = 'SCRIPT_EXECUTIONS_READ',
     S_SCRIPT_EXECUTIONS_WRITE = 'SCRIPT_EXECUTIONS_WRITE',
 
-    S_USERS_READ = 'USERS_READ',
+    S_USERS_READ = 'USERS_READ',    
     S_USERS_WRITE = 'USERS_WRITE',
 
     S_EXECUTION_REQUEST_WRITE = 'EXECUTION_REQUESTS_WRITE',
@@ -38,6 +37,5 @@ export enum SECURITY_PRIVILEGES {
     S_TEAMS_WRITE = 'TEAMS_WRITE',
 
     S_ROLES_WRITE = 'ROLES_WRITE',
-
 
 }
