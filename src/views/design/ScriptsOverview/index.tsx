@@ -328,7 +328,7 @@ const ScriptsOverview = withStyles(styles)(
                                                 item.columns.securityGroupName.toString(),
                                             ),
                                     },
-                                    checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC') ? {
+                                    {
                                         icon: <Edit />,
                                         label: translator('scripts.overview.list.actions.edit'),
                                         onClick: (id: string) => {
@@ -344,49 +344,67 @@ const ScriptsOverview = withStyles(styles)(
                                                 },
                                             });
                                         },
-                                    } : [],
-                                    !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
-                                        && checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, 'PUBLIC') ? {
-                                            icon: <Visibility />,
-                                            label: translator('scripts.overview.list.actions.edit'),
-                                            onClick: (id: string) => {
-                                                const scripts = getAsyncScripts(this.props.state);
-                                                const selectedScript = scripts.find((item) =>
-                                                    getUniqueIdFromScript(item) === id);
+                                        hideAction: (item: IListItem<IColumnNames>) =>
+                                            !checkAuthority(
+                                                SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                                item.columns.securityGroupName.toString(),
+                                            ),
+                                    },
+                                    {
+                                        icon: <Visibility />,
+                                        label: translator('scripts.overview.list.actions.edit'),
+                                        onClick: (id: string) => {
+                                            const scripts = getAsyncScripts(this.props.state);
+                                            const selectedScript = scripts.find((item) =>
+                                                getUniqueIdFromScript(item) === id);
 
-                                                redirectTo({
-                                                    routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                                    params: {
-                                                        name: selectedScript.name,
-                                                        version: selectedScript.version.number,
-                                                    },
-                                                });
-                                            },
-                                        } : [],
-                                    checkAuthority(SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_READ, 'PUBLIC')
-                                        ? {
-                                            icon: <ReportIcon />,
-                                            label: translator('scripts.overview.list.actions.report'),
-                                            onClick: (id: string) => {
-                                                const scripts = getAsyncScripts(this.props.state);
-                                                const selectedScript = scripts.find((item) =>
-                                                    getUniqueIdFromScript(item) === id);
+                                            redirectTo({
+                                                routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                                params: {
+                                                    name: selectedScript.name,
+                                                    version: selectedScript.version.number,
+                                                },
+                                            });
+                                        },
+                                        hideAction: (item: IListItem<IColumnNames>) =>
+                                            checkAuthority(
+                                                SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                                item.columns.securityGroupName.toString(),
+                                            // eslint-disable-next-line max-len
+                                            ) || !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, item.columns.securityGroupName.toString()),
+                                    },
+                                    {
+                                        icon: <ReportIcon />,
+                                        label: translator('scripts.overview.list.actions.report'),
+                                        onClick: (id: string) => {
+                                            const scripts = getAsyncScripts(this.props.state);
+                                            const selectedScript = scripts.find((item) =>
+                                                getUniqueIdFromScript(item) === id);
 
-                                                redirectTo({
-                                                    routeKey: ROUTE_KEYS.R_REPORTS,
-                                                    queryParams: {
-                                                        script: selectedScript.name,
-                                                        version: selectedScript.version.number,
-                                                    },
-                                                });
-                                            },
-                                        } : [],
-                                    checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
-                                        ? {
-                                            icon: <Delete />,
-                                            label: translator('scripts.overview.list.actions.delete'),
-                                            onClick: this.setScriptToDelete,
-                                        } : [],
+                                            redirectTo({
+                                                routeKey: ROUTE_KEYS.R_REPORTS,
+                                                queryParams: {
+                                                    script: selectedScript.name,
+                                                    version: selectedScript.version.number,
+                                                },
+                                            });
+                                        },
+                                        hideAction: (item: IListItem<IColumnNames>) =>
+                                            !checkAuthority(
+                                                SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_READ,
+                                                item.columns.securityGroupName.toString(),
+                                            ),
+                                    },
+                                    {
+                                        icon: <Delete />,
+                                        label: translator('scripts.overview.list.actions.delete'),
+                                        onClick: this.setScriptToDelete,
+                                        hideAction: (item: IListItem<IColumnNames>) =>
+                                            !checkAuthority(
+                                                SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                                item.columns.securityGroupName.toString(),
+                                            ),
+                                    },
                                 )}
                                 columns={columns}
                                 listItems={listItems}
