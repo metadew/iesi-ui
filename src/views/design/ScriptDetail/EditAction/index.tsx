@@ -26,6 +26,8 @@ interface IPublicProps {
     action: IScriptAction;
     onClose: () => void;
     onEdit: (action: IScriptAction) => void;
+    isCreateScriptRoute: boolean;
+    securityGroupName: string;
 }
 
 const useStyles = makeStyles(({ palette, spacing, typography }) => ({
@@ -86,7 +88,14 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
     },
 }));
 
-function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveProps) {
+function EditAction({
+    onClose,
+    action,
+    onEdit,
+    isCreateScriptRoute,
+    securityGroupName,
+    state,
+}: IPublicProps & IObserveProps) {
     const classes = useStyles();
     const translator = getTranslator(state);
     const [errorStopChecked, setErrorStopChecked] = useState<boolean>(action.errorStop);
@@ -141,7 +150,8 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                         onBlur={(e) => setName(e.target.value)}
                         className={classes.nameTextField}
                         InputProps={{
-                            readOnly: !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC'),
+                            readOnly: !isCreateScriptRoute
+                                && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
                             disableUnderline: true,
                         }}
                     />
@@ -161,7 +171,8 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                             defaultValue={description}
                             onBlur={(e) => setDescription(e.target.value)}
                             InputProps={{
-                                readOnly: !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC'),
+                                readOnly: !isCreateScriptRoute
+                                    && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
                                 disableUnderline: true,
                             }}
                         />
@@ -178,7 +189,8 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                             defaultValue={condition}
                             onBlur={(e) => setCondition(e.target.value)}
                             InputProps={{
-                                readOnly: !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC'),
+                                readOnly: !isCreateScriptRoute
+                                    && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
                                 disableUnderline: true,
                             }}
                         />
@@ -227,7 +239,8 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                             onChange={() => {
                                 setErrorStopChecked(!errorStopChecked);
                             }}
-                            disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
+                            disabled={!isCreateScriptRoute
+                                && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)}
                         />
                     </Box>
                     <Box display="flex" alignItems="center" marginLeft={2}>
@@ -240,24 +253,16 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                             onChange={() => {
                                 setErrorExpectedChecked(!errorExpectedChecked);
                             }}
-                            disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
+                            disabled={!isCreateScriptRoute
+                                || !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)}
                         />
                     </Box>
 
                     <Box marginLeft={2}>
                         <ButtonGroup size="small">
-                            {!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
-                            && checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, 'PUBLIC')
+                            {isCreateScriptRoute
+                                || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)
                                 ? (
-                                    <Button
-                                        color="default"
-                                        variant="outlined"
-                                        onClick={onClose}
-                                    >
-                                        <Translate msg="scripts.detail.edit_action.footer.go_back" />
-                                    </Button>
-                                )
-                                : (
                                     <Button
                                         color="default"
                                         variant="outlined"
@@ -265,8 +270,17 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                                     >
                                         <Translate msg="scripts.detail.edit_action.footer.cancel" />
                                     </Button>
+                                ) : (
+                                    <Button
+                                        color="default"
+                                        variant="outlined"
+                                        onClick={onClose}
+                                    >
+                                        <Translate msg="scripts.detail.edit_action.footer.go_back" />
+                                    </Button>
                                 )}
-                            {checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
+                            {isCreateScriptRoute
+                                || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)
                                 ? (
                                     <Button
                                         variant="contained"

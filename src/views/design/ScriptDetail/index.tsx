@@ -305,8 +305,7 @@ const ScriptDetail = withStyles(styles)(
                                 onChange={(e) => this.updateScript({ name: e.target.value })}
                                 required={this.isCreateScriptRoute()}
                                 InputProps={{
-                                    readOnly: !this.isCreateScriptRoute()
-                                    || !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC'),
+                                    readOnly: !this.isCreateScriptRoute(),
                                     disableUnderline: true,
                                 }}
 
@@ -320,7 +319,10 @@ const ScriptDetail = withStyles(styles)(
                                     ? newScriptDetail.description : ''}
                                 onChange={(e) => this.updateScript({ description: e.target.value })}
                                 InputProps={{
-                                    readOnly: !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC'),
+                                    readOnly: !this.isCreateScriptRoute() && newScriptDetail && !checkAuthority(
+                                        SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                        newScriptDetail.securityGroupName,
+                                    ),
                                     disableUnderline: true,
                                 }}
 
@@ -386,6 +388,8 @@ const ScriptDetail = withStyles(styles)(
                                         labels={newScriptDetail && newScriptDetail.labels
                                             ? newScriptDetail.labels : []}
                                         onChange={(labels) => this.updateScript({ labels })}
+                                        securityGroupName={newScriptDetail ? newScriptDetail.securityGroupName : null}
+                                        isCreateScriptRoute={this.isCreateScriptRoute()}
                                     />,
                                 },
                             )}
@@ -504,6 +508,7 @@ const ScriptDetail = withStyles(styles)(
                                 });
                             }}
                             isCreateRoute={this.isCreateScriptRoute()}
+                            newScriptDetail={newScriptDetail}
                         />
                     </Box>
                     <Box marginY={1}>
@@ -511,22 +516,31 @@ const ScriptDetail = withStyles(styles)(
                             listItems={listItems}
                             columns={columns}
                             listActions={[].concat(
-                                !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
-                                && checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, 'PUBLIC')
+                                this.isCreateScriptRoute() || checkAuthority(
+                                    SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                    newScriptDetail.securityGroupName,
+                                )
                                     ? {
-                                        icon: <Visibility />,
-                                        label: translator('scripts.detail.main.list.item.actions.edit'),
-                                        onClick: (index: number) => {
-                                            this.setState({ editActionIndex: index });
-                                        },
-                                    } : {
                                         icon: <EditIcon />,
                                         label: translator('scripts.detail.main.list.item.actions.edit'),
                                         onClick: (index: number) => {
                                             this.setState({ editActionIndex: index });
                                         },
-                                    },
-                                checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
+                                    } : checkAuthority(
+                                        SECURITY_PRIVILEGES.S_SCRIPTS_READ,
+                                        newScriptDetail.securityGroupName,
+                                    )
+                                        ? {
+                                            icon: <Visibility />,
+                                            label: translator('scripts.detail.main.list.item.actions.edit'),
+                                            onClick: (index: number) => {
+                                                this.setState({ editActionIndex: index });
+                                            },
+                                        } : null,
+                                this.isCreateScriptRoute() || checkAuthority(
+                                    SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                    newScriptDetail.securityGroupName,
+                                )
                                     ? {
                                         icon: <DeleteIcon />,
                                         label: translator('scripts.detail.main.list.item.actions.delete'),
@@ -576,6 +590,8 @@ const ScriptDetail = withStyles(styles)(
                         newActions[editActionIndex] = newAction;
                         this.updateScript({ actions: newActions });
                     }}
+                    isCreateScriptRoute={this.isCreateScriptRoute()}
+                    securityGroupName={newScriptDetail.securityGroupName}
                 />
             );
         }

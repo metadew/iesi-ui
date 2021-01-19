@@ -13,9 +13,17 @@ import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/com
 interface IPublicProps {
     labels: ILabel[];
     onChange: (newLabels: ILabel[]) => void;
+    securityGroupName: string;
+    isCreateScriptRoute: boolean;
 }
 
-function EditLabels({ labels, onChange, state }: IPublicProps & IObserveProps) {
+function EditLabels({
+    labels,
+    onChange,
+    securityGroupName,
+    isCreateScriptRoute,
+    state,
+}: IPublicProps & IObserveProps) {
     const [isAddLabelFormOpen, setIsAddLabelFormOpen] = useState(false);
     const [newLabelName, setNewLabelName] = useState('');
     const [newLabelValue, setNewLabelValue] = useState('');
@@ -39,21 +47,26 @@ function EditLabels({ labels, onChange, state }: IPublicProps & IObserveProps) {
 
     return (
         <>
-            {labels.length > 0 ? (
-                <OrderedList
-                    items={labels.map((label) => ({
-                        content: `${label.name}:${label.value}`,
-                        onDelete: () => onChange(labels.filter((l) => l.name !== label.name)),
-                    }))}
-                />
-            ) : (
-                <Typography variant="body2">
-                    <Translate msg="scripts.detail.side.labels.empty" />
-                </Typography>
-            )}
+            {isCreateScriptRoute || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, securityGroupName)
+                ? labels.length > 0
+                    ? (
+                        <OrderedList
+                            items={labels.map((label) => ({
+                                content: `${label.name}:${label.value}`,
+                                onDelete: checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName) 
+                                    ? () => onChange(labels.filter((l) => l.name !== label.name))
+                                    : null,
+                            }))}
+                        />
+                    ) : (
+                        <Typography variant="body2">
+                            <Translate msg="scripts.detail.side.labels.empty" />
+                        </Typography>
+                    )
+                : null }
             <ClickAwayListener onClickAway={handleClickAway}>
                 <div>
-                    {checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
+                    {isCreateScriptRoute || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)
                         ? (
                             <ButtonWithContent
                                 buttonText={<Translate msg="scripts.detail.side.labels.add_button" />}

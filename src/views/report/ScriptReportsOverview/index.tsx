@@ -49,7 +49,7 @@ import { getEnvironmentsForDropdown } from 'state/entities/environments/selector
 import { getTranslator } from 'state/i18n/selectors';
 import { getExecutionsListFilter } from 'state/ui/selectors';
 import { setExecutionsListFilter } from 'state/ui/actions';
-import { checkAuthority, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import { SECURITY_PRIVILEGES, checkAuthorityGeneral } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -369,7 +369,7 @@ const ScriptReportsOverview = withStyles(styles)(
                 <Box paddingBottom={5} marginX={2.8}>
                     <GenericList
                         listActions={[].concat(
-                            checkAuthority(SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_READ, 'PUBLIC')
+                            checkAuthorityGeneral(SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_READ)
                                 ? {
                                     icon: <ReportIcon />,
                                     label: translator('script_reports.overview.list.actions.report'),

@@ -1,4 +1,7 @@
 export function checkAuthority(privilege: SECURITY_PRIVILEGES, securityGroupName: string) {
+    if (securityGroupName == null || privilege == null) {
+        return false;
+    }
     return sessionStorage.getItem('authorities').includes(`${privilege}@${securityGroupName}`);
 }
 

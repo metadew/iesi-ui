@@ -26,14 +26,15 @@ export function UserSessionProvider({ children }: IUserSessionContextProps) {
 
     function setAuthenticated(newToken: string) {
         setToken(newToken);
+        sessionStorage.setItem('token', newToken);
 
-        const decoded: any = decode(token);
+        const decoded: any = decode(newToken);
 
         if (decoded !== undefined) {
             sessionStorage.setItem('authorities', JSON.stringify(decoded.authorities));
             setUsername(decoded.sub);
         }
-        if (decoded.sub !== '' && token !== '') {
+        if (decoded.sub !== '' && newToken !== '') {
             sessionStorage.setItem('isAuthenticated', 'true');
         } else {
             sessionStorage.setItem('isAuthenticated', 'false');

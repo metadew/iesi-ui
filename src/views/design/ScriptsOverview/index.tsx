@@ -53,7 +53,11 @@ import { getScriptsListFilter } from 'state/ui/selectors';
 import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
 import { setScriptsListFilter } from 'state/ui/actions';
 import ReportIcon from 'views/common/icons/Report';
-import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import {
+    SECURITY_PRIVILEGES,
+    checkAuthority,
+    checkAuthorityGeneral,
+} from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -189,7 +193,7 @@ const ScriptsOverview = withStyles(styles)(
                                             sortedColumn={filterFromState.sortedColumn as ISortedColumn<{}>}
                                         />
                                     </Box>
-                                    {checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')
+                                    {checkAuthorityGeneral(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)
                                         ? (
                                             <Box flex="0 0 auto">
                                                 <Button
