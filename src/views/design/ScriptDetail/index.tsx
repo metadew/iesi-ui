@@ -38,7 +38,8 @@ import {
 } from 'state/entities/scripts/triggers';
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
-import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+// eslint-disable-next-line max-len
+import { SECURITY_PRIVILEGES, checkAuthority, checkAuthorityGeneral } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import ExecuteScriptDialog from '../common/ExecuteScriptDialog';
 
 import DetailActions from './DetailActions';
@@ -237,7 +238,7 @@ const ScriptDetail = withStyles(styles)(
                                     variant="contained"
                                     color="secondary"
                                     disabled={this.isCreateScriptRoute()
-                                        || !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
+                                        || !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)}
                                 >
                                     <Translate msg="scripts.detail.save_script_dialog.update_current_version" />
                                 </Button>
@@ -259,7 +260,7 @@ const ScriptDetail = withStyles(styles)(
                                     }}
                                     color="secondary"
                                     variant="outlined"
-                                    disabled={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
+                                    disabled={!checkAuthorityGeneral(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)}
                                 >
                                     <Translate msg="scripts.detail.save_script_dialog.save_as_new_version" />
                                 </Button>

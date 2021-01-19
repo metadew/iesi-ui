@@ -4,6 +4,10 @@ export function checkAuthority(privilege: SECURITY_PRIVILEGES, securityGroupName
     return sessionStorage.getItem('authorities').includes(`${privilege}@${securityGroupName}`);
 }
 
+export function checkAuthorityGeneral(privilege: SECURITY_PRIVILEGES) {
+    return sessionStorage.getItem('authorities').includes(privilege);
+}
+
 export enum SECURITY_PRIVILEGES {
 
     S_SCRIPTS_READ = 'SCRIPTS_READ',
