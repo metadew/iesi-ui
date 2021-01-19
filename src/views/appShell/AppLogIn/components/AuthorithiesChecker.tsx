@@ -1,5 +1,3 @@
-/* eslint-disable linebreak-style */
-
 export function checkAuthority(privilege: SECURITY_PRIVILEGES, securityGroupName: string) {
     return sessionStorage.getItem('authorities').includes(`${privilege}@${securityGroupName}`);
 }

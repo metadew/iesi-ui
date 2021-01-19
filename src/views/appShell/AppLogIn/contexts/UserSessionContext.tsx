@@ -14,9 +14,8 @@ type User = {
 type UserSession = {
     username: string;
     token: string;
-    setAuthenticated: any;
-    isAuthenticated: any;
-    isAdmin: any;
+    setAuthenticated: (newToken: string) => void;
+    isAuthenticated: () => boolean;
 };
 
 export const UserSessionContext = React.createContext<Partial<UserSession>>({});
@@ -24,20 +23,15 @@ export const UserSessionContext = React.createContext<Partial<UserSession>>({});
 export function UserSessionProvider({ children }: IUserSessionContextProps) {
     const [username, setUsername] = useState('');
     const [token, setToken] = useState('');
-    const [role, setRole] = useState('');
 
-    // eslint-disable-next-line no-shadow
-    function setAuthenticated(token: string) {
-        sessionStorage.setItem('token', token);
-        setToken(token);
+    function setAuthenticated(newToken: string) {
+        setToken(newToken);
 
         const decoded: any = decode(token);
 
         if (decoded !== undefined) {
-            sessionStorage.setItem('userName', decoded.sub);
             sessionStorage.setItem('authorities', JSON.stringify(decoded.authorities));
             setUsername(decoded.sub);
-            setRole(decoded.authorities);
         }
         if (decoded.sub !== '' && token !== '') {
             sessionStorage.setItem('isAuthenticated', 'true');
@@ -50,23 +44,9 @@ export function UserSessionProvider({ children }: IUserSessionContextProps) {
         return username !== '' && token !== '';
     }
 
-    function isAdmin() {
-        return role === 'admin';
-    }
-
     return (
-        <UserSessionContext.Provider value={{ username, token, setAuthenticated, isAuthenticated, isAdmin }}>
+        <UserSessionContext.Provider value={{ username, token, setAuthenticated, isAuthenticated }}>
             {children}
         </UserSessionContext.Provider>
     );
-}
-
-export function getSecurityGroupNamesExisting(): Set<string> {
-    const securityGroupNames = new Set<string>();
-
-    // eslint-disable-next-line no-restricted-syntax
-    for (const item of JSON.parse(sessionStorage.getItem('authorities'))) {
-        securityGroupNames.add(JSON.stringify(item).split('@')[1].slice(0, -1));
-    }
-    return securityGroupNames;
 }
