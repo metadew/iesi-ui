@@ -14,7 +14,7 @@ import { ExpandMore } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { IParameter } from 'models/state/iesiGeneric.models';
 import { IConstantParameter } from 'models/state/constants.models';
-import { checkAuthority, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import { SECURITY_PRIVILEGES, checkAuthorityGeneral } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 
 interface IPublicProps {
     onChange: (value: string) => void;
@@ -91,7 +91,7 @@ export default function ExpandableParameter({ parameter, onChange, constantParam
                         value={parameter ? parameter.value : ''}
                         onChange={(e) => onChange(e.target.value)}
                         multiline
-                        readOnly={!checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, 'PUBLIC')}
+                        readOnly={!checkAuthorityGeneral(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)}
                     />
                 </FormControl>
             </ExpansionPanelDetails>
