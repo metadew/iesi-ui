@@ -140,6 +140,7 @@ function ExecutionDetail({ state }: IObserveProps) {
                 content={renderDetailContent()}
                 goBackTo={ROUTE_KEYS.R_REPORTS}
                 toggleLabel={<Translate msg="script_reports.detail.side.toggle_button" />}
+                scriptDetail={scriptExecutionData}
             />
         </>
     );
