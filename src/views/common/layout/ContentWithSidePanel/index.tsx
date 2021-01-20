@@ -12,7 +12,6 @@ import {
     isAppHeaderVisible as checkVisbilityAppHeader,
 } from 'views/appShell/AppHeader';
 import useExecuteOnUnmount from 'utils/hooks/useExecuteOnUnmount';
-import { IScriptExecutionDetail } from 'models/state/scriptExecutions.models';
 
 interface IPublicProps {
     panel: React.ReactNode;
@@ -22,7 +21,6 @@ interface IPublicProps {
     contentOverlayOpen?: boolean;
     toggleLabel: TTranslatorComponent;
     showLoader?: boolean | AsyncStatus;
-    scriptDetail?: IScriptExecutionDetail;
 }
 
 const SIDE_PANEL_WIDTH_MOBILE = 350;

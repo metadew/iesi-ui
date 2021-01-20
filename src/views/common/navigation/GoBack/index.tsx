@@ -3,12 +3,10 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { Button, makeStyles } from '@material-ui/core';
 import { ChevronLeftRounded } from '@material-ui/icons';
 import { ROUTE_KEYS } from 'views/routes';
-import { IScriptExecutionDetail } from 'models/state/scriptExecutions.models';
 import RouteLink, { IPublicProps as IRouteLinkProps } from '../RouteLink';
 
 interface IPublicProps {
     to: ROUTE_KEYS;
-    scriptDetail?: IScriptExecutionDetail;
 }
 
 const useStyles = makeStyles(() => ({
