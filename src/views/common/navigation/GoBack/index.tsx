@@ -23,6 +23,7 @@ const RouteLinkRef = React.forwardRef<HTMLAnchorElement, IRouteLinkProps>((props
 
 function GoBack(props: IPublicProps) {
     const classes = useStyles();
+
     return (
         <Button
             variant="contained"
