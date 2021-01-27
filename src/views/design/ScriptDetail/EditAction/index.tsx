@@ -152,7 +152,8 @@ function EditAction({
                         InputProps={{
                             readOnly: !isCreateScriptRoute
                                 && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
-                            disableUnderline: true,
+                            disableUnderline: !isCreateScriptRoute
+                                && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
                         }}
                     />
                 </Box>

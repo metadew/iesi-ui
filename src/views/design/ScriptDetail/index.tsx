@@ -39,7 +39,7 @@ import {
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 // eslint-disable-next-line max-len
-import { SECURITY_PRIVILEGES, checkAuthority, checkAuthorityGeneral } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import ExecuteScriptDialog from '../common/ExecuteScriptDialog';
 
 import DetailActions from './DetailActions';
@@ -238,7 +238,10 @@ const ScriptDetail = withStyles(styles)(
                                     variant="contained"
                                     color="secondary"
                                     disabled={this.isCreateScriptRoute()
-                                        || !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)}
+                                        || (newScriptDetail  && !checkAuthority(
+                                            SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                            newScriptDetail.securityGroupName,
+                                        ))}
                                 >
                                     <Translate msg="scripts.detail.save_script_dialog.update_current_version" />
                                 </Button>
@@ -260,7 +263,10 @@ const ScriptDetail = withStyles(styles)(
                                     }}
                                     color="secondary"
                                     variant="outlined"
-                                    disabled={!checkAuthorityGeneral(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)}
+                                    disabled={newScriptDetail  && !checkAuthority(
+                                        SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                        newScriptDetail.securityGroupName,
+                                    )}
                                 >
                                     <Translate msg="scripts.detail.save_script_dialog.save_as_new_version" />
                                 </Button>
@@ -516,38 +522,45 @@ const ScriptDetail = withStyles(styles)(
                             listItems={listItems}
                             columns={columns}
                             listActions={[].concat(
-                                this.isCreateScriptRoute() || checkAuthority(
-                                    SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                    newScriptDetail.securityGroupName,
-                                )
-                                    ? {
-                                        icon: <EditIcon />,
-                                        label: translator('scripts.detail.main.list.item.actions.edit'),
-                                        onClick: (index: number) => {
-                                            this.setState({ editActionIndex: index });
-                                        },
-                                    } : checkAuthority(
-                                        SECURITY_PRIVILEGES.S_SCRIPTS_READ,
+                                {
+                                    icon: <EditIcon />,
+                                    label: translator('scripts.detail.main.list.item.actions.edit'),
+                                    onClick: (index: number) => {
+                                        this.setState({ editActionIndex: index });
+                                    },
+                                    hideAction: () =>
+                                        !this.isCreateScriptRoute() && !(newScriptDetail && checkAuthority(
+                                            SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                            newScriptDetail.securityGroupName,
+                                        )),
+                                },
+                                {
+                                    icon: <Visibility />,
+                                    label: translator('scripts.detail.main.list.item.actions.edit'),
+                                    onClick: (index: number) => {
+                                        this.setState({ editActionIndex: index });
+                                    },
+                                    hideAction: () =>
+                                        this.isCreateScriptRoute() || !(newScriptDetail
+                                            && !checkAuthority(
+                                                SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                                newScriptDetail.securityGroupName,
+                                            ) && checkAuthority(
+                                                SECURITY_PRIVILEGES.S_SCRIPTS_READ,
+                                                newScriptDetail.securityGroupName,
+                                            )),
+                                },
+                                {
+                                    icon: <DeleteIcon />,
+                                    label: translator('scripts.detail.main.list.item.actions.delete'),
+                                    onClick: (index: number) => {
+                                        this.setState({ actionIndexToDelete: index });
+                                    },
+                                    hideAction: () => !this.isCreateScriptRoute() && !(newScriptDetail && checkAuthority(
+                                        SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                         newScriptDetail.securityGroupName,
-                                    )
-                                        ? {
-                                            icon: <Visibility />,
-                                            label: translator('scripts.detail.main.list.item.actions.edit'),
-                                            onClick: (index: number) => {
-                                                this.setState({ editActionIndex: index });
-                                            },
-                                        } : null,
-                                this.isCreateScriptRoute() || checkAuthority(
-                                    SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                    newScriptDetail.securityGroupName,
-                                )
-                                    ? {
-                                        icon: <DeleteIcon />,
-                                        label: translator('scripts.detail.main.list.item.actions.delete'),
-                                        onClick: (index: number) => {
-                                            this.setState({ actionIndexToDelete: index });
-                                        },
-                                    } : [],
+                                    )),
+                                }
                             )}
                             onOrder={(list) => {
                                 this.updateScript({

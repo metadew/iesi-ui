@@ -47,23 +47,25 @@ function EditLabels({
 
     return (
         <>
-            {isCreateScriptRoute || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, securityGroupName)
-                ? labels.length > 0
-                    ? (
-                        <OrderedList
-                            items={labels.map((label) => ({
-                                content: `${label.name}:${label.value}`,
-                                onDelete: checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName) 
-                                    ? () => onChange(labels.filter((l) => l.name !== label.name))
-                                    : null,
-                            }))}
-                        />
-                    ) : (
-                        <Typography variant="body2">
-                            <Translate msg="scripts.detail.side.labels.empty" />
-                        </Typography>
-                    )
-                : null }
+            {labels.length > 0
+                ? (
+                    <OrderedList
+                        items={labels.map((label) => ({
+                            content: `${label.name}:${label.value}`,
+                            onDelete: isCreateScriptRoute || checkAuthority(
+                                SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                securityGroupName,
+                            )
+                                ? () => onChange(labels.filter((l) => l.name !== label.name))
+                                : null,
+                        }))}
+                    />
+                ) : (
+                    <Typography variant="body2">
+                        <Translate msg="scripts.detail.side.labels.empty" />
+                    </Typography>
+                )
+            }
             <ClickAwayListener onClickAway={handleClickAway}>
                 <div>
                     {isCreateScriptRoute || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)

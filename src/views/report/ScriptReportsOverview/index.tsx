@@ -49,7 +49,7 @@ import { getEnvironmentsForDropdown } from 'state/entities/environments/selector
 import { getTranslator } from 'state/i18n/selectors';
 import { getExecutionsListFilter } from 'state/ui/selectors';
 import { setExecutionsListFilter } from 'state/ui/actions';
-import { SECURITY_PRIVILEGES, checkAuthorityGeneral } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import { SECURITY_PRIVILEGES, checkAuthorityGeneral, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -63,6 +63,9 @@ const styles = ({ palette, typography }: Theme) =>
             color: palette.primary.main,
         },
         scriptVersion: {
+            fontWeight: typography.fontWeightBold,
+        },
+        scriptSecurityGroupName: {
             fontWeight: typography.fontWeightBold,
         },
         executionLabels: {
@@ -299,6 +302,10 @@ const ScriptReportsOverview = withStyles(styles)(
                     className: classes.scriptVersion,
                     fixedWidth: '5%',
                 },
+                securityGroupName: {
+                    className: classes.scriptSecurityGroupName,
+                    fixedWidth: '25%',
+                },
                 environment: {
                     label: (
                         <Translate msg="script_reports.overview.list.labels.environment" />
@@ -368,28 +375,29 @@ const ScriptReportsOverview = withStyles(styles)(
             return !hasError ? (
                 <Box paddingBottom={5} marginX={2.8}>
                     <GenericList
-                        listActions={[].concat(
-                            checkAuthorityGeneral(SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_READ)
-                                ? {
-                                    icon: <ReportIcon />,
-                                    label: translator('script_reports.overview.list.actions.report'),
-                                    onClick: (id: number) => {
-                                        const execution = listItems.find((listItem) => listItem.id === id);
+                        listActions={[].concat({
+                                icon: <ReportIcon />,
+                                label: translator('script_reports.overview.list.actions.report'),
+                                onClick: (id: number) => {
+                                    const execution = listItems.find((listItem) => listItem.id === id);
 
-                                        redirectTo({
-                                            routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
-                                            params: {
-                                                executionRequestId: id,
-                                                runId: execution && execution.data.runId,
-                                            },
-                                        });
-                                    },
-                                    hideAction: (item: IListItem<IColumnNames>) => {
-                                        const execution = listItems.find((listItem) =>
-                                            listItem.id === item.id);
-                                        return execution.data.runId === null;
-                                    },
-                                } : [],
+                                    redirectTo({
+                                        routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
+                                        params: {
+                                            executionRequestId: id,
+                                            runId: execution && execution.data.runId,
+                                        },
+                                    });
+                                },
+                                hideAction: (item: IListItem<IColumnNames>) => {
+                                    const execution = listItems.find((listItem) =>
+                                        listItem.id === item.id);
+                                    return execution.data.runId === null && !checkAuthority(
+                                        SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_READ,
+                                        item.columns.securityGroupName.toString(),
+                                    );
+                                },
+                            },
                         )}
                         columns={columns}
                         listItems={listItems}
@@ -471,6 +479,7 @@ function mapExecutionsToListItems(
                     columns: {
                         script: scriptExecution.scriptName,
                         version: (scriptExecution.scriptVersion).toString(),
+                        securityGroupName: scriptExecution.securityGroupName,
                         environment: scriptExecution.environment,
                         requestTimestamp: {
                             value: formatDate(
