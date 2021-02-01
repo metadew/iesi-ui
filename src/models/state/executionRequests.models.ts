@@ -5,6 +5,7 @@ import { ExecutionActionStatus } from './executionActionStatus.models';
 export interface IColumnNames {
     script: string;
     version: string;
+    securityGroupName: string;
     environment: string;
     requestTimestamp: string;
     executionStatus: string;
@@ -33,8 +34,17 @@ export interface ICreateExecutionRequestPayload {
     context: string;
     email: string;
     // eslint-disable-next-line max-len
-    scriptExecutionRequests: Omit<IScriptExecutionRequest, 'executionRequestId' | 'scriptExecutionRequestId' | 'scriptExecutionRequestStatus'>[];
+    scriptExecutionRequests: ICreateScriptExecutionRequestPayload[];
     executionRequestLabels: ILabel[];
+}
+
+interface ICreateScriptExecutionRequestPayload {
+    environment: string;
+    exit: boolean;
+    impersonations: { name: string }[];
+    parameters: IParameter[];
+    scriptName: string;
+    scriptVersion: number;
 }
 
 interface IScriptExecutionRequest {
@@ -47,6 +57,7 @@ interface IScriptExecutionRequest {
     scriptExecutionRequestStatus: ExecutionRequestStatus;
     scriptName: string;
     scriptVersion: number;
+    securityGroupName: string;
     runId?: string;
     runStatus?: ExecutionActionStatus;
 }

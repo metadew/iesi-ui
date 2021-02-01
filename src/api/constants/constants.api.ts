@@ -1,6 +1,6 @@
 import { IActionType, IConnectionType, IConstantParameter } from 'models/state/constants.models';
 import { IListResponse } from 'models/state/iesiGeneric.models';
-import { get } from '../requestWrapper';
+import { get } from 'api/requestWrapper';
 import API_URLS from '../apiUrls';
 
 interface IActionTypeResponse {

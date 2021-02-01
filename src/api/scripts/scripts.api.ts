@@ -8,7 +8,7 @@ import {
 } from 'models/state/scripts.models';
 import { IListResponse, IPageData } from 'models/state/iesiGeneric.models';
 import FileSaver from 'file-saver';
-import { get, post, put, remove } from '../requestWrapper';
+import { get, post, put, remove } from 'api/requestWrapper';
 import API_URLS from '../apiUrls';
 
 interface IScriptsResponse {
