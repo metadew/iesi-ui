@@ -536,7 +536,7 @@ const ScriptDetail = withStyles(styles)(
                                 },
                                 {
                                     icon: <Visibility />,
-                                    label: translator('scripts.detail.main.list.item.actions.edit'),
+                                    label: translator('scripts.detail.main.list.item.actions.view'),
                                     onClick: (index: number) => {
                                         this.setState({ editActionIndex: index });
                                     },

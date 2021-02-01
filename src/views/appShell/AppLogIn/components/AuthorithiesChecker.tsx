@@ -2,11 +2,11 @@ export function checkAuthority(privilege: SECURITY_PRIVILEGES, securityGroupName
     if (securityGroupName == null || privilege == null) {
         return false;
     }
-    return sessionStorage.getItem('authorities').includes(`${privilege}@${securityGroupName}`);
+    return JSON.parse(sessionStorage.getItem('authorities')).includes(`${privilege}@${securityGroupName}`);
 }
 
 export function checkAuthorityGeneral(privilege: SECURITY_PRIVILEGES) {
-    return sessionStorage.getItem('authorities').includes(privilege);
+    return JSON.parse(sessionStorage.getItem('authorities')).includes(privilege);
 }
 
 export enum SECURITY_PRIVILEGES {

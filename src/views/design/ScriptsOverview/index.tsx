@@ -356,7 +356,7 @@ const ScriptsOverview = withStyles(styles)(
                                     },
                                     {
                                         icon: <Visibility />,
-                                        label: translator('scripts.overview.list.actions.edit'),
+                                        label: translator('scripts.overview.list.actions.view'),
                                         onClick: (id: string) => {
                                             const scripts = getAsyncScripts(this.props.state);
                                             const selectedScript = scripts.find((item) =>
@@ -395,7 +395,7 @@ const ScriptsOverview = withStyles(styles)(
                                         },
                                         hideAction: (item: IListItem<IColumnNames>) =>
                                             !checkAuthority(
-                                                SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_READ,
+                                                SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_READ,
                                                 item.columns.securityGroupName.toString(),
                                             ),
                                     },

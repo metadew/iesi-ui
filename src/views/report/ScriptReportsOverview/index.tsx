@@ -49,7 +49,7 @@ import { getEnvironmentsForDropdown } from 'state/entities/environments/selector
 import { getTranslator } from 'state/i18n/selectors';
 import { getExecutionsListFilter } from 'state/ui/selectors';
 import { setExecutionsListFilter } from 'state/ui/actions';
-import { SECURITY_PRIVILEGES, checkAuthorityGeneral, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -304,13 +304,14 @@ const ScriptReportsOverview = withStyles(styles)(
                 },
                 securityGroupName: {
                     className: classes.scriptSecurityGroupName,
-                    fixedWidth: '25%',
+                    fixedWidth: '20%',
+                    hideOnCompactView: true,
                 },
                 environment: {
                     label: (
                         <Translate msg="script_reports.overview.list.labels.environment" />
                     ),
-                    fixedWidth: '15%',
+                    fixedWidth: '10%',
                 },
                 requestTimestamp: {
                     label: (
@@ -376,29 +377,28 @@ const ScriptReportsOverview = withStyles(styles)(
                 <Box paddingBottom={5} marginX={2.8}>
                     <GenericList
                         listActions={[].concat({
-                                icon: <ReportIcon />,
-                                label: translator('script_reports.overview.list.actions.report'),
-                                onClick: (id: number) => {
-                                    const execution = listItems.find((listItem) => listItem.id === id);
+                            icon: <ReportIcon />,
+                            label: translator('script_reports.overview.list.actions.report'),
+                            onClick: (id: number) => {
+                                const execution = listItems.find((listItem) => listItem.id === id);
 
-                                    redirectTo({
-                                        routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
-                                        params: {
-                                            executionRequestId: id,
-                                            runId: execution && execution.data.runId,
-                                        },
-                                    });
-                                },
-                                hideAction: (item: IListItem<IColumnNames>) => {
-                                    const execution = listItems.find((listItem) =>
-                                        listItem.id === item.id);
-                                    return execution.data.runId === null && !checkAuthority(
-                                        SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_READ,
-                                        item.columns.securityGroupName.toString(),
-                                    );
-                                },
+                                redirectTo({
+                                    routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
+                                    params: {
+                                        executionRequestId: id,
+                                        runId: execution && execution.data.runId,
+                                    },
+                                });
                             },
-                        )}
+                            hideAction: (item: IListItem<IColumnNames>) => {
+                                const execution = listItems.find((listItem) =>
+                                    listItem.id === item.id);
+                                return execution.data.runId === null || !checkAuthority(
+                                    SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_READ,
+                                    item.columns.securityGroupName.toString(),
+                                );
+                            },
+                        })}
                         columns={columns}
                         listItems={listItems}
                         pagination={{
