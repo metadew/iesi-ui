@@ -2,7 +2,7 @@ import {
     IScriptExecutionDetail,
     IScriptExecutionByRunIdAndProcessIdPayload,
 } from 'models/state/scriptExecutions.models';
-import { get } from '../requestWrapper';
+import { get } from 'api/requestWrapper';
 import API_URLS from '../apiUrls';
 
 export function fetchScriptExecutionDetail({
