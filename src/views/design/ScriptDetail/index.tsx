@@ -7,6 +7,7 @@ import {
     AddRounded as AddIcon,
     Edit as EditIcon,
     Delete as DeleteIcon,
+    Visibility,
 } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import { IScript, IScriptAction } from 'models/state/scripts.models';
@@ -37,6 +38,8 @@ import {
 } from 'state/entities/scripts/triggers';
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
+// eslint-disable-next-line max-len
+import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import ExecuteScriptDialog from '../common/ExecuteScriptDialog';
 
 import DetailActions from './DetailActions';
@@ -234,7 +237,11 @@ const ScriptDetail = withStyles(styles)(
                                     }}
                                     variant="contained"
                                     color="secondary"
-                                    disabled={this.isCreateScriptRoute()}
+                                    disabled={this.isCreateScriptRoute()
+                                        || (newScriptDetail  && !checkAuthority(
+                                            SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                            newScriptDetail.securityGroupName,
+                                        ))}
                                 >
                                     <Translate msg="scripts.detail.save_script_dialog.update_current_version" />
                                 </Button>
@@ -256,6 +263,10 @@ const ScriptDetail = withStyles(styles)(
                                     }}
                                     color="secondary"
                                     variant="outlined"
+                                    disabled={newScriptDetail  && !checkAuthority(
+                                        SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                        newScriptDetail.securityGroupName,
+                                    )}
                                 >
                                     <Translate msg="scripts.detail.save_script_dialog.save_as_new_version" />
                                 </Button>
@@ -303,6 +314,7 @@ const ScriptDetail = withStyles(styles)(
                                     readOnly: !this.isCreateScriptRoute(),
                                     disableUnderline: true,
                                 }}
+
                             />
                             <TextInput
                                 id="script-description"
@@ -312,6 +324,14 @@ const ScriptDetail = withStyles(styles)(
                                 value={newScriptDetail && newScriptDetail.description
                                     ? newScriptDetail.description : ''}
                                 onChange={(e) => this.updateScript({ description: e.target.value })}
+                                InputProps={{
+                                    readOnly: !this.isCreateScriptRoute() && newScriptDetail && !checkAuthority(
+                                        SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                        newScriptDetail.securityGroupName,
+                                    ),
+                                    disableUnderline: true,
+                                }}
+
                             />
                             {this.isCreateScriptRoute() && (
                                 <>
@@ -355,7 +375,7 @@ const ScriptDetail = withStyles(styles)(
                         </form>
                         <DescriptionList
                             noLineAfterListItem
-                            items={[
+                            items={[].concat(
                                 ...(!this.isCreateScriptRoute()) ? [
                                     {
                                         label: translator('scripts.detail.side.description.version'),
@@ -374,18 +394,20 @@ const ScriptDetail = withStyles(styles)(
                                         labels={newScriptDetail && newScriptDetail.labels
                                             ? newScriptDetail.labels : []}
                                         onChange={(labels) => this.updateScript({ labels })}
+                                        securityGroupName={newScriptDetail ? newScriptDetail.securityGroupName : null}
+                                        isCreateScriptRoute={this.isCreateScriptRoute()}
                                     />,
                                 },
-                                // Hide schedules for now
-                                // {
-                                //     label: <Translate msg="scripts.detail.side.schedules.title" />,
-                                //     value: <EditSchedules
-                                //         schedules={newScriptDetail && newScriptDetail.scheduling
-                                //             ? newScriptDetail.scheduling : []}
-                                //         onChange={(scheduling) => this.updateScript({ scheduling })}
-                                //     />,
-                                // },
-                            ]}
+                            )}
+                            // Hide schedules for now
+                            // {
+                            //     label: <Translate msg="scripts.detail.side.schedules.title" />,
+                            //     value: <EditSchedules
+                            //         schedules={newScriptDetail && newScriptDetail.scheduling
+                            //             ? newScriptDetail.scheduling : []}
+                            //         onChange={(scheduling) => this.updateScript({ scheduling })}
+                            //     />,
+                            // },
                         />
                     </Box>
                 </Box>
@@ -492,28 +514,54 @@ const ScriptDetail = withStyles(styles)(
                                 });
                             }}
                             isCreateRoute={this.isCreateScriptRoute()}
+                            newScriptDetail={newScriptDetail}
                         />
                     </Box>
                     <Box marginY={1}>
                         <GenericDraggableList
                             listItems={listItems}
                             columns={columns}
-                            listActions={[
+                            listActions={[].concat(
                                 {
                                     icon: <EditIcon />,
                                     label: translator('scripts.detail.main.list.item.actions.edit'),
-                                    onClick: (id, index) => {
+                                    onClick: (index: number) => {
                                         this.setState({ editActionIndex: index });
                                     },
+                                    hideAction: () =>
+                                        !this.isCreateScriptRoute() && !(newScriptDetail && checkAuthority(
+                                            SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                            newScriptDetail.securityGroupName,
+                                        )),
+                                },
+                                {
+                                    icon: <Visibility />,
+                                    label: translator('scripts.detail.main.list.item.actions.view'),
+                                    onClick: (index: number) => {
+                                        this.setState({ editActionIndex: index });
+                                    },
+                                    hideAction: () =>
+                                        this.isCreateScriptRoute() || !(newScriptDetail
+                                            && !checkAuthority(
+                                                SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                                newScriptDetail.securityGroupName,
+                                            ) && checkAuthority(
+                                                SECURITY_PRIVILEGES.S_SCRIPTS_READ,
+                                                newScriptDetail.securityGroupName,
+                                            )),
                                 },
                                 {
                                     icon: <DeleteIcon />,
                                     label: translator('scripts.detail.main.list.item.actions.delete'),
-                                    onClick: (id, index) => {
+                                    onClick: (index: number) => {
                                         this.setState({ actionIndexToDelete: index });
                                     },
-                                },
-                            ]}
+                                    hideAction: () => !this.isCreateScriptRoute() && !(newScriptDetail && checkAuthority(
+                                        SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                        newScriptDetail.securityGroupName,
+                                    )),
+                                }
+                            )}
                             onOrder={(list) => {
                                 this.updateScript({
                                     actions: list.map((item, index) => {
@@ -555,6 +603,8 @@ const ScriptDetail = withStyles(styles)(
                         newActions[editActionIndex] = newAction;
                         this.updateScript({ actions: newActions });
                     }}
+                    isCreateScriptRoute={this.isCreateScriptRoute()}
+                    securityGroupName={newScriptDetail.securityGroupName}
                 />
             );
         }

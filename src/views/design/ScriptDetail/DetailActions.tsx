@@ -14,6 +14,8 @@ import Tooltip from 'views/common/tooltips/Tooltip';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
+import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import { IScript } from 'models/state/scripts.models';
 
 interface IPublicProps {
     onPlay: () => void;
@@ -23,6 +25,7 @@ interface IPublicProps {
     onViewReport: () => void;
     onExport: () => void;
     isCreateRoute?: boolean;
+    newScriptDetail?: IScript;
 }
 
 const useStyles = makeStyles(({ palette, spacing }) => ({
@@ -51,6 +54,7 @@ function DetailActions({
     onViewReport,
     onExport,
     isCreateRoute,
+    newScriptDetail,
     state,
 }: IPublicProps & IObserveProps) {
     const classes = useStyles();
@@ -99,33 +103,42 @@ function DetailActions({
     return (
         <Box display="flex" alignItems="center" justifyContent="space-between" marginX={2.2}>
             <Box flex="0 0 auto">
-                <Tooltip
-                    title={translator('scripts.detail.main.actions.add_action')}
-                    enterDelay={1000}
-                    enterNextDelay={1000}
-                >
-                    <IconButton
-                        aria-label={translator('scripts.detail.main.actions.add_action')}
-                        className={classes.addButton}
-                        onClick={onAdd}
-                        color="default"
-                    >
-                        <AddIcon />
-                    </IconButton>
-                </Tooltip>
+                {isCreateRoute || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, newScriptDetail.securityGroupName)
+                    ? (
+                        <Tooltip
+                            title={translator('scripts.detail.main.actions.add_action')}
+                            enterDelay={1000}
+                            enterNextDelay={1000}
+                        >
+                            <IconButton
+                                aria-label={translator('scripts.detail.main.actions.add_action')}
+                                className={classes.addButton}
+                                onClick={onAdd}
+                                color="default"
+                            >
+                                <AddIcon />
+                            </IconButton>
+                        </Tooltip>
+                    )
+                    : null}
             </Box>
             <Box flex="0 0 auto">
                 <Paper elevation={0} className={classes.actions}>
                     <Box display="inline" marginRight={1}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            size="small"
-                            startIcon={<SaveIcon />}
-                            onClick={onSave}
-                        >
-                            <Translate msg="scripts.detail.main.actions.save" />
-                        </Button>
+                        {isCreateRoute
+                            || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, newScriptDetail.securityGroupName)
+                            ? (
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    size="small"
+                                    startIcon={<SaveIcon />}
+                                    onClick={onSave}
+                                >
+                                    <Translate msg="scripts.detail.main.actions.save" />
+                                </Button>
+                            )
+                            : null}
                     </Box>
                     {isCreateRoute ? (
                         <>
@@ -136,34 +149,59 @@ function DetailActions({
                         </>
                     ) : (
                         <>
-                            <Tooltip
-                                title={translator('scripts.detail.main.actions.delete')}
-                                enterDelay={1000}
-                                enterNextDelay={1000}
-                            >
-                                {DeleteButton}
-                            </Tooltip>
-                            <Tooltip
-                                title={translator('scripts.detail.main.actions.report')}
-                                enterDelay={1000}
-                                enterNextDelay={1000}
-                            >
-                                {ReportButton}
-                            </Tooltip>
-                            <Tooltip
-                                title={translator('scripts.detail.main.actions.execute')}
-                                enterDelay={1000}
-                                enterNextDelay={1000}
-                            >
-                                {ExecuteButton}
-                            </Tooltip>
-                            <Tooltip
-                                title={translator('scripts.detail.main.actions.export')}
-                                enterDelay={1000}
-                                enterNextDelay={1000}
-                            >
-                                {ExportButton}
-                            </Tooltip>
+                            {checkAuthority(
+                                SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_WRITE,
+                                newScriptDetail.securityGroupName,
+                            )
+                                ? (
+                                    <Tooltip
+                                        title={translator('scripts.detail.main.actions.execute')}
+                                        enterDelay={1000}
+                                        enterNextDelay={1000}
+                                    >
+                                        {ExecuteButton}
+                                    </Tooltip>
+                                ) : null}
+                            {checkAuthority(
+                                SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                newScriptDetail.securityGroupName,
+                            )
+                                ? (
+                                    <Tooltip
+                                        title={translator('scripts.detail.main.actions.delete')}
+                                        enterDelay={1000}
+                                        enterNextDelay={1000}
+                                    >
+                                        {DeleteButton}
+                                    </Tooltip>
+                                ) : null}
+                            {checkAuthority(
+                                SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_READ,
+                                newScriptDetail.securityGroupName,
+                            )
+                                ? (
+                                    <Tooltip
+                                        title={translator('scripts.detail.main.actions.report')}
+                                        enterDelay={1000}
+                                        enterNextDelay={1000}
+                                    >
+                                        {ReportButton}
+                                    </Tooltip>
+                                ) : null}
+                            {checkAuthority(
+                                SECURITY_PRIVILEGES.S_SCRIPTS_READ,
+                                newScriptDetail.securityGroupName,
+                            )
+                                ? (
+                                    <Tooltip
+                                        title={translator('scripts.detail.main.actions.export')}
+                                        enterDelay={1000}
+                                        enterNextDelay={1000}
+                                    >
+                                        {ExportButton}
+                                    </Tooltip>
+                                ) : null}
+
                         </>
                     )}
                 </Paper>

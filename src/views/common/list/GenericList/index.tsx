@@ -38,7 +38,7 @@ const MAX_TABLE_WIDTH_FOR_COMPACT_VIEW = 800; // in px
 interface IPublicProps<ColumnNames> {
     columns: ListColumns<ColumnNames>;
     listItems: IListItem<ColumnNames>[];
-    listActions?: IListAction[];
+    listActions?: IListAction<ColumnNames>[];
     sortedColumn?: ISortedColumn<ColumnNames>;
     filters?: ListFilters<Partial<ColumnNames>>;
     isLoading?: boolean;

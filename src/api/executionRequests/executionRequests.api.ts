@@ -6,7 +6,7 @@ import {
     IExecutionRequestsEntity,
 } from 'models/state/executionRequests.models';
 import { IPageData } from 'models/state/iesiGeneric.models';
-import { get, post } from '../requestWrapper';
+import { get, post } from 'api/requestWrapper';
 import API_URLS from '../apiUrls';
 
 interface IExecutionRequestsResponse {

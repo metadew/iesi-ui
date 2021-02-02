@@ -16,13 +16,14 @@ import {
     Typography,
 } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
+import { SECURITY_PRIVILEGES, checkAuthorityGeneral } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import GenericTableRow from '../GenericTableRow';
 import { useListStyles } from '../common';
 
 interface IPublicProps<ColumnNames> {
     columns: ListColumns<ColumnNames>;
     listItems: IListItem<ColumnNames>[];
-    listActions?: IListAction[];
+    listActions?: IListAction<ColumnNames>[];
     onOrder: (newListItems: IListItem<ColumnNames>[]) => void;
 }
 
@@ -36,7 +37,10 @@ export default function GenericDraggableList<ColumnNames>({
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId="droppable">
+            <Droppable
+                droppableId="droppable"
+                isDropDisabled={!checkAuthorityGeneral(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)}
+            >
                 {(droppableProvided, droppableSnapshot) => (
                     <TableContainer
                         ref={droppableProvided.innerRef}
