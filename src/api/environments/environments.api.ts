@@ -1,6 +1,6 @@
 import { IEnvironment } from 'models/state/environments.models';
 import { IListResponse } from 'models/state/iesiGeneric.models';
-import { get, post, put, remove } from '../requestWrapper';
+import { get, post, put, remove } from 'api/requestWrapper';
 import API_URLS from '../apiUrls';
 
 export function fetchEnvironments() {

@@ -14,9 +14,8 @@ type User = {
 type UserSession = {
     username: string;
     token: string;
-    setAuthenticated: any;
-    isAuthenticated: any;
-    isAdmin: any;
+    setAuthenticated: (newToken: string) => void;
+    isAuthenticated: () => boolean;
 };
 
 export const UserSessionContext = React.createContext<Partial<UserSession>>({});
@@ -24,22 +23,18 @@ export const UserSessionContext = React.createContext<Partial<UserSession>>({});
 export function UserSessionProvider({ children }: IUserSessionContextProps) {
     const [username, setUsername] = useState('');
     const [token, setToken] = useState('');
-    const [role, setRole] = useState('');
 
-    // eslint-disable-next-line no-shadow
-    function setAuthenticated(token: string) {
-        sessionStorage.setItem('token', token);
-        setToken(token);
+    function setAuthenticated(newToken: string) {
+        setToken(newToken);
+        sessionStorage.setItem('token', newToken);
 
-        const decoded: any = decode(token);
+        const decoded: any = decode(newToken);
 
         if (decoded !== undefined) {
-            sessionStorage.setItem('userName', decoded.sub);
             sessionStorage.setItem('authorities', JSON.stringify(decoded.authorities));
             setUsername(decoded.sub);
-            setRole(decoded.authorities);
         }
-        if (decoded.sub !== '' && token !== '') {
+        if (decoded.sub !== '' && newToken !== '') {
             sessionStorage.setItem('isAuthenticated', 'true');
         } else {
             sessionStorage.setItem('isAuthenticated', 'false');
@@ -50,12 +45,8 @@ export function UserSessionProvider({ children }: IUserSessionContextProps) {
         return username !== '' && token !== '';
     }
 
-    function isAdmin() {
-        return role === 'admin';
-    }
-
     return (
-        <UserSessionContext.Provider value={{ username, token, setAuthenticated, isAuthenticated, isAdmin }}>
+        <UserSessionContext.Provider value={{ username, token, setAuthenticated, isAuthenticated }}>
             {children}
         </UserSessionContext.Provider>
     );

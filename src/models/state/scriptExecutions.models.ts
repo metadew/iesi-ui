@@ -9,6 +9,7 @@ export interface IScriptExecutionDetail {
     scriptId: string;
     scriptName: string;
     scriptVersion: number;
+    securityGroupName: string;
     environment: string;
     status: ExecutionRequestStatus | ExecutionActionStatus;
     startTimestamp: string;

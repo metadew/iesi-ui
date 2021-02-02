@@ -85,6 +85,7 @@ scripts:
       actions:
         delete: Delete
         edit: Edit
+        view: View
         execute: Run script
         report: Reporting
       filter:
@@ -124,9 +125,11 @@ scripts:
         expected_to_fail: Action expected to fail
         cancel: Discard changes
         save: Update action
+        go_back: Go back
     side:
       script_description: Script description
       script_name: Script name
+      script_security: Security group
       script_version: Script version
       description:
         last_run_date: Last run date
@@ -171,6 +174,7 @@ scripts:
         item:
           actions:
             delete: Delete
+            view: View
             edit: Edit
       no_actions:
         title: No actions yet

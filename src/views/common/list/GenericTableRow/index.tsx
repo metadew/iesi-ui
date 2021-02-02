@@ -38,7 +38,7 @@ interface IPublicProps<ColumnNames> {
     index: number;
     item?: IListItem<ColumnNames>;
     columns: ListColumns<ColumnNames>;
-    listActions?: IListAction[];
+    listActions?: IListAction<ColumnNames>[];
     draggableProps?: DraggableProvidedDraggableProps & DraggableProvidedDragHandleProps & {
         ref(element?: HTMLElement | null): unknown;
     };
@@ -224,10 +224,11 @@ export default function GenericTableRow<ColumnNames>({
                     >
                         <div className={classes.actionsWrapper}>
                             {listActions.map((action, listActionIndex) => (
-                                // eslint-disable-next-line react/no-array-index-key
-                                <div key={listActionIndex} className={classes.actionsItem}>
-                                    {!isPlaceholder ? (
-                                        (!action.hideAction || !action.hideAction(item.id, rowIndex)) && (
+                                !isPlaceholder ? (
+                                    (!action.hideAction || !action.hideAction(item, rowIndex)) && (
+                                        // eslint-disable-next-line react/no-array-index-key
+                                        <div key={listActionIndex} className={classes.actionsItem}>
+
                                             <Tooltip title={action.label} enterDelay={1000} enterNextDelay={1000}>
                                                 <IconButton
                                                     area-label={action.label}
@@ -237,9 +238,10 @@ export default function GenericTableRow<ColumnNames>({
                                                     {action.icon}
                                                 </IconButton>
                                             </Tooltip>
-                                        )
-                                    ) : renderPlaceholderCellContent()}
-                                </div>
+
+                                        </div>
+                                    )
+                                ) : renderPlaceholderCellContent()
                             ))}
                         </div>
                     </TableCell>
@@ -269,7 +271,7 @@ export default function GenericTableRow<ColumnNames>({
                                 }}
                             >
                                 {listActions.map((action, listActionIndex) => (
-                                    (!action.hideAction || !action.hideAction(item.id, rowIndex)) && (
+                                    !isPlaceholder && (!action.hideAction || !action.hideAction(item, rowIndex)) && (
                                         <MenuItem
                                             // eslint-disable-next-line react/no-array-index-key
                                             key={listActionIndex}

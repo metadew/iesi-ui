@@ -19,12 +19,15 @@ import { IObserveProps, observe } from 'views/observe';
 import { getAsyncActionTypes } from 'state/entities/constants/selectors';
 import { getTranslator } from 'state/i18n/selectors';
 import { StateChangeNotification } from 'models/state.models';
+import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import ExpandableParameter from './ExpandableParameter';
 
 interface IPublicProps {
     action: IScriptAction;
     onClose: () => void;
     onEdit: (action: IScriptAction) => void;
+    isCreateScriptRoute: boolean;
+    securityGroupName: string;
 }
 
 const useStyles = makeStyles(({ palette, spacing, typography }) => ({
@@ -85,7 +88,14 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
     },
 }));
 
-function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveProps) {
+function EditAction({
+    onClose,
+    action,
+    onEdit,
+    isCreateScriptRoute,
+    securityGroupName,
+    state,
+}: IPublicProps & IObserveProps) {
     const classes = useStyles();
     const translator = getTranslator(state);
     const [errorStopChecked, setErrorStopChecked] = useState<boolean>(action.errorStop);
@@ -139,6 +149,12 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                         defaultValue={name}
                         onBlur={(e) => setName(e.target.value)}
                         className={classes.nameTextField}
+                        InputProps={{
+                            readOnly: !isCreateScriptRoute
+                                && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
+                            disableUnderline: !isCreateScriptRoute
+                                && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
+                        }}
                     />
                 </Box>
             </Box>
@@ -155,6 +171,11 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                             className={classes.descriptionTextField}
                             defaultValue={description}
                             onBlur={(e) => setDescription(e.target.value)}
+                            InputProps={{
+                                readOnly: !isCreateScriptRoute
+                                    && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
+                                disableUnderline: true,
+                            }}
                         />
                     </Paper>
                 </Box>
@@ -168,6 +189,11 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                             className={classes.conditionTextField}
                             defaultValue={condition}
                             onBlur={(e) => setCondition(e.target.value)}
+                            InputProps={{
+                                readOnly: !isCreateScriptRoute
+                                    && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
+                                disableUnderline: true,
+                            }}
                         />
                     </Paper>
                 </Box>
@@ -214,6 +240,8 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                             onChange={() => {
                                 setErrorStopChecked(!errorStopChecked);
                             }}
+                            disabled={!isCreateScriptRoute
+                                && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)}
                         />
                     </Box>
                     <Box display="flex" alignItems="center" marginLeft={2}>
@@ -226,26 +254,45 @@ function EditAction({ onClose, action, onEdit, state }: IPublicProps & IObserveP
                             onChange={() => {
                                 setErrorExpectedChecked(!errorExpectedChecked);
                             }}
+                            disabled={!isCreateScriptRoute
+                                || !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)}
                         />
                     </Box>
 
                     <Box marginLeft={2}>
                         <ButtonGroup size="small">
-                            <Button
-                                color="default"
-                                variant="outlined"
-                                onClick={onClose}
-                            >
-                                <Translate msg="scripts.detail.edit_action.footer.cancel" />
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                disableElevation
-                                onClick={updateAction}
-                            >
-                                <Translate msg="scripts.detail.edit_action.footer.save" />
-                            </Button>
+                            {isCreateScriptRoute
+                                || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)
+                                ? (
+                                    <Button
+                                        color="default"
+                                        variant="outlined"
+                                        onClick={onClose}
+                                    >
+                                        <Translate msg="scripts.detail.edit_action.footer.cancel" />
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        color="default"
+                                        variant="outlined"
+                                        onClick={onClose}
+                                    >
+                                        <Translate msg="scripts.detail.edit_action.footer.go_back" />
+                                    </Button>
+                                )}
+                            {isCreateScriptRoute
+                                || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)
+                                ? (
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        disableElevation
+                                        onClick={updateAction}
+                                    >
+                                        <Translate msg="scripts.detail.edit_action.footer.save" />
+                                    </Button>
+                                )
+                                : null}
                         </ButtonGroup>
                     </Box>
                 </Box>

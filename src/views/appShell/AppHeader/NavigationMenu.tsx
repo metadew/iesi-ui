@@ -49,17 +49,21 @@ function NavigationMenu({ state }: IObserveProps) {
             >
                 <MenuIcon style={{ fontSize: 'inherit' }} />
             </IconButton>
-            <Menu
-                id="toolbar-menu"
-                anchorEl={anchorEl}
-                keepMounted
-                open={!!anchorEl}
-                onClose={handleClose}
-                disableAutoFocus
-                disableAutoFocusItem
-            >
-                {MAIN_NAV_ITEMS.map(renderNavItem)}
-            </Menu>
+            {location.pathname !== '/login'
+                ? (
+                    <Menu
+                        id="toolbar-menu"
+                        anchorEl={anchorEl}
+                        keepMounted
+                        open={!!anchorEl}
+                        onClose={handleClose}
+                        disableAutoFocus
+                        disableAutoFocusItem
+                    >
+                        {MAIN_NAV_ITEMS.map(renderNavItem)}
+                    </Menu>
+                )
+                : null }
         </div>
     );
 
