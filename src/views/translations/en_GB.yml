@@ -204,6 +204,7 @@ script_reports:
         script_name: Script name
         version: Version
     header:
+      redirect_to: Go to script details
       amount: 'You have {amount} script executions'
   detail:
     main:
