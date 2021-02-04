@@ -209,26 +209,27 @@ function ExecutionDetail({ state }: IObserveProps) {
                                 <Translate msg="script_reports.detail.main.action.go_to_parent_script_detail" />
                             </Button>
                         )}
-                        {checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, scriptExecutionData.securityGroupName)
-                            ? (
-                                <Box flex="0 0 auto" marginLeft={72}>
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        size="small"
-                                        endIcon={<ChevronRight />}
-                                        onClick={() => redirectTo({
-                                            routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                            params: {
-                                                name: scriptExecutionData.scriptName,
-                                                version: scriptExecutionData.scriptVersion,
-                                            },
-                                        })}
-                                    >
-                                        <Translate msg="script_reports.overview.header.redirect_to" />
-                                    </Button>
-                                </Box>
-                            ) : null}
+                        <Box flex="0 0 auto" marginLeft={72}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                size="small"
+                                endIcon={<ChevronRight />}
+                                onClick={() => redirectTo({
+                                    routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                    params: {
+                                        name: scriptExecutionData.scriptName,
+                                        version: scriptExecutionData.scriptVersion,
+                                    },
+                                })}
+                                hidden={!checkAuthority(
+                                    SECURITY_PRIVILEGES.S_SCRIPTS_READ,
+                                    scriptExecutionData.securityGroupName,
+                                )}
+                            >
+                                <Translate msg="script_reports.overview.header.redirect_to" />
+                            </Button>
+                        </Box>
 
 
                     </Box>
