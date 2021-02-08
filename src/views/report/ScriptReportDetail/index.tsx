@@ -73,6 +73,9 @@ const useStyles = makeStyles(({ palette, typography }) => ({
             color: THEME_COLORS.WARNING,
         },
     },
+    redirectButton: {
+        marginLeft: 'auto',
+    },
 }));
 
 function ExecutionDetail({ state }: IObserveProps) {
@@ -190,8 +193,8 @@ function ExecutionDetail({ state }: IObserveProps) {
 
             return (
                 <Box marginY={1}>
-                    <Box marginBottom={3}>
-                        {typeof parentProcessId !== 'undefined' && (
+                    <Box display="flex" alignItems="center" marginBottom={3}>
+                        {processId && (
                             <Button
                                 variant="contained"
                                 color="secondary"
@@ -209,27 +212,26 @@ function ExecutionDetail({ state }: IObserveProps) {
                                 <Translate msg="script_reports.detail.main.action.go_to_parent_script_detail" />
                             </Button>
                         )}
-                        <Box flex="0 0 auto" marginLeft={72}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                size="small"
-                                endIcon={<ChevronRight />}
-                                onClick={() => redirectTo({
-                                    routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                    params: {
-                                        name: scriptExecutionData.scriptName,
-                                        version: scriptExecutionData.scriptVersion,
-                                    },
-                                })}
-                                hidden={!checkAuthority(
-                                    SECURITY_PRIVILEGES.S_SCRIPTS_READ,
-                                    scriptExecutionData.securityGroupName,
-                                )}
-                            >
-                                <Translate msg="script_reports.overview.header.redirect_to" />
-                            </Button>
-                        </Box>
+                        <Button
+                            className={classes.redirectButton}
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            endIcon={<ChevronRight />}
+                            onClick={() => redirectTo({
+                                routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                params: {
+                                    name: scriptExecutionData.scriptName,
+                                    version: scriptExecutionData.scriptVersion,
+                                },
+                            })}
+                            hidden={!checkAuthority(
+                                SECURITY_PRIVILEGES.S_SCRIPTS_READ,
+                                scriptExecutionData.securityGroupName,
+                            )}
+                        >
+                            <Translate msg="script_reports.overview.header.redirect_to" />
+                        </Button>
 
 
                     </Box>
