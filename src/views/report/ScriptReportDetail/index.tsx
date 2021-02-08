@@ -4,7 +4,7 @@ import { parseISO, format as formatDate } from 'date-fns';
 import isSet from '@snipsonian/core/es/is/isSet';
 import isEmptyObject from '@snipsonian/core/es/object/isEmptyObject';
 import { Box, makeStyles, Button, Typography } from '@material-ui/core';
-import { ChevronLeftRounded } from '@material-ui/icons';
+import { ChevronLeftRounded, ChevronRight } from '@material-ui/icons';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import useExecuteOnUnmount from 'utils/hooks/useExecuteOnUnmount';
@@ -28,6 +28,7 @@ import { getAsyncScriptExecutionDetail } from 'state/entities/scriptExecutions/s
 import { ListColumns, IListItem, ISortedColumn, SortOrder, SortType } from 'models/list.models';
 import { THEME_COLORS } from 'config/themes/colors';
 import sortListItems from 'utils/list/sortListItems';
+import { checkAuthority, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import ScriptExecutionDetailActions from './ScriptExecutionDetailActions';
 import ShowLabels from './ShowLabels';
 import { IExecutionDetailPathParams } from './shared';
@@ -208,6 +209,29 @@ function ExecutionDetail({ state }: IObserveProps) {
                                 <Translate msg="script_reports.detail.main.action.go_to_parent_script_detail" />
                             </Button>
                         )}
+                        <Box flex="0 0 auto" marginLeft={72}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                size="small"
+                                endIcon={<ChevronRight />}
+                                onClick={() => redirectTo({
+                                    routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                    params: {
+                                        name: scriptExecutionData.scriptName,
+                                        version: scriptExecutionData.scriptVersion,
+                                    },
+                                })}
+                                hidden={!checkAuthority(
+                                    SECURITY_PRIVILEGES.S_SCRIPTS_READ,
+                                    scriptExecutionData.securityGroupName,
+                                )}
+                            >
+                                <Translate msg="script_reports.overview.header.redirect_to" />
+                            </Button>
+                        </Box>
+
+
                     </Box>
                     <ScriptExecutionDetailActions
                         listItems={listItems}
