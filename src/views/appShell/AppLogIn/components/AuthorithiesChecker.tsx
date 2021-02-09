@@ -6,7 +6,7 @@ export function checkAuthority(privilege: SECURITY_PRIVILEGES, securityGroupName
 }
 
 export function checkAuthorityGeneral(privilege: SECURITY_PRIVILEGES) {
-    return JSON.parse(sessionStorage.getItem('authorities')).includes(privilege);
+    return JSON.parse(sessionStorage.getItem('authorities')).map((value : string) => value.substr(0, value.indexOf('@'))).includes(privilege);
 }
 
 export enum SECURITY_PRIVILEGES {
