@@ -194,7 +194,7 @@ function ExecutionDetail({ state }: IObserveProps) {
             return (
                 <Box marginY={1}>
                     <Box display="flex" alignItems="center" marginBottom={3}>
-                        {processId && (
+                        {parentProcessId && (
                             <Button
                                 variant="contained"
                                 color="secondary"
