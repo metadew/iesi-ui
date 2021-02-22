@@ -204,7 +204,7 @@ script_reports:
         script_name: Script name
         version: Version
     header:
-      redirect_to: Go to script details
+      redirect_to: Go to script design
       amount: 'You have {amount} script executions'
   detail:
     main:
@@ -234,8 +234,8 @@ script_reports:
           name: Name
           value: Value
           none: '-'
-        go_to_script_detail: View script details
-        go_to_parent_script_detail: Back to parent script
+        go_to_script_detail: View script execution
+        go_to_parent_script_detail: Back to parent execution
     side:
       toggle_button: Details
       execution:
