@@ -238,7 +238,7 @@ const ScriptDetail = withStyles(styles)(
                                     variant="contained"
                                     color="secondary"
                                     disabled={this.isCreateScriptRoute()
-                                        || (newScriptDetail  && !checkAuthority(
+                                        || (newScriptDetail && !checkAuthority(
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                             newScriptDetail.securityGroupName,
                                         ))}
@@ -263,7 +263,7 @@ const ScriptDetail = withStyles(styles)(
                                     }}
                                     color="secondary"
                                     variant="outlined"
-                                    disabled={newScriptDetail  && !checkAuthority(
+                                    disabled={newScriptDetail && !checkAuthority(
                                         SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                         newScriptDetail.securityGroupName,
                                     )}
@@ -545,7 +545,8 @@ const ScriptDetail = withStyles(styles)(
                                             && !checkAuthority(
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                                 newScriptDetail.securityGroupName,
-                                            ) && checkAuthority(
+                                            )
+                                            && checkAuthority(
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_READ,
                                                 newScriptDetail.securityGroupName,
                                             )),
@@ -556,11 +557,12 @@ const ScriptDetail = withStyles(styles)(
                                     onClick: (index: number) => {
                                         this.setState({ actionIndexToDelete: index });
                                     },
-                                    hideAction: () => !this.isCreateScriptRoute() && !(newScriptDetail && checkAuthority(
+                                    hideAction: () => !this.isCreateScriptRoute()
+                                    && !(newScriptDetail && checkAuthority(
                                         SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                         newScriptDetail.securityGroupName,
                                     )),
-                                }
+                                },
                             )}
                             onOrder={(list) => {
                                 this.updateScript({
@@ -642,7 +644,8 @@ const ScriptDetail = withStyles(styles)(
 
             if (actionIndexToDelete !== null) {
                 newActions.splice(actionIndexToDelete, 1);
-                this.updateScript({ actions: newActions });
+                // sync action number with script design number after deleting action
+                this.updateScript({ actions: newActions.map((action, index) => ({ ...action, number: index + 1 })) });
                 this.setState({ actionIndexToDelete: null });
             }
         }
