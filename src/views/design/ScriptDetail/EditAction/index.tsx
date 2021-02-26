@@ -101,6 +101,7 @@ function EditAction({
     const [errorStopChecked, setErrorStopChecked] = useState<boolean>(action.errorStop);
     const [errorExpectedChecked, setErrorExpectedChecked] = useState<boolean>(action.errorExpected);
     const [parameters, setParameters] = useState(action.parameters);
+    const [parametersBackup] = useState(action.parameters);
     const [description, setDescription] = useState(action.description);
     const [name, setName] = useState(action.name);
     const [condition, setCondition] = useState(action.condition);
@@ -267,7 +268,7 @@ function EditAction({
                                     <Button
                                         color="default"
                                         variant="outlined"
-                                        onClick={onClose}
+                                        onClick={discardChanges}
                                     >
                                         <Translate msg="scripts.detail.edit_action.footer.cancel" />
                                     </Button>
@@ -311,6 +312,11 @@ function EditAction({
             errorExpected: errorExpectedChecked,
         });
 
+        onClose();
+    }
+
+    function discardChanges() {
+        setParameters(parametersBackup);
         onClose();
     }
 }

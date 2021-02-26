@@ -181,6 +181,8 @@ const ScriptDetail = withStyles(styles)(
             const deleteStatus = getAsyncScriptDetail(this.props.state).remove.status;
 
             const editAction = this.getEditAction();
+            console.log(`new script detail: ${newScriptDetail.actions}`);
+            console.log(`edit action: ${editAction}`);
 
             return (
                 <>
@@ -238,7 +240,7 @@ const ScriptDetail = withStyles(styles)(
                                     variant="contained"
                                     color="secondary"
                                     disabled={this.isCreateScriptRoute()
-                                        || (newScriptDetail  && !checkAuthority(
+                                        || (newScriptDetail && !checkAuthority(
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                             newScriptDetail.securityGroupName,
                                         ))}
@@ -263,7 +265,7 @@ const ScriptDetail = withStyles(styles)(
                                     }}
                                     color="secondary"
                                     variant="outlined"
-                                    disabled={newScriptDetail  && !checkAuthority(
+                                    disabled={newScriptDetail && !checkAuthority(
                                         SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                         newScriptDetail.securityGroupName,
                                     )}
@@ -546,9 +548,9 @@ const ScriptDetail = withStyles(styles)(
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                                 newScriptDetail.securityGroupName,
                                             ) && checkAuthority(
-                                                SECURITY_PRIVILEGES.S_SCRIPTS_READ,
-                                                newScriptDetail.securityGroupName,
-                                            )),
+                                            SECURITY_PRIVILEGES.S_SCRIPTS_READ,
+                                            newScriptDetail.securityGroupName,
+                                        )),
                                 },
                                 {
                                     icon: <DeleteIcon />,
@@ -556,11 +558,12 @@ const ScriptDetail = withStyles(styles)(
                                     onClick: (index: number) => {
                                         this.setState({ actionIndexToDelete: index });
                                     },
-                                    hideAction: () => !this.isCreateScriptRoute() && !(newScriptDetail && checkAuthority(
+                                    hideAction: () => !this.isCreateScriptRoute()
+                                    && !(newScriptDetail && checkAuthority(
                                         SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                         newScriptDetail.securityGroupName,
                                     )),
-                                }
+                                },
                             )}
                             onOrder={(list) => {
                                 this.updateScript({
