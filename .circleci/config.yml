@@ -1,0 +1,44 @@
+version: 2
+jobs:
+  build:
+    docker:
+    - image: cimg/node:12.20
+    steps:
+    - checkout
+    - run:
+        command: |
+          if [ ! -f "package.json" ]; then
+            echo
+            echo "---"
+            echo "Unable to find your package.json file. Did you forget to set the app-dir parameter?"
+            echo "---"
+            echo
+            echo "Current directory: $(pwd)"
+            echo
+            echo
+            echo "List directory: "
+            echo
+            ls
+            exit 1
+          fi
+        name: Checking for package.json.
+        working_directory: .
+    - restore_cache:
+        keys:
+        - node-deps-v1-{{ .Branch }}-{{ checksum "./package-lock.json" }}
+    - run:
+        command: |
+          if [[ ! -z "npm install" ]]; then
+            echo "Running override package installation command:"
+            npm install
+          else
+            npm ci
+          fi
+        name: Installing NPM packages
+        working_directory: .
+    - save_cache:
+        key: node-deps-v1-{{ .Branch }}-{{ checksum "./package-lock.json" }}
+        paths:
+        - ~/project/node_modules
+    - run:
+        command: npm run test
