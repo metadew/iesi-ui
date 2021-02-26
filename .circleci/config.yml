@@ -26,7 +26,7 @@ jobs:
     - restore_cache:
         keys:
         - node-deps-v1-{{ .Branch }}-{{ checksum "./package-lock.json" }}
-    - run:
+    - run: 
         command: |
           if [[ ! -z "npm install" ]]; then
             echo "Running override package installation command:"
@@ -35,6 +35,11 @@ jobs:
             npm ci
           fi
         name: Installing NPM packages
+        working_directory: .
+
+    - run:
+        command: npm run init-env-config
+        name: Initializing configuration
         working_directory: .
     - save_cache:
         key: node-deps-v1-{{ .Branch }}-{{ checksum "./package-lock.json" }}
