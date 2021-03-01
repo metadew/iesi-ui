@@ -232,8 +232,6 @@ function ExecutionDetail({ state }: IObserveProps) {
                         >
                             <Translate msg="script_reports.overview.header.redirect_to" />
                         </Button>
-
-
                     </Box>
                     <ScriptExecutionDetailActions
                         listItems={listItems}
