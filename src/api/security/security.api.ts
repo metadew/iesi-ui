@@ -1,14 +1,6 @@
 import { post } from '../requestWrapper';
 import API_URLS from '../apiUrls';
-
-interface IAuthenticationRequest {
-    username: string;
-    password: string;
-}
-interface IAuthenticationResponse {
-    accessToken: string;
-    expiresIn: number;
-}
+import { IAuthenticationRequest, IAuthenticationResponse } from 'models/state/auth.models';
 
 export function logon(credentials: IAuthenticationRequest) {
     return post<IAuthenticationResponse, IAuthenticationResponse>({
@@ -16,7 +8,6 @@ export function logon(credentials: IAuthenticationRequest) {
         needsAuthentication: false,
         url: API_URLS.SECURITY_LOGON,
         mapResponse: ({ data }) => ({
-            // eslint-disable-next-line no-underscore-dangle
             accessToken: data.accessToken,
             expiresIn: data.expiresIn,
         }),

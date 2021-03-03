@@ -25,22 +25,26 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
     path: '/',
     exact: true,
+    // requiredAccessLevels: [],
     component: Home,
 }, {
     routeKey: ROUTE_KEYS.R_LOGIN,
     path: '/login',
     exact: true,
+    // requiredAccessLevels: [],
     component: Login,
 }, {
     routeKey: ROUTE_KEYS.R_SCRIPTS,
     path: '/scripts',
     template: ScriptsTemplate,
+    // requiredAccessLevels: [],
     component: ScriptsOverview,
     childRoutes: [
         {
             routeKey: ROUTE_KEYS.R_SCRIPT_NEW,
             path: '/new',
             component: ScriptDetail as React.ComponentType<unknown>,
+            // requiredAccessLevels: [],
             executeOnRoute: [{
                 execute: triggerFetchActionTypes,
             }],
@@ -103,6 +107,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_REPORTS,
     path: '/reports',
     template: ScriptReportsTemplate,
+    // requiredAccessLevels: [],
     component: ScriptReportsOverview,
     childRoutes: [{
         routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
