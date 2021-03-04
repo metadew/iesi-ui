@@ -599,7 +599,7 @@ const ScriptDetail = withStyles(styles)(
             return (
                 <EditAction
                     onClose={() => this.setState({ editActionIndex: -1 })}
-                    action={clone(this.getEditAction())}
+                    action={this.getEditAction()}
                     onEdit={(newAction) => {
                         const newActions = [...newScriptDetail.actions];
                         newActions[editActionIndex] = newAction;
@@ -655,7 +655,7 @@ const ScriptDetail = withStyles(styles)(
             if (editActionIndex === -1) {
                 return null;
             }
-            return newScriptDetail && newScriptDetail.actions && newScriptDetail.actions[editActionIndex];
+            return clone(newScriptDetail && newScriptDetail.actions && newScriptDetail.actions[editActionIndex]);
         }
 
         private setScriptToExecute(id: ReactText) {
