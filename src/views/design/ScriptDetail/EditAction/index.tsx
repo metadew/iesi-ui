@@ -101,11 +101,9 @@ function EditAction({
     const [errorStopChecked, setErrorStopChecked] = useState<boolean>(action.errorStop);
     const [errorExpectedChecked, setErrorExpectedChecked] = useState<boolean>(action.errorExpected);
     const [parameters, setParameters] = useState(action.parameters);
-    const [parametersBackup] = useState(action.parameters);
     const [description, setDescription] = useState(action.description);
     const [name, setName] = useState(action.name);
     const [condition, setCondition] = useState(action.condition);
-
     const actionTypes = getAsyncActionTypes(state).data || [];
     const matchingActionType = actionTypes.find((item) => action.type === item.type);
 
@@ -208,7 +206,6 @@ function EditAction({
                                 onChange={(value) => {
                                     const index = parameters.findIndex((p) => p.name === constantParameter.name);
                                     const newParameters = [...parameters];
-
                                     if (index === -1) {
                                         newParameters.push({
                                             name: constantParameter.name,
@@ -268,7 +265,7 @@ function EditAction({
                                     <Button
                                         color="default"
                                         variant="outlined"
-                                        onClick={discardChanges}
+                                        onClick={onClose}
                                     >
                                         <Translate msg="scripts.detail.edit_action.footer.cancel" />
                                     </Button>
@@ -311,12 +308,6 @@ function EditAction({
             errorStop: errorStopChecked,
             errorExpected: errorExpectedChecked,
         });
-
-        onClose();
-    }
-
-    function discardChanges() {
-        setParameters(parametersBackup);
         onClose();
     }
 }

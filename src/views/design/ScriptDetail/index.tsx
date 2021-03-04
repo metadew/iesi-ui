@@ -181,8 +181,6 @@ const ScriptDetail = withStyles(styles)(
             const deleteStatus = getAsyncScriptDetail(this.props.state).remove.status;
 
             const editAction = this.getEditAction();
-            console.log(`new script detail: ${newScriptDetail.actions}`);
-            console.log(`edit action: ${editAction}`);
 
             return (
                 <>
@@ -600,7 +598,7 @@ const ScriptDetail = withStyles(styles)(
             return (
                 <EditAction
                     onClose={() => this.setState({ editActionIndex: -1 })}
-                    action={this.getEditAction()}
+                    action={clone(this.getEditAction())}
                     onEdit={(newAction) => {
                         const newActions = [...newScriptDetail.actions];
                         newActions[editActionIndex] = newAction;
