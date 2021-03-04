@@ -255,7 +255,7 @@ function EditAction({
                                 setErrorExpectedChecked(!errorExpectedChecked);
                             }}
                             disabled={!isCreateScriptRoute
-                                || !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)}
+                                && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)}
                         />
                     </Box>
 
