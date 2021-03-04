@@ -545,10 +545,11 @@ const ScriptDetail = withStyles(styles)(
                                             && !checkAuthority(
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                                 newScriptDetail.securityGroupName,
-                                            ) && checkAuthority(
-                                            SECURITY_PRIVILEGES.S_SCRIPTS_READ,
-                                            newScriptDetail.securityGroupName,
-                                        )),
+                                            )
+                                            && checkAuthority(
+                                                SECURITY_PRIVILEGES.S_SCRIPTS_READ,
+                                                newScriptDetail.securityGroupName,
+                                            )),
                                 },
                                 {
                                     icon: <DeleteIcon />,
@@ -643,7 +644,8 @@ const ScriptDetail = withStyles(styles)(
 
             if (actionIndexToDelete !== null) {
                 newActions.splice(actionIndexToDelete, 1);
-                this.updateScript({ actions: newActions });
+                // sync action number with script design number after deleting action
+                this.updateScript({ actions: newActions.map((action, index) => ({ ...action, number: index + 1 })) });
                 this.setState({ actionIndexToDelete: null });
             }
         }
