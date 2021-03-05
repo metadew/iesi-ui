@@ -655,7 +655,9 @@ const ScriptDetail = withStyles(styles)(
             if (editActionIndex === -1) {
                 return null;
             }
-            return newScriptDetail && newScriptDetail.actions && newScriptDetail.actions[editActionIndex];
+            return newScriptDetail
+                && newScriptDetail.actions
+                && clone(newScriptDetail.actions[editActionIndex]);
         }
 
         private setScriptToExecute(id: ReactText) {
