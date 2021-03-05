@@ -104,7 +104,6 @@ function EditAction({
     const [description, setDescription] = useState(action.description);
     const [name, setName] = useState(action.name);
     const [condition, setCondition] = useState(action.condition);
-
     const actionTypes = getAsyncActionTypes(state).data || [];
     const matchingActionType = actionTypes.find((item) => action.type === item.type);
 
@@ -207,7 +206,6 @@ function EditAction({
                                 onChange={(value) => {
                                     const index = parameters.findIndex((p) => p.name === constantParameter.name);
                                     const newParameters = [...parameters];
-
                                     if (index === -1) {
                                         newParameters.push({
                                             name: constantParameter.name,
@@ -310,7 +308,6 @@ function EditAction({
             errorStop: errorStopChecked,
             errorExpected: errorExpectedChecked,
         });
-
         onClose();
     }
 }
