@@ -655,8 +655,8 @@ const ScriptDetail = withStyles(styles)(
             if (editActionIndex === -1) {
                 return null;
             }
-            return clone(newScriptDetail)
-                && clone(newScriptDetail.actions)
+            return newScriptDetail
+                && newScriptDetail.actions
                 && clone(newScriptDetail.actions[editActionIndex]);
         }
 
