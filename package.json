@@ -29,7 +29,7 @@
     "@snipsonian/react": "^1.12.0",
     "@snipsonian/react-observable-state": "^1.12.0",
     "@types/file-saver": "^2.0.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "classnames": "^2.2.6",
     "date-fns": "2.14.0",
     "file-saver": "^2.0.5",
