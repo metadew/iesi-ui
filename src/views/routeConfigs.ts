@@ -20,6 +20,8 @@ import ScriptReportsTemplate from './report/ScriptReportsTemplate';
 import ScriptReportsOverview from './report/ScriptReportsOverview';
 import ScriptReportDetail from './report/ScriptReportDetail';
 import Login from './appShell/AppLogIn/LoginPage';
+import OpenAPI from './doc/OpenAPI';
+import OpenAPITemplate from './doc/OpenAPITemplate';
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
@@ -80,10 +82,10 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
                     ...(filters && {
                         name:
                             filters.name.values.length > 0
-                                && filters.name.values[0].toString(),
+                            && filters.name.values[0].toString(),
                         label:
                             filters.labels.values.length > 0
-                                && filters.labels.values[0].toString(),
+                            && filters.labels.values[0].toString(),
                     }),
                 },
                 pagination: {
@@ -123,9 +125,15 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
         execute: triggerFetchEnvironments,
     }],
 }, {
+    routeKey: ROUTE_KEYS.R_OPENAPI,
+    path: '/openapi',
+    template: OpenAPITemplate,
+    component: OpenAPI,
+}, {
     routeKey: ROUTE_KEYS.R_NOT_FOUND,
     path: '*',
     component: NotFound,
-}];
+},
+];
 
 registerRoutes(ALL_ROUTES);

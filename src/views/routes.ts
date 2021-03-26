@@ -15,6 +15,8 @@ export enum ROUTE_KEYS {
     R_REPORTS = 'R_REPORTS',
     R_REPORT_DETAIL = 'R_REPORT_DETAIL',
     R_NOT_FOUND = 'R_NOT_FOUND',
+    /* OpenAPI */
+    R_OPENAPI = 'R_OPENAPI'
 }
 
 let registeredRoutes: IRoutesMap<ROUTE_KEYS> = {};

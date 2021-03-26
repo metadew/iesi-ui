@@ -9,6 +9,7 @@ import {
     Button,
     FormControlLabel,
     Switch,
+    Tooltip,
 } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
@@ -84,6 +85,14 @@ const styles = ({ palette, typography }: Theme) =>
             fontWeight: typography.fontWeightBold,
             fontSize: typography.pxToRem(12),
         },
+        generateTooltip: {
+            backgroundColor: palette.common.black,
+            fontSize: typography.pxToRem(12),
+            padding: 16,
+        },
+        generateTooltipArrow: {
+            color: palette.common.black,
+        },
     });
 
 export const filterConfig: FilterConfig<Partial<IColumnNames>> = {
@@ -141,7 +150,6 @@ const ScriptsOverview = withStyles(styles)(
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
             const { state, dispatch } = prevProps;
             const filterFromState = getScriptsListFilter(state);
-
             if (filterFromState.filters === null || filterFromState.sortedColumn === null) {
                 dispatch(setScriptsListFilter({
                     filters: filterFromState.filters === null && getIntialFiltersFromFilterConfig(filterConfig),
@@ -195,17 +203,46 @@ const ScriptsOverview = withStyles(styles)(
                                     </Box>
                                     {checkAuthorityGeneral(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)
                                         ? (
-                                            <Box flex="0 0 auto">
-                                                <Button
-                                                    variant="contained"
-                                                    color="secondary"
-                                                    size="small"
-                                                    startIcon={<AddRounded />}
-                                                    onClick={() => redirectTo({ routeKey: ROUTE_KEYS.R_SCRIPT_NEW })}
-                                                >
-                                                    <Translate msg="scripts.overview.header.add_button" />
-                                                </Button>
+                                            <Box display="flex" alignItems="center">
+                                                <Box flex="0 0 auto" mr="8px" width="220px">
+                                                    <Tooltip
+                                                        title="Transform an OpenAPI documentation into IESI concept"
+                                                        placement="top"
+                                                        classes={{
+                                                            tooltip: classes.generateTooltip,
+                                                            arrow: classes.generateTooltipArrow,
+                                                        }}
+                                                        arrow
+                                                    >
+                                                        <Button
+                                                            variant="contained"
+                                                            color="secondary"
+                                                            size="small"
+                                                            onClick={() => {
+                                                                redirectTo({ routeKey: ROUTE_KEYS.R_OPENAPI });
+                                                            }}
+                                                        >
+                                                            <Translate
+                                                                msg="scripts.overview.header.generate_button"
+                                                            />
+                                                        </Button>
+                                                    </Tooltip>
+                                                </Box>
+                                                <Box flex="0 0 auto">
+                                                    <Button
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        size="small"
+                                                        startIcon={<AddRounded />}
+                                                        onClick={() => {
+                                                            redirectTo({ routeKey: ROUTE_KEYS.R_SCRIPT_NEW });
+                                                        }}
+                                                    >
+                                                        <Translate msg="scripts.overview.header.add_button" />
+                                                    </Button>
+                                                </Box>
                                             </Box>
+
                                         ) : null}
 
                                 </Box>
@@ -319,7 +356,7 @@ const ScriptsOverview = withStyles(styles)(
             return (
                 <>
                     <Box paddingBottom={5} marginX={2.8}>
-                        { !hasError && (
+                        {!hasError && (
                             <GenericList
                                 listActions={[].concat(
                                     {
@@ -374,7 +411,7 @@ const ScriptsOverview = withStyles(styles)(
                                             checkAuthority(
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                                 item.columns.securityGroupName.toString(),
-                                            // eslint-disable-next-line max-len
+                                                // eslint-disable-next-line max-len
                                             ) || !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, item.columns.securityGroupName.toString()),
                                     },
                                     {
