@@ -267,3 +267,12 @@ script_reports:
         output:
           label: Output
           none: '-'
+doc:
+  overview:
+    openapi_title: 'Open API Title : {title}'
+    openapi_version:  'Open API Version : {title}'
+    load_doc_button:
+      title: 'Load doc'
+      helper_text: 'Only OpenAPI v3 is required'
+    connection_header_amount: 'You have {amount} connections'
+    component_header_amount: 'You have {amount} components'

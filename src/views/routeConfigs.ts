@@ -20,7 +20,7 @@ import ScriptReportsTemplate from './report/ScriptReportsTemplate';
 import ScriptReportsOverview from './report/ScriptReportsOverview';
 import ScriptReportDetail from './report/ScriptReportDetail';
 import Login from './appShell/AppLogIn/LoginPage';
-import OpenAPI from './doc/OpenAPI';
+import OpenAPI from './doc/OpenAPIOverview';
 import OpenAPITemplate from './doc/OpenAPITemplate';
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
