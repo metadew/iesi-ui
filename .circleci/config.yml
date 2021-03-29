@@ -51,6 +51,7 @@ jobs:
         command: npm run test
         name: Run tests
 
+    # set CI to false to stop warnings to be seen as errors during build. This should be resolved in the future! (https://github.com/facebook/create-react-app/issues/3657)
     - run:
         command: CI=false npm run build --url=http://localhost:8080/api
         name: Build
