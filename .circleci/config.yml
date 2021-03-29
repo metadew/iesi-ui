@@ -41,9 +41,31 @@ jobs:
         command: npm run init-env-config
         name: Initializing configuration
         working_directory: .
+    
     - save_cache:
         key: node-deps-v1-{{ .Branch }}-{{ checksum "./package-lock.json" }}
         paths:
         - ~/project/node_modules
+
     - run:
         command: npm run test
+        name: Run tests
+
+    - run:
+        command: npm run build --url=http://localhost:8080
+        name: Build
+    
+    - run:
+        name: Compress build
+        command: |
+          zip -r iesi-ui-dist-v1.2.1.zip ./*
+          mv iesi-ui-dist-v1.2.1.zip ..
+          tar -czvf iesi-ui-dist-v1.2.1.tar.gz ./*
+          mv iesi-ui-dist-v1.2.1.tar.gz ..
+        working_directory: build
+
+    - store_artifacts:
+        path: iesi-ui-dist-v1.2.1.zip
+
+    - store_artifacts:
+        path: iesi-ui-dist-v1.2.1.tar.gz
