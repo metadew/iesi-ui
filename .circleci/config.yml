@@ -52,7 +52,7 @@ jobs:
         name: Run tests
 
     - run:
-        command: npm run build --url=http://localhost:8080
+        command: npm run build --url=http://localhost:8080/api
         name: Build
     
     - run:
