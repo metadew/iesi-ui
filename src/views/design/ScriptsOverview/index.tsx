@@ -206,7 +206,7 @@ const ScriptsOverview = withStyles(styles)(
                                             <Box display="flex" alignItems="center">
                                                 <Box flex="0 0 auto" mr="8px" width="220px">
                                                     <Tooltip
-                                                        title="Transform an OpenAPI documentation into IESI concept"
+                                                        title={translator('scripts.overview.header.transform_openapi_tooltip')}
                                                         placement="top"
                                                         classes={{
                                                             tooltip: classes.generateTooltip,

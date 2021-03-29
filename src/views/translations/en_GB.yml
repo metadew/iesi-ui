@@ -81,6 +81,7 @@ scripts:
       amount: 'You have {amount} scripts'
       add_button: Create new script
       generate_button: "Generate connections and components"
+      transform_openapi_tooltip: "Transform an OpenAPI documentation into IESI concept"
     list:
       fetch_error: Something went wrong while loading the scripts, please try again.
       actions:
