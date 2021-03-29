@@ -208,7 +208,7 @@ const ScriptsOverview = withStyles(styles)(
                                                     <Tooltip
                                                         title={
                                                             translator(
-                                                                'scripts.overview.header.transform_openapi_tooltip'
+                                                                'scripts.overview.header.transform_openapi_tooltip',
                                                             )
                                                         }
                                                         placement="top"
