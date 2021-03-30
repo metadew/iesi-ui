@@ -107,6 +107,13 @@ export default function getMockState({
                     error: null,
                 },
             },
+            openapi: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
         },
     };
 }

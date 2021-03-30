@@ -15,6 +15,7 @@ import {
     IScriptBase,
     IFetchScriptsListPayload,
 } from 'models/state/scripts.models';
+import { IOpenAPI } from 'models/state/openapi.model';
 
 // eslint-disable-next-line max-len
 const entitiesConfigManager = initAsyncEntitiesConfigManager<IState, {}, ITraceableApiError, string, IExtraProcessInput>();
@@ -129,6 +130,16 @@ entitiesConfigManager.register({
     operationsConfig: {
         fetch: {
             api: api.constants.fetchActionTypes,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.openapi,
+    operationsConfig: {
+        create: {
+            api: api.openapi.transformDocumentation,
+            apiInputSelector: ({ extraInput }) => extraInput as IOpenAPI,
         },
     },
 });

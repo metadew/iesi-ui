@@ -5,6 +5,7 @@ import { ITraceableApiError } from 'models/api.models';
 import { IScript, IScriptsEntity } from 'models/state/scripts.models';
 import { IExecutionRequest, IExecutionRequestsEntity } from './executionRequests.models';
 import { IActionType } from './constants.models';
+import { IOpenAPIEntity } from './openapi.model';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ICustomAsyncEntity<Data> extends IAsyncEntity<Data, ITraceableApiError> {}
@@ -30,6 +31,8 @@ export enum ASYNC_ENTITY_KEYS {
     executionRequestDetail = 'executionRequestDetail',
 
     scriptExecutionDetail = 'scriptExecutionDetail',
+
+    openapi = 'openapi'
 }
 
 /* Keep the keys in sync with ASYNC_ENTITY_KEYS !! */
@@ -42,4 +45,5 @@ export interface IEntitiesState {
     executionRequests: ICustomAsyncEntity<IExecutionRequestsEntity>;
     executionRequestDetail: ICustomAsyncEntity<IExecutionRequest>;
     scriptExecutionDetail: ICustomAsyncEntity<IScriptExecutionDetail>;
+    openapi: ICustomAsyncEntity<IOpenAPIEntity>;
 }

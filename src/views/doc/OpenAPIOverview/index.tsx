@@ -1,7 +1,6 @@
 import React from 'react';
 import {
     Box,
-    Button,
     createStyles,
     Theme,
     Typography,
@@ -11,6 +10,7 @@ import {
 import { IObserveProps } from 'views/observe';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
+import TransformDocumentationDialog from './common/TransformDocumentationDialog';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -37,6 +37,7 @@ interface IComponentState {
     openapiVersion: string;
     connectionAmount: number;
     componentAmount: number;
+    isDialogOpen: boolean;
 }
 type TProps = WithStyles<typeof styles>;
 
@@ -50,7 +51,11 @@ const OpenAPI = withStyles(styles)(
                 openapiVersion: '',
                 componentAmount: 0,
                 connectionAmount: 0,
+                isDialogOpen: false,
             };
+
+            this.onOpenDialog = this.onOpenDialog.bind(this);
+            this.onCloseDialog = this.onCloseDialog.bind(this);
         }
 
         public render() {
@@ -92,14 +97,11 @@ const OpenAPI = withStyles(styles)(
                                     alignItems="center"
                                     className={classes.loadDocButton}
                                 >
-                                    <Button
-                                        variant="contained"
-                                        color="secondary"
-                                        size="small"
-
-                                    >
-                                        <Translate msg="doc.overview.load_doc_button.title" />
-                                    </Button>
+                                    <TransformDocumentationDialog
+                                        open={this.state.isDialogOpen}
+                                        onOpen={this.onOpenDialog}
+                                        onClose={this.onCloseDialog}
+                                    />
                                     <Typography
                                         variant="subtitle1"
                                         className={classes.helperButton}
@@ -150,6 +152,14 @@ const OpenAPI = withStyles(styles)(
                     </Box>
                 </Box>
             );
+        }
+
+        public onOpenDialog() {
+            this.setState((state) => ({ ...state, isDialogOpen: true }));
+        }
+
+        public onCloseDialog() {
+            this.setState((state) => ({ ...state, isDialogOpen: true }));
         }
     },
 );

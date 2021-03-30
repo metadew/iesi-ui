@@ -4,6 +4,7 @@ import * as environments from './environments/environments.api';
 import * as executionRequests from './executionRequests/executionRequests.api';
 import * as scriptExecutions from './scriptExecutions/scriptExecutions.api';
 import * as scripts from './scripts/scripts.api';
+import * as openapi from './openapi/openapi.api';
 
 export const api = {
     envConfig,
@@ -12,4 +13,5 @@ export const api = {
     executionRequests,
     scripts,
     scriptExecutions,
+    openapi,
 };

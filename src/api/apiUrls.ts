@@ -21,6 +21,8 @@ const API_URLS = {
 
     SECURITY_LOGON: '/users/login',
 
+    OPEN_API_TRANSFORM: '/openapi/transform',
+
     /* eslint-enable max-len */
 };
 
