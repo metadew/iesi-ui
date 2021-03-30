@@ -88,7 +88,7 @@ const styles = ({ palette, typography }: Theme) =>
         generateTooltip: {
             backgroundColor: palette.common.black,
             fontSize: typography.pxToRem(12),
-            padding: 16,
+            padding: 8,
         },
         generateTooltipArrow: {
             color: palette.common.black,
@@ -201,10 +201,11 @@ const ScriptsOverview = withStyles(styles)(
                                             sortedColumn={filterFromState.sortedColumn as ISortedColumn<{}>}
                                         />
                                     </Box>
-                                    {checkAuthorityGeneral(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)
-                                        ? (
-                                            <Box display="flex" alignItems="center">
-                                                <Box flex="0 0 auto" mr="8px" width="220px">
+                                    <Box display="flex" alignItems="center">
+                                        {
+                                            checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                            && checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE) && (
+                                                <Box flex="0 0 auto" mr="4px">
                                                     <Tooltip
                                                         title={
                                                             translator(
@@ -232,6 +233,10 @@ const ScriptsOverview = withStyles(styles)(
                                                         </Button>
                                                     </Tooltip>
                                                 </Box>
+                                            )
+                                        }
+                                        {
+                                            checkAuthorityGeneral(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE) && (
                                                 <Box flex="0 0 auto">
                                                     <Button
                                                         variant="contained"
@@ -245,10 +250,9 @@ const ScriptsOverview = withStyles(styles)(
                                                         <Translate msg="scripts.overview.header.add_button" />
                                                     </Button>
                                                 </Box>
-                                            </Box>
-
-                                        ) : null}
-
+                                            )
+                                        }
+                                    </Box>
                                 </Box>
                             </AppTemplateContainer>
                         </Box>
