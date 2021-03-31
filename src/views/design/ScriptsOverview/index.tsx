@@ -9,7 +9,6 @@ import {
     Button,
     FormControlLabel,
     Switch,
-    Tooltip,
 } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
@@ -59,6 +58,7 @@ import {
     checkAuthority,
     checkAuthorityGeneral,
 } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import TransformDocumentationDialog from 'views/doc/OpenAPIOverview/common/TransformDocumentationDialog';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -116,6 +116,7 @@ const sortActions: SortActions<Partial<IColumnNames>> = {
 interface IComponentState {
     scriptIdToDelete: string;
     scriptIdToExecute: string;
+    loadDocDialogOpen: boolean;
 }
 
 type TProps = WithStyles<typeof styles>;
@@ -128,6 +129,7 @@ const ScriptsOverview = withStyles(styles)(
             this.state = {
                 scriptIdToDelete: null,
                 scriptIdToExecute: null,
+                loadDocDialogOpen: false,
             };
 
             this.renderPanel = this.renderPanel.bind(this);
@@ -145,6 +147,9 @@ const ScriptsOverview = withStyles(styles)(
             this.closeDeleteScriptDialogAfterSuccessfulDelete = this.closeDeleteScriptDialogAfterSuccessfulDelete.bind(this);
 
             this.fetchScriptsWithFilterAndPagination = this.fetchScriptsWithFilterAndPagination.bind(this);
+
+            this.onLoadDocDialogOpen = this.onLoadDocDialogOpen.bind(this);
+            this.onLoadDocDialogClose = this.onLoadDocDialogClose.bind(this);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
@@ -204,29 +209,12 @@ const ScriptsOverview = withStyles(styles)(
                                     {checkAuthorityGeneral(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)
                                         ? (
                                             <Box display="flex" alignItems="center">
-                                                <Box flex="0 0 auto" mr="8px" width="220px">
-                                                    <Tooltip
-                                                        title="Transform an OpenAPI documentation into IESI concept"
-                                                        placement="top"
-                                                        classes={{
-                                                            tooltip: classes.generateTooltip,
-                                                            arrow: classes.generateTooltipArrow,
-                                                        }}
-                                                        arrow
-                                                    >
-                                                        <Button
-                                                            variant="contained"
-                                                            color="secondary"
-                                                            size="small"
-                                                            onClick={() => {
-                                                                redirectTo({ routeKey: ROUTE_KEYS.R_OPENAPI });
-                                                            }}
-                                                        >
-                                                            <Translate
-                                                                msg="scripts.overview.header.generate_button"
-                                                            />
-                                                        </Button>
-                                                    </Tooltip>
+                                                <Box flex="0 0 auto" mr="8px" width="250px">
+                                                    <TransformDocumentationDialog
+                                                        open={this.state.loadDocDialogOpen}
+                                                        onOpen={this.onLoadDocDialogOpen}
+                                                        onClose={this.onLoadDocDialogClose}
+                                                    />
                                                 </Box>
                                                 <Box flex="0 0 auto">
                                                     <Button
@@ -559,6 +547,14 @@ const ScriptsOverview = withStyles(styles)(
 
         private setScriptToExecute(id: ReactText) {
             this.setState({ scriptIdToExecute: id as string });
+        }
+
+        private onLoadDocDialogOpen() {
+            this.setState((state) => ({ ...state, loadDocDialogOpen: true }));
+        }
+
+        private onLoadDocDialogClose() {
+            this.setState((state) => ({ ...state, loadDocDialogOpen: false }));
         }
     },
 );

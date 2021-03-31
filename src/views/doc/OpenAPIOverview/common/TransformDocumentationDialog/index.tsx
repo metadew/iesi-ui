@@ -5,10 +5,39 @@ import {
     Typography,
     IconButton,
     TextField,
+    makeStyles,
+    Tooltip,
+    Theme,
 } from '@material-ui/core';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import { Delete } from '@material-ui/icons';
 import { triggerCreateTransformDocumentation } from 'state/entities/openapi/triggers';
+import Translate from '@snipsonian/react/es/components/i18n/Translate';
+import { getTranslator } from 'state/i18n/selectors';
+import { IObserveProps, observe } from 'views/observe';
+
+const useStyles = makeStyles(({ palette, typography }: Theme) => ({
+    generateTooltip: {
+        backgroundColor: palette.common.black,
+        fontSize: typography.pxToRem(12),
+        padding: 16,
+    },
+    generateTooltipArrow: {
+        color: palette.common.black,
+    },
+    inputDivider: {
+        marginTop: 4, marginBottom: 4,
+    },
+    fileHelper: {
+        marginTop: 2,
+        marginBottom: 2,
+        fontSize: typography.pxToRem(12),
+        color: palette.grey[500],
+    },
+    validateButton: {
+        marginRight: 8,
+    },
+}));
 
 interface IPublicProps {
     open: boolean;
@@ -21,7 +50,9 @@ interface IFormValues {
     fileDoc: File | undefined;
 }
 
-function TransformDocumentationDialog({ onClose, open, onOpen }: IPublicProps) {
+function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicProps & IObserveProps) {
+    const classes = useStyles();
+    const translator = getTranslator(state);
     const [formValues, setFormValues] = useState<IFormValues>({
         textDoc: '',
         fileDoc: undefined,
@@ -29,10 +60,10 @@ function TransformDocumentationDialog({ onClose, open, onOpen }: IPublicProps) {
     const handleTextDocChange = (e: ChangeEvent<HTMLInputElement>) => {
         e.persist();
         if (e.target.value.length === 1 && formValues.fileDoc) {
-            setFormValues((state) => ({ ...state, textDoc: e.target.value, fileDoc: undefined }));
+            setFormValues((currentState) => ({ ...currentState, textDoc: e.target.value, fileDoc: undefined }));
             return;
         }
-        setFormValues((state) => ({ ...state, textDoc: e.target.value }));
+        setFormValues((currentState) => ({ ...currentState, textDoc: e.target.value }));
     };
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -40,29 +71,42 @@ function TransformDocumentationDialog({ onClose, open, onOpen }: IPublicProps) {
         e.persist();
         if (e.target.files[0] && formValues.textDoc.length > 0) {
             console.log('TEST MEC : ', e.target.files[0]);
-            setFormValues((state) => ({ ...state, fileDoc: e.target.files[0], textDoc: '' }));
+            setFormValues((currentState) => ({ ...currentState, fileDoc: e.target.files[0], textDoc: '' }));
             return;
         }
-        setFormValues((state) => ({ ...state, fileDoc: e.target.files[0] }));
+        setFormValues((currentState) => ({ ...currentState, fileDoc: e.target.files[0] }));
     };
 
     const onDeleteFile = () => {
-        setFormValues((state) => ({ ...state, fileDoc: undefined }));
+        setFormValues((currentState) => ({ ...currentState, fileDoc: undefined }));
     };
 
     return (
         <>
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={onOpen}
+            <Tooltip
+                title={translator('scripts.overview.header.transform_openapi_tooltip')}
+                placement="top"
+                classes={{
+                    tooltip: classes.generateTooltip,
+                    arrow: classes.generateTooltipArrow,
+                }}
+                arrow
             >
-                Load doc
-            </Button>
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    size="small"
+                    onClick={onOpen}
+                >
+                    <Translate
+                        msg="scripts.overview.header.generate_button"
+                    />
+                </Button>
+            </Tooltip>
             <ClosableDialog
                 onClose={onClose}
                 open={open}
-                title="Provide an OpenAPI documentation to perform the transformation"
+                title={translator('doc.dialog.title')}
             >
                 <Box marginX="auto" width="100%">
                     <Box
@@ -74,7 +118,7 @@ function TransformDocumentationDialog({ onClose, open, onOpen }: IPublicProps) {
                     >
                         <Box flex={1} width="100%">
                             <TextField
-                                label="Json Content"
+                                label={translator('doc.dialog.json_content_label')}
                                 variant="filled"
                                 rows={20}
                                 multiline
@@ -84,7 +128,7 @@ function TransformDocumentationDialog({ onClose, open, onOpen }: IPublicProps) {
                             />
                         </Box>
 
-                        <Typography style={{ marginTop: 4, marginBottom: 4 }}>OR</Typography>
+                        <Typography variant="body1" className={classes.inputDivider}>OR</Typography>
                         <Box
                             display="flex"
                             flexDirection="column"
@@ -103,7 +147,9 @@ function TransformDocumentationDialog({ onClose, open, onOpen }: IPublicProps) {
                                         component="span"
                                         size="small"
                                     >
-                                        Choose a file
+                                        <Translate
+                                            msg="doc.dialog.file_label"
+                                        />
                                     </Button>
                                 </label>
                             </form>
@@ -117,10 +163,9 @@ function TransformDocumentationDialog({ onClose, open, onOpen }: IPublicProps) {
                                         </IconButton>
                                     </Box>
                                 ) : (
-                                    <>
-                                        <Typography variant="subtitle1">Only .JSON and .YAML</Typography>
-                                        <Typography variant="subtitle1">are accepted</Typography>
-                                    </>
+                                    <Typography variant="subtitle1" className={classes.fileHelper}>
+                                        {translator('doc.dialog.file_helper')}
+                                    </Typography>
                                 )
                             }
 
@@ -133,11 +178,11 @@ function TransformDocumentationDialog({ onClose, open, onOpen }: IPublicProps) {
                         color="primary"
                         size="small"
                         onClick={createTransformResult}
-                        style={{
-                            marginRight: 8,
-                        }}
+                        className={classes.validateButton}
                     >
-                        Validate
+                        <Translate
+                            msg="doc.dialog.validate"
+                        />
                     </Button>
                     <Button
                         variant="contained"
@@ -145,7 +190,9 @@ function TransformDocumentationDialog({ onClose, open, onOpen }: IPublicProps) {
                         size="small"
                         onClick={onClose}
                     >
-                        Cancel
+                        <Translate
+                            msg="doc.dialog.cancel"
+                        />
                     </Button>
                 </Box>
             </ClosableDialog>
@@ -164,4 +211,4 @@ function TransformDocumentationDialog({ onClose, open, onOpen }: IPublicProps) {
     }
 }
 
-export default TransformDocumentationDialog;
+export default observe<IPublicProps>([], TransformDocumentationDialog);

@@ -59,21 +59,6 @@ export default function initAsyncEntitiesStateManager
             }
 
             const extraInput = extraInputSelector({ state: store.getState() });
-            console.log('INFO : ', {
-                asyncEntityKey,
-                extraInput,
-                api: operationConfig.api,
-                apiInputSelector: operationConfig.apiInputSelector,
-                mapApiResponse: operationConfig.mapApiResponse,
-                notificationsToTrigger: notificationsToTrigger
-                    || getDefaultNotificationsToTrigger({ asyncEntityKey, operation }),
-                nrOfParentNotificationLevelsToTrigger,
-                updateDataOnSuccess,
-                dispatch: store.dispatch,
-                onSuccess,
-                onFail,
-            });
-
             // eslint-disable-next-line max-len
             store.dispatch(getAsyncEntityActionCreators().createAsyncEntityAction<ExtraInput, ApiInput, ApiResult, ApiResponse>({
                 asyncEntityKey,

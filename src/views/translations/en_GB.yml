@@ -80,7 +80,8 @@ scripts:
     header:
       amount: 'You have {amount} scripts'
       add_button: Create new script
-      generate_button: "Generate connections and components"
+      generate_button: "Load OpenAPI documentation"
+      transform_openapi_tooltip: "Transform an OpenAPI documentation into IESI connections and components"
     list:
       fetch_error: Something went wrong while loading the scripts, please try again.
       actions:
@@ -268,6 +269,13 @@ script_reports:
           label: Output
           none: '-'
 doc:
+  dialog:
+    title: Provide an OpenAPI documentation to perform the transformation
+    json_content_label: Json Content
+    file_label: 'Choose a file'
+    file_helper: 'Only .JSON and .YAML are accepted'
+    validate: 'Validate'
+    cancel: 'cancel'
   overview:
     openapi_title: 'Open API Title : {title}'
     openapi_version:  'Open API Version : {title}'

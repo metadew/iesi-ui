@@ -3,8 +3,6 @@ import { post } from 'api/requestWrapper';
 import { IOpenAPI, IOpenAPIEntity } from 'models/state/openapi.model';
 
 export function transformDocumentation({ value }: IOpenAPI) {
-    console.log('TEST : ', value);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return post<IOpenAPIEntity>({
         needsAuthentication: true,
         isIesiApi: true,
