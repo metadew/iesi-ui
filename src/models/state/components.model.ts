@@ -5,7 +5,6 @@ export interface IComponentEntity {
     version: IComponentVersion;
     parameters: IComponentParameter[];
     attributes: IComponentAttribute[];
-
 }
 
 export interface IComponentVersion {
@@ -22,4 +21,13 @@ export interface IComponentAttribute {
     environment: string;
     name: string;
     value: string;
+}
+
+export interface IComponentColumnNames {
+    name: string;
+    description: string;
+    version: string;
+    endpoint: string;
+    type: string;
+    connection: string;
 }

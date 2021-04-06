@@ -15,6 +15,7 @@ import { triggerCreateTransformDocumentation } from 'state/entities/openapi/trig
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getTranslator } from 'state/i18n/selectors';
 import { IObserveProps, observe } from 'views/observe';
+import { StateChangeNotification } from 'models/state.models';
 
 const useStyles = makeStyles(({ palette, typography }: Theme) => ({
     generateTooltip: {
@@ -57,6 +58,7 @@ function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicP
         textDoc: '',
         fileDoc: undefined,
     });
+
     const handleTextDocChange = (e: ChangeEvent<HTMLInputElement>) => {
         e.persist();
         if (e.target.value.length === 1 && formValues.fileDoc) {
@@ -70,7 +72,6 @@ function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicP
         // const newFile = e.target.files[0];
         e.persist();
         if (e.target.files[0] && formValues.textDoc.length > 0) {
-            console.log('TEST MEC : ', e.target.files[0]);
             setFormValues((currentState) => ({ ...currentState, fileDoc: e.target.files[0], textDoc: '' }));
             return;
         }
@@ -106,7 +107,7 @@ function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicP
             <ClosableDialog
                 onClose={onClose}
                 open={open}
-                title={translator('doc.dialog.title')}
+                title={translator('doc.dialog.transform.title')}
             >
                 <Box marginX="auto" width="100%">
                     <Box
@@ -118,7 +119,7 @@ function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicP
                     >
                         <Box flex={1} width="100%">
                             <TextField
-                                label={translator('doc.dialog.json_content_label')}
+                                label={translator('doc.dialog.transform.json_content_label')}
                                 variant="filled"
                                 rows={20}
                                 multiline
@@ -148,7 +149,7 @@ function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicP
                                         size="small"
                                     >
                                         <Translate
-                                            msg="doc.dialog.file_label"
+                                            msg="doc.dialog.transform.file_label"
                                         />
                                     </Button>
                                 </label>
@@ -164,7 +165,7 @@ function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicP
                                     </Box>
                                 ) : (
                                     <Typography variant="subtitle1" className={classes.fileHelper}>
-                                        {translator('doc.dialog.file_helper')}
+                                        {translator('doc.dialog.transform.file_helper')}
                                     </Typography>
                                 )
                             }
@@ -181,7 +182,7 @@ function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicP
                         className={classes.validateButton}
                     >
                         <Translate
-                            msg="doc.dialog.validate"
+                            msg="doc.dialog.transform.validate"
                         />
                     </Button>
                     <Button
@@ -191,7 +192,7 @@ function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicP
                         onClick={onClose}
                     >
                         <Translate
-                            msg="doc.dialog.cancel"
+                            msg="common.action.cancel"
                         />
                     </Button>
                 </Box>
@@ -211,4 +212,4 @@ function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicP
     }
 }
 
-export default observe<IPublicProps>([], TransformDocumentationDialog);
+export default observe<IPublicProps>([StateChangeNotification.OPENAPI_TRANSFORM], TransformDocumentationDialog);

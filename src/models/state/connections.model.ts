@@ -3,10 +3,19 @@ export interface IConnectionEntity {
     type: string;
     description: string;
     environment: string;
-    parameters: IConnectionParameter;
+    parameters: IConnectionParameter[];
 }
 
 export interface IConnectionParameter {
     name: string;
     value: string;
+}
+
+export interface IConnectionColumnNames {
+    name: string;
+    description: string;
+    host: string;
+    baseUrl: string;
+    tls: string;
+    environment: string;
 }

@@ -58,7 +58,7 @@ import {
     checkAuthority,
     checkAuthorityGeneral,
 } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
-import TransformDocumentationDialog from 'views/doc/OpenAPIOverview/common/TransformDocumentationDialog';
+import TransformDocumentationDialog from 'views/design/common/TransformDocumentationDialog';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -182,7 +182,6 @@ const ScriptsOverview = withStyles(styles)(
                 ? getLatestVersionsFromScripts(scripts) : scripts);
 
             const translator = getTranslator(state);
-
             return (
                 <>
                     <Box height="100%" display="flex" flexDirection="column" flex="1 0 auto">

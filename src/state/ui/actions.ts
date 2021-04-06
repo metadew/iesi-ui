@@ -7,6 +7,9 @@ import { isExecutionRequestStatusPending } from 'utils/scripts/executionRequests
 import { ROUTE_KEYS } from 'views/routes';
 import { IColumnNames as IScriptsColumnNames } from 'models/state/scripts.models';
 import { IColumnNames as IExecutionsColumnNames } from 'models/state/executionRequests.models';
+import { getUniqueIdFromConnection } from 'utils/connections/connectionUtils';
+import { getUniqueIdFromComponent } from 'utils/components/componentUtils';
+import { ReactText } from 'react';
 
 export const triggerFlashMessage = (payload: ITriggerFlashMessagePayload) => createAction<ITriggerFlashMessagePayload>({
     type: 'TRIGGER_FLASH_MESSAGE',
@@ -177,6 +180,38 @@ export const setExecutionsListFilter = (payload: {
                 };
             },
             notificationsToTrigger: [StateChangeNotification.LIST_FILTER_EXECUTIONS],
+        });
+    },
+});
+
+export const deleteConnection = (payload: { id: ReactText }) => createAction<{ id: ReactText }>({
+    type: 'CONNECTION.DELETE',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                const { connections } = draftState.entities.openapi.data;
+                // eslint-disable-next-line no-param-reassign
+                draftState.entities.openapi.data.connections = connections
+                    .filter((connection) => getUniqueIdFromConnection(connection) !== payload.id);
+            },
+            notificationsToTrigger: [StateChangeNotification.CONNECTION_DELETE],
+        });
+    },
+});
+
+export const deleteComponent = (payload: { id: ReactText }) => createAction<{ id: ReactText }>({
+    type: 'CONNECTION.DELETE',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                const { components } = draftState.entities.openapi.data;
+                // eslint-disable-next-line no-param-reassign
+                draftState.entities.openapi.data.components = components
+                    .filter((component) => getUniqueIdFromComponent(component) !== payload.id);
+            },
+            notificationsToTrigger: [StateChangeNotification.COMPONENT_DELETE],
         });
     },
 });

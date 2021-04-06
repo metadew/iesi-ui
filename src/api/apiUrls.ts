@@ -19,6 +19,10 @@ const API_URLS = {
 
     SCRIPT_EXECUTION_BY_RUN_AND_PROCESS_ID: '/script-executions/{runId}/{processId}',
 
+    CONNECTIONS: '/connections',
+
+    COMPONENTS: '/components',
+
     SECURITY_LOGON: '/users/login',
 
     OPEN_API_TRANSFORM: '/openapi/transform',
