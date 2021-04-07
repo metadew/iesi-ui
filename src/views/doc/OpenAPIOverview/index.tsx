@@ -16,7 +16,7 @@ import GenericList from 'views/common/list/GenericList';
 import { IListItem, ListColumns } from 'models/list.models';
 import { IConnectionEntity, IConnectionColumnNames } from 'models/state/connections.model';
 import { getUniqueIdFromConnection } from 'utils/connections/connectionUtils';
-import { Add, Delete } from '@material-ui/icons';
+import { Add, Delete, Edit } from '@material-ui/icons';
 import { getTranslator } from 'state/i18n/selectors';
 import { getAsyncTransformResultEntity } from 'state/entities/openapi/selectors';
 import { IComponentColumnNames, IComponentEntity } from 'models/state/components.model';
@@ -29,6 +29,8 @@ import {
 } from 'state/entities/components/triggers';
 import { deleteComponent, deleteConnection } from 'state/ui/actions';
 import { StateChangeNotification } from 'models/state.models';
+import EditConnectionDialog from '../common/EditConnectionDialog/EditConnectionDialog';
+import EditComponentDialog from '../common/EditComponentDialog/EditComponentDialog';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -57,7 +59,10 @@ const styles = ({ palette, typography }: Theme) =>
     });
 
 interface IComponentState {
-    isConnectionEditOpen: boolean;
+    isConnectionEditDialogOpen: boolean;
+    isComponentEditDialogOpen: boolean;
+    connectionToEdit?: IConnectionEntity | undefined;
+    componentToEdit?: IComponentEntity | undefined;
 }
 type TProps = WithStyles<typeof styles>;
 
@@ -67,13 +72,16 @@ const OpenAPIOverview = withStyles(styles)(
             super(props);
 
             this.state = {
-                isConnectionEditOpen: false,
+                isConnectionEditDialogOpen: false,
+                isComponentEditDialogOpen: false,
             };
 
             this.renderConnectionContent = this.renderConnectionContent.bind(this);
             this.renderComponentContent = this.renderComponentContent.bind(this);
-            this.onOpenDialog = this.onOpenDialog.bind(this);
-            this.onCloseDialog = this.onCloseDialog.bind(this);
+            this.onOpenConnectionDialog = this.onOpenConnectionDialog.bind(this);
+            this.onCloseConnectionDialog = this.onCloseConnectionDialog.bind(this);
+            this.onOpenComponentDialog = this.onOpenComponentDialog.bind(this);
+            this.onCloseComponentDialog = this.onCloseComponentDialog.bind(this);
         }
 
         public componentDidMount() {
@@ -124,7 +132,7 @@ const OpenAPIOverview = withStyles(styles)(
                                         color="primary"
                                         size="small"
                                         className={classes.saveAllButton}
-                                        onClick={() => {}}
+                                        onClick={() => { }}
                                     >
                                         Save All connections
                                     </Button>
@@ -133,7 +141,7 @@ const OpenAPIOverview = withStyles(styles)(
                                         color="primary"
                                         size="small"
                                         className={classes.saveAllButton}
-                                        onClick={() => {}}
+                                        onClick={() => { }}
                                     >
                                         Save All components
                                     </Button>
@@ -165,6 +173,11 @@ const OpenAPIOverview = withStyles(styles)(
                                 </Box>
                                 <Box display="flex" flexDirection="column" alignItems="flex-start">
                                     {this.renderConnectionContent({ listItems: connectionsListItems })}
+                                    <EditConnectionDialog
+                                        open={this.state.isConnectionEditDialogOpen}
+                                        onClose={this.onCloseConnectionDialog}
+                                        connection={this.state.connectionToEdit}
+                                    />
                                 </Box>
 
                             </Box>
@@ -187,6 +200,11 @@ const OpenAPIOverview = withStyles(styles)(
 
                                 <Box display="flex" flexDirection="column" alignItems="flex-start">
                                     {this.renderComponentContent({ listItems: componentsListItems })}
+                                    <EditComponentDialog
+                                        open={this.state.isComponentEditDialogOpen}
+                                        onClose={this.onCloseComponentDialog}
+                                        component={this.state.componentToEdit}
+                                    />
                                 </Box>
                             </Box>
                         </Box>
@@ -210,11 +228,11 @@ const OpenAPIOverview = withStyles(styles)(
                     label: <Translate msg="doc.overview.common_columns.description" />,
                 },
                 host: {
-                    fixedWidth: '35%',
+                    fixedWidth: '25%',
                     label: <Translate msg="doc.overview.connection_columns.host" />,
                 },
                 baseUrl: {
-                    fixedWidth: '35%',
+                    fixedWidth: '20%',
                     label: <Translate msg="doc.overview.connection_columns.baseUrl" />,
                 },
                 tls: {
@@ -241,6 +259,11 @@ const OpenAPIOverview = withStyles(styles)(
                             icon: <Delete />,
                             label: translator('doc.overview.action_buttons.delete'),
                             onClick: (id) => this.props.dispatch(deleteConnection({ id })),
+                        },
+                        {
+                            icon: <Edit />,
+                            label: '',
+                            onClick: (_, index) => this.onOpenConnectionDialog(connections[index]),
                         },
                     ]}
                     columns={columns}
@@ -290,6 +313,11 @@ const OpenAPIOverview = withStyles(styles)(
                             onClick: (_, index) => triggerCreateComponent(components[index]),
                         },
                         {
+                            icon: <Edit />,
+                            label: '',
+                            onClick: (_, index) => this.onOpenComponentDialog(components[index]),
+                        },
+                        {
                             icon: <Delete />,
                             label: translator('doc.overview.action_buttons.delete'),
                             onClick: (id) => this.props.dispatch(deleteComponent({ id })),
@@ -301,12 +329,23 @@ const OpenAPIOverview = withStyles(styles)(
             );
         }
 
-        public onOpenDialog() {
-            this.setState((state) => ({ ...state, isDialogOpen: true }));
+        public onOpenConnectionDialog(connection: IConnectionEntity) {
+            this.setState({
+                isConnectionEditDialogOpen: true,
+                connectionToEdit: connection,
+            });
         }
 
-        public onCloseDialog() {
-            this.setState((state) => ({ ...state, isDialogOpen: true }));
+        public onOpenComponentDialog(component: IComponentEntity) {
+            this.setState({ isComponentEditDialogOpen: true, componentToEdit: component });
+        }
+
+        public onCloseConnectionDialog() {
+            this.setState({ isConnectionEditDialogOpen: false });
+        }
+
+        public onCloseComponentDialog() {
+            this.setState({ isComponentEditDialogOpen: false });
         }
     },
 );
@@ -340,6 +379,8 @@ function mapComponentsToListItems(components: IComponentEntity[]): IListItem<ICo
 }
 
 export default observe<TProps>([
+    StateChangeNotification.CONNECTION_EDIT,
     StateChangeNotification.CONNECTION_DELETE,
     StateChangeNotification.COMPONENT_DELETE,
+    StateChangeNotification.COMPONENT_EDIT,
 ], OpenAPIOverview);

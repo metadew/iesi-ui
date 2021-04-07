@@ -289,7 +289,25 @@ doc:
       file_helper: 'Only .JSON and .YAML are accepted'
       validate: 'Validate'
     edit:
-      title: 'Edit the {entityName} values'
+      connection:
+        title: 'Edit the connection values'
+        name: 'Name'
+        description: 'Description'
+        host: 'Host'
+        baseUrl: 'BaseUrl'
+        tls: 'Tls'
+        environment: 'Environment'
+      titleConnection: 
+      component:
+        titleComponent: 'Edit the component values'
+        name: 'Name'
+        description: 'Description'
+        versionNumber: 'Version number'
+        versionDescription: 'Version description'
+        endpoint: 'Endpoint'
+        type: 'Type'
+        connection: 'Connection'
+
   overview:
     openapi_title: 'Open API Title : {title}'
     openapi_version:  'Open API Version : {version}'

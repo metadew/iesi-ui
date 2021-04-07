@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import {
     Button,
     Box,
@@ -12,15 +12,10 @@ import ClosableDialog from 'views/common/layout/ClosableDialog';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getTranslator } from 'state/i18n/selectors';
 import { IObserveProps, observe } from 'views/observe';
-import { IConnectionEntity } from 'models/state/connections.model';
-import { getAsyncEnvironments } from 'state/entities/environments/selectors';
-import entitiesStateManager from 'state/entities/entitiesStateManager';
-import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
-import Loader from 'views/common/waiting/Loader';
-import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
-import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
-import { editConnection } from 'state/ui/actions';
+import { editComponent } from 'state/ui/actions';
 import { StateChangeNotification } from 'models/state.models';
+import { getAsyncTransformResultEntity } from 'state/entities/openapi/selectors';
+import { IComponentEntity } from 'models/state/components.model';
 
 const useStyles = makeStyles(({ palette, typography }: Theme) => ({
     generateTooltip: {
@@ -60,54 +55,46 @@ const useStyles = makeStyles(({ palette, typography }: Theme) => ({
 interface IPublicProps {
     open: boolean;
     onClose: () => void;
-    connection: IConnectionEntity | undefined;
+    component: IComponentEntity | undefined;
 }
 
-function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IPublicProps & IObserveProps) {
+function EditComponentDialog({ onClose, open, state, dispatch, component }: IPublicProps & IObserveProps) {
     const classes = useStyles();
     const translator = getTranslator(state);
-    const environments = getAsyncEnvironments(state).data;
-    const environmentsAsyncInfo = entitiesStateManager.getAsyncEntity({
-        asyncEntityKey: ASYNC_ENTITY_KEYS.environments,
-    }).fetch;
+    const { connections = [] } = getAsyncTransformResultEntity(state).data || {};
     const nameInput = useRef<HTMLInputElement>();
     const descriptionInput = useRef<HTMLInputElement>();
-    const hostInput = useRef<HTMLInputElement>();
-    const baseUrlInput = useRef<HTMLInputElement>();
-    const tlsInput = useRef<HTMLInputElement>();
-    const envSelect = useRef<HTMLSelectElement>();
+    const versionNumberInput = useRef<HTMLInputElement>();
+    const versionDescInput = useRef<HTMLInputElement>();
+    const endpointInput = useRef<HTMLInputElement>();
+    const typeInput = useRef<HTMLInputElement>();
+    const connSelect = useRef<HTMLSelectElement>();
 
-    // Trigger Fetch envs on open dialog
-    useEffect(() => {
-        if (open) {
-            triggerFetchEnvironments();
-        } else {
-            // Reset form & async status
-        }
-        return () => { };
-    }, [open]);
-
-    if (!connection) return <></>;
+    if (!component) return <></>;
 
     const onValidateClick = () => {
         onClose();
-        dispatch(editConnection({
-            currentConnection: connection,
-            newConnection: {
+        dispatch(editComponent({
+            currentComponent: component,
+            newComponent: {
                 name: nameInput.current.value,
-                type: connection.type,
+                type: component.type,
                 description: descriptionInput.current.value,
-                environment: envSelect.current.value,
+                version: {
+                    number: parseFloat(versionNumberInput.current.value),
+                    description: versionDescInput.current.value,
+                },
                 parameters: [{
-                    name: 'baseUrl',
-                    value: baseUrlInput.current.value,
+                    name: 'endpoint',
+                    value: endpointInput.current.value,
                 }, {
-                    name: 'host',
-                    value: hostInput.current.value,
+                    name: 'type',
+                    value: typeInput.current.value,
                 }, {
-                    name: 'tls',
-                    value: tlsInput.current.value,
+                    name: 'connection',
+                    value: connSelect.current.value,
                 }],
+                attributes: [],
             },
         }));
     };
@@ -116,9 +103,8 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
         <ClosableDialog
             onClose={onClose}
             open={open}
-            title={translator('doc.dialog.edit.connection.title')}
+            title={translator('doc.dialog.edit.component.title')}
         >
-            <Loader show={environmentsAsyncInfo.status === AsyncStatus.Busy} />
             <Box marginX="auto" width="100%">
                 <Box
                     display="flex"
@@ -129,57 +115,65 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
                 >
                     <TextField
                         variant="filled"
-                        defaultValue={connection.name}
-                        label={translator('doc.dialog.edit.connection.name')}
+                        defaultValue={component.name}
+                        label={translator('doc.dialog.edit.component.name')}
                         fullWidth
                         inputRef={nameInput}
                         className={classes.input}
                     />
                     <TextField
                         variant="filled"
-                        defaultValue={connection.description}
-                        label={translator('doc.dialog.edit.connection.description')}
+                        defaultValue={component.description}
+                        label={translator('doc.dialog.edit.component.description')}
                         fullWidth
                         inputRef={descriptionInput}
                         className={classes.input}
                     />
                     <TextField
                         variant="filled"
-                        defaultValue={connection.parameters[1].value}
-                        label={translator('doc.dialog.edit.connection.host')}
+                        defaultValue={component.version.number}
+                        label={translator('doc.dialog.edit.component.versionNumber')}
                         fullWidth
-                        inputRef={hostInput}
+                        inputRef={versionNumberInput}
                         className={classes.input}
                     />
                     <TextField
                         variant="filled"
-                        defaultValue={connection.parameters[0].value}
-                        label={translator('doc.dialog.edit.connection.baseUrl')}
+                        defaultValue={component.version.description}
+                        label={translator('doc.dialog.edit.component.versionDescription')}
                         fullWidth
-                        inputRef={baseUrlInput}
+                        inputRef={versionDescInput}
                         className={classes.input}
                     />
                     <TextField
                         variant="filled"
-                        defaultValue={connection.parameters[2].value}
-                        label={translator('doc.dialog.edit.connection.tls')}
+                        defaultValue={component.parameters[0].value}
+                        label={translator('doc.dialog.edit.component.endpoint')}
                         fullWidth
-                        inputRef={tlsInput}
+                        inputRef={endpointInput}
+                        className={classes.input}
+                    />
+                    <TextField
+                        variant="filled"
+                        defaultValue={component.parameters[1].value}
+                        label={translator('doc.dialog.edit.component.type')}
+                        fullWidth
+                        inputRef={typeInput}
                         className={classes.input}
                     />
                     <Select
-                        labelId="connection-environment-label"
-                        id="connection-environment"
-                        defaultValue={connection.environment}
-                        inputRef={envSelect}
+                        labelId="connection-label"
+                        id="connection"
+                        defaultValue={component.parameters[2].value}
+                        inputRef={connSelect}
                         className={`${classes.select} ${classes.input}`}
                     >
-                        {environments && environments.map((env) => (
+                        {connections && connections.map((connection) => (
                             <MenuItem
-                                key={JSON.stringify(env.name)}
-                                value={env.name}
+                                key={JSON.stringify(connection.name)}
+                                value={connection.name}
                             >
-                                {env.name}
+                                {connection.name}
                             </MenuItem>
                         ))}
                     </Select>
@@ -213,4 +207,4 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
     );
 }
 
-export default observe<IPublicProps>([StateChangeNotification.ENVIRONMENTS], EditConnectionDialog);
+export default observe<IPublicProps>([StateChangeNotification.ENVIRONMENTS], EditComponentDialog);
