@@ -57,7 +57,8 @@ interface ICreateAsyncEntityActionPropsBase
     nrOfParentNotificationLevelsToTrigger?: TNrOfParentNotificationLevelsToTrigger;
     dispatch: Dispatch<Action>;
     onSuccess: (props: { dispatch: Dispatch<Action> }) => void;
-    onFail: (props: { dispatch: Dispatch<Action> }) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onFail: (props: { dispatch: Dispatch<Action>; error: any }) => void;
 }
 
 interface ICreateFetchAsyncEntityActionProps
@@ -351,7 +352,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                     });
                 } catch (error) {
                     if (typeof onFail === 'function') {
-                        onFail({ dispatch });
+                        onFail({ dispatch, error });
                     }
 
                     updateAsyncEntityInState(

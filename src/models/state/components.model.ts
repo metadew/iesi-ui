@@ -5,6 +5,7 @@ export interface IComponentEntity {
     version: IComponentVersion;
     parameters: IComponentParameter[];
     attributes: IComponentAttribute[];
+    isHandled: boolean;
 }
 
 export interface IComponentVersion {

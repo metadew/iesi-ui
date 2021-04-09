@@ -4,6 +4,7 @@ export interface IConnectionEntity {
     description: string;
     environment: string;
     parameters: IConnectionParameter[];
+    isHandled: boolean;
 }
 
 export interface IConnectionParameter {

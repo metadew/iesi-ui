@@ -12,5 +12,16 @@ export function transformDocumentation({ value }: IOpenAPI) {
         headers: {
             'Content-Type': value instanceof FormData ? 'multipart/form-data' : 'application/json',
         },
+        mapResponse: ({ data }) => ({
+            ...data,
+            connections: data.connections.map((connection) => ({
+                ...connection,
+                isHandled: false,
+            })),
+            components: data.components.map((component) => ({
+                ...component,
+                isHandled: false,
+            })),
+        }),
     });
 }

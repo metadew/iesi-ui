@@ -16,6 +16,7 @@ import { editComponent } from 'state/ui/actions';
 import { StateChangeNotification } from 'models/state.models';
 import { getAsyncTransformResultEntity } from 'state/entities/openapi/selectors';
 import { IComponentEntity } from 'models/state/components.model';
+import { componentsEqual } from 'utils/components/componentUtils';
 
 const useStyles = makeStyles(({ palette, typography }: Theme) => ({
     generateTooltip: {
@@ -73,30 +74,35 @@ function EditComponentDialog({ onClose, open, state, dispatch, component }: IPub
     if (!component) return <></>;
 
     const onValidateClick = () => {
-        onClose();
-        dispatch(editComponent({
-            currentComponent: component,
-            newComponent: {
-                name: nameInput.current.value,
-                type: component.type,
-                description: descriptionInput.current.value,
-                version: {
-                    number: parseFloat(versionNumberInput.current.value),
-                    description: versionDescInput.current.value,
-                },
-                parameters: [{
-                    name: 'endpoint',
-                    value: endpointInput.current.value,
-                }, {
-                    name: 'type',
-                    value: typeInput.current.value,
-                }, {
-                    name: 'connection',
-                    value: connSelect.current.value,
-                }],
-                attributes: [],
+        const newComponent: IComponentEntity = {
+            name: nameInput.current.value,
+            type: component.type,
+            description: descriptionInput.current.value,
+            version: {
+                number: parseFloat(versionNumberInput.current.value),
+                description: versionDescInput.current.value,
             },
-        }));
+            parameters: [{
+                name: 'endpoint',
+                value: endpointInput.current.value,
+            }, {
+                name: 'type',
+                value: typeInput.current.value,
+            }, {
+                name: 'connection',
+                value: connSelect.current.value,
+            }],
+            attributes: [],
+            isHandled: true,
+        };
+
+        if (!componentsEqual(component, newComponent)) {
+            dispatch(editComponent({
+                currentComponent: component,
+                newComponent,
+            }));
+        }
+        onClose();
     };
 
     return (

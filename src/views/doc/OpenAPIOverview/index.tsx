@@ -101,6 +101,8 @@ const OpenAPIOverview = withStyles(styles)(
             const connectionsListItems = mapConnectionsToListItems(connections);
             const componentsListItems = mapComponentsToListItems(components);
 
+            console.log(state.entities.openapi);
+
             return (
                 <Box height="100%" display="flex" flexDirection="column" flex="1 0 auto">
                     <Box
@@ -219,11 +221,11 @@ const OpenAPIOverview = withStyles(styles)(
             const { connections = [] } = getAsyncTransformResultEntity(state).data || {};
             const columns: ListColumns<IConnectionColumnNames> = {
                 name: {
-                    fixedWidth: '35%',
+                    fixedWidth: '20%',
                     label: <Translate msg="doc.overview.common_columns.name" />,
                 },
                 description: {
-                    fixedWidth: '35%',
+                    fixedWidth: '20%',
                     noWrap: true,
                     label: <Translate msg="doc.overview.common_columns.description" />,
                 },
@@ -240,7 +242,7 @@ const OpenAPIOverview = withStyles(styles)(
                     label: <Translate msg="doc.overview.connection_columns.tls" />,
                 },
                 environment: {
-                    fixedWidth: '35%',
+                    fixedWidth: '45%',
                     label: <Translate msg="doc.overview.connection_columns.environment" />,
                 },
             };
@@ -256,14 +258,14 @@ const OpenAPIOverview = withStyles(styles)(
                             },
                         },
                         {
+                            icon: <Edit />,
+                            label: translator('doc.overview.action_buttons.edit'),
+                            onClick: (_, index) => this.onOpenConnectionDialog(connections[index]),
+                        },
+                        {
                             icon: <Delete />,
                             label: translator('doc.overview.action_buttons.delete'),
                             onClick: (id) => this.props.dispatch(deleteConnection({ id })),
-                        },
-                        {
-                            icon: <Edit />,
-                            label: '',
-                            onClick: (_, index) => this.onOpenConnectionDialog(connections[index]),
                         },
                     ]}
                     columns={columns}
@@ -314,7 +316,7 @@ const OpenAPIOverview = withStyles(styles)(
                         },
                         {
                             icon: <Edit />,
-                            label: '',
+                            label: translator('doc.overview.action_buttons.edit'),
                             onClick: (_, index) => this.onOpenComponentDialog(components[index]),
                         },
                         {
@@ -361,6 +363,7 @@ function mapConnectionsToListItems(connections: IConnectionEntity[]): IListItem<
             tls: connection.parameters[2].value,
             environment: connection.environment,
         },
+        isHandled: connection.isHandled,
     }));
 }
 
@@ -375,12 +378,15 @@ function mapComponentsToListItems(components: IComponentEntity[]): IListItem<ICo
             type: component.parameters[1].value,
             connection: component.parameters[2].value,
         },
+        isHandled: component.isHandled,
     }));
 }
 
 export default observe<TProps>([
+    StateChangeNotification.CONNECTION_HANDLE,
     StateChangeNotification.CONNECTION_EDIT,
     StateChangeNotification.CONNECTION_DELETE,
+    StateChangeNotification.COMPONENT_HANDLE,
     StateChangeNotification.COMPONENT_DELETE,
     StateChangeNotification.COMPONENT_EDIT,
 ], OpenAPIOverview);

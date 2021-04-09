@@ -186,6 +186,31 @@ export const setExecutionsListFilter = (payload: {
     },
 });
 
+export const handleConnection = (payload: {
+    currentConnection: IConnectionEntity;
+}) => createAction<{
+    currentConnection: IConnectionEntity;
+}>({
+    type: 'CONNECTION.HANDLE',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                const { currentConnection } = payload;
+                const { connections } = draftState.entities.openapi.data;
+                const currentConnectionId = getUniqueIdFromConnection(currentConnection);
+                // eslint-disable-next-line no-param-reassign
+                draftState.entities.openapi.data.connections = connections
+                    .map((connection) => (getUniqueIdFromConnection(connection) === currentConnectionId
+                        ? { ...connection, isHandled: true }
+                        : connection
+                    ));
+            },
+            notificationsToTrigger: [StateChangeNotification.CONNECTION_HANDLE],
+        });
+    },
+});
+
 export const deleteConnection = (payload: { id: ReactText }) => createAction<{ id: ReactText }>({
     type: 'CONNECTION.DELETE',
     payload,
@@ -203,7 +228,7 @@ export const deleteConnection = (payload: { id: ReactText }) => createAction<{ i
 });
 
 export const deleteComponent = (payload: { id: ReactText }) => createAction<{ id: ReactText }>({
-    type: 'CONNECTION.DELETE',
+    type: 'COMPONENT.DELETE',
     payload,
     process({ setStateImmutable }) {
         setStateImmutable({
@@ -214,6 +239,31 @@ export const deleteComponent = (payload: { id: ReactText }) => createAction<{ id
                     .filter((component) => getUniqueIdFromComponent(component) !== payload.id);
             },
             notificationsToTrigger: [StateChangeNotification.COMPONENT_DELETE],
+        });
+    },
+});
+
+export const handleComponent = (payload: {
+    currentComponent: IComponentEntity;
+}) => createAction<{
+    currentComponent: IComponentEntity;
+}>({
+    type: 'COMPONENT.HANDLE',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                const { currentComponent } = payload;
+                const { components } = draftState.entities.openapi.data;
+                const currentComponentId = getUniqueIdFromComponent(currentComponent);
+                // eslint-disable-next-line no-param-reassign
+                draftState.entities.openapi.data.components = components
+                    .map((component) => (getUniqueIdFromComponent(component) === currentComponentId
+                        ? { ...component, isHandled: true }
+                        : component
+                    ));
+            },
+            notificationsToTrigger: [StateChangeNotification.COMPONENT_HANDLE],
         });
     },
 });

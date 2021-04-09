@@ -1,6 +1,6 @@
 import entitiesStateManager from 'state/entities/entitiesStateManager';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
-import { triggerFlashMessage } from 'state/ui/actions';
+import { triggerFlashMessage, handleConnection } from 'state/ui/actions';
 import { IConnectionEntity } from 'models/state/connections.model';
 
 export const triggerUpdateConnection = (payload: IConnectionEntity) =>
@@ -19,15 +19,18 @@ export const triggerUpdateConnection = (payload: IConnectionEntity) =>
                 },
                 type: 'success',
             }));
+            dispatch(handleConnection({ currentConnection: payload }));
         },
-        onFail: ({ dispatch }) => {
-            dispatch(triggerFlashMessage({
-                translationKey: 'flash_messages.openapi.connection_unknown_error',
-                translationPlaceholders: {
-                    connectionName: payload.name,
-                },
-                type: 'error',
-            }));
+        onFail: ({ dispatch, error }) => {
+            if (error.status) {
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.common.responseError',
+                    translationPlaceholders: {
+                        message: error.response?.message,
+                    },
+                    type: 'error',
+                }));
+            }
         },
     });
 
@@ -44,8 +47,29 @@ export const triggerCreateConnection = (payload: IConnectionEntity) =>
                 translationKey: 'flash_messages.openapi.connection_successfully_created',
                 type: 'success',
             }));
+            dispatch(handleConnection({ currentConnection: payload }));
         },
-        onFail: () => {
-            triggerUpdateConnection(payload);
+        onFail: ({ dispatch, error }) => {
+            let message = 'Unknown error';
+            if (error.status) {
+                switch (error.status) {
+                    case 404:
+                        triggerUpdateConnection(payload);
+                        return;
+                    case -1:
+                        message = 'Cannot connect to the server';
+                        break;
+                    default:
+                        message = error.response?.message;
+                        break;
+                }
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.common.responseError',
+                    translationPlaceholders: {
+                        message,
+                    },
+                    type: 'error',
+                }));
+            }
         },
     });

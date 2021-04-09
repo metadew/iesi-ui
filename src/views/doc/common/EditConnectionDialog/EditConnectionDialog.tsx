@@ -21,6 +21,7 @@ import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/ent
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { editConnection } from 'state/ui/actions';
 import { StateChangeNotification } from 'models/state.models';
+import { connectionsEqual } from 'utils/connections/connectionUtils';
 
 const useStyles = makeStyles(({ palette, typography }: Theme) => ({
     generateTooltip: {
@@ -90,26 +91,30 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
     if (!connection) return <></>;
 
     const onValidateClick = () => {
+        const newConnection: IConnectionEntity = {
+            name: nameInput.current.value,
+            type: connection.type,
+            description: descriptionInput.current.value,
+            environment: envSelect.current.value,
+            parameters: [{
+                name: 'baseUrl',
+                value: baseUrlInput.current.value,
+            }, {
+                name: 'host',
+                value: hostInput.current.value,
+            }, {
+                name: 'tls',
+                value: tlsInput.current.value,
+            }],
+            isHandled: true,
+        };
+        if (!connectionsEqual(connection, newConnection)) {
+            dispatch(editConnection({
+                currentConnection: connection,
+                newConnection,
+            }));
+        }
         onClose();
-        dispatch(editConnection({
-            currentConnection: connection,
-            newConnection: {
-                name: nameInput.current.value,
-                type: connection.type,
-                description: descriptionInput.current.value,
-                environment: envSelect.current.value,
-                parameters: [{
-                    name: 'baseUrl',
-                    value: baseUrlInput.current.value,
-                }, {
-                    name: 'host',
-                    value: hostInput.current.value,
-                }, {
-                    name: 'tls',
-                    value: tlsInput.current.value,
-                }],
-            },
-        }));
     };
 
     return (
@@ -142,6 +147,9 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
                         fullWidth
                         inputRef={descriptionInput}
                         className={classes.input}
+                        style={{ whiteSpace: 'pre-line' }}
+                        rows={10}
+                        multiline
                     />
                     <TextField
                         variant="filled"

@@ -112,7 +112,8 @@ export interface ITriggerAsyncEntityOperationBaseProps<State, ExtraInput extends
     notificationsToTrigger?: StateChangeNotificationKey[];
     nrOfParentNotificationLevelsToTrigger?: TNrOfParentNotificationLevelsToTrigger;
     onSuccess?: (props: { dispatch: Dispatch<Action> }) => void;
-    onFail?: (props: { dispatch: Dispatch<Action> }) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onFail?: (props: { dispatch: Dispatch<Action>; error: any }) => void;
 }
 
 export interface ITriggerAsyncEntityCreateProps<State, ExtraInput extends object, StateChangeNotificationKey>

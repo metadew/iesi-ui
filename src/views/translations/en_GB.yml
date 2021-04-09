@@ -43,6 +43,8 @@ error:
   timeout: The server did not respond in a timely fashion. Please try again.
   fetch_env: Could not fetch ENV
 flash_messages:
+  common:
+    responseError: '{message}'
   execution_request:
     run_finished: 'Script execution "{scriptName}" is finished!'
   openapi:
@@ -330,10 +332,10 @@ doc:
       type: 'Type'
       connection: 'Connection'
     action_buttons:
-      save: 'Save'
-      update: 'Update'
-      delete: 'Delete'
-      edit: 'Edit'
+      save: 'Save to database, if existing, update it'
+      edit: 'Edit the table cells'
+      delete: 'Delete from the table'
+
 
 
       
