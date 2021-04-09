@@ -50,6 +50,10 @@ const styles = ({ palette, typography }: Theme) =>
         listHeading: {
             fontWeight: 'bold',
         },
+        listSubHeading: {
+            color: palette.grey[500],
+            fontSize: typography.pxToRem(14),
+        },
         saveAllButton: {
             marginLeft: 4,
         },
@@ -100,8 +104,6 @@ const OpenAPIOverview = withStyles(styles)(
             } = state.entities.openapi.data || {};
             const connectionsListItems = mapConnectionsToListItems(connections);
             const componentsListItems = mapComponentsToListItems(components);
-
-            console.log(state.entities.openapi);
 
             return (
                 <Box height="100%" display="flex" flexDirection="column" flex="1 0 auto">
@@ -162,7 +164,11 @@ const OpenAPIOverview = withStyles(styles)(
                                 flexDirection="column"
                                 my={2}
                             >
-                                <Box display="flex" alignItems="center">
+                                <Box
+                                    display="flex"
+                                    flexDirection="column"
+                                    alignItems="flex-start"
+                                >
                                     <Typography
                                         variant="h5"
                                         className={classes.listHeading}
@@ -171,6 +177,12 @@ const OpenAPIOverview = withStyles(styles)(
                                             msg="doc.overview.connection_header_amount"
                                             placeholders={{ amount: connections.length }}
                                         />
+                                    </Typography>
+                                    <Typography
+                                        variant="h6"
+                                        className={classes.listSubHeading}
+                                    >
+                                        The connections must not have the name and environment at the same time
                                     </Typography>
                                 </Box>
                                 <Box display="flex" flexDirection="column" alignItems="flex-start">
