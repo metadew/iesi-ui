@@ -24,6 +24,7 @@ interface IPublicProps {
     open: boolean;
     onClose: () => void;
     children: ReactNode;
+    contentClassName?: string;
 }
 
 export default function ClosableDialog({
@@ -31,6 +32,7 @@ export default function ClosableDialog({
     open,
     title,
     children,
+    contentClassName,
 }: IPublicProps) {
     const classes = useStyles();
 
@@ -42,7 +44,7 @@ export default function ClosableDialog({
                     <Close />
                 </IconButton>
             </Box>
-            <Box className={classes.dialogContent} padding={3}>
+            <Box className={`${classes.dialogContent} ${contentClassName}`} padding={3}>
                 {children}
             </Box>
         </Dialog>

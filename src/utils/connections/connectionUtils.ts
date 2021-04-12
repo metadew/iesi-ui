@@ -26,6 +26,7 @@ export function connectionsEqual({
         && parameters[0].value === newParameters[0].value
         && parameters[1].value === newParameters[1].value
         && parameters[2].value === newParameters[2].value
+        && parameters[3].value === newParameters[3].value
     ) {
         return true;
     }

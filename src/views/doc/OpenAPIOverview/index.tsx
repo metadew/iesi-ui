@@ -16,7 +16,7 @@ import GenericList from 'views/common/list/GenericList';
 import { IListItem, ListColumns } from 'models/list.models';
 import { IConnectionEntity, IConnectionColumnNames } from 'models/state/connections.model';
 import { getUniqueIdFromConnection } from 'utils/connections/connectionUtils';
-import { Add, Delete, Edit } from '@material-ui/icons';
+import { Save, Edit, Delete } from '@material-ui/icons';
 import { getTranslator } from 'state/i18n/selectors';
 import { getAsyncTransformResultEntity } from 'state/entities/openapi/selectors';
 import { IComponentColumnNames, IComponentEntity } from 'models/state/components.model';
@@ -233,28 +233,32 @@ const OpenAPIOverview = withStyles(styles)(
             const { connections = [] } = getAsyncTransformResultEntity(state).data || {};
             const columns: ListColumns<IConnectionColumnNames> = {
                 name: {
-                    fixedWidth: '20%',
+                    fixedWidth: '25%',
                     label: <Translate msg="doc.overview.common_columns.name" />,
                 },
                 description: {
-                    fixedWidth: '20%',
+                    fixedWidth: '15%',
                     noWrap: true,
                     label: <Translate msg="doc.overview.common_columns.description" />,
                 },
                 host: {
-                    fixedWidth: '25%',
+                    fixedWidth: '15%',
                     label: <Translate msg="doc.overview.connection_columns.host" />,
                 },
+                port: {
+                    fixedWidth: '5%',
+                    label: <Translate msg="doc.overview.connection_columns.port" />,
+                },
                 baseUrl: {
-                    fixedWidth: '20%',
+                    fixedWidth: '10%',
                     label: <Translate msg="doc.overview.connection_columns.baseUrl" />,
                 },
                 tls: {
-                    fixedWidth: '35%',
+                    fixedWidth: '5%',
                     label: <Translate msg="doc.overview.connection_columns.tls" />,
                 },
                 environment: {
-                    fixedWidth: '45%',
+                    fixedWidth: '25%',
                     label: <Translate msg="doc.overview.connection_columns.environment" />,
                 },
             };
@@ -263,7 +267,7 @@ const OpenAPIOverview = withStyles(styles)(
                 <GenericList
                     listActions={[
                         {
-                            icon: <Add />,
+                            icon: <Save />,
                             label: translator('doc.overview.action_buttons.save'),
                             onClick: (_, index) => {
                                 triggerCreateConnection(connections[index]);
@@ -322,7 +326,7 @@ const OpenAPIOverview = withStyles(styles)(
                 <GenericList
                     listActions={[
                         {
-                            icon: <Add />,
+                            icon: <Save />,
                             label: translator('doc.overview.action_buttons.save'),
                             onClick: (_, index) => triggerCreateComponent(components[index]),
                         },
@@ -370,9 +374,10 @@ function mapConnectionsToListItems(connections: IConnectionEntity[]): IListItem<
         columns: {
             name: connection.name,
             description: connection.description,
-            host: connection.parameters[1].value,
-            baseUrl: connection.parameters[0].value,
-            tls: connection.parameters[2].value,
+            host: connection.parameters[0].value,
+            port: connection.parameters[1].value,
+            baseUrl: connection.parameters[2].value,
+            tls: connection.parameters[3].value,
             environment: connection.environment,
         },
         isHandled: connection.isHandled,

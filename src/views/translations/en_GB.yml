@@ -296,12 +296,15 @@ doc:
         name: 'Name'
         description: 'Description'
         host: 'Host'
+        port: 'Port'
         baseUrl: 'BaseUrl'
         tls: 'Tls'
         environment: 'Environment'
-      titleConnection: 
+        footer:
+          cancel: 'Discard changes'
+          save: 'Update connection'
       component:
-        title: 'Edit the component values'
+        title: Edit the component values
         name: 'Name'
         description: 'Description'
         versionNumber: 'Version number'
@@ -309,6 +312,9 @@ doc:
         endpoint: 'Endpoint'
         type: 'Type'
         connection: 'Connection'
+        footer:
+          cancel: 'Discard changes'
+          save: 'Update connection'
 
   overview:
     openapi_title: 'Open API Title : {title}'
@@ -323,6 +329,7 @@ doc:
       description: 'Description'
     connection_columns:
       host: 'Host'
+      port: 'Port'
       baseUrl: 'base URL'
       tls: 'TLS'
       environment: 'Environment'
