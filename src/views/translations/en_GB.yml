@@ -301,7 +301,7 @@ doc:
         environment: 'Environment'
       titleConnection: 
       component:
-        titleComponent: 'Edit the component values'
+        title: 'Edit the component values'
         name: 'Name'
         description: 'Description'
         versionNumber: 'Version number'
