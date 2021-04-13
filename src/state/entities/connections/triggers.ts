@@ -3,7 +3,7 @@ import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { triggerFlashMessage, handleConnection } from 'state/ui/actions';
 import { IConnectionEntity } from 'models/state/connections.model';
 
-export const triggerUpdateConnection = (payload: IConnectionEntity) =>
+export const triggerUpdateConnection = (payload: IConnectionEntity | IConnectionEntity[], bulk?: boolean) =>
     entitiesStateManager.triggerAsyncEntityUpdate<{}>({
         asyncEntityToUpdate: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.connections,
@@ -11,15 +11,22 @@ export const triggerUpdateConnection = (payload: IConnectionEntity) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [],
-        onSuccess: ({ dispatch }) => {
+        bulk,
+        onSuccess: ({ dispatch, currentEntity }) => {
             dispatch(triggerFlashMessage({
                 translationKey: 'flash_messages.openapi.connection_successfully_updated',
                 translationPlaceholders: {
-                    connectionName: payload.name,
+                    connectionName: currentEntity
+                        ? (currentEntity as IConnectionEntity).name
+                        : (payload as IConnectionEntity).name,
                 },
                 type: 'success',
             }));
-            dispatch(handleConnection({ currentConnection: payload }));
+            dispatch(handleConnection({
+                currentConnection: currentEntity
+                    ? currentEntity as IConnectionEntity
+                    : payload as IConnectionEntity,
+            }));
         },
         onFail: ({ dispatch, error }) => {
             if (error.status) {
@@ -34,7 +41,7 @@ export const triggerUpdateConnection = (payload: IConnectionEntity) =>
         },
     });
 
-export const triggerCreateConnection = (payload: IConnectionEntity) =>
+export const triggerCreateConnection = (payload: IConnectionEntity | IConnectionEntity[], bulk?: boolean) =>
     entitiesStateManager.triggerAsyncEntityCreate<{}>({
         asyncEntityToCreate: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.connections,
@@ -42,12 +49,17 @@ export const triggerCreateConnection = (payload: IConnectionEntity) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [],
-        onSuccess: ({ dispatch }) => {
+        bulk,
+        onSuccess: ({ dispatch, currentEntity }) => {
             dispatch(triggerFlashMessage({
                 translationKey: 'flash_messages.openapi.connection_successfully_created',
                 type: 'success',
             }));
-            dispatch(handleConnection({ currentConnection: payload }));
+            dispatch(handleConnection({
+                currentConnection: currentEntity
+                    ? currentEntity as IConnectionEntity
+                    : payload as IConnectionEntity,
+            }));
         },
         onFail: ({ dispatch, error }) => {
             let message = 'Unknown error';

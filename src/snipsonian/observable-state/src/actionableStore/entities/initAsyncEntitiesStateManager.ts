@@ -47,6 +47,7 @@ export default function initAsyncEntitiesStateManager
             nrOfParentNotificationLevelsToTrigger,
             onSuccess,
             onFail,
+            bulk,
         }: ITriggerAsyncEntityCreateProps<State, ExtraInput, StateChangeNotificationKey>): boolean {
             const { asyncEntityKey, updateDataOnSuccess } = asyncEntityToCreate;
             const operation = AsyncOperation.create;
@@ -73,6 +74,7 @@ export default function initAsyncEntitiesStateManager
                 dispatch: store.dispatch,
                 onSuccess,
                 onFail,
+                bulk,
             }));
 
             return true;
@@ -85,6 +87,7 @@ export default function initAsyncEntitiesStateManager
             nrOfParentNotificationLevelsToTrigger,
             onSuccess,
             onFail,
+            bulk,
         }: ITriggerAsyncEntityUpdateProps<State, ExtraInput, StateChangeNotificationKey>): boolean {
             const { asyncEntityKey, updateDataOnSuccess } = asyncEntityToUpdate;
             const operation = AsyncOperation.update;
@@ -112,6 +115,7 @@ export default function initAsyncEntitiesStateManager
                 dispatch: store.dispatch,
                 onSuccess,
                 onFail,
+                bulk,
             }));
 
             return true;
@@ -124,6 +128,7 @@ export default function initAsyncEntitiesStateManager
             nrOfParentNotificationLevelsToTrigger,
             onSuccess,
             onFail,
+            bulk,
         }: ITriggerAsyncEntityRemoveProps<State, ExtraInput, StateChangeNotificationKey>): boolean {
             const { asyncEntityKey } = asyncEntityToRemove;
             const operation = AsyncOperation.remove;
@@ -150,6 +155,7 @@ export default function initAsyncEntitiesStateManager
                 dispatch: store.dispatch,
                 onSuccess,
                 onFail,
+                bulk,
             }));
 
             return true;

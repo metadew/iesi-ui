@@ -21,12 +21,8 @@ import { getTranslator } from 'state/i18n/selectors';
 import { getAsyncTransformResultEntity } from 'state/entities/openapi/selectors';
 import { IComponentColumnNames, IComponentEntity } from 'models/state/components.model';
 import { getUniqueIdFromComponent } from 'utils/components/componentUtils';
-import {
-    triggerCreateConnection,
-} from 'state/entities/connections/triggers';
-import {
-    triggerCreateComponent,
-} from 'state/entities/components/triggers';
+import { triggerCreateConnection } from 'state/entities/connections/triggers';
+import { triggerCreateComponent } from 'state/entities/components/triggers';
 import { deleteComponent, deleteConnection } from 'state/ui/actions';
 import { StateChangeNotification } from 'models/state.models';
 import EditConnectionDialog from '../common/EditConnectionDialog/EditConnectionDialog';
@@ -136,7 +132,7 @@ const OpenAPIOverview = withStyles(styles)(
                                         color="primary"
                                         size="small"
                                         className={classes.saveAllButton}
-                                        onClick={() => { }}
+                                        onClick={() => triggerCreateConnection(connections, true)}
                                     >
                                         Save All connections
                                     </Button>
@@ -145,7 +141,7 @@ const OpenAPIOverview = withStyles(styles)(
                                         color="primary"
                                         size="small"
                                         className={classes.saveAllButton}
-                                        onClick={() => { }}
+                                        onClick={() => triggerCreateComponent(components, true)}
                                     >
                                         Save All components
                                     </Button>

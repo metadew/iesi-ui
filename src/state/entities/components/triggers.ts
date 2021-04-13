@@ -3,7 +3,7 @@ import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { handleComponent, triggerFlashMessage } from 'state/ui/actions';
 import { IComponentEntity } from 'models/state/components.model';
 
-export const triggerUpdateComponent = (payload: IComponentEntity) =>
+export const triggerUpdateComponent = (payload: IComponentEntity | IComponentEntity[], bulk?: boolean) =>
     entitiesStateManager.triggerAsyncEntityUpdate<{}>({
         asyncEntityToUpdate: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.components,
@@ -11,15 +11,21 @@ export const triggerUpdateComponent = (payload: IComponentEntity) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [],
-        onSuccess: ({ dispatch }) => {
+        bulk,
+        onSuccess: ({ dispatch, currentEntity }) => {
             dispatch(triggerFlashMessage({
                 translationKey: 'flash_messages.openapi.component_successfully_updated',
                 translationPlaceholders: {
-                    componentName: payload.name,
+                    componentName: currentEntity
+                        ? (currentEntity as IComponentEntity).name
+                        : (payload as IComponentEntity).name,
                 },
                 type: 'success',
             }));
-            dispatch(handleComponent({ currentComponent: payload }));
+            dispatch(handleComponent({ currentComponent: currentEntity
+                ? currentEntity as IComponentEntity
+                : payload as IComponentEntity,
+            }));
         },
         onFail: ({ dispatch, error }) => {
             if (error.status) {
@@ -33,7 +39,7 @@ export const triggerUpdateComponent = (payload: IComponentEntity) =>
             }
         },
     });
-export const triggerCreateComponent = (payload: IComponentEntity) =>
+export const triggerCreateComponent = (payload: IComponentEntity | IComponentEntity[], bulk?: boolean) =>
     entitiesStateManager.triggerAsyncEntityCreate<{}>({
         asyncEntityToCreate: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.components,
@@ -41,22 +47,28 @@ export const triggerCreateComponent = (payload: IComponentEntity) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [],
-        onSuccess: ({ dispatch }) => {
+        bulk,
+        onSuccess: ({ dispatch, currentEntity }) => {
             dispatch(triggerFlashMessage({
                 translationKey: 'flash_messages.openapi.component_successfully_created',
                 translationPlaceholders: {
-                    componentName: payload.name,
+                    componentName: currentEntity
+                        ? (currentEntity as IComponentEntity).name
+                        : (payload as IComponentEntity).name,
                 },
                 type: 'success',
             }));
-            dispatch(handleComponent({ currentComponent: payload }));
+            dispatch(handleComponent({ currentComponent: currentEntity
+                ? currentEntity as IComponentEntity
+                : payload as IComponentEntity,
+            }));
         },
         onFail: ({ dispatch, error }) => {
             let message = 'Unknown error';
             if (error.status) {
                 switch (error.status) {
                     case 404:
-                        triggerUpdateComponent(payload);
+                        triggerUpdateComponent(payload, bulk);
                         return;
                     case -1:
                         message = 'Cannot connect to the server';
