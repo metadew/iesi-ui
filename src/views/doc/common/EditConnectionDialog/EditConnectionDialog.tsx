@@ -4,9 +4,11 @@ import {
     Box,
     TextField,
     makeStyles,
-    Theme,
     Select,
     MenuItem,
+    FormControl,
+    InputLabel,
+    ButtonGroup,
 } from '@material-ui/core';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -23,36 +25,20 @@ import { editConnection } from 'state/ui/actions';
 import { StateChangeNotification } from 'models/state.models';
 import { connectionsEqual } from 'utils/connections/connectionUtils';
 
-const useStyles = makeStyles(({ palette, typography }: Theme) => ({
-    generateTooltip: {
-        backgroundColor: palette.common.black,
-        fontSize: typography.pxToRem(12),
-        padding: 16,
-    },
-    generateTooltipArrow: {
-        color: palette.common.black,
-    },
-    inputDivider: {
-        marginTop: 4, marginBottom: 4,
-    },
-    fileHelper: {
-        marginTop: 2,
-        marginBottom: 2,
-        fontSize: typography.pxToRem(12),
-        color: palette.grey[500],
-    },
-    validateButton: {
-        marginRight: 8,
+const useStyles = makeStyles(() => ({
+    content: {
+        width: '600px',
     },
     input: {
-        marginTop: 4,
-        marginBottom: 4,
+        marginTop: 6,
+        marginBottom: 6,
     },
     select: {
         alignSelf: 'flex-start',
         width: '100%',
     },
     footer: {
+        width: '100%',
         marginTop: 8,
         marginbottom: 4,
     },
@@ -74,6 +60,7 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
     const nameInput = useRef<HTMLInputElement>();
     const descriptionInput = useRef<HTMLInputElement>();
     const hostInput = useRef<HTMLInputElement>();
+    const portInput = useRef<HTMLInputElement>();
     const baseUrlInput = useRef<HTMLInputElement>();
     const tlsInput = useRef<HTMLInputElement>();
     const envSelect = useRef<HTMLSelectElement>();
@@ -97,11 +84,14 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
             description: descriptionInput.current.value,
             environment: envSelect.current.value,
             parameters: [{
-                name: 'baseUrl',
-                value: baseUrlInput.current.value,
-            }, {
                 name: 'host',
                 value: hostInput.current.value,
+            }, {
+                name: 'port',
+                value: portInput.current.value,
+            }, {
+                name: 'baseUrl',
+                value: baseUrlInput.current.value,
             }, {
                 name: 'tls',
                 value: tlsInput.current.value,
@@ -122,6 +112,7 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
             onClose={onClose}
             open={open}
             title={translator('doc.dialog.edit.connection.title')}
+            contentClassName={classes.content}
         >
             <Loader show={environmentsAsyncInfo.status === AsyncStatus.Busy} />
             <Box marginX="auto" width="100%">
@@ -153,7 +144,7 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
                     />
                     <TextField
                         variant="filled"
-                        defaultValue={connection.parameters[1].value}
+                        defaultValue={connection.parameters[0].value}
                         label={translator('doc.dialog.edit.connection.host')}
                         fullWidth
                         inputRef={hostInput}
@@ -161,7 +152,15 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
                     />
                     <TextField
                         variant="filled"
-                        defaultValue={connection.parameters[0].value}
+                        defaultValue={connection.parameters[1].value}
+                        label={translator('doc.dialog.edit.connection.port')}
+                        fullWidth
+                        inputRef={portInput}
+                        className={classes.input}
+                    />
+                    <TextField
+                        variant="filled"
+                        defaultValue={connection.parameters[2].value}
                         label={translator('doc.dialog.edit.connection.baseUrl')}
                         fullWidth
                         inputRef={baseUrlInput}
@@ -169,52 +168,60 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
                     />
                     <TextField
                         variant="filled"
-                        defaultValue={connection.parameters[2].value}
+                        defaultValue={connection.parameters[3].value}
                         label={translator('doc.dialog.edit.connection.tls')}
                         fullWidth
                         inputRef={tlsInput}
                         className={classes.input}
                     />
-                    <Select
-                        labelId="connection-environment-label"
-                        id="connection-environment"
-                        defaultValue={connection.environment}
-                        inputRef={envSelect}
-                        className={`${classes.select} ${classes.input}`}
-                    >
-                        {environments && environments.map((env) => (
-                            <MenuItem
-                                key={JSON.stringify(env.name)}
-                                value={env.name}
-                            >
-                                {env.name}
+                    <FormControl className={`${classes.select} ${classes.input}`}>
+                        <InputLabel id="connection-environment-label">Environment</InputLabel>
+                        <Select
+                            labelId="connection-environment-label"
+                            id="connection-environment"
+                            defaultValue={connection.environment}
+                            inputRef={envSelect}
+                        >
+                            <MenuItem value={connection.environment}>
+                                {connection.environment}
                             </MenuItem>
-                        ))}
-                    </Select>
+                            {environments && environments.map((env) => (
+                                <MenuItem
+                                    key={JSON.stringify(env.name)}
+                                    value={env.name}
+                                >
+                                    {env.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
                 </Box>
             </Box>
             <Box display="flex" width="100%" justifyContent="flex-end" className={classes.footer}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    className={classes.validateButton}
-                    onClick={onValidateClick}
-                >
-                    <Translate
-                        msg="doc.dialog.transform.validate"
-                    />
-                </Button>
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    size="small"
-                    onClick={onClose}
-                >
-                    <Translate
-                        msg="common.action.cancel"
-                    />
-                </Button>
+                <ButtonGroup size="small">
+                    <Button
+                        variant="outlined"
+                        color="default"
+                        size="small"
+                        onClick={onClose}
+                    >
+                        <Translate
+                            msg="doc.dialog.edit.connection.footer.cancel"
+                        />
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        size="small"
+                        onClick={onValidateClick}
+                    >
+                        <Translate
+                            msg="doc.dialog.edit.connection.footer.save"
+                        />
+                    </Button>
+                </ButtonGroup>
+
             </Box>
         </ClosableDialog>
 

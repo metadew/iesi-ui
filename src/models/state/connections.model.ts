@@ -16,6 +16,7 @@ export interface IConnectionColumnNames {
     name: string;
     description: string;
     host: string;
+    port: string;
     baseUrl: string;
     tls: string;
     environment: string;
