@@ -54,6 +54,13 @@ export default function getMockState({
                     error: null,
                 },
             },
+            connectionTypes: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
             scripts: {
                 data: null,
                 fetch: {

@@ -137,6 +137,15 @@ entitiesConfigManager.register({
 });
 
 entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.connectionTypes,
+    operationsConfig: {
+        fetch: {
+            api: api.constants.fetchConnectionTypes,
+        },
+    },
+});
+
+entitiesConfigManager.register({
     asyncEntityKey: ASYNC_ENTITY_KEYS.openapi,
     operationsConfig: {
         create: {

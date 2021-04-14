@@ -206,7 +206,7 @@ export const handleConnection = (payload: {
                         : connection
                     ));
             },
-            notificationsToTrigger: [StateChangeNotification.CONNECTION_HANDLE],
+            notificationsToTrigger: [StateChangeNotification.HANDLE],
         });
     },
 });
@@ -263,7 +263,7 @@ export const handleComponent = (payload: {
                         : component
                     ));
             },
-            notificationsToTrigger: [StateChangeNotification.COMPONENT_HANDLE],
+            notificationsToTrigger: [StateChangeNotification.HANDLE],
         });
     },
 });

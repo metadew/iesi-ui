@@ -183,13 +183,14 @@ const OpenAPIOverview = withStyles(styles)(
                                 </Box>
                                 <Box display="flex" flexDirection="column" alignItems="flex-start">
                                     {this.renderConnectionContent({ listItems: connectionsListItems })}
-                                    <EditConnectionDialog
-                                        open={this.state.isConnectionEditDialogOpen}
-                                        onClose={this.onCloseConnectionDialog}
-                                        connection={this.state.connectionToEdit}
-                                    />
+                                    {this.state.isConnectionEditDialogOpen && (
+                                        <EditConnectionDialog
+                                            open={this.state.isConnectionEditDialogOpen}
+                                            onClose={this.onCloseConnectionDialog}
+                                            connection={this.state.connectionToEdit}
+                                        />
+                                    )}
                                 </Box>
-
                             </Box>
                             <Box
                                 display="flex"
@@ -370,10 +371,10 @@ function mapConnectionsToListItems(connections: IConnectionEntity[]): IListItem<
         columns: {
             name: connection.name,
             description: connection.description,
-            host: connection.parameters[0].value,
-            port: connection.parameters[1].value,
-            baseUrl: connection.parameters[2].value,
-            tls: connection.parameters[3].value,
+            host: connection.parameters.find((p) => p.name === 'host'),
+            port: connection.parameters.find((p) => p.name === 'port'),
+            baseUrl: connection.parameters.find((p) => p.name === 'baseUrl'),
+            tls: connection.parameters.find((p) => p.name === 'tls'),
             environment: connection.environment,
         },
         isHandled: connection.isHandled,
@@ -396,10 +397,10 @@ function mapComponentsToListItems(components: IComponentEntity[]): IListItem<ICo
 }
 
 export default observe<TProps>([
-    StateChangeNotification.CONNECTION_HANDLE,
+    StateChangeNotification.HANDLE,
+    StateChangeNotification.CONSTANTS_CONNECTION_TYPES,
     StateChangeNotification.CONNECTION_EDIT,
     StateChangeNotification.CONNECTION_DELETE,
-    StateChangeNotification.COMPONENT_HANDLE,
     StateChangeNotification.COMPONENT_DELETE,
     StateChangeNotification.COMPONENT_EDIT,
 ], OpenAPIOverview);

@@ -66,7 +66,7 @@ export const triggerCreateConnection = (payload: IConnectionEntity | IConnection
             if (error.status) {
                 switch (error.status) {
                     case 404:
-                        triggerUpdateConnection(payload);
+                        triggerUpdateConnection(payload, bulk);
                         return;
                     case -1:
                         message = 'Cannot connect to the server';

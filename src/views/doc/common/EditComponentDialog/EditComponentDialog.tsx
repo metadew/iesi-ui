@@ -13,7 +13,6 @@ import { IObserveProps, observe } from 'views/observe';
 import { editComponent } from 'state/ui/actions';
 import { StateChangeNotification } from 'models/state.models';
 import { IComponentEntity } from 'models/state/components.model';
-import { componentsEqual } from 'utils/components/componentUtils';
 
 const useStyles = makeStyles(() => ({
     content: {
@@ -52,34 +51,30 @@ function EditComponentDialog({ onClose, open, state, dispatch, component }: IPub
     if (!component) return <></>;
 
     const onValidateClick = () => {
-        const newComponent: IComponentEntity = {
-            name: nameInput.current.value,
-            type: component.type,
-            description: descriptionInput.current.value,
-            version: {
-                number: parseFloat(versionNumberInput.current.value),
-                description: versionDescInput.current.value,
+        dispatch(editComponent({
+            currentComponent: component,
+            newComponent: {
+                name: nameInput.current.value,
+                type: component.type,
+                description: descriptionInput.current.value,
+                version: {
+                    number: parseFloat(versionNumberInput.current.value),
+                    description: versionDescInput.current.value,
+                },
+                parameters: [{
+                    name: 'endpoint',
+                    value: endpointInput.current.value,
+                }, {
+                    name: 'type',
+                    value: typeInput.current.value,
+                }, {
+                    name: 'connection',
+                    value: component.parameters[2].value,
+                }],
+                attributes: [],
+                isHandled: component.isHandled,
             },
-            parameters: [{
-                name: 'endpoint',
-                value: endpointInput.current.value,
-            }, {
-                name: 'type',
-                value: typeInput.current.value,
-            }, {
-                name: 'connection',
-                value: component.parameters[2].value,
-            }],
-            attributes: [],
-            isHandled: true,
-        };
-
-        if (!componentsEqual(component, newComponent)) {
-            dispatch(editComponent({
-                currentComponent: component,
-                newComponent,
-            }));
-        }
+        }));
         onClose();
     };
 
@@ -89,6 +84,7 @@ function EditComponentDialog({ onClose, open, state, dispatch, component }: IPub
             open={open}
             title={translator('doc.dialog.edit.component.title')}
             contentClassName={classes.content}
+            maxWidth="lg"
         >
             <Box marginX="auto" width="100%">
                 <Box
@@ -151,9 +147,6 @@ function EditComponentDialog({ onClose, open, state, dispatch, component }: IPub
                         defaultValue={component.parameters[2].value}
                         label="Connection"
                         fullWidth
-                        inputProps={{
-                            readOnly: true,
-                        }}
                         className={classes.input}
                     />
                 </Box>

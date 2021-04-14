@@ -1,5 +1,4 @@
 import { IActionType, IConnectionType, IConstantParameter } from 'models/state/constants.models';
-import { IListResponse } from 'models/state/iesiGeneric.models';
 import { get } from 'api/requestWrapper';
 import API_URLS from '../apiUrls';
 
@@ -7,6 +6,12 @@ interface IActionTypeResponse {
     name: string;
     description: string;
     status: string;
+    parameters: IConstantParameter[];
+}
+
+interface IConnectionTypeResponse {
+    name: string;
+    description: string;
     parameters: IConstantParameter[];
 }
 
@@ -29,11 +34,18 @@ export function fetchActionTypes() {
 }
 
 export function fetchConnectionTypes() {
-    return get<IConnectionType[], IListResponse<IConnectionType>>({
+    return get<IConnectionType[], IConnectionTypeResponse[]>({
         isIesiApi: true,
         needsAuthentication: true,
         url: API_URLS.CONNECTION_TYPES,
-        // eslint-disable-next-line no-underscore-dangle
-        mapResponse: ({ data }) => data._embedded,
+        // eslint-disable-next-line arrow-body-style
+        mapResponse: ({ data }) => {
+            return data.map((connection) => ({
+                category: connection.name.split('.')[0],
+                type: connection.name,
+                name: connection.description,
+                parameters: connection.parameters,
+            }));
+        },
     });
 }

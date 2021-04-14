@@ -3,7 +3,7 @@ import { triggerFetchScripts, triggerFetchScriptDetail } from 'state/entities/sc
 import {
     triggerFetchExecutionRequestDetail,
 } from 'state/entities/executionRequests/triggers';
-import { triggerFetchActionTypes } from 'state/entities/constants/triggers';
+import { triggerFetchActionTypes, triggerFetchConnectionTypes } from 'state/entities/constants/triggers';
 import { SortType, SortOrder } from 'models/list.models';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
@@ -129,6 +129,9 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     path: '/openapi',
     template: OpenAPITemplate,
     component: OpenAPI,
+    executeOnRoute: [{
+        execute: () => triggerFetchConnectionTypes(),
+    }],
 }, {
     routeKey: ROUTE_KEYS.R_NOT_FOUND,
     path: '*',

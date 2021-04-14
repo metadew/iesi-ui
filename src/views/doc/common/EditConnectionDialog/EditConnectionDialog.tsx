@@ -1,14 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Button,
     Box,
-    TextField,
     makeStyles,
     Select,
     MenuItem,
     FormControl,
     InputLabel,
     ButtonGroup,
+    Theme,
 } from '@material-ui/core';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -23,19 +23,26 @@ import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/ent
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { editConnection } from 'state/ui/actions';
 import { StateChangeNotification } from 'models/state.models';
-import { connectionsEqual } from 'utils/connections/connectionUtils';
+import { getAsyncConnectionTypes } from 'state/entities/constants/selectors';
+import ExpandableParameter from 'views/design/ScriptDetail/EditAction/ExpandableParameter';
+import TextInput from 'views/common/input/TextInput';
+import classNames from 'classnames';
 
-const useStyles = makeStyles(() => ({
-    content: {
-        width: '600px',
+const useStyles = makeStyles(({ palette }: Theme) => ({
+    textField: {
+        marginTop: 0,
+        '& .MuiFilledInput-root': {
+            background: palette.background.paper,
+        },
     },
-    input: {
-        marginTop: 6,
-        marginBottom: 6,
+    descriptionTextField: {
+        whiteSpace: 'pre-line',
     },
     select: {
         alignSelf: 'flex-start',
         width: '100%',
+        marginTop: 4,
+        marginBottom: 4,
     },
     footer: {
         width: '100%',
@@ -57,13 +64,13 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
     const environmentsAsyncInfo = entitiesStateManager.getAsyncEntity({
         asyncEntityKey: ASYNC_ENTITY_KEYS.environments,
     }).fetch;
-    const nameInput = useRef<HTMLInputElement>();
-    const descriptionInput = useRef<HTMLInputElement>();
-    const hostInput = useRef<HTMLInputElement>();
-    const portInput = useRef<HTMLInputElement>();
-    const baseUrlInput = useRef<HTMLInputElement>();
-    const tlsInput = useRef<HTMLInputElement>();
-    const envSelect = useRef<HTMLSelectElement>();
+    const [parameters, setParameters] = useState(connection.parameters);
+    const [name, setName] = useState(connection.name);
+    const [description, setDescription] = useState(connection.description);
+    const [environment, setEnvironment] = useState(connection.environment);
+
+    const connectionTypes = getAsyncConnectionTypes(state).data || [];
+    const matchingConnectionTypes = connectionTypes.find((item) => item.type === 'http');
 
     // Trigger Fetch envs on open dialog
     useEffect(() => {
@@ -78,32 +85,17 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
     if (!connection) return <></>;
 
     const onValidateClick = () => {
-        const newConnection: IConnectionEntity = {
-            name: nameInput.current.value,
-            type: connection.type,
-            description: descriptionInput.current.value,
-            environment: envSelect.current.value,
-            parameters: [{
-                name: 'host',
-                value: hostInput.current.value,
-            }, {
-                name: 'port',
-                value: portInput.current.value,
-            }, {
-                name: 'baseUrl',
-                value: baseUrlInput.current.value,
-            }, {
-                name: 'tls',
-                value: tlsInput.current.value,
-            }],
-            isHandled: true,
-        };
-        if (!connectionsEqual(connection, newConnection)) {
-            dispatch(editConnection({
-                currentConnection: connection,
-                newConnection,
-            }));
-        }
+        dispatch(editConnection({
+            currentConnection: connection,
+            newConnection: {
+                type: connection.type,
+                name,
+                description,
+                environment,
+                parameters,
+                isHandled: connection.isHandled,
+            },
+        }));
         onClose();
     };
 
@@ -112,7 +104,7 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
             onClose={onClose}
             open={open}
             title={translator('doc.dialog.edit.connection.title')}
-            contentClassName={classes.content}
+            maxWidth="lg"
         >
             <Loader show={environmentsAsyncInfo.status === AsyncStatus.Busy} />
             <Box marginX="auto" width="100%">
@@ -120,70 +112,62 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
                     display="flex"
                     flexDirection="column"
                     justifyContent="space-between"
-                    alignItems="center"
+                    alignItems="flex-start"
                     width="100%"
                 >
-                    <TextField
-                        variant="filled"
-                        defaultValue={connection.name}
-                        label={translator('doc.dialog.edit.connection.name')}
+                    <TextInput
+                        id="connection-name"
+                        label={translator('doc.edit.connection.name')}
+                        defaultValue={name}
+                        onBlur={(e) => setName(e.target.value)}
+                        className={classes.textField}
                         fullWidth
-                        inputRef={nameInput}
-                        className={classes.input}
                     />
-                    <TextField
-                        variant="filled"
-                        defaultValue={connection.description}
-                        label={translator('doc.dialog.edit.connection.description')}
-                        fullWidth
-                        inputRef={descriptionInput}
-                        className={classes.input}
-                        style={{ whiteSpace: 'pre-line' }}
-                        rows={10}
+                    <TextInput
+                        id="connection-description"
+                        label={translator('doc.edit.connection.description')}
+                        defaultValue={description}
+                        onBlur={(e) => setDescription(e.target.value)}
+                        className={classNames(classes.textField, classes.descriptionTextField)}
+                        rows={20}
                         multiline
-                    />
-                    <TextField
-                        variant="filled"
-                        defaultValue={connection.parameters[0].value}
-                        label={translator('doc.dialog.edit.connection.host')}
                         fullWidth
-                        inputRef={hostInput}
-                        className={classes.input}
                     />
-                    <TextField
-                        variant="filled"
-                        defaultValue={connection.parameters[1].value}
-                        label={translator('doc.dialog.edit.connection.port')}
-                        fullWidth
-                        inputRef={portInput}
-                        className={classes.input}
-                    />
-                    <TextField
-                        variant="filled"
-                        defaultValue={connection.parameters[2].value}
-                        label={translator('doc.dialog.edit.connection.baseUrl')}
-                        fullWidth
-                        inputRef={baseUrlInput}
-                        className={classes.input}
-                    />
-                    <TextField
-                        variant="filled"
-                        defaultValue={connection.parameters[3].value}
-                        label={translator('doc.dialog.edit.connection.tls')}
-                        fullWidth
-                        inputRef={tlsInput}
-                        className={classes.input}
-                    />
-                    <FormControl className={`${classes.select} ${classes.input}`}>
+                    {
+                        matchingConnectionTypes.parameters.map((constantParameter) => {
+                            const parameter = parameters.find((p) => p.name === constantParameter.name);
+                            return (
+                                <ExpandableParameter
+                                    key={constantParameter.name}
+                                    onChange={(value) => {
+                                        const index = parameters.findIndex((p) => p.name === constantParameter.name);
+                                        const newParameters = [...parameters];
+                                        if (index === -1) {
+                                            newParameters.push({
+                                                name: constantParameter.name,
+                                                value,
+                                            });
+                                        } else {
+                                            newParameters[index].value = value;
+                                        }
+                                        setParameters(newParameters);
+                                    }}
+                                    parameter={parameter}
+                                    constantParameter={constantParameter}
+                                />
+                            );
+                        })
+                    }
+                    <FormControl className={classes.select}>
                         <InputLabel id="connection-environment-label">Environment</InputLabel>
                         <Select
                             labelId="connection-environment-label"
                             id="connection-environment"
-                            defaultValue={connection.environment}
-                            inputRef={envSelect}
+                            defaultValue={environment}
+                            onBlur={(e) => setEnvironment(e.target.value)}
                         >
-                            <MenuItem value={connection.environment}>
-                                {connection.environment}
+                            <MenuItem value={environment}>
+                                {environment}
                             </MenuItem>
                             {environments && environments.map((env) => (
                                 <MenuItem
@@ -221,11 +205,13 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
                         />
                     </Button>
                 </ButtonGroup>
-
             </Box>
         </ClosableDialog>
 
     );
 }
 
-export default observe<IPublicProps>([StateChangeNotification.ENVIRONMENTS], EditConnectionDialog);
+export default observe<IPublicProps>([
+    StateChangeNotification.ENVIRONMENTS,
+    StateChangeNotification.CONSTANTS_CONNECTION_TYPES,
+], EditConnectionDialog);

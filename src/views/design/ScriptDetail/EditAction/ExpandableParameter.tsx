@@ -24,6 +24,7 @@ interface IPublicProps {
 
 const useStyles = makeStyles(({ palette, spacing }) => ({
     expansionPanel: {
+        width: '100%',
         margin: '0 !important',
         background: palette.background.paper,
         boxShadow: 'none',
@@ -67,7 +68,7 @@ export default function ExpandableParameter({ parameter, onChange, constantParam
                 expandIcon={<ExpandMore />}
                 className={classes.expansionPanelSummary}
             >
-                <Box>
+                <Box display="flex" flexDirection="column" alignItems="flex-start">
                     <Typography className={classes.expansionPanelLabel}>
                         {constantParameter.name}
                         {constantParameter.mandatory && <span>&nbsp;*</span>}
