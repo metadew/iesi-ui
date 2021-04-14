@@ -1,4 +1,4 @@
-import { IActionType, IConnectionType, IConstantParameter } from 'models/state/constants.models';
+import { IActionType, IComponentType, IConnectionType, IConstantParameter } from 'models/state/constants.models';
 import { get } from 'api/requestWrapper';
 import API_URLS from '../apiUrls';
 
@@ -10,6 +10,12 @@ interface IActionTypeResponse {
 }
 
 interface IConnectionTypeResponse {
+    name: string;
+    description: string;
+    parameters: IConstantParameter[];
+}
+
+interface IComponentTypeResponse {
     name: string;
     description: string;
     parameters: IConstantParameter[];
@@ -45,6 +51,23 @@ export function fetchConnectionTypes() {
                 type: connection.name,
                 name: connection.description,
                 parameters: connection.parameters,
+            }));
+        },
+    });
+}
+
+export function fetchComponentTypes() {
+    return get<IComponentType[], IComponentTypeResponse[]>({
+        isIesiApi: true,
+        needsAuthentication: true,
+        url: API_URLS.COMPONENT_TYPES,
+        // eslint-disable-next-line arrow-body-style
+        mapResponse: ({ data }) => {
+            return data.map((component) => ({
+                category: component.name.split('.')[0],
+                type: component.name,
+                name: component.description,
+                parameters: component.parameters,
             }));
         },
     });

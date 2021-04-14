@@ -28,3 +28,10 @@ export interface IConnectionType {
     parameters: IConstantParameter[];
     category: string;
 }
+
+export interface IComponentType {
+    name: string;
+    type: string;
+    parameters: IConstantParameter[];
+    category: string;
+}

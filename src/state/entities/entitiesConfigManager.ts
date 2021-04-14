@@ -146,6 +146,15 @@ entitiesConfigManager.register({
 });
 
 entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.componentTypes,
+    operationsConfig: {
+        fetch: {
+            api: api.constants.fetchComponentTypes,
+        },
+    },
+});
+
+entitiesConfigManager.register({
     asyncEntityKey: ASYNC_ENTITY_KEYS.openapi,
     operationsConfig: {
         create: {

@@ -5,6 +5,7 @@ const API_URLS = {
 
     ACTION_TYPES: '/action-types',
     CONNECTION_TYPES: '/connection-types',
+    COMPONENT_TYPES: '/component-types',
 
     ENVIRONMENTS: '/environments',
     ENVIRONMENT_BY_NAME: '/environments/{name}',

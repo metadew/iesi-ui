@@ -100,7 +100,6 @@ const OpenAPIOverview = withStyles(styles)(
             } = state.entities.openapi.data || {};
             const connectionsListItems = mapConnectionsToListItems(connections);
             const componentsListItems = mapComponentsToListItems(components);
-
             return (
                 <Box height="100%" display="flex" flexDirection="column" flex="1 0 auto">
                     <Box
@@ -211,11 +210,13 @@ const OpenAPIOverview = withStyles(styles)(
 
                                 <Box display="flex" flexDirection="column" alignItems="flex-start">
                                     {this.renderComponentContent({ listItems: componentsListItems })}
-                                    <EditComponentDialog
-                                        open={this.state.isComponentEditDialogOpen}
-                                        onClose={this.onCloseComponentDialog}
-                                        component={this.state.componentToEdit}
-                                    />
+                                    {this.state.isComponentEditDialogOpen && (
+                                        <EditComponentDialog
+                                            open={this.state.isComponentEditDialogOpen}
+                                            onClose={this.onCloseComponentDialog}
+                                            component={this.state.componentToEdit}
+                                        />
+                                    )}
                                 </Box>
                             </Box>
                         </Box>
@@ -388,9 +389,9 @@ function mapComponentsToListItems(components: IComponentEntity[]): IListItem<ICo
             name: component.name,
             description: component.description,
             version: component.version.number,
-            endpoint: component.parameters[0].value,
-            type: component.parameters[1].value,
-            connection: component.parameters[2].value,
+            endpoint: component.parameters.find((p) => p.name === 'endpoint'),
+            type: component.parameters.find((p) => p.name === 'type'),
+            connection: component.parameters.find((p) => p.name === 'connection'),
         },
         isHandled: component.isHandled,
     }));
@@ -399,6 +400,7 @@ function mapComponentsToListItems(components: IComponentEntity[]): IListItem<ICo
 export default observe<TProps>([
     StateChangeNotification.HANDLE,
     StateChangeNotification.CONSTANTS_CONNECTION_TYPES,
+    StateChangeNotification.CONSTANTS_COMPONENT_TYPES,
     StateChangeNotification.CONNECTION_EDIT,
     StateChangeNotification.CONNECTION_DELETE,
     StateChangeNotification.COMPONENT_DELETE,

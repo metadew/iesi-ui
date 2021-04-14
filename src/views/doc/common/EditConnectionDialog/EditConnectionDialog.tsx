@@ -9,6 +9,7 @@ import {
     InputLabel,
     ButtonGroup,
     Theme,
+    Paper,
 } from '@material-ui/core';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -34,6 +35,10 @@ const useStyles = makeStyles(({ palette }: Theme) => ({
         '& .MuiFilledInput-root': {
             background: palette.background.paper,
         },
+    },
+    paperInput: {
+        marginTop: 4,
+        marginBottom: 4,
     },
     descriptionTextField: {
         whiteSpace: 'pre-line',
@@ -115,24 +120,53 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
                     alignItems="flex-start"
                     width="100%"
                 >
-                    <TextInput
-                        id="connection-name"
-                        label={translator('doc.edit.connection.name')}
-                        defaultValue={name}
-                        onBlur={(e) => setName(e.target.value)}
-                        className={classes.textField}
-                        fullWidth
-                    />
-                    <TextInput
-                        id="connection-description"
-                        label={translator('doc.edit.connection.description')}
-                        defaultValue={description}
-                        onBlur={(e) => setDescription(e.target.value)}
-                        className={classNames(classes.textField, classes.descriptionTextField)}
-                        rows={20}
-                        multiline
-                        fullWidth
-                    />
+                    <Box marginBottom={2} width="100%">
+                        <FormControl className={classes.select}>
+                            <InputLabel id="connection-environment-label">Environment</InputLabel>
+                            <Select
+                                labelId="connection-environment-label"
+                                id="connection-environment"
+                                defaultValue={environment}
+                                onBlur={(e) => setEnvironment(e.target.value)}
+                            >
+                                <MenuItem value={environment}>
+                                    {environment}
+                                </MenuItem>
+                                {environments && environments.map((env) => (
+                                    <MenuItem
+                                        key={JSON.stringify(env.name)}
+                                        value={env.name}
+                                    >
+                                        {env.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    </Box>
+                    <Box marginBottom={2} width="100%">
+                        <Paper className={classes.paperInput}>
+                            <TextInput
+                                id="connection-name"
+                                label={translator('doc.edit.connection.name')}
+                                defaultValue={name}
+                                onBlur={(e) => setName(e.target.value)}
+                                className={classes.textField}
+                                fullWidth
+                            />
+                        </Paper>
+                        <Paper className={classes.paperInput}>
+                            <TextInput
+                                id="connection-description"
+                                label={translator('doc.edit.connection.description')}
+                                defaultValue={description}
+                                onBlur={(e) => setDescription(e.target.value)}
+                                className={classNames(classes.textField, classes.descriptionTextField)}
+                                rows={20}
+                                multiline
+                                fullWidth
+                            />
+                        </Paper>
+                    </Box>
                     {
                         matchingConnectionTypes.parameters.map((constantParameter) => {
                             const parameter = parameters.find((p) => p.name === constantParameter.name);
@@ -158,28 +192,6 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
                             );
                         })
                     }
-                    <FormControl className={classes.select}>
-                        <InputLabel id="connection-environment-label">Environment</InputLabel>
-                        <Select
-                            labelId="connection-environment-label"
-                            id="connection-environment"
-                            defaultValue={environment}
-                            onBlur={(e) => setEnvironment(e.target.value)}
-                        >
-                            <MenuItem value={environment}>
-                                {environment}
-                            </MenuItem>
-                            {environments && environments.map((env) => (
-                                <MenuItem
-                                    key={JSON.stringify(env.name)}
-                                    value={env.name}
-                                >
-                                    {env.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-
                 </Box>
             </Box>
             <Box display="flex" width="100%" justifyContent="flex-end" className={classes.footer}>

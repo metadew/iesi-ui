@@ -314,7 +314,7 @@ doc:
         connection: 'Connection'
         footer:
           cancel: 'Discard changes'
-          save: 'Update connection'
+          save: 'Update component'
 
   overview:
     openapi_title: 'Open API Title : {title}'
