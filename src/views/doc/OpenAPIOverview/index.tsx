@@ -3,6 +3,7 @@ import {
     Box,
     Button,
     createStyles,
+    IconButton,
     Theme,
     Typography,
     withStyles,
@@ -16,7 +17,7 @@ import GenericList from 'views/common/list/GenericList';
 import { IListItem, ListColumns } from 'models/list.models';
 import { IConnectionEntity, IConnectionColumnNames } from 'models/state/connections.model';
 import { getUniqueIdFromConnection } from 'utils/connections/connectionUtils';
-import { Save, Edit, Delete } from '@material-ui/icons';
+import { Save, Edit, Delete, ArrowBack } from '@material-ui/icons';
 import { getTranslator } from 'state/i18n/selectors';
 import { getAsyncTransformResultEntity } from 'state/entities/openapi/selectors';
 import { IComponentColumnNames, IComponentEntity } from 'models/state/components.model';
@@ -112,7 +113,11 @@ const OpenAPIOverview = withStyles(styles)(
                                 display="flex"
                                 flexDirection="column"
                                 justifyContent="space-between"
+                                alignItems="flex-start"
                             >
+                                <IconButton onClick={() => redirectTo({ routeKey: ROUTE_KEYS.R_HOME })}>
+                                    <ArrowBack />
+                                </IconButton>
                                 <Typography variant="h6">
                                     <Translate
                                         msg="doc.overview.openapi_title"

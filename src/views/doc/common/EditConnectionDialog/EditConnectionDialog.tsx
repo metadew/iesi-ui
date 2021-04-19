@@ -147,7 +147,7 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
                         <Paper className={classes.paperInput}>
                             <TextInput
                                 id="connection-name"
-                                label={translator('doc.edit.connection.name')}
+                                label={translator('doc.dialog.edit.connection.name')}
                                 defaultValue={name}
                                 onBlur={(e) => setName(e.target.value)}
                                 className={classes.textField}
@@ -157,7 +157,7 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
                         <Paper className={classes.paperInput}>
                             <TextInput
                                 id="connection-description"
-                                label={translator('doc.edit.connection.description')}
+                                label={translator('doc.dialog.edit.connection.description')}
                                 defaultValue={description}
                                 onBlur={(e) => setDescription(e.target.value)}
                                 className={classNames(classes.textField, classes.descriptionTextField)}

@@ -236,6 +236,7 @@ export default function GenericTableRow<ColumnNames>({
                                                     area-label={action.label}
                                                     onClick={() => action.onClick(item.id, rowIndex)}
                                                     className={classes.actionIcon}
+                                                    disabled={isHandled}
                                                 >
                                                     {action.icon}
                                                 </IconButton>

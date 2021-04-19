@@ -1,6 +1,7 @@
 import React, { useState, ChangeEvent } from 'react';
 import {
     Button,
+    ButtonGroup,
     Box,
     Typography,
     IconButton,
@@ -174,27 +175,28 @@ function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicP
                     </Box>
                 </Box>
                 <Box display="flex" width="100%" justifyContent="flex-end">
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        size="small"
-                        onClick={createTransformResult}
-                        className={classes.validateButton}
-                    >
-                        <Translate
-                            msg="doc.dialog.transform.validate"
-                        />
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        size="small"
-                        onClick={onClose}
-                    >
-                        <Translate
-                            msg="common.action.cancel"
-                        />
-                    </Button>
+                    <ButtonGroup size="small">
+                        <Button
+                            variant="outlined"
+                            color="default"
+                            onClick={onClose}
+                        >
+                            <Translate
+                                msg="common.action.cancel"
+                            />
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            color="secondary"
+                            onClick={createTransformResult}
+                            className={classes.validateButton}
+                        >
+                            <Translate
+                                msg="doc.dialog.transform.validate"
+                            />
+                        </Button>
+                    </ButtonGroup>
+
                 </Box>
             </ClosableDialog>
         </>
