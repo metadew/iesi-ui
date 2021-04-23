@@ -320,7 +320,7 @@ function ExecutionDetail({ state }: IObserveProps) {
                         : <Translate msg="script_reports.detail.side.execution.design_labels.none" />,
                 },
                 {
-                    label: translator('script_reports.detail.side.execution.username_labels.label'),
+                    label: translator('script_reports.detail.side.execution.username.label'),
                     value: scriptExecutionData.username,
                 },
             ] : [],
