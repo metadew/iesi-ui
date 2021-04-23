@@ -266,3 +266,6 @@ script_reports:
         output:
           label: Output
           none: '-'
+        username_labels:
+          label: Username
+          none: '-'
