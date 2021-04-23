@@ -5,6 +5,7 @@ const API_URLS = {
 
     ACTION_TYPES: '/action-types',
     CONNECTION_TYPES: '/connection-types',
+    COMPONENT_TYPES: '/component-types',
 
     ENVIRONMENTS: '/environments',
     ENVIRONMENT_BY_NAME: '/environments/{name}',
@@ -19,7 +20,13 @@ const API_URLS = {
 
     SCRIPT_EXECUTION_BY_RUN_AND_PROCESS_ID: '/script-executions/{runId}/{processId}',
 
+    CONNECTIONS: '/connections',
+
+    COMPONENTS: '/components',
+
     SECURITY_LOGON: '/users/login',
+
+    OPEN_API_TRANSFORM: '/openapi/transform',
 
     /* eslint-enable max-len */
 };

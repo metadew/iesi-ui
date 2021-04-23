@@ -15,6 +15,9 @@ import {
     IScriptBase,
     IFetchScriptsListPayload,
 } from 'models/state/scripts.models';
+import { IOpenAPI } from 'models/state/openapi.model';
+import { IConnectionEntity } from 'models/state/connections.model';
+import { IComponentEntity } from 'models/state/components.model';
 
 // eslint-disable-next-line max-len
 const entitiesConfigManager = initAsyncEntitiesConfigManager<IState, {}, ITraceableApiError, string, IExtraProcessInput>();
@@ -129,6 +132,62 @@ entitiesConfigManager.register({
     operationsConfig: {
         fetch: {
             api: api.constants.fetchActionTypes,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.connectionTypes,
+    operationsConfig: {
+        fetch: {
+            api: api.constants.fetchConnectionTypes,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.componentTypes,
+    operationsConfig: {
+        fetch: {
+            api: api.constants.fetchComponentTypes,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.openapi,
+    operationsConfig: {
+        create: {
+            api: api.openapi.transformDocumentation,
+            apiInputSelector: ({ extraInput }) => extraInput as IOpenAPI,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.connections,
+    operationsConfig: {
+        create: {
+            api: api.connections.createConnection,
+            apiInputSelector: ({ extraInput }) => extraInput as IConnectionEntity,
+        },
+        update: {
+            api: api.connections.updateConnection,
+            apiInputSelector: ({ extraInput }) => extraInput as IConnectionEntity,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.components,
+    operationsConfig: {
+        create: {
+            api: api.components.createComponent,
+            apiInputSelector: ({ extraInput }) => extraInput as IComponentEntity,
+        },
+        update: {
+            api: api.components.updateComponent,
+            apiInputSelector: ({ extraInput }) => extraInput as IComponentEntity,
         },
     },
 });
