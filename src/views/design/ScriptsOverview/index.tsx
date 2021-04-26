@@ -113,7 +113,7 @@ const sortActions: SortActions<Partial<IColumnNames>> = {
     },
 };
 
-interface IComponentState {
+interface IScriptState {
     scriptIdToDelete: string;
     scriptIdToExecute: string;
     loadDocDialogOpen: boolean;
@@ -122,7 +122,7 @@ interface IComponentState {
 type TProps = WithStyles<typeof styles>;
 
 const ScriptsOverview = withStyles(styles)(
-    class extends React.Component<TProps & IObserveProps, IComponentState> {
+    class extends React.Component<TProps & IObserveProps, IScriptState> {
         public constructor(props: TProps & IObserveProps) {
             super(props);
 

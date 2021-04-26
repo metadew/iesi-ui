@@ -1,12 +1,36 @@
 import entitiesStateManager from 'state/entities/entitiesStateManager';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { handleComponent, triggerFlashMessage } from 'state/ui/actions';
-import { IComponentEntity } from 'models/state/components.model';
+import {
+    IComponent,
+    IComponentByNameAndVersionPayload,
+    IFetchComponentsListPayload,
+} from 'models/state/components.model';
+import { StateChangeNotification } from 'models/state.models';
 
-export const triggerUpdateComponent = (payload: IComponentEntity | IComponentEntity[], bulk?: boolean) =>
+export const triggerFetchComponents = (payload: IFetchComponentsListPayload) =>
+    entitiesStateManager.triggerAsyncEntityFetch<{}>({
+        asyncEntityToFetch: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.components,
+            refreshMode: 'always',
+            resetDataOnTrigger: false,
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENTS_LIST],
+    });
+
+export const triggerDeleteComponentDetail = (payload: IComponentByNameAndVersionPayload) =>
+    entitiesStateManager.triggerAsyncEntityRemove<{}>({
+        asyncEntityToRemove: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.componentDetail,
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENT_DETAIL],
+    });
+export const triggerUpdateComponent = (payload: IComponent | IComponent[], bulk?: boolean) =>
     entitiesStateManager.triggerAsyncEntityUpdate<{}>({
         asyncEntityToUpdate: {
-            asyncEntityKey: ASYNC_ENTITY_KEYS.components,
+            asyncEntityKey: ASYNC_ENTITY_KEYS.openapiComponents,
             updateDataOnSuccess: false,
         },
         extraInputSelector: () => payload,
@@ -17,14 +41,14 @@ export const triggerUpdateComponent = (payload: IComponentEntity | IComponentEnt
                 translationKey: 'flash_messages.openapi.component_successfully_updated',
                 translationPlaceholders: {
                     componentName: currentEntity
-                        ? (currentEntity as IComponentEntity).name
-                        : (payload as IComponentEntity).name,
+                        ? (currentEntity as IComponent).name
+                        : (payload as IComponent).name,
                 },
                 type: 'success',
             }));
             dispatch(handleComponent({ currentComponent: currentEntity
-                ? currentEntity as IComponentEntity
-                : payload as IComponentEntity,
+                ? currentEntity as IComponent
+                : payload as IComponent,
             }));
         },
         onFail: ({ dispatch, error }) => {
@@ -39,10 +63,10 @@ export const triggerUpdateComponent = (payload: IComponentEntity | IComponentEnt
             }
         },
     });
-export const triggerCreateComponent = (payload: IComponentEntity | IComponentEntity[], bulk?: boolean) =>
+export const triggerCreateComponent = (payload: IComponent | IComponent[], bulk?: boolean) =>
     entitiesStateManager.triggerAsyncEntityCreate<{}>({
         asyncEntityToCreate: {
-            asyncEntityKey: ASYNC_ENTITY_KEYS.components,
+            asyncEntityKey: ASYNC_ENTITY_KEYS.openapiComponents,
             updateDataOnSuccess: false,
         },
         extraInputSelector: () => payload,
@@ -53,14 +77,14 @@ export const triggerCreateComponent = (payload: IComponentEntity | IComponentEnt
                 translationKey: 'flash_messages.openapi.component_successfully_created',
                 translationPlaceholders: {
                     componentName: currentEntity
-                        ? (currentEntity as IComponentEntity).name
-                        : (payload as IComponentEntity).name,
+                        ? (currentEntity as IComponent).name
+                        : (payload as IComponent).name,
                 },
                 type: 'success',
             }));
             dispatch(handleComponent({ currentComponent: currentEntity
-                ? currentEntity as IComponentEntity
-                : payload as IComponentEntity,
+                ? currentEntity as IComponent
+                : payload as IComponent,
             }));
         },
         onFail: ({ dispatch, error }) => {

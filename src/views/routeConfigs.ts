@@ -8,12 +8,14 @@ import {
     triggerFetchComponentTypes,
     triggerFetchConnectionTypes,
 } from 'state/entities/constants/triggers';
+import { triggerFetchComponents } from 'state/entities/components/triggers';
 import { SortType, SortOrder } from 'models/list.models';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { getStore } from 'state';
-import { getScriptsListFilter } from 'state/ui/selectors';
+import { getComponentsListFilter, getScriptsListFilter } from 'state/ui/selectors';
 import { IFetchScriptsListPayload } from 'models/state/scripts.models';
+import { IFetchComponentsListPayload } from 'models/state/components.model';
 import { ROUTE_KEYS, registerRoutes } from './routes';
 import NotFound from './appShell/NotFound';
 import Home from './Home';
@@ -26,6 +28,9 @@ import ScriptReportDetail from './report/ScriptReportDetail';
 import Login from './appShell/AppLogIn/LoginPage';
 import OpenAPI from './doc/OpenAPIOverview';
 import OpenAPITemplate from './doc/OpenAPITemplate';
+import ComponentsTemplate from './design/ComponentsTemplate';
+import ComponentsOverview from './design/ComponentsOverview';
+import ComponentDetail from './design/ComponentDetail';
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
@@ -103,6 +108,49 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
                 },
                 ...payload,
             });
+        },
+    }],
+}, {
+    routeKey: ROUTE_KEYS.R_COMPONENTS,
+    path: '/components',
+    template: ComponentsTemplate,
+    component: ComponentsOverview,
+    childRoutes: [
+        {
+            routeKey: ROUTE_KEYS.R_COMPONENT_NEW,
+            path: '/new',
+            component: ComponentDetail as React.ComponentType<unknown>,
+            executeOnRoute: [{
+                execute: triggerFetchComponentTypes,
+            }],
+        },
+    ],
+    executeOnRoute: [{
+        execute: () => {
+            const { getState } = getStore();
+            const { filters, page, sortedColumn } = getComponentsListFilter(getState());
+
+            const sort = sortedColumn || {
+                name: 'name',
+                sortOrder: SortOrder.Ascending,
+                sortType: SortType.String,
+            };
+
+            const payload: IFetchComponentsListPayload = {
+                sort: formatSortQueryParameter(sort),
+                filter: {
+                    ...(filters && {
+                        name:
+                            filters.name.values.length > 0
+                            && filters.name.values[0].toString(),
+                    }),
+                },
+                pagination: {
+                    page,
+                },
+            };
+
+            triggerFetchComponents(payload);
         },
     }],
 }, {

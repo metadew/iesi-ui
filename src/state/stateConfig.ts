@@ -31,6 +31,12 @@ export const initialState: IState = {
                 page: 1,
                 sortedColumn: null,
             },
+            components: {
+                filters: null,
+                onlyShowLatestVersion: true,
+                page: 1,
+                sortedColumn: null,
+            },
         },
     },
     auth: {

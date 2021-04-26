@@ -20,7 +20,7 @@ import { getUniqueIdFromConnection } from 'utils/connections/connectionUtils';
 import { Save, Edit, Delete, ArrowBack } from '@material-ui/icons';
 import { getTranslator } from 'state/i18n/selectors';
 import { getAsyncTransformResultEntity } from 'state/entities/openapi/selectors';
-import { IComponentColumnNames, IComponentEntity } from 'models/state/components.model';
+import { IComponentColumnNames, IComponent } from 'models/state/components.model';
 import { getUniqueIdFromComponent } from 'utils/components/componentUtils';
 import { triggerCreateConnection } from 'state/entities/connections/triggers';
 import { triggerCreateComponent } from 'state/entities/components/triggers';
@@ -63,7 +63,7 @@ interface IComponentState {
     isConnectionEditDialogOpen: boolean;
     isComponentEditDialogOpen: boolean;
     connectionToEdit?: IConnectionEntity | undefined;
-    componentToEdit?: IComponentEntity | undefined;
+    componentToEdit?: IComponent | undefined;
 }
 type TProps = WithStyles<typeof styles>;
 
@@ -357,7 +357,7 @@ const OpenAPIOverview = withStyles(styles)(
             });
         }
 
-        public onOpenComponentDialog(component: IComponentEntity) {
+        public onOpenComponentDialog(component: IComponent) {
             this.setState({ isComponentEditDialogOpen: true, componentToEdit: component });
         }
 
@@ -387,7 +387,7 @@ function mapConnectionsToListItems(connections: IConnectionEntity[]): IListItem<
     }));
 }
 
-function mapComponentsToListItems(components: IComponentEntity[]): IListItem<IComponentColumnNames>[] {
+function mapComponentsToListItems(components: IComponent[]): IListItem<IComponentColumnNames>[] {
     return components.map((component) => ({
         id: getUniqueIdFromComponent(component),
         columns: {

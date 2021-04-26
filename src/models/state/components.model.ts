@@ -1,4 +1,29 @@
+import { IPageData, IPageFilter } from './iesiGeneric.models';
+
+export interface IFetchComponentsListPayload {
+    pagination?: IPageFilter;
+    filter?: IComponentListFilter;
+    sort: string;
+}
+
+interface IComponentListFilter {
+    name?: string;
+}
+export interface IComponentByNamePayload {
+    name: string;
+}
+
+export interface IComponentByNameAndVersionPayload extends IComponentByNamePayload {
+    version: number;
+}
+
 export interface IComponentEntity {
+    components: IComponent[];
+    page: IPageData;
+}
+
+export interface IComponent {
+    [key: string]: string | IComponentVersion | IComponentParameter[] | IComponentAttribute[] | boolean;
     type: string;
     name: string;
     description: string;
@@ -7,7 +32,6 @@ export interface IComponentEntity {
     attributes: IComponentAttribute[];
     isHandled: boolean;
 }
-
 export interface IComponentVersion {
     number: number;
     description: string;
@@ -31,4 +55,11 @@ export interface IComponentColumnNames {
     endpoint: string;
     type: string;
     connection: string;
+}
+
+export interface IComponentColumnNamesBase {
+    name: string;
+    description: string;
+    version: string;
+    type: string;
 }

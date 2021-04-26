@@ -17,7 +17,11 @@ import {
 } from 'models/state/scripts.models';
 import { IOpenAPI } from 'models/state/openapi.model';
 import { IConnectionEntity } from 'models/state/connections.model';
-import { IComponentEntity } from 'models/state/components.model';
+import {
+    IComponent,
+    IComponentByNameAndVersionPayload,
+    IFetchComponentsListPayload,
+} from 'models/state/components.model';
 
 // eslint-disable-next-line max-len
 const entitiesConfigManager = initAsyncEntitiesConfigManager<IState, {}, ITraceableApiError, string, IExtraProcessInput>();
@@ -181,13 +185,47 @@ entitiesConfigManager.register({
 entitiesConfigManager.register({
     asyncEntityKey: ASYNC_ENTITY_KEYS.components,
     operationsConfig: {
+        fetch: {
+            api: api.components.fetchComponents,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchComponentsListPayload,
+        },
+        remove: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.components.deleteComponentVersion,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IComponentByNameAndVersionPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.componentDetail,
+    operationsConfig: {
+        remove: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.components.deleteComponentVersion,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IComponentByNameAndVersionPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.openapiComponents,
+    operationsConfig: {
         create: {
             api: api.components.createComponent,
-            apiInputSelector: ({ extraInput }) => extraInput as IComponentEntity,
+            apiInputSelector: ({ extraInput }) => extraInput as IComponent,
         },
         update: {
             api: api.components.updateComponent,
-            apiInputSelector: ({ extraInput }) => extraInput as IComponentEntity,
+            apiInputSelector: ({ extraInput }) => extraInput as IComponent,
         },
     },
 });

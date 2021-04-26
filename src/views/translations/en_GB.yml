@@ -4,6 +4,7 @@ app_shell:
       home: Home
       reports: Reports
       scripts: Scripts
+      components: Components
     title: iesi
 common:
   yes: Yes
@@ -282,6 +283,77 @@ script_reports:
         output:
           label: Output
           none: '-'
+components:
+  overview:
+    delete_component_dialog:
+      text: Are you sure you want to delete this component?
+      title: Delete component
+      form:
+        description: Description
+        name: Name
+        environment: Environment
+        input_param:
+          add:
+            name: Name
+            value: Value
+            button: Add
+            title: Add input parameter
+          empty: No input params defined yet.
+          title: Input parameters
+    header:
+      amount: 'You have {amount} components'
+      add_button: Create new component
+      generate_button: "Load from OpenAPI documentation"
+    list:
+      labels:
+        name: Name
+        type: type
+        version: Version
+        description: Description
+      fetch_error: Something went wrong while loading the components, please try again.
+      actions:
+        delete: Delete
+        edit: Edit
+      filter:
+       component_name: Component name
+      sort:
+        component_name: Component name
+        version: Version
+  detail:
+    add_parameter: 'Add new parameter'
+    delete_component_dialog:
+      text: Are you sure you want to delete this component?
+      title: Delete component
+    save_component_dialog:
+      title: Save component
+      text: Do you want to overwrite the current version or create a new version with the current changes?
+      update_current_version: Update current version
+      save_as_new_version: Save as new version
+    side:
+      component_type: Component type
+      component_description: Component description
+      component_name: Component name
+      component_version: Component version
+    main:
+      actions:
+        add_action: Add new parameter
+        delete: Delete component
+        save: Save
+        export: Export component
+      list:
+        labels:
+          name: Name
+          value: Value
+        actions:
+          edit: Edit
+          delete: Delete
+      alert:
+        save_changes: You made changes to this component. Don't forget to save them.
+    edit:
+      name: Name
+      value: Value
+    error:
+      save: Failed to save changes
 doc:
   dialog:
     transform:
