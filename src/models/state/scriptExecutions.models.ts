@@ -19,6 +19,7 @@ export interface IScriptExecutionDetail {
     executionLabels: ILabel[];
     output: ILabel[];
     actions: IScriptExecutionDetailAction[];
+    username: string;
 }
 
 export interface IScriptExecutionDetailAction {

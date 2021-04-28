@@ -282,6 +282,10 @@ script_reports:
         output:
           label: Output
           none: '-'
+        username:
+          label: Username
+          none: '-'
+
 doc:
   dialog:
     transform:
@@ -342,7 +346,3 @@ doc:
       save: 'Save to database, if existing, update it'
       edit: 'Edit the table cells'
       delete: 'Delete from the table'
-
-
-
-      
