@@ -56,8 +56,10 @@ interface ICreateAsyncEntityActionPropsBase
     notificationsToTrigger: StateChangeNotificationKey[];
     nrOfParentNotificationLevelsToTrigger?: TNrOfParentNotificationLevelsToTrigger;
     dispatch: Dispatch<Action>;
-    onSuccess: (props: { dispatch: Dispatch<Action> }) => void;
-    onFail: (props: { dispatch: Dispatch<Action> }) => void;
+    onSuccess: (props: { dispatch: Dispatch<Action>; currentEntity?: unknown}) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onFail: (props: { dispatch: Dispatch<Action>; error: any; currentEntity?: unknown }) => void;
+    bulk?: boolean;
 }
 
 interface ICreateFetchAsyncEntityActionProps
@@ -115,6 +117,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
             dispatch,
             onFail,
             onSuccess,
+            bulk,
             // eslint-disable-next-line max-len
         }: ICreateUpdateAsyncEntityActionProps<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse>) =>
             createAsyncEntityActionBase({
@@ -131,6 +134,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                 dispatch,
                 onFail,
                 onSuccess,
+                bulk,
             }),
 
         updateAsyncEntityAction: <ExtraInput extends object, ApiInput, ApiResult, ApiResponse = ApiResult>({
@@ -145,6 +149,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
             dispatch,
             onFail,
             onSuccess,
+            bulk,
             // eslint-disable-next-line max-len
         }: ICreateUpdateAsyncEntityActionProps<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse>) =>
             createAsyncEntityActionBase({
@@ -161,6 +166,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                 dispatch,
                 onFail,
                 onSuccess,
+                bulk,
             }),
 
         removeAsyncEntityAction: <ExtraInput extends object, ApiInput, ApiResult, ApiResponse = ApiResult>({
@@ -173,6 +179,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
             dispatch,
             onFail,
             onSuccess,
+            bulk,
             // eslint-disable-next-line max-len
         }: ICreateRemoveAsyncEntityActionProps<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse>) =>
             createAsyncEntityActionBase({
@@ -189,6 +196,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                 dispatch,
                 onFail,
                 onSuccess,
+                bulk,
             }),
 
         // TODO (but e.g. without always storing the response on success in the data)
@@ -304,6 +312,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
         dispatch,
         onSuccess,
         onFail,
+        bulk,
         // eslint-disable-next-line max-len
     }: ICreateAsyncEntityActionPropsBase<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse> & {
         operation: AsyncOperation;
@@ -332,26 +341,46 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                         ? apiInputSelector({ state: getState(), extraInput })
                         : null;
 
-                    const apiResponse = await api(apiInput);
-                    const apiResult = isSet(mapApiResponse)
-                        ? mapApiResponse({ response: apiResponse, state: getState() })
-                        : apiResponse;
+                    if (bulk && apiInput instanceof Array) {
+                        await Promise.all(apiInput.map(async (input) => {
+                            const response = await api(input);
+                            const apiResult = isSet(mapApiResponse)
+                                ? mapApiResponse({ response, state: getState() })
+                                : response;
+                            if (typeof onSuccess === 'function') {
+                                onSuccess({ dispatch, currentEntity: input });
+                            }
+                            // eslint-disable-next-line arrow-body-style
+                            updateAsyncEntityInState((entity) => {
+                                return updateDataOnSuccess
+                                    ? getAsyncEntityUpdaterFromOperation(operation)
+                                        .succeeded(entity, apiResult)
+                                    : getAsyncEntityUpdaterFromOperation(operation)
+                                        .succeededWithoutDataSet(entity);
+                            });
+                        }));
+                    } else {
+                        const apiResponse = await api(apiInput);
+                        const apiResult = isSet(mapApiResponse)
+                            ? mapApiResponse({ response: apiResponse, state: getState() })
+                            : apiResponse;
 
-                    if (typeof onSuccess === 'function') {
-                        onSuccess({ dispatch });
+                        if (typeof onSuccess === 'function') {
+                            onSuccess({ dispatch });
+                        }
+
+                        // eslint-disable-next-line arrow-body-style
+                        updateAsyncEntityInState((entity) => {
+                            return updateDataOnSuccess
+                                ? getAsyncEntityUpdaterFromOperation(operation)
+                                    .succeeded(entity, apiResult)
+                                : getAsyncEntityUpdaterFromOperation(operation)
+                                    .succeededWithoutDataSet(entity);
+                        });
                     }
-
-                    // eslint-disable-next-line arrow-body-style
-                    updateAsyncEntityInState((entity) => {
-                        return updateDataOnSuccess
-                            ? getAsyncEntityUpdaterFromOperation(operation)
-                                .succeeded(entity, apiResult)
-                            : getAsyncEntityUpdaterFromOperation(operation)
-                                .succeededWithoutDataSet(entity);
-                    });
                 } catch (error) {
                     if (typeof onFail === 'function') {
-                        onFail({ dispatch });
+                        onFail({ dispatch, error });
                     }
 
                     updateAsyncEntityInState(

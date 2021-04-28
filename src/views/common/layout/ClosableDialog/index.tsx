@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import Dialog from '@material-ui/core/Dialog';
+import Dialog, { DialogProps } from '@material-ui/core/Dialog';
 import { Typography, Box, makeStyles, IconButton } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 
@@ -24,6 +24,7 @@ interface IPublicProps {
     open: boolean;
     onClose: () => void;
     children: ReactNode;
+    contentClassName?: string;
 }
 
 export default function ClosableDialog({
@@ -31,18 +32,20 @@ export default function ClosableDialog({
     open,
     title,
     children,
-}: IPublicProps) {
+    contentClassName,
+    ...dialogProps
+}: IPublicProps & DialogProps) {
     const classes = useStyles();
 
     return (
-        <Dialog onClose={onClose} aria-labelledby="closable-dialog" open={open}>
+        <Dialog onClose={onClose} aria-labelledby="closable-dialog" open={open} {...dialogProps}>
             <Box className={classes.dialogHeader} paddingY={3} paddingX={7} position="relative">
                 <Typography variant="h3">{title}</Typography>
                 <IconButton size="small" onClick={onClose} className={classes.closeButton}>
                     <Close />
                 </IconButton>
             </Box>
-            <Box className={classes.dialogContent} padding={3}>
+            <Box className={`${classes.dialogContent} ${contentClassName}`} padding={3}>
                 {children}
             </Box>
         </Dialog>

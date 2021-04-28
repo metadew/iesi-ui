@@ -58,6 +58,7 @@ import {
     checkAuthority,
     checkAuthorityGeneral,
 } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import TransformDocumentationDialog from 'views/design/common/TransformDocumentationDialog';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -84,6 +85,14 @@ const styles = ({ palette, typography }: Theme) =>
             fontWeight: typography.fontWeightBold,
             fontSize: typography.pxToRem(12),
         },
+        generateTooltip: {
+            backgroundColor: palette.common.black,
+            fontSize: typography.pxToRem(12),
+            padding: 16,
+        },
+        generateTooltipArrow: {
+            color: palette.common.black,
+        },
     });
 
 export const filterConfig: FilterConfig<Partial<IColumnNames>> = {
@@ -107,6 +116,7 @@ const sortActions: SortActions<Partial<IColumnNames>> = {
 interface IComponentState {
     scriptIdToDelete: string;
     scriptIdToExecute: string;
+    loadDocDialogOpen: boolean;
 }
 
 type TProps = WithStyles<typeof styles>;
@@ -119,6 +129,7 @@ const ScriptsOverview = withStyles(styles)(
             this.state = {
                 scriptIdToDelete: null,
                 scriptIdToExecute: null,
+                loadDocDialogOpen: false,
             };
 
             this.renderPanel = this.renderPanel.bind(this);
@@ -136,12 +147,14 @@ const ScriptsOverview = withStyles(styles)(
             this.closeDeleteScriptDialogAfterSuccessfulDelete = this.closeDeleteScriptDialogAfterSuccessfulDelete.bind(this);
 
             this.fetchScriptsWithFilterAndPagination = this.fetchScriptsWithFilterAndPagination.bind(this);
+
+            this.onLoadDocDialogOpen = this.onLoadDocDialogOpen.bind(this);
+            this.onLoadDocDialogClose = this.onLoadDocDialogClose.bind(this);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
             const { state, dispatch } = prevProps;
             const filterFromState = getScriptsListFilter(state);
-
             if (filterFromState.filters === null || filterFromState.sortedColumn === null) {
                 dispatch(setScriptsListFilter({
                     filters: filterFromState.filters === null && getIntialFiltersFromFilterConfig(filterConfig),
@@ -169,7 +182,6 @@ const ScriptsOverview = withStyles(styles)(
                 ? getLatestVersionsFromScripts(scripts) : scripts);
 
             const translator = getTranslator(state);
-
             return (
                 <>
                     <Box height="100%" display="flex" flexDirection="column" flex="1 0 auto">
@@ -195,17 +207,29 @@ const ScriptsOverview = withStyles(styles)(
                                     </Box>
                                     {checkAuthorityGeneral(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)
                                         ? (
-                                            <Box flex="0 0 auto">
-                                                <Button
-                                                    variant="contained"
-                                                    color="secondary"
-                                                    size="small"
-                                                    startIcon={<AddRounded />}
-                                                    onClick={() => redirectTo({ routeKey: ROUTE_KEYS.R_SCRIPT_NEW })}
-                                                >
-                                                    <Translate msg="scripts.overview.header.add_button" />
-                                                </Button>
+                                            <Box display="flex" alignItems="center">
+                                                <Box flex="0 0 auto" mr="8px" width="250px">
+                                                    <TransformDocumentationDialog
+                                                        open={this.state.loadDocDialogOpen}
+                                                        onOpen={this.onLoadDocDialogOpen}
+                                                        onClose={this.onLoadDocDialogClose}
+                                                    />
+                                                </Box>
+                                                <Box flex="0 0 auto">
+                                                    <Button
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        size="small"
+                                                        startIcon={<AddRounded />}
+                                                        onClick={() => {
+                                                            redirectTo({ routeKey: ROUTE_KEYS.R_SCRIPT_NEW });
+                                                        }}
+                                                    >
+                                                        <Translate msg="scripts.overview.header.add_button" />
+                                                    </Button>
+                                                </Box>
                                             </Box>
+
                                         ) : null}
 
                                 </Box>
@@ -319,7 +343,7 @@ const ScriptsOverview = withStyles(styles)(
             return (
                 <>
                     <Box paddingBottom={5} marginX={2.8}>
-                        { !hasError && (
+                        {!hasError && (
                             <GenericList
                                 listActions={[].concat(
                                     {
@@ -374,7 +398,7 @@ const ScriptsOverview = withStyles(styles)(
                                             checkAuthority(
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                                 item.columns.securityGroupName.toString(),
-                                            // eslint-disable-next-line max-len
+                                                // eslint-disable-next-line max-len
                                             ) || !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, item.columns.securityGroupName.toString()),
                                     },
                                     {
@@ -522,6 +546,14 @@ const ScriptsOverview = withStyles(styles)(
 
         private setScriptToExecute(id: ReactText) {
             this.setState({ scriptIdToExecute: id as string });
+        }
+
+        private onLoadDocDialogOpen() {
+            this.setState((state) => ({ ...state, loadDocDialogOpen: true }));
+        }
+
+        private onLoadDocDialogClose() {
+            this.setState((state) => ({ ...state, loadDocDialogOpen: false }));
         }
     },
 );

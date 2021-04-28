@@ -54,6 +54,20 @@ export default function getMockState({
                     error: null,
                 },
             },
+            connectionTypes: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            componentTypes: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
             scripts: {
                 data: null,
                 fetch: {
@@ -101,6 +115,13 @@ export default function getMockState({
                 },
             },
             environments: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            openapi: {
                 data: null,
                 fetch: {
                     status: AsyncStatus.Initial,

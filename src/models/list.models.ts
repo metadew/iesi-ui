@@ -37,6 +37,7 @@ export interface IListItem<ColumnNames, Data = TObjectWithProps> {
         [key in keyof ColumnNames]: ReactText | IListItemValueWithSortValue
     };
     data?: Data;
+    isHandled?: boolean;
 }
 
 export enum SortOrder {
