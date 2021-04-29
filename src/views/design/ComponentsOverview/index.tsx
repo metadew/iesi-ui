@@ -263,18 +263,29 @@ const ComponentsOverview = withStyles(styles)(
                         {
                             !hasError && (
                                 <GenericList
-                                    listActions={[
+                                    listActions={[].concat(
                                         {
                                             icon: <Edit />,
                                             label: translator('components.overview.list.actions.edit'),
-                                            onClick: () => { },
+                                            onClick: (id: string) => {
+                                                const components = getAsyncComponents(this.props.state);
+                                                const selectedComponent = components.find((item) =>
+                                                    getUniqueIdFromComponent(item) === id);
+                                                redirectTo({
+                                                    routeKey: ROUTE_KEYS.R_COMPONENT_DETAIL,
+                                                    params: {
+                                                        name: selectedComponent.name,
+                                                        version: selectedComponent.version.number,
+                                                    },
+                                                });
+                                            },
                                         },
                                         {
                                             icon: <Delete />,
                                             label: translator('components.overview.list.actions.delete'),
                                             onClick: this.setComponentToDelete,
                                         },
-                                    ]}
+                                    )}
                                     columns={columns}
                                     listItems={listItems}
                                     pagination={{

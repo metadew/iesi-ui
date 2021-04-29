@@ -59,6 +59,9 @@ flash_messages:
     connections_unknown_error: 'Unknown error for the one or more connections'
     component_unknown_error: 'Unknown error for the component "{componentName}"'
     components_unknown_error: 'Unknown error for the one or more connections'
+  component:
+    edit: 'The component has been updated'
+    error: 'An error has occured : {error}'
 scripts:
   overview:
     delete_script_dialog:
@@ -336,7 +339,8 @@ components:
       component_version: Component version
     main:
       actions:
-        add_action: Add new parameter
+        add_parameter: Add new parameter
+        add_attribute: Add new attribute
         delete: Delete component
         save: Save
         export: Export component
@@ -344,6 +348,8 @@ components:
         labels:
           name: Name
           value: Value
+          mandatory: Mandatory
+          environment: Environment
         actions:
           edit: Edit
           delete: Delete
@@ -352,6 +358,10 @@ components:
     edit:
       name: Name
       value: Value
+      environment: Environment
+      footer:
+        cancel: Cancel
+        save: Save
     error:
       save: Failed to save changes
 doc:

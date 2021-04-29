@@ -18,7 +18,44 @@ export const triggerFetchComponents = (payload: IFetchComponentsListPayload) =>
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENTS_LIST],
     });
+export const triggerFetchComponentDetail = (payload: IComponentByNameAndVersionPayload) =>
+    entitiesStateManager.triggerAsyncEntityFetch<{}>({
+        asyncEntityToFetch: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.componentDetail,
+            refreshMode: 'always',
+            resetDataOnTrigger: true,
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENT_DETAIL],
+    });
 
+export const triggerCreateComponentDetail = (payload: IComponent) =>
+    entitiesStateManager.triggerAsyncEntityCreate<{}>({
+        asyncEntityToCreate: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.componentDetail,
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENT_DETAIL],
+    });
+
+export const triggerUpdateComponentDetail = (payload: IComponent) =>
+    entitiesStateManager.triggerAsyncEntityUpdate<{}>({
+        asyncEntityToUpdate: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.componentDetail,
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENT_DETAIL],
+        onSuccess: ({ dispatch }) => {
+            dispatch(triggerFlashMessage({
+                translationKey: 'flash_messages.component.edit',
+                type: 'success',
+            }));
+        },
+        onFail: ({ dispatch }) => dispatch(triggerFlashMessage({
+            translationKey: 'flash_messages.error',
+            type: 'error',
+        })),
+    });
 export const triggerDeleteComponentDetail = (payload: IComponentByNameAndVersionPayload) =>
     entitiesStateManager.triggerAsyncEntityRemove<{}>({
         asyncEntityToRemove: {
@@ -46,9 +83,10 @@ export const triggerUpdateComponent = (payload: IComponent | IComponent[], bulk?
                 },
                 type: 'success',
             }));
-            dispatch(handleComponent({ currentComponent: currentEntity
-                ? currentEntity as IComponent
-                : payload as IComponent,
+            dispatch(handleComponent({
+                currentComponent: currentEntity
+                    ? currentEntity as IComponent
+                    : payload as IComponent,
             }));
         },
         onFail: ({ dispatch, error }) => {
@@ -82,9 +120,10 @@ export const triggerCreateComponent = (payload: IComponent | IComponent[], bulk?
                 },
                 type: 'success',
             }));
-            dispatch(handleComponent({ currentComponent: currentEntity
-                ? currentEntity as IComponent
-                : payload as IComponent,
+            dispatch(handleComponent({
+                currentComponent: currentEntity
+                    ? currentEntity as IComponent
+                    : payload as IComponent,
             }));
         },
         onFail: ({ dispatch, error }) => {

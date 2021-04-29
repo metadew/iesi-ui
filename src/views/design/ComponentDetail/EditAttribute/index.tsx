@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { IComponentParameter } from 'models/state/components.model';
+import { IComponentAttribute } from 'models/state/components.model';
 import { IObserveProps, observe } from 'views/observe';
 import { Box, Button, ButtonGroup, makeStyles, Paper, Theme } from '@material-ui/core';
 import TextInput from 'views/common/input/TextInput';
@@ -8,11 +8,10 @@ import { checkAuthorityGeneral, SECURITY_PRIVILEGES } from 'views/appShell/AppLo
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 
 interface IPublicProps {
-    parameter: IComponentParameter;
-    mandatory: boolean;
+    attribute: IComponentAttribute;
     onClose: () => void;
-    onEdit: (parameter: IComponentParameter) => void;
-    isCreateParameter?: boolean;
+    onEdit: (attribute: IComponentAttribute) => void;
+    isCreateAttribute?: boolean;
 }
 
 const useStyles = makeStyles(({ palette }: Theme) => ({
@@ -27,17 +26,17 @@ const useStyles = makeStyles(({ palette }: Theme) => ({
     },
 }));
 
-function EditParameter({
-    parameter,
+function EditAttribute({
+    attribute,
     onClose,
     onEdit,
-    mandatory,
     state,
-    isCreateParameter,
+    isCreateAttribute,
 }: IPublicProps & IObserveProps) {
     const classes = useStyles();
-    const [name, setName] = useState(parameter.name);
-    const [value, setValue] = useState(parameter.value);
+    const [name, setName] = useState(attribute.name);
+    const [value, setValue] = useState(attribute.value);
+    const [environment, setEnvironment] = useState(attribute.environment);
     const translator = getTranslator(state);
 
     return (
@@ -46,14 +45,11 @@ function EditParameter({
                 <Box marginBottom={2}>
                     <Paper>
                         <TextInput
-                            id="parameter-name"
+                            id="attribute-name"
                             label={translator('components.detail.edit.name')}
                             defaultValue={name}
                             onBlur={(e) => setName(e.target.value)}
                             className={classes.textField}
-                            InputProps={{
-                                readOnly: mandatory,
-                            }}
                             fullWidth
                         />
                     </Paper>
@@ -61,12 +57,23 @@ function EditParameter({
                 <Box marginBottom={2}>
                     <Paper>
                         <TextInput
-                            id="parameter-value"
+                            id="attribute-value"
                             label={translator('components.detail.edit.value')}
                             defaultValue={value}
                             onBlur={(e) => setValue(e.target.value)}
                             className={classes.textField}
-                            required={mandatory}
+                            fullWidth
+                        />
+                    </Paper>
+                </Box>
+                <Box marginBottom={2}>
+                    <Paper>
+                        <TextInput
+                            id="attribute-environment"
+                            label={translator('components.detail.edit.environment')}
+                            defaultValue={environment}
+                            onBlur={(e) => setEnvironment(e.target.value)}
+                            className={classes.textField}
                             fullWidth
                         />
                     </Paper>
@@ -91,11 +98,11 @@ function EditParameter({
                                     <Button
                                         variant="contained"
                                         color="secondary"
-                                        onClick={updateParameter}
+                                        onClick={updateAttribute}
                                         disableElevation
                                     >
                                         {
-                                            isCreateParameter ? (
+                                            isCreateAttribute ? (
                                                 <Translate msg="components.detail.edit.footer.save" />
                                             ) : (
                                                 <Translate msg="components.detail.edit.footer.update" />
@@ -111,10 +118,10 @@ function EditParameter({
         </Box>
     );
 
-    function updateParameter() {
-        onEdit({ name, value });
+    function updateAttribute() {
+        onEdit({ name, value, environment });
         onClose();
     }
 }
 
-export default observe<IPublicProps>([], EditParameter);
+export default observe<IPublicProps>([], EditAttribute);

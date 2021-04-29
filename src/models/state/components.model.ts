@@ -23,7 +23,6 @@ export interface IComponentEntity {
 }
 
 export interface IComponent {
-    [key: string]: string | IComponentVersion | IComponentParameter[] | IComponentAttribute[] | boolean;
     type: string;
     name: string;
     description: string;

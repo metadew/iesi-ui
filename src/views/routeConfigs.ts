@@ -8,7 +8,7 @@ import {
     triggerFetchComponentTypes,
     triggerFetchConnectionTypes,
 } from 'state/entities/constants/triggers';
-import { triggerFetchComponents } from 'state/entities/components/triggers';
+import { triggerFetchComponentDetail, triggerFetchComponents } from 'state/entities/components/triggers';
 import { SortType, SortOrder } from 'models/list.models';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
@@ -121,6 +121,21 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             path: '/new',
             component: ComponentDetail as React.ComponentType<unknown>,
             executeOnRoute: [{
+                execute: triggerFetchComponentTypes,
+            }],
+        }, {
+            routeKey: ROUTE_KEYS.R_COMPONENT_DETAIL,
+            path: '/:name/:version',
+            component: ComponentDetail as React.ComponentType<unknown>,
+            executeOnRoute: [{
+                // TODO: Fix this typing error so we dont need to cast to () => unknown? Can this be simpler?
+                // Maybe pass the routeLocation to the execute so we dont need the executeInputSelector prop?
+                execute: triggerFetchComponentDetail as () => unknown,
+                executeInputSelector: ({ routeLocation }) => ({
+                    name: routeLocation.params.name,
+                    version: routeLocation.params.version,
+                }),
+            }, {
                 execute: triggerFetchComponentTypes,
             }],
         },
