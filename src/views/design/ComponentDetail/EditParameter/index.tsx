@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { IComponentParameter } from 'models/state/components.model';
 import { IObserveProps, observe } from 'views/observe';
-import { Box, Button, ButtonGroup, makeStyles, Paper, Theme } from '@material-ui/core';
+import { Box, Button, ButtonGroup, makeStyles, Paper, Theme, Typography } from '@material-ui/core';
 import TextInput from 'views/common/input/TextInput';
 import { getTranslator } from 'state/i18n/selectors';
 import { checkAuthorityGeneral, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
+import { THEME_COLORS } from 'config/themes/colors';
 
 interface IPublicProps {
     parameter: IComponentParameter;
@@ -15,14 +16,33 @@ interface IPublicProps {
     isCreateParameter?: boolean;
 }
 
-const useStyles = makeStyles(({ palette }: Theme) => ({
+const useStyles = makeStyles(({ palette, typography }: Theme) => ({
     dialog: {
         background: palette.background.default,
+    },
+    header: {
+        background: palette.background.paper,
+    },
+    index: {
+        fontWeight: typography.fontWeightBold,
+        textAlign: 'center',
     },
     textField: {
         marginTop: 0,
         '& .MuiFilledInput-root': {
             background: palette.background.paper,
+        },
+    },
+    tableCell: {
+        position: 'relative',
+        '&:after': {
+            content: '" "',
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            right: 0,
+            width: '1px',
+            backgroundColor: THEME_COLORS.GREY,
         },
     },
 }));
@@ -42,6 +62,15 @@ function EditParameter({
 
     return (
         <Box className={classes.dialog}>
+            <Box
+                className={classes.header}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                padding={2}
+            >
+                <Typography variant="h2">Add new parameter</Typography>
+            </Box>
             <Box padding={2}>
                 <Box marginBottom={2}>
                     <Paper>
@@ -53,6 +82,7 @@ function EditParameter({
                             className={classes.textField}
                             InputProps={{
                                 readOnly: mandatory,
+                                disableUnderline: true,
                             }}
                             fullWidth
                         />
@@ -66,6 +96,9 @@ function EditParameter({
                             defaultValue={value}
                             onBlur={(e) => setValue(e.target.value)}
                             className={classes.textField}
+                            InputProps={{
+                                disableUnderline: true,
+                            }}
                             required={mandatory}
                             fullWidth
                         />

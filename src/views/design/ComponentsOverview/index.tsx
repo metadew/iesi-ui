@@ -229,12 +229,12 @@ const ComponentsOverview = withStyles(styles)(
                 name: {
                     label: <Translate msg="components.overview.list.labels.name" />,
                     className: classes.componentName,
-                    fixedWidth: '20%',
+                    fixedWidth: '40%',
                 },
                 type: {
                     label: <Translate msg="components.overview.list.labels.type" />,
                     className: classes.componentType,
-                    fixedWidth: '40%',
+                    fixedWidth: '15%',
                 },
                 version: {
                     label: <Translate msg="components.overview.list.labels.version" />,
@@ -245,7 +245,7 @@ const ComponentsOverview = withStyles(styles)(
                 description: {
                     label: <Translate msg="components.overview.list.labels.description" />,
                     className: classes.componentDescription,
-                    fixedWidth: '25%',
+                    fixedWidth: '40%',
                     noWrap: true,
                 },
             };

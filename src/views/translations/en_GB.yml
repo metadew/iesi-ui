@@ -333,10 +333,10 @@ components:
       update_current_version: Update current version
       save_as_new_version: Save as new version
     side:
-      component_type: Component type
-      component_description: Component description
-      component_name: Component name
-      component_version: Component version
+      component_type: Type
+      component_description: Description
+      component_name: Name
+      component_version: Version
     main:
       actions:
         add_parameter: Add new parameter

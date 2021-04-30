@@ -7,13 +7,11 @@ import {
     Collapse,
     Typography,
     Button,
-    IconButton,
     Theme,
     darken,
 } from '@material-ui/core';
 import { THEME_COLORS } from 'config/themes/colors';
-import { Add, Delete, Edit } from '@material-ui/icons';
-import Tooltip from 'views/common/tooltips/Tooltip';
+import { Delete, Edit } from '@material-ui/icons';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { IComponent, IComponentAttribute, IComponentParameter } from 'models/state/components.model';
 import { triggerUpdateComponentDetail, triggerCreateComponentDetail } from 'state/entities/components/triggers';
@@ -223,7 +221,9 @@ const ComponentDetail = withStyles(styles)(
             const { newComponentDetail } = this.state;
             const { state } = this.props;
             const translator = getTranslator(state);
-            const componentTypes = getAsyncComponentTypes(state).data || [];
+            const asyncComponentTypes = getAsyncComponentTypes(state);
+            const { status } = asyncComponentTypes.fetch;
+            const componentTypes = asyncComponentTypes.data || [];
             const listItems = mapComponentTypeToListItems(componentTypes);
             const autoCompleteValue = listItems
                 .find((item) => item.data.type === newComponentDetail.type);
@@ -232,63 +232,64 @@ const ComponentDetail = withStyles(styles)(
                     <Box flex="1 1 auto">
                         <form noValidate autoComplete="off">
                             {
-                                autoCompleteValue && !this.isCreateComponentRoute() ? (
-                                    <Autocomplete
-                                        id="combo-box-component-types"
-                                        options={listItems}
-                                        value={autoCompleteValue}
-                                        getOptionLabel={(option) => option.data.type}
-                                        renderInput={(params) => (
-                                            <TextInput
-                                                {...params}
-                                                label={translator('components.detail.side.component_type')}
-                                                variant="filled"
-                                            />
-                                        )}
-                                        onChange={(
-                                            e: React.ChangeEvent<{}>,
-                                            newValue: IListItem<IColumnNames, IListData>,
-                                        ) => {
-                                            this.updateComponent({
-                                                type: newValue ? newValue.data.type : null,
-                                                parameters: newValue
-                                                    ? componentTypes
-                                                        .find((item) => item.type === newValue?.data?.type)
-                                                        .parameters?.map((item) => ({ name: item.name, value: '' }))
-                                                    : [],
+                                !this.isCreateComponentRoute()
+                                    && status === AsyncStatus.Success ? (
+                                        <Autocomplete
+                                            id="combo-box-component-types"
+                                            options={listItems}
+                                            value={autoCompleteValue || null}
+                                            getOptionLabel={(option) => option.data.type}
+                                            renderInput={(params) => (
+                                                <TextInput
+                                                    {...params}
+                                                    label={translator('components.detail.side.component_type')}
+                                                    variant="filled"
+                                                />
+                                            )}
+                                            onChange={(
+                                                e: React.ChangeEvent<{}>,
+                                                newValue: IListItem<IColumnNames, IListData>,
+                                            ) => {
+                                                this.updateComponent({
+                                                    type: newValue ? newValue.data.type : null,
+                                                    parameters: newValue
+                                                        ? componentTypes
+                                                            .find((item) => item.type === newValue?.data?.type)
+                                                            .parameters?.map((item) => ({ name: item.name, value: '' }))
+                                                        : [],
 
-                                            });
-                                        }}
-                                    />
-                                ) : this.isCreateComponentRoute() && (
-                                    <Autocomplete
-                                        id="combo-box-component-types"
-                                        options={listItems}
-                                        getOptionLabel={(option) => option.data.type}
-                                        renderInput={(params) => (
-                                            <TextInput
-                                                {...params}
-                                                label={translator('components.detail.side.component_type')}
-                                                variant="filled"
-                                            />
-                                        )}
-                                        onChange={(
-                                            e: React.ChangeEvent<{}>,
-                                            newValue: IListItem<IColumnNames, IListData>,
-                                        ) => {
-                                            this.updateComponent({
-                                                type: newValue ? newValue.data.type : null,
-                                                parameters: newValue
-                                                    ? componentTypes
-                                                        .find((item) => item.type === newValue?.data?.type)
-                                                        .parameters?.filter((item) => item.mandatory)
-                                                        .map((item) => ({ name: item.name, value: '' }))
-                                                    : [],
+                                                });
+                                            }}
+                                        />
+                                    ) : this.isCreateComponentRoute() && (
+                                        <Autocomplete
+                                            id="combo-box-component-types"
+                                            options={listItems}
+                                            getOptionLabel={(option) => option.data.type}
+                                            renderInput={(params) => (
+                                                <TextInput
+                                                    {...params}
+                                                    label={translator('components.detail.side.component_type')}
+                                                    variant="filled"
+                                                />
+                                            )}
+                                            onChange={(
+                                                e: React.ChangeEvent<{}>,
+                                                newValue: IListItem<IColumnNames, IListData>,
+                                            ) => {
+                                                this.updateComponent({
+                                                    type: newValue ? newValue.data.type : null,
+                                                    parameters: newValue
+                                                        ? componentTypes
+                                                            .find((item) => item.type === newValue?.data?.type)
+                                                            .parameters?.filter((item) => item.mandatory)
+                                                            .map((item) => ({ name: item.name, value: '' }))
+                                                        : [],
 
-                                            });
-                                        }}
-                                    />
-                                )
+                                                });
+                                            }}
+                                        />
+                                    )
                             }
                             <TextInput
                                 id="component-name"
@@ -345,26 +346,27 @@ const ComponentDetail = withStyles(styles)(
 
         private renderComponentDetailContent() {
             const { newComponentDetail, hasChangesToCheck } = this.state;
-            const { classes, state } = this.props;
+            const { state } = this.props;
             const translator = getTranslator(state);
             const componentTypes = getAsyncComponentTypes(state).data || [];
             const matchingComponentType = componentTypes.find((item) => item.type === newComponentDetail.type);
             const parameterItems = getParametersFromComponentDetails(newComponentDetail, matchingComponentType);
-            const attributeItems = getAttributesFromComponentDetails(newComponentDetail);
+            // const attributeItems = getAttributesFromComponentDetails(newComponentDetail);
             const hasParameters = parameterItems.length > 0;
-            const hasAttributes = attributeItems.length > 0;
+            // const hasAttributes = attributeItems.length > 0;
 
             const parameterColumns: ListColumns<IComponentParameter> = {
                 name: {
                     label: <Translate msg="components.detail.main.list.labels.name" />,
-                    fixedWidth: '50%',
+                    fixedWidth: '40%',
                 },
                 value: {
                     label: <Translate msg="components.detail.main.list.labels.value" />,
-                    fixedWidth: '50%',
+                    fixedWidth: '60%',
                 },
             };
 
+            /*
             const attributeColumns: ListColumns<IComponentAttribute> = {
                 name: {
                     label: <Translate msg="components.detail.main.list.labels.name" />,
@@ -379,6 +381,7 @@ const ComponentDetail = withStyles(styles)(
                     fixedWidth: '30%',
                 },
             };
+            */
             return (
                 <>
                     <Box>
@@ -443,7 +446,9 @@ const ComponentDetail = withStyles(styles)(
                         }
 
                     </Box>
-                    <Box
+                    {
+                        /*
+                        <Box
                         display="flex"
                         flexDirection="column"
                         alignItems="flex-start"
@@ -512,6 +517,8 @@ const ComponentDetail = withStyles(styles)(
                         }
 
                     </Box>
+                    */
+                    }
                 </>
             );
         }
@@ -664,26 +671,28 @@ function getParametersFromComponentDetails(detail: IComponent, componentType: IC
             .map((parameter) => ({
                 name: parameter.name,
                 value: parameter.value,
+                mandatory: componentType
+                    ? componentType.parameters
+                        .some((type) => type.name === parameter.name && type.mandatory === true)
+                    : false,
             }))
         : [];
     const newListItems: IListItem<IComponentParameter>[] = parameters.map((parameter, index) => ({
         id: index,
         columns: {
-            name: parameter.name,
+            name: parameter.name.concat(parameter.mandatory && '*'),
             value: parameter.value,
         },
         data: {
             name: parameter.name,
             value: parameter.value,
-            mandatory: componentType
-                ? componentType.parameters
-                    .some((type) => type.name === parameter.name && type.mandatory === true)
-                : false,
+            mandatory: parameter.mandatory,
         },
     }));
     return newListItems;
 }
 
+/*
 function getAttributesFromComponentDetails(detail: IComponent) {
     const attributes = detail
         ? detail.attributes
@@ -708,6 +717,7 @@ function getAttributesFromComponentDetails(detail: IComponent) {
     }));
     return newListItems;
 }
+*/
 
 function mapComponentTypeToListItems(items: IComponentType[]) {
     const listItems = items
