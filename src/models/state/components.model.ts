@@ -37,6 +37,7 @@ export interface IComponentVersion {
 }
 
 export interface IComponentParameter {
+    [key: string]: string;
     name: string;
     value: string;
 }

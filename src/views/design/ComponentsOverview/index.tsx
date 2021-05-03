@@ -98,6 +98,7 @@ const ComponentsOverview = withStyles(styles)(
             this.onDeleteComponent = this.onDeleteComponent.bind(this);
             // eslint-disable-next-line max-len
             this.closeDeleteComponentDialogAfterSuccessfulDelete = this.closeDeleteComponentDialogAfterSuccessfulDelete.bind(this);
+            this.onSort = this.onSort.bind(this);
             this.onFilter = this.onFilter.bind(this);
             this.fetchComponentsWithFilterAndPagination = this.fetchComponentsWithFilterAndPagination.bind(this);
             this.onLoadDocDialogOpen = this.onLoadDocDialogOpen.bind(this);
@@ -148,8 +149,8 @@ const ComponentsOverview = withStyles(styles)(
                                     <Box flex="1 0 auto">
                                         <GenericSort
                                             sortActions={sortActions}
-                                            onSort={() => { }}
-                                            sortedColumn={undefined}
+                                            onSort={this.onSort}
+                                            sortedColumn={filterFromState.sortedColumn as ISortedColumn<{}>}
                                         />
                                     </Box>
                                     {
@@ -337,6 +338,12 @@ const ComponentsOverview = withStyles(styles)(
             }
         }
 
+        private onSort(sortedColumn: ISortedColumn<IComponentColumnNamesBase>) {
+            const { dispatch } = this.props;
+            this.fetchComponentsWithFilterAndPagination({ newSortedColumn: sortedColumn });
+            dispatch(setComponentsListFilter({ sortedColumn }));
+        }
+
         private onFilter(listFilters: ListFilters<Partial<IComponentColumnNamesBase>>) {
             const { dispatch } = this.props;
             this.fetchComponentsWithFilterAndPagination({ newListFilters: listFilters });
@@ -369,7 +376,6 @@ const ComponentsOverview = withStyles(styles)(
             const filters = newListFilters || filtersFromState.filters;
             const page = newListFilters ? 1 : newPage || pageData.number;
             const sortedColumn = newSortedColumn || filtersFromState.sortedColumn;
-
             triggerFetchComponents({
                 pagination: { page },
                 filter: {
@@ -391,7 +397,6 @@ function mapComponentsToListItems(components: IComponent[]): IListItem<IComponen
             version: component.version.number,
             type: component.type,
         },
-        isHandled: component.isHandled,
     }));
 }
 

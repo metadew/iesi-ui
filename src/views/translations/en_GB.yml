@@ -338,6 +338,8 @@ components:
       component_name: Name
       component_version: Version
     main:
+      no_parameters:
+        title: No parameters yet
       actions:
         add_parameter: Add new parameter
         add_attribute: Add new attribute
@@ -362,6 +364,7 @@ components:
       footer:
         cancel: Cancel
         save: Save
+        update: Update
     error:
       save: Failed to save changes
 doc:

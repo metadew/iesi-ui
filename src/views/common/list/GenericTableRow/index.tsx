@@ -56,10 +56,11 @@ interface IPublicProps<ColumnNames> {
         showIndexCell: boolean;
     };
     isHandled?: boolean;
+    canBeDeleted?: boolean;
 }
 
 const useStyles = makeStyles(({ palette, shape, typography, spacing }: Theme) => ({
-    tableRow: (props: { isHandled: boolean}) => ({
+    tableRow: (props: { isHandled: boolean }) => ({
         background: props.isHandled ? THEME_COLORS.GREY_LIGHT : palette.background.paper,
         height: '100%',
     }),
@@ -174,6 +175,7 @@ export default function GenericTableRow<ColumnNames>({
     index: rowIndex,
     placeholderProps,
     isHandled,
+    canBeDeleted = true,
 }: IPublicProps<ColumnNames>) {
     const classes = useStyles({ isHandled });
     const [anchorEl, setAnchorEl] = useState(null);
@@ -215,7 +217,7 @@ export default function GenericTableRow<ColumnNames>({
                     ) : renderPlaceholderCellContent()}
                 </TableCell>
             )}
-            { isPlaceholder ? renderPlaceholderCells() : renderDataCells() }
+            { isPlaceholder ? renderPlaceholderCells() : renderDataCells()}
             {listActions && (
                 <>
                     <TableCell
@@ -236,7 +238,9 @@ export default function GenericTableRow<ColumnNames>({
                                                     area-label={action.label}
                                                     onClick={() => action.onClick(item.id, rowIndex)}
                                                     className={classes.actionIcon}
-                                                    disabled={isHandled}
+                                                    disabled={(isHandled || (
+                                                        action.label === 'Delete' && !canBeDeleted
+                                                    ))}
                                                 >
                                                     {action.icon}
                                                 </IconButton>

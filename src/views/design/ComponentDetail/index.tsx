@@ -14,13 +14,19 @@ import { THEME_COLORS } from 'config/themes/colors';
 import { Delete, Edit } from '@material-ui/icons';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { IComponent, IComponentAttribute, IComponentParameter } from 'models/state/components.model';
-import { triggerUpdateComponentDetail, triggerCreateComponentDetail } from 'state/entities/components/triggers';
+import {
+    triggerUpdateComponentDetail,
+    triggerCreateComponentDetail,
+    triggerDeleteComponentDetail,
+} from 'state/entities/components/triggers';
 import { IObserveProps, observe } from 'views/observe';
 import { checkAuthorityGeneral, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel';
 import TextInput from 'views/common/input/TextInput';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import { getTranslator } from 'state/i18n/selectors';
+import { TRequiredFieldsState } from 'models/form.models';
+import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import { getRouteKeyByPath, redirectTo, ROUTE_KEYS } from 'views/routes';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getAsyncComponentTypes } from 'state/entities/constants/selectors';
@@ -30,6 +36,7 @@ import { Alert, Autocomplete } from '@material-ui/lab';
 import { StateChangeNotification } from 'models/state.models';
 import GenericList from 'views/common/list/GenericList';
 import { getAsyncScriptDetail } from 'state/entities/scripts/selectors';
+import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import Loader from 'views/common/waiting/Loader';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { getAsyncComponentDetail } from 'state/entities/components/selectors';
@@ -59,11 +66,13 @@ interface IComponentState {
     attributeToEdit: IComponentAttribute;
     editParameterIndex: number;
     editAttributeIndex: number;
-    hasChangesToCheck: false;
+    hasChangesToCheck: boolean;
     isAddingParameter: boolean;
     isAddingAttribute: boolean;
     isSaveDialogOpen: boolean;
+    isConfirmDeleteComponentOpen: boolean;
     additionalParameters: IComponentParameter[];
+    requiredFieldsState: TRequiredFieldsState<IComponent>;
 }
 
 interface IColumnNames {
@@ -103,7 +112,16 @@ const ComponentDetail = withStyles(styles)(
                 isAddingParameter: false,
                 isAddingAttribute: false,
                 isSaveDialogOpen: false,
+                isConfirmDeleteComponentOpen: false,
                 additionalParameters: [],
+                requiredFieldsState: {
+                    type: {
+                        showError: false,
+                    },
+                    name: {
+                        showError: false,
+                    },
+                },
             };
 
             // eslint-disable-next-line max-len
@@ -118,6 +136,8 @@ const ComponentDetail = withStyles(styles)(
             this.isCreateComponentRoute = this.isCreateComponentRoute.bind(this);
             this.getEditParameter = this.getEditParameter.bind(this);
             this.updateComponent = this.updateComponent.bind(this);
+
+            this.onDeleteComponent = this.onDeleteComponent.bind(this);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
@@ -131,11 +151,13 @@ const ComponentDetail = withStyles(styles)(
                 isAddingParameter,
                 isAddingAttribute,
                 isSaveDialogOpen,
+                isConfirmDeleteComponentOpen,
                 newComponentDetail,
             } = this.state;
             const { state } = this.props;
             const componentDetailAsyncStatus = getAsyncScriptDetail(state).fetch.status;
             const componentTypesAsyncStatus = getAsyncComponentTypes(state).fetch.status;
+            const deleteStatus = getAsyncComponentDetail(state).remove.status;
             const parameter = this.getEditParameter();
             const attribute = this.getEditAttribute();
             const translator = getTranslator(state);
@@ -163,6 +185,14 @@ const ComponentDetail = withStyles(styles)(
                             || attribute
                         )}
                         toggleLabel={<Translate msg="components.detail.side.toggle_button" />}
+                    />
+                    <ConfirmationDialog
+                        title={translator('components.detail.delete_component_dialog.title')}
+                        text={translator('components.detail.delete_component_dialog.text')}
+                        open={isConfirmDeleteComponentOpen}
+                        onClose={() => this.setState({ isConfirmDeleteComponentOpen: false })}
+                        onConfirm={this.onDeleteComponent}
+                        showLoader={deleteStatus === AsyncStatus.Busy}
                     />
                     <ClosableDialog
                         title={translator('components.detail.save_component_dialog.title')}
@@ -218,11 +248,10 @@ const ComponentDetail = withStyles(styles)(
         }
 
         private renderComponentDetailPanel() {
-            const { newComponentDetail } = this.state;
+            const { newComponentDetail, requiredFieldsState } = this.state;
             const { state } = this.props;
             const translator = getTranslator(state);
             const asyncComponentTypes = getAsyncComponentTypes(state);
-            const { status } = asyncComponentTypes.fetch;
             const componentTypes = asyncComponentTypes.data || [];
             const listItems = mapComponentTypeToListItems(componentTypes);
             const autoCompleteValue = listItems
@@ -231,66 +260,37 @@ const ComponentDetail = withStyles(styles)(
                 <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
                     <Box flex="1 1 auto">
                         <form noValidate autoComplete="off">
-                            {
-                                !this.isCreateComponentRoute()
-                                    && status === AsyncStatus.Success ? (
-                                        <Autocomplete
-                                            id="combo-box-component-types"
-                                            options={listItems}
-                                            value={autoCompleteValue || null}
-                                            getOptionLabel={(option) => option.data.type}
-                                            renderInput={(params) => (
-                                                <TextInput
-                                                    {...params}
-                                                    label={translator('components.detail.side.component_type')}
-                                                    variant="filled"
-                                                />
-                                            )}
-                                            onChange={(
-                                                e: React.ChangeEvent<{}>,
-                                                newValue: IListItem<IColumnNames, IListData>,
-                                            ) => {
-                                                this.updateComponent({
-                                                    type: newValue ? newValue.data.type : null,
-                                                    parameters: newValue
-                                                        ? componentTypes
-                                                            .find((item) => item.type === newValue?.data?.type)
-                                                            .parameters?.map((item) => ({ name: item.name, value: '' }))
-                                                        : [],
+                            <Autocomplete
+                                id="combo-box-component-types"
+                                options={listItems}
+                                value={autoCompleteValue || null}
+                                getOptionLabel={(option) => option.data.type}
+                                renderInput={(params) => (
+                                    <TextInput
+                                        {...params}
+                                        label={translator('components.detail.side.component_type')}
+                                        variant="filled"
+                                        error={requiredFieldsState.type.showError}
+                                        // eslint-disable-next-line max-len
+                                        helperText={requiredFieldsState.type.showError && 'Component type is a required field'}
+                                    />
+                                )}
+                                onChange={(
+                                    e: React.ChangeEvent<{}>,
+                                    newValue: IListItem<IColumnNames, IListData>,
+                                ) => {
+                                    this.updateComponent({
+                                        type: newValue ? newValue.data.type : null,
+                                        parameters: newValue
+                                            ? componentTypes
+                                                .find((item) => item.type === newValue?.data?.type)
+                                                .parameters?.filter((item) => item.mandatory)
+                                                .map((item) => ({ name: item.name, value: '' }))
+                                            : [],
 
-                                                });
-                                            }}
-                                        />
-                                    ) : this.isCreateComponentRoute() && (
-                                        <Autocomplete
-                                            id="combo-box-component-types"
-                                            options={listItems}
-                                            getOptionLabel={(option) => option.data.type}
-                                            renderInput={(params) => (
-                                                <TextInput
-                                                    {...params}
-                                                    label={translator('components.detail.side.component_type')}
-                                                    variant="filled"
-                                                />
-                                            )}
-                                            onChange={(
-                                                e: React.ChangeEvent<{}>,
-                                                newValue: IListItem<IColumnNames, IListData>,
-                                            ) => {
-                                                this.updateComponent({
-                                                    type: newValue ? newValue.data.type : null,
-                                                    parameters: newValue
-                                                        ? componentTypes
-                                                            .find((item) => item.type === newValue?.data?.type)
-                                                            .parameters?.filter((item) => item.mandatory)
-                                                            .map((item) => ({ name: item.name, value: '' }))
-                                                        : [],
-
-                                                });
-                                            }}
-                                        />
-                                    )
-                            }
+                                    });
+                                }}
+                            />
                             <TextInput
                                 id="component-name"
                                 label={translator('components.detail.side.component_name')}
@@ -302,6 +302,8 @@ const ComponentDetail = withStyles(styles)(
                                 onChange={(e) => this.updateComponent({ name: e.target.value })}
                                 focused={newComponentDetail && newComponentDetail.name.length > 0}
                                 required={this.isCreateComponentRoute()}
+                                error={requiredFieldsState.name.showError}
+                                helperText={requiredFieldsState.name.showError && 'Component name is a required field'}
                             />
                             <TextInput
                                 id="component-description"
@@ -355,6 +357,24 @@ const ComponentDetail = withStyles(styles)(
             const hasParameters = parameterItems.length > 0;
             // const hasAttributes = attributeItems.length > 0;
 
+            const handleSaveAction = () => {
+                const { passed: passedRequired, requiredFieldsState } = requiredFieldsCheck({
+                    data: newComponentDetail,
+                    requiredFields: ['type', 'name'],
+                });
+                if (passedRequired) {
+                    this.setState({
+                        isSaveDialogOpen: true,
+                        requiredFieldsState,
+                        hasChangesToCheck: false,
+                    });
+                } else {
+                    this.setState({
+                        requiredFieldsState,
+                    });
+                }
+            };
+
             const parameterColumns: ListColumns<IComponentParameter> = {
                 name: {
                     label: <Translate msg="components.detail.main.list.labels.name" />,
@@ -393,8 +413,8 @@ const ComponentDetail = withStyles(styles)(
                             </Box>
                         </Collapse>
                         <DetailActions
-                            onSave={() => { this.setState({ isSaveDialogOpen: true }); }}
-                            onDelete={() => { }}
+                            onSave={handleSaveAction}
+                            onDelete={() => this.setState({ isConfirmDeleteComponentOpen: true })}
                             onAdd={() => {
                                 this.setState({ isAddingParameter: true });
                             }}
@@ -592,7 +612,16 @@ const ComponentDetail = withStyles(styles)(
                     ...prevState.newComponentDetail,
                     ...fieldsToUpdate,
                 },
+                hasChangesToCheck: true,
             }));
+        }
+
+        private onDeleteComponent() {
+            const { state } = this.props;
+            const detail = getAsyncComponentDetail(state).data;
+            if (detail) {
+                triggerDeleteComponentDetail({ name: detail.name, version: detail.version.number });
+            }
         }
 
         private isCreateComponentRoute() {
@@ -680,7 +709,7 @@ function getParametersFromComponentDetails(detail: IComponent, componentType: IC
     const newListItems: IListItem<IComponentParameter>[] = parameters.map((parameter, index) => ({
         id: index,
         columns: {
-            name: parameter.name.concat(parameter.mandatory && '*'),
+            name: parameter.name.concat(parameter.mandatory ? '*' : ''),
             value: parameter.value,
         },
         data: {
@@ -688,6 +717,7 @@ function getParametersFromComponentDetails(detail: IComponent, componentType: IC
             value: parameter.value,
             mandatory: parameter.mandatory,
         },
+        canBeDeleted: !parameter.mandatory,
     }));
     return newListItems;
 }
