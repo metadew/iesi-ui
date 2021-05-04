@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Button, IconButton, Box, makeStyles, Paper, darken } from '@material-ui/core';
+import { Button, IconButton, Box, makeStyles, Paper, darken } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
     Save as SaveIcon,
@@ -23,7 +23,6 @@ interface IPublicProps {
     onExport?: () => void;
     isCreateRoute?: boolean;
     newComponentDetail?: IComponent;
-    title?: string;
 }
 
 const useStyles = makeStyles(({ palette, spacing }) => ({
@@ -50,7 +49,6 @@ function DetailActions({
     onSave,
     isCreateRoute,
     state,
-    title,
 }: IPublicProps & IObserveProps) {
     const classes = useStyles();
     const translator = getTranslator(state);
@@ -73,7 +71,6 @@ function DetailActions({
             marginX={2.2}
             width="100%"
         >
-            <Typography variant="h4">{title}</Typography>
             <Box display="flex" alignItems="center" justifyContent="space-between" width="100%" mt={2}>
                 <Box flex="0 0 auto">
                     {isCreateRoute || checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)

@@ -2,7 +2,7 @@ import React, { ReactText } from 'react';
 import { IObserveProps, observe } from 'views/observe';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { Box, Button, Theme, Typography, WithStyles, withStyles, createStyles } from '@material-ui/core';
-import { AddRounded, Delete, Edit } from '@material-ui/icons';
+import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { checkAuthorityGeneral, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
@@ -280,11 +280,34 @@ const ComponentsOverview = withStyles(styles)(
                                                     },
                                                 });
                                             },
-                                        },
-                                        {
+                                            hideAction: () => (
+                                                !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                            ),
+                                        }, {
+                                            icon: <Visibility />,
+                                            label: translator('components.overview.list.actions.view'),
+                                            onClick: (id: string) => {
+                                                const components = getAsyncComponents(this.props.state);
+                                                const selectedComponent = components.find((item) =>
+                                                    getUniqueIdFromComponent(item) === id);
+                                                redirectTo({
+                                                    routeKey: ROUTE_KEYS.R_COMPONENT_DETAIL,
+                                                    params: {
+                                                        name: selectedComponent.name,
+                                                        version: selectedComponent.version.number,
+                                                    },
+                                                });
+                                            },
+                                            hideAction: () => (
+                                                checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                            ),
+                                        }, {
                                             icon: <Delete />,
                                             label: translator('components.overview.list.actions.delete'),
                                             onClick: this.setComponentToDelete,
+                                            hideAction: () => (
+                                                !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                            ),
                                         },
                                     )}
                                     columns={columns}
@@ -393,7 +416,7 @@ function mapComponentsToListItems(components: IComponent[]): IListItem<IComponen
         id: getUniqueIdFromComponent(component),
         columns: {
             name: component.name,
-            description: component.description,
+            description: component.version.description,
             version: component.version.number,
             type: component.type,
         },

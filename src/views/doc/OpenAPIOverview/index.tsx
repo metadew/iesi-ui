@@ -285,6 +285,7 @@ const OpenAPIOverview = withStyles(styles)(
                             icon: <Delete />,
                             label: translator('doc.overview.action_buttons.delete'),
                             onClick: (id) => this.props.dispatch(deleteConnection({ id })),
+                            hideAction: (item) => item.isHandled,
                         },
                     ]}
                     columns={columns}
@@ -342,6 +343,7 @@ const OpenAPIOverview = withStyles(styles)(
                             icon: <Delete />,
                             label: translator('doc.overview.action_buttons.delete'),
                             onClick: (id) => this.props.dispatch(deleteComponent({ id })),
+                            hideAction: (item) => item.isHandled,
                         },
                     ]}
                     columns={columns}

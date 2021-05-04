@@ -132,7 +132,6 @@ export default function GenericList<ColumnNames>({
                                         columns={columns}
                                         compactView={compactView}
                                         isHandled={item.isHandled}
-                                        canBeDeleted={item.canBeDeleted}
                                     />
                                 ))}
                             </>

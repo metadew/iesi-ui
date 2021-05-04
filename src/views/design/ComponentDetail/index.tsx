@@ -41,6 +41,7 @@ import Loader from 'views/common/waiting/Loader';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { getAsyncComponentDetail } from 'state/entities/components/selectors';
 import { getUniqueIdFromComponent } from 'utils/components/componentUtils';
+import DescriptionList from 'views/common/list/DescriptionList';
 import { clone } from 'lodash';
 import EditParameter from './EditParameter';
 import EditAttribute from './EditAttribute';
@@ -265,6 +266,7 @@ const ComponentDetail = withStyles(styles)(
                                 options={listItems}
                                 value={autoCompleteValue || null}
                                 getOptionLabel={(option) => option.data.type}
+                                disabled={!checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
                                 renderInput={(params) => (
                                     <TextInput
                                         {...params}
@@ -295,12 +297,12 @@ const ComponentDetail = withStyles(styles)(
                                 id="component-name"
                                 label={translator('components.detail.side.component_name')}
                                 InputProps={{
-                                    readOnly: !this.isCreateComponentRoute() && newComponentDetail !== undefined,
+                                    readOnly: !this.isCreateComponentRoute() && newComponentDetail !== undefined
+                                        && !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
                                     disableUnderline: true,
                                 }}
                                 value={newComponentDetail.name}
                                 onChange={(e) => this.updateComponent({ name: e.target.value })}
-                                focused={newComponentDetail && newComponentDetail.name.length > 0}
                                 required={this.isCreateComponentRoute()}
                                 error={requiredFieldsState.name.showError}
                                 helperText={requiredFieldsState.name.showError && 'Component name is a required field'}
@@ -311,32 +313,50 @@ const ComponentDetail = withStyles(styles)(
                                 multiline
                                 rows={8}
                                 InputProps={{
-                                    readOnly: !this.isCreateComponentRoute && newComponentDetail !== undefined,
+                                    readOnly: !this.isCreateComponentRoute && newComponentDetail !== undefined
+                                        && !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
                                     disableUnderline: true,
                                 }}
-                                defaultValue={newComponentDetail.description}
-                                onBlur={(e) => this.updateComponent({ description: e.target.value })}
-                                focused={newComponentDetail && newComponentDetail.description.length > 0}
+                                value={newComponentDetail.version.description}
+                                onChange={(e) => this.updateComponent({
+                                    version: {
+                                        ...newComponentDetail.version,
+                                        description: e.target.value,
+                                    },
+                                })}
                             />
                             {
-                                this.isCreateComponentRoute() && (
+                                this.isCreateComponentRoute() ? (
                                     <TextInput
                                         id="component-version"
                                         label={translator('components.detail.side.component_version')}
-                                        type="number"
-                                        InputProps={{
-                                            disableUnderline: true,
-                                            inputProps: {
-                                                min: 0,
-                                            },
-                                        }}
-                                        defaultValue={newComponentDetail.version.number}
-                                        onBlur={(e) => this.updateComponent({
+                                        multiline
+                                        rows={8}
+                                        value={(newComponentDetail && newComponentDetail.description)
+                                            ? newComponentDetail.description : ''}
+                                        onChange={(e) => this.updateComponent({
                                             version: {
                                                 ...newComponentDetail.version,
                                                 number: parseInt(e.target.value, 10),
                                             },
                                         })}
+                                        InputProps={{
+                                            readOnly: !this.isCreateComponentRoute() && newComponentDetail
+                                                && !checkAuthorityGeneral(
+                                                    SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
+                                                ),
+                                            disableUnderline: true,
+                                        }}
+
+                                    />
+                                ) : (
+                                    <DescriptionList
+                                        noLineAfterListItem
+                                        items={[].concat([{
+                                            label: translator('components.detail.side.component_version'),
+                                            value: newComponentDetail && newComponentDetail.version
+                                                ? newComponentDetail.version.number : '',
+                                        }])}
                                     />
                                 )
                             }
@@ -402,6 +422,25 @@ const ComponentDetail = withStyles(styles)(
                 },
             };
             */
+
+            if (!hasParameters) {
+                return (
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        flex="1 1 auto"
+                        justifyContent="center"
+                        paddingBottom={5}
+                    >
+                        <Box textAlign="center">
+                            <Typography variant="h2" paragraph>
+                                <Translate msg="components.detail.main.no_parameters.title" />
+                            </Typography>
+                        </Box>
+                    </Box>
+                );
+            }
+
             return (
                 <>
                     <Box>
@@ -419,51 +458,39 @@ const ComponentDetail = withStyles(styles)(
                                 this.setState({ isAddingParameter: true });
                             }}
                             isCreateRoute={this.isCreateComponentRoute()}
-                            title="Parameters"
                         />
                     </Box>
                     <Box marginY={1}>
-                        {
-                            hasParameters ? (
-                                <GenericList
-                                    listItems={parameterItems}
-                                    columns={parameterColumns}
-                                    listActions={[{
-                                        icon: <Edit />,
-                                        label: translator('components.detail.main.list.actions.edit'),
-                                        onClick: (_, index) => {
-                                            this.setState({ editParameterIndex: index });
-                                        },
-                                    }, {
-                                        icon: <Delete />,
-                                        label: translator('components.detail.main.list.actions.delete'),
-                                        onClick: (_, index) => {
-                                            if (!parameterItems[index].data.mandatory) {
-                                                const newParameters = [...newComponentDetail.parameters];
-                                                newParameters.splice(index, 1);
-                                                this.updateComponent({
-                                                    parameters: newParameters,
-                                                });
-                                            }
-                                        },
-                                    }]}
-                                />
-                            ) : (
-                                <Box
-                                    display="flex"
-                                    flexDirection="column"
-                                    flex="1 1 auto"
-                                    justifyContent="center"
-                                    paddingBottom={5}
-                                >
-                                    <Box textAlign="center">
-                                        <Typography variant="h2" paragraph>
-                                            <Translate msg="components.detail.main.no_parameters.title" />
-                                        </Typography>
-                                    </Box>
-                                </Box>
-                            )
-                        }
+                        <GenericList
+                            listItems={parameterItems}
+                            columns={parameterColumns}
+                            listActions={[{
+                                icon: <Edit />,
+                                label: translator('components.detail.main.list.actions.edit'),
+                                onClick: (_, index) => {
+                                    this.setState({ editParameterIndex: index });
+                                },
+                                hideAction: () => (
+                                    !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                ),
+                            }, {
+                                icon: <Delete />,
+                                label: translator('components.detail.main.list.actions.delete'),
+                                onClick: (_, index) => {
+                                    if (!parameterItems[index].data.mandatory) {
+                                        const newParameters = [...newComponentDetail.parameters];
+                                        newParameters.splice(index, 1);
+                                        this.updateComponent({
+                                            parameters: newParameters,
+                                        });
+                                    }
+                                },
+                                hideAction: (item) => (
+                                    !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                    || !item.canBeDeleted
+                                ),
+                            }]}
+                        />
 
                     </Box>
                     {

@@ -346,6 +346,7 @@ components:
         delete: Delete component
         save: Save
         export: Export component
+        view: View
       list:
         labels:
           name: Name
