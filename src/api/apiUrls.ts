@@ -23,6 +23,8 @@ const API_URLS = {
     CONNECTIONS: '/connections',
 
     COMPONENTS: '/components',
+    COMPONENT_BY_NAME: '/components/{name}',
+    COMPONENT_BY_NAME_VERSION: '/components/{name}/{version}',
 
     SECURITY_LOGON: '/users/login',
 

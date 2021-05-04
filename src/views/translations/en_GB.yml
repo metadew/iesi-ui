@@ -4,6 +4,7 @@ app_shell:
       home: Home
       reports: Reports
       scripts: Scripts
+      components: Components
     title: iesi
 common:
   yes: Yes
@@ -58,6 +59,9 @@ flash_messages:
     connections_unknown_error: 'Unknown error for the one or more connections'
     component_unknown_error: 'Unknown error for the component "{componentName}"'
     components_unknown_error: 'Unknown error for the one or more connections'
+  component:
+    edit: 'The component has been updated'
+    error: 'An error has occured : {error}'
 scripts:
   overview:
     delete_script_dialog:
@@ -282,10 +286,95 @@ script_reports:
         output:
           label: Output
           none: '-'
+<<<<<<< HEAD
         username:
           label: Username
           none: '-'
 
+=======
+components:
+  overview:
+    delete_component_dialog:
+      text: Are you sure you want to delete this component?
+      title: Delete component
+      form:
+        description: Description
+        name: Name
+        environment: Environment
+        input_param:
+          add:
+            name: Name
+            value: Value
+            button: Add
+            title: Add input parameter
+          empty: No input params defined yet.
+          title: Input parameters
+    header:
+      amount: 'You have {amount} components'
+      add_button: Create new component
+      generate_button: "Load from OpenAPI documentation"
+    list:
+      labels:
+        name: Name
+        type: type
+        version: Version
+        description: Description
+      fetch_error: Something went wrong while loading the components, please try again.
+      actions:
+        delete: Delete
+        edit: Edit
+      filter:
+       component_name: Component name
+      sort:
+        component_name: Component name
+        version: Version
+  detail:
+    add_parameter: 'Add new parameter'
+    delete_component_dialog:
+      text: Are you sure you want to delete this component?
+      title: Delete component
+    save_component_dialog:
+      title: Save component
+      text: Do you want to overwrite the current version or create a new version with the current changes?
+      update_current_version: Update current version
+      save_as_new_version: Save as new version
+    side:
+      component_type: Type
+      component_description: Description
+      component_name: Name
+      component_version: Version
+    main:
+      no_parameters:
+        title: No parameters yet
+      actions:
+        add_parameter: Add new parameter
+        add_attribute: Add new attribute
+        delete: Delete component
+        save: Save
+        export: Export component
+        view: View
+      list:
+        labels:
+          name: Name
+          value: Value
+          mandatory: Mandatory
+          environment: Environment
+        actions:
+          edit: Edit
+          delete: Delete
+      alert:
+        save_changes: You made changes to this component. Don't forget to save them.
+    edit:
+      name: Name
+      value: Value
+      environment: Environment
+      footer:
+        cancel: Cancel
+        save: Save
+        update: Update
+    error:
+      save: Failed to save changes
+>>>>>>> feature/2c9fdc0/Create-component
 doc:
   dialog:
     transform:

@@ -173,7 +173,6 @@ const ScriptDetail = withStyles(styles)(
                 scriptIdToExecute,
                 actionIndexToDelete,
             } = this.state;
-
             // State
             const scriptDetailAsyncStatus = getAsyncScriptDetail(state).fetch.status;
             const actionTypesAsyncStatus = getAsyncActionTypes(state).fetch.status;
@@ -672,6 +671,7 @@ const ScriptDetail = withStyles(styles)(
         private updateScriptInStateIfNewScriptWasLoaded(prevProps: TProps & IObserveProps) {
             const scriptDetail = getAsyncScriptDetail(this.props.state).data;
             const prevScriptDetail = getAsyncScriptDetail(prevProps.state).data;
+            // eslint-disable-next-line max-len
             if (getUniqueIdFromScript(scriptDetail) !== getUniqueIdFromScript(prevScriptDetail)) {
                 const scriptDetailDeepClone = clone(scriptDetail);
                 // eslint-disable-next-line react/no-did-update-set-state
