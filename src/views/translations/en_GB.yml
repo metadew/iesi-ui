@@ -282,9 +282,9 @@ script_reports:
         output:
           label: Output
           none: '-'
-        username:
-          label: Username
-          none: '-'
+        requestor:
+          label: Requestor
+          none: 'anonymous'
 
 doc:
   dialog:

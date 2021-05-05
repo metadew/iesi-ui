@@ -254,6 +254,12 @@ function ExecutionDetail({ state }: IObserveProps) {
         const executionListItems: IDescriptionListItem[] = [
             ...(scriptExecutionData && asyncExecutionRequest.status === AsyncStatus.Success) ? [
                 {
+                    label: translator('script_reports.detail.side.execution.requestor.label'),
+                    value: scriptExecutionData.username.length
+                        ? <Translate msg={scriptExecutionData.username} />
+                        : <Translate msg="script_reports.detail.side.execution.requestor.none" />,
+                },
+                {
                     label: translator('script_reports.detail.side.execution.script_name.label'),
                     value: scriptExecutionData.scriptName,
                 },
@@ -318,10 +324,6 @@ function ExecutionDetail({ state }: IObserveProps) {
                     value: scriptExecutionData.designLabels.length
                         ? <ShowLabels labels={scriptExecutionData.designLabels} />
                         : <Translate msg="script_reports.detail.side.execution.design_labels.none" />,
-                },
-                {
-                    label: translator('script_reports.detail.side.execution.username.label'),
-                    value: scriptExecutionData.username,
                 },
             ] : [],
         ];
