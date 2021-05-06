@@ -15,7 +15,7 @@ import ClosableDialog from 'views/common/layout/ClosableDialog';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getTranslator } from 'state/i18n/selectors';
 import { IObserveProps, observe } from 'views/observe';
-import { IConnectionEntity } from 'models/state/connections.model';
+import { IConnection } from 'models/state/connections.model';
 import { getAsyncEnvironments } from 'state/entities/environments/selectors';
 import entitiesStateManager from 'state/entities/entitiesStateManager';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
@@ -59,7 +59,7 @@ const useStyles = makeStyles(({ palette }: Theme) => ({
 interface IPublicProps {
     open: boolean;
     onClose: () => void;
-    connection: IConnectionEntity | undefined;
+    connection: IConnection | undefined;
 }
 
 function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IPublicProps & IObserveProps) {

@@ -15,7 +15,7 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import GenericList from 'views/common/list/GenericList';
 import { IListItem, ListColumns } from 'models/list.models';
-import { IConnectionEntity, IConnectionColumnNames } from 'models/state/connections.model';
+import { IConnection, IConnectionColumnNames } from 'models/state/connections.model';
 import { getUniqueIdFromConnection } from 'utils/connections/connectionUtils';
 import { Save, Edit, Delete, ArrowBack } from '@material-ui/icons';
 import { getTranslator } from 'state/i18n/selectors';
@@ -62,7 +62,7 @@ const styles = ({ palette, typography }: Theme) =>
 interface IComponentState {
     isConnectionEditDialogOpen: boolean;
     isComponentEditDialogOpen: boolean;
-    connectionToEdit?: IConnectionEntity | undefined;
+    connectionToEdit?: IConnection | undefined;
     componentToEdit?: IComponent | undefined;
 }
 type TProps = WithStyles<typeof styles>;
@@ -352,7 +352,7 @@ const OpenAPIOverview = withStyles(styles)(
             );
         }
 
-        public onOpenConnectionDialog(connection: IConnectionEntity) {
+        public onOpenConnectionDialog(connection: IConnection) {
             this.setState({
                 isConnectionEditDialogOpen: true,
                 connectionToEdit: connection,
@@ -373,7 +373,7 @@ const OpenAPIOverview = withStyles(styles)(
     },
 );
 
-function mapConnectionsToListItems(connections: IConnectionEntity[]): IListItem<IConnectionColumnNames>[] {
+function mapConnectionsToListItems(connections: IConnection[]): IListItem<IConnectionColumnNames>[] {
     return connections.map((connection) => ({
         id: getUniqueIdFromConnection(connection),
         columns: {

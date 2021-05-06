@@ -38,6 +38,11 @@ export default function getMockState({
                     page: 1,
                     sortedColumn: null,
                 },
+                connections: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                },
                 executions: {
                     filters: null,
                     page: 1,
@@ -128,6 +133,20 @@ export default function getMockState({
                 },
             },
             componentDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            connections: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            connectionDetail: {
                 data: null,
                 fetch: {
                     status: AsyncStatus.Initial,

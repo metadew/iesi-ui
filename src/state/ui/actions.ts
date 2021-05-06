@@ -10,7 +10,7 @@ import { IColumnNames as IExecutionsColumnNames } from 'models/state/executionRe
 import { getUniqueIdFromConnection } from 'utils/connections/connectionUtils';
 import { getUniqueIdFromComponent } from 'utils/components/componentUtils';
 import { ReactText } from 'react';
-import { IConnectionEntity } from 'models/state/connections.model';
+import { IConnection, IConnectionColumnNamesBase } from 'models/state/connections.model';
 import { IComponent, IComponentColumnNamesBase } from 'models/state/components.model';
 
 export const triggerFlashMessage = (payload: ITriggerFlashMessagePayload) => createAction<ITriggerFlashMessagePayload>({
@@ -217,10 +217,36 @@ export const setComponentsListFilter = (payload: {
     },
 });
 
-export const handleConnection = (payload: {
-    currentConnection: IConnectionEntity;
+export const setConnectionsListFilter = (payload: {
+    filters?: ListFilters<Partial<IConnectionColumnNamesBase>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<IConnectionColumnNamesBase>;
 }) => createAction<{
-    currentConnection: IConnectionEntity;
+    filters?: ListFilters<Partial<IConnectionColumnNamesBase>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<IConnectionColumnNamesBase>;
+}>({
+    type: 'UPDATE_CONNECTIONS_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.connections = {
+                    filters: payload.filters || draftState.ui.listFilters.connections.filters,
+                    page: payload.page || draftState.ui.listFilters.connections.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.connections.sortedColumn,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_COMPONENTS],
+        });
+    },
+});
+
+export const handleConnection = (payload: {
+    currentConnection: IConnection;
+}) => createAction<{
+    currentConnection: IConnection;
 }>({
     type: 'CONNECTION.HANDLE',
     payload,
@@ -300,11 +326,11 @@ export const handleComponent = (payload: {
 });
 
 export const editConnection = (payload: {
-    newConnection: IConnectionEntity;
-    currentConnection: IConnectionEntity;
+    newConnection: IConnection;
+    currentConnection: IConnection;
 }) => createAction<{
-    newConnection: IConnectionEntity;
-    currentConnection: IConnectionEntity;
+    newConnection: IConnection;
+    currentConnection: IConnection;
 }>({
     type: 'CONNECTION.EDIT',
     payload,

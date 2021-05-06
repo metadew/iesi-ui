@@ -16,7 +16,11 @@ import {
     IFetchScriptsListPayload,
 } from 'models/state/scripts.models';
 import { IOpenAPI } from 'models/state/openapi.model';
-import { IConnectionEntity } from 'models/state/connections.model';
+import {
+    IConnection,
+    IConnectionByNameAndEnvironmentPayload,
+    IFetchConnectionsListPayload,
+} from 'models/state/connections.model';
 import {
     IComponent,
     IComponentByNameAndVersionPayload,
@@ -159,30 +163,6 @@ entitiesConfigManager.register({
 });
 
 entitiesConfigManager.register({
-    asyncEntityKey: ASYNC_ENTITY_KEYS.openapi,
-    operationsConfig: {
-        create: {
-            api: api.openapi.transformDocumentation,
-            apiInputSelector: ({ extraInput }) => extraInput as IOpenAPI,
-        },
-    },
-});
-
-entitiesConfigManager.register({
-    asyncEntityKey: ASYNC_ENTITY_KEYS.connections,
-    operationsConfig: {
-        create: {
-            api: api.connections.createConnection,
-            apiInputSelector: ({ extraInput }) => extraInput as IConnectionEntity,
-        },
-        update: {
-            api: api.connections.updateConnection,
-            apiInputSelector: ({ extraInput }) => extraInput as IConnectionEntity,
-        },
-    },
-});
-
-entitiesConfigManager.register({
     asyncEntityKey: ASYNC_ENTITY_KEYS.components,
     operationsConfig: {
         fetch: {
@@ -241,6 +221,50 @@ entitiesConfigManager.register({
 });
 
 entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.connections,
+    operationsConfig: {
+        fetch: {
+            api: api.connections.fetchConnections,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchConnectionsListPayload,
+        },
+        remove: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.connections.deleteComponentEnvironment,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IConnectionByNameAndEnvironmentPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.connectionDetail,
+    operationsConfig: {
+        remove: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.connections.deleteComponentEnvironment,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IConnectionByNameAndEnvironmentPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.openapi,
+    operationsConfig: {
+        create: {
+            api: api.openapi.transformDocumentation,
+            apiInputSelector: ({ extraInput }) => extraInput as IOpenAPI,
+        },
+    },
+});
+
+entitiesConfigManager.register({
     asyncEntityKey: ASYNC_ENTITY_KEYS.openapiComponents,
     operationsConfig: {
         create: {
@@ -250,6 +274,20 @@ entitiesConfigManager.register({
         update: {
             api: api.components.updateComponent,
             apiInputSelector: ({ extraInput }) => extraInput as IComponent,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.openapiConnections,
+    operationsConfig: {
+        create: {
+            api: api.connections.createConnection,
+            apiInputSelector: ({ extraInput }) => extraInput as IConnection,
+        },
+        update: {
+            api: api.connections.updateConnection,
+            apiInputSelector: ({ extraInput }) => extraInput as IConnection,
         },
     },
 });

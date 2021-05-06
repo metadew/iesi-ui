@@ -5,14 +5,16 @@ import { ListFilters, ISortedColumn } from 'models/list.models';
 import { IColumnNames as IScriptsColumnNames } from 'models/state/scripts.models';
 import { IColumnNames as IExecutionsColumnNames } from 'models/state/executionRequests.models';
 import { IComponentColumnNames } from './components.model';
+import { IConnectionColumnNamesBase } from './connections.model';
 
 export interface IUiState {
     flashMessages: IFlashMessage[];
     pollingExecutionRequestIds: string[];
     listFilters: {
         scripts: IScriptsListFilters;
-        executions: IListFilters<IExecutionsColumnNames>;
         components: IComponentsListFilters;
+        connections: IListFilters<IConnectionColumnNamesBase>;
+        executions: IListFilters<IExecutionsColumnNames>;
     };
 }
 

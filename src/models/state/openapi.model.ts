@@ -1,10 +1,10 @@
 import { IComponent } from './components.model';
-import { IConnectionEntity } from './connections.model';
+import { IConnection } from './connections.model';
 
 export interface IOpenAPIEntity {
     version: string;
     title: string;
-    connections: IConnectionEntity[];
+    connections: IConnection[];
     components: IComponent[];
 }
 
