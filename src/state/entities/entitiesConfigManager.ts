@@ -18,7 +18,7 @@ import {
 import { IOpenAPI } from 'models/state/openapi.model';
 import {
     IConnection,
-    IConnectionByNameAndEnvironmentPayload,
+    IConnectionByNamePayload,
     IFetchConnectionsListPayload,
 } from 'models/state/connections.model';
 import {
@@ -234,7 +234,7 @@ entitiesConfigManager.register({
             api: api.connections.deleteComponentEnvironment,
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
-            apiInputSelector: ({ extraInput }) => extraInput as IConnectionByNameAndEnvironmentPayload,
+            apiInputSelector: ({ extraInput }) => extraInput as IConnectionByNamePayload,
         },
     },
 });
@@ -249,7 +249,7 @@ entitiesConfigManager.register({
             api: api.connections.deleteComponentEnvironment,
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
-            apiInputSelector: ({ extraInput }) => extraInput as IConnectionByNameAndEnvironmentPayload,
+            apiInputSelector: ({ extraInput }) => extraInput as IConnectionByNamePayload,
         },
     },
 });

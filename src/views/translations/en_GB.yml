@@ -386,7 +386,7 @@ connections:
       labels:
         name: Name
         type: type
-        environment: Environment
+        environments: Environments
         description: Description
       fetch_error: Something went wrong while loading the connections, please try again.
       actions:

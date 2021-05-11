@@ -33,6 +33,7 @@ import Tooltip from 'views/common/tooltips/Tooltip';
 import InfoTooltip from 'views/common/tooltips/InfoTooltip';
 import DragHandlerIcon from 'views/common/icons/DragHandler';
 import TooltipDiv from 'views/common/TooltipDiv';
+import { Info } from '@material-ui/icons';
 
 interface IPublicProps<ColumnNames> {
     index: number;
@@ -56,6 +57,9 @@ interface IPublicProps<ColumnNames> {
         showIndexCell: boolean;
     };
     isHandled?: boolean;
+    cellDetail?: {
+        [key in keyof Partial<ColumnNames>]: string;
+    };
 }
 
 const useStyles = makeStyles(({ palette, shape, typography, spacing }: Theme) => ({
@@ -174,6 +178,7 @@ export default function GenericTableRow<ColumnNames>({
     index: rowIndex,
     placeholderProps,
     isHandled,
+    cellDetail,
 }: IPublicProps<ColumnNames>) {
     const classes = useStyles({ isHandled });
     const [anchorEl, setAnchorEl] = useState(null);
@@ -349,7 +354,7 @@ export default function GenericTableRow<ColumnNames>({
                                     {column.label}
                                 </Typography>
                             )}
-                            <Box display="flex" alignItems="center">
+                            <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
                                 {column.noWrap ? (
                                     <TooltipDiv text={value} className={cellClassName} />
                                 ) : (
@@ -360,6 +365,24 @@ export default function GenericTableRow<ColumnNames>({
                                 {tooltip && (
                                     <InfoTooltip title={tooltip} iconSize="small" />
                                 )}
+                                {
+                                    cellDetail && columnName in cellDetail && (
+                                        <Tooltip
+                                            title={(
+                                                <>
+                                                    <Typography style={{ whiteSpace: 'pre' }}>
+                                                        {cellDetail[columnName]}
+                                                    </Typography>
+                                                </>
+                                            )}
+                                            style={{ justifySelf: 'flex-end' }}
+                                        >
+                                            <IconButton>
+                                                <Info fontSize="small" />
+                                            </IconButton>
+                                        </Tooltip>
+                                    )
+                                }
                             </Box>
                         </Box>
                     </Box>

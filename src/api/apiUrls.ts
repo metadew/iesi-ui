@@ -22,7 +22,6 @@ const API_URLS = {
 
     CONNECTIONS: '/connections',
     CONNECTION_BY_NAME: '/connections/{name}',
-    CONNECTION_BY_NAME_ENVIRONMENT: '/connections/{name}/{environment}',
 
     COMPONENTS: '/components',
     COMPONENT_BY_NAME: '/components/{name}',

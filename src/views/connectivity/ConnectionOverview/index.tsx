@@ -237,8 +237,8 @@ const ConnectionOverview = withStyles(styles)(
                     className: classes.connectionType,
                     fixedWidth: '15%',
                 },
-                environment: {
-                    label: <Translate msg="connections.overview.list.labels.environment" />,
+                environmentCount: {
+                    label: <Translate msg="connections.overview.list.labels.environments" />,
                     className: classes.connectionEnvironment,
                     noWrap: true,
                     fixedWidth: '5%',
@@ -276,7 +276,6 @@ const ConnectionOverview = withStyles(styles)(
                                                     routeKey: ROUTE_KEYS.R_CONNECTION_DETAIL,
                                                     params: {
                                                         name: selectedConnection.name,
-                                                        environment: selectedConnection.environment,
                                                     },
                                                 });
                                             },
@@ -294,7 +293,6 @@ const ConnectionOverview = withStyles(styles)(
                                                     routeKey: ROUTE_KEYS.R_CONNECTION_DETAIL,
                                                     params: {
                                                         name: selectedConnection.name,
-                                                        environment: selectedConnection.environment,
                                                     },
                                                 });
                                             },
@@ -377,7 +375,6 @@ const ConnectionOverview = withStyles(styles)(
             if (connectionToDelete) {
                 triggerDeleteConnectionDetail({
                     name: connectionToDelete.name,
-                    environment: connectionToDelete.environment,
                 });
             }
         }
@@ -417,7 +414,13 @@ function mapConnectionsToListItems(connections: IConnection[]): IListItem<IConne
             name: connection.name,
             description: connection.description,
             type: connection.type,
-            environment: connection.environment,
+            environmentCount: connection.environments.length,
+        },
+        data: {
+            environments: connection.environments,
+        },
+        cellDetail: {
+            environmentCount: connection.environments.map((env) => env.environment).join('\n'),
         },
     }));
 }

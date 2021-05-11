@@ -3,7 +3,7 @@ import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { triggerFlashMessage, handleConnection } from 'state/ui/actions';
 import {
     IConnection,
-    IConnectionByNameAndEnvironmentPayload,
+    IConnectionByNamePayload,
     IFetchConnectionsListPayload,
 } from 'models/state/connections.model';
 import { StateChangeNotification } from 'models/state.models';
@@ -19,7 +19,7 @@ export const triggerFetchConnections = (payload: IFetchConnectionsListPayload) =
         notificationsToTrigger: [StateChangeNotification.DESIGN_CONNECTIONS_LIST],
     });
 
-export const triggerDeleteConnectionDetail = (payload: IConnectionByNameAndEnvironmentPayload) =>
+export const triggerDeleteConnectionDetail = (payload: IConnectionByNamePayload) =>
     entitiesStateManager.triggerAsyncEntityRemove<{}>({
         asyncEntityToRemove: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.connectionDetail,

@@ -13,10 +13,6 @@ export interface IConnectionByNamePayload {
     name: string;
 }
 
-export interface IConnectionByNameAndEnvironmentPayload extends IConnectionByNamePayload {
-    environment: string;
-}
-
 export interface IConnectionEntity {
     connections: IConnection[];
     page: IPageData;
@@ -26,12 +22,16 @@ export interface IConnection {
     name: string;
     type: string;
     description: string;
-    environment: string;
-    parameters: IConnectionParameter[];
+    environments: IConnectionEnvironment[];
     isHandled: boolean;
 }
 
-export interface IConnectionParameter {
+export interface IConnectionEnvironment {
+    environment: string;
+    parameters: IConnectionEnvironmentParameter[];
+}
+
+export interface IConnectionEnvironmentParameter {
     name: string;
     value: string;
 }
@@ -50,5 +50,5 @@ export interface IConnectionColumnNamesBase {
     name: string;
     type: string;
     description: string;
-    environment: string;
+    environmentCount: number;
 }

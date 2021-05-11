@@ -132,6 +132,7 @@ export default function GenericList<ColumnNames>({
                                         columns={columns}
                                         compactView={compactView}
                                         isHandled={item.isHandled}
+                                        cellDetail={item.cellDetail}
                                     />
                                 ))}
                             </>

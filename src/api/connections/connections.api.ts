@@ -4,7 +4,7 @@ import {
     IConnectionEntity,
     IConnection,
     IFetchConnectionsListPayload,
-    IConnectionByNameAndEnvironmentPayload,
+    IConnectionByNamePayload,
 } from 'models/state/connections.model';
 import { IPageData } from 'models/state/iesiGeneric.models';
 
@@ -56,14 +56,13 @@ export function updateConnection(connection: IConnection) {
     });
 }
 
-export function deleteComponentEnvironment({ name, environment }: IConnectionByNameAndEnvironmentPayload) {
+export function deleteConnection({ name }: IConnectionByNamePayload) {
     return remove<{}>({
         needsAuthentication: true,
         isIesiApi: true,
-        url: API_URLS.CONNECTION_BY_NAME_ENVIRONMENT,
+        url: API_URLS.CONNECTION_BY_NAME,
         pathParams: {
             name,
-            environment,
         },
     });
 }

@@ -1,3 +1,8 @@
+import React from 'react';
+import { IConnection } from 'models/state/connections.model';
+import { observe } from 'views/observe';
+import { StateChangeNotification } from 'models/state.models';
+/*
 import React, { useEffect, useState } from 'react';
 import {
     Button,
@@ -24,10 +29,6 @@ import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/ent
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { editConnection } from 'state/ui/actions';
 import { StateChangeNotification } from 'models/state.models';
-import { getAsyncConnectionTypes } from 'state/entities/constants/selectors';
-import ExpandableParameter from 'views/design/ScriptDetail/EditAction/ExpandableParameter';
-import TextInput from 'views/common/input/TextInput';
-import classNames from 'classnames';
 
 const useStyles = makeStyles(({ palette }: Theme) => ({
     textField: {
@@ -55,6 +56,7 @@ const useStyles = makeStyles(({ palette }: Theme) => ({
         marginbottom: 4,
     },
 }));
+*/
 
 interface IPublicProps {
     open: boolean;
@@ -62,7 +64,11 @@ interface IPublicProps {
     connection: IConnection | undefined;
 }
 
-function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IPublicProps & IObserveProps) {
+function EditConnectionDialog() {
+    return (
+        <></>
+    );
+    /*
     const classes = useStyles();
     const translator = getTranslator(state);
     const environments = getAsyncEnvironments(state).data;
@@ -221,6 +227,7 @@ function EditConnectionDialog({ onClose, open, state, dispatch, connection }: IP
         </ClosableDialog>
 
     );
+    */
 }
 
 export default observe<IPublicProps>([

@@ -379,11 +379,11 @@ function mapConnectionsToListItems(connections: IConnection[]): IListItem<IConne
         columns: {
             name: connection.name,
             description: connection.description,
-            host: connection.parameters.find((p) => p.name === 'host'),
-            port: connection.parameters.find((p) => p.name === 'port'),
-            baseUrl: connection.parameters.find((p) => p.name === 'baseUrl'),
-            tls: connection.parameters.find((p) => p.name === 'tls'),
-            environment: connection.environment,
+            host: '', // connection.parameters.find((p) => p.name === 'host'),
+            port: '', // connection.parameters.find((p) => p.name === 'port'),
+            baseUrl: '', // connection.parameters.find((p) => p.name === 'baseUrl'),
+            tls: '', // connection.parameters.find((p) => p.name === 'tls'),
+            environment: '',
         },
         isHandled: connection.isHandled,
     }));
