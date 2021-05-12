@@ -256,7 +256,7 @@ function ExecutionDetail({ state }: IObserveProps) {
                 {
                     label: translator('script_reports.detail.side.execution.requestor.label'),
                     value: scriptExecutionData.username.length
-                        ? <Translate msg={scriptExecutionData.username} />
+                        ? scriptExecutionData.username
                         : <Translate msg="script_reports.detail.side.execution.requestor.none" />,
                 },
                 {
