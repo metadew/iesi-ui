@@ -319,6 +319,10 @@ function ExecutionDetail({ state }: IObserveProps) {
                         ? <ShowLabels labels={scriptExecutionData.designLabels} />
                         : <Translate msg="script_reports.detail.side.execution.design_labels.none" />,
                 },
+                {
+                    label: translator('script_reports.detail.side.execution.username.label'),
+                    value: scriptExecutionData.username,
+                },
             ] : [],
         ];
 

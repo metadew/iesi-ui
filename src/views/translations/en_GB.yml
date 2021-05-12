@@ -286,6 +286,9 @@ script_reports:
         output:
           label: Output
           none: '-'
+        username:
+          label: Username
+          none: '-'
 components:
   overview:
     delete_component_dialog:
@@ -368,6 +371,7 @@ components:
         update: Update
     error:
       save: Failed to save changes
+
 doc:
   dialog:
     transform:
@@ -428,7 +432,3 @@ doc:
       save: 'Save to database, if existing, update it'
       edit: 'Edit the table cells'
       delete: 'Delete from the table'
-
-
-
-      
