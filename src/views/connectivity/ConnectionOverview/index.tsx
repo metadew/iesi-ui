@@ -426,6 +426,6 @@ function mapConnectionsToListItems(connections: IConnection[]): IListItem<IConne
 }
 
 export default observe<TProps>([
-    StateChangeNotification.DESIGN_CONNECTIONS_LIST,
-    StateChangeNotification.DESIGN_CONNECTION_DETAIL,
+    StateChangeNotification.CONNECTIVITY_CONNECTIONS_LIST,
+    StateChangeNotification.CONNECTIVITY_CONNECTION_DETAIL,
 ], ConnectionOverview);

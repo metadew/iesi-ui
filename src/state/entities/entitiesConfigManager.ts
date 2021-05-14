@@ -242,11 +242,35 @@ entitiesConfigManager.register({
 entitiesConfigManager.register({
     asyncEntityKey: ASYNC_ENTITY_KEYS.connectionDetail,
     operationsConfig: {
+        fetch: {
+            api: api.connections.fetchConnection,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IConnectionByNamePayload,
+        },
+        create: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.connections.createConnection,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IConnection,
+        },
+        update: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.connections.updateConnection,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IConnection,
+        },
         remove: {
             // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
-            api: api.connections.deleteComponentEnvironment,
+            api: api.connections.deleteConnection,
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
             apiInputSelector: ({ extraInput }) => extraInput as IConnectionByNamePayload,

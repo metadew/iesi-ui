@@ -23,15 +23,15 @@ export interface IConnection {
     type: string;
     description: string;
     environments: IConnectionEnvironment[];
-    isHandled: boolean;
+    isHandled?: boolean;
 }
 
 export interface IConnectionEnvironment {
     environment: string;
-    parameters: IConnectionEnvironmentParameter[];
+    parameters: IConnectionParameter[];
 }
 
-export interface IConnectionEnvironmentParameter {
+export interface IConnectionParameter {
     name: string;
     value: string;
 }

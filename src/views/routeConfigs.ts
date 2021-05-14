@@ -9,7 +9,7 @@ import {
     triggerFetchConnectionTypes,
 } from 'state/entities/constants/triggers';
 import { triggerFetchComponentDetail, triggerFetchComponents } from 'state/entities/components/triggers';
-import { triggerFetchConnections } from 'state/entities/connections/triggers';
+import { triggerFetchConnectionDetail, triggerFetchConnections } from 'state/entities/connections/triggers';
 import { SortType, SortOrder } from 'models/list.models';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
@@ -34,6 +34,7 @@ import ComponentsOverview from './design/ComponentsOverview';
 import ComponentDetail from './design/ComponentDetail';
 import ConnectionTemplate from './connectivity/ConnectionTemplate';
 import ConnectionOverview from './connectivity/ConnectionOverview';
+import ConnectionDetail from './connectivity/ConnectionDetail';
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
@@ -176,6 +177,31 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     path: '/connections',
     template: ConnectionTemplate,
     component: ConnectionOverview,
+    childRoutes: [
+        {
+            routeKey: ROUTE_KEYS.R_CONNECTION_NEW,
+            path: '/new',
+            component: ConnectionDetail as React.ComponentType<unknown>,
+            executeOnRoute: [{
+                execute: triggerFetchConnectionTypes,
+            }],
+        }, {
+            routeKey: ROUTE_KEYS.R_CONNECTION_DETAIL,
+            path: '/:name',
+            component: ConnectionDetail as React.ComponentType<unknown>,
+            executeOnRoute: [{
+                // TODO: Fix this typing error so we dont need to cast to () => unknown? Can this be simpler?
+                // Maybe pass the routeLocation to the execute so we dont need the executeInputSelector prop?
+                execute: triggerFetchConnectionDetail as () => unknown,
+                executeInputSelector: ({ routeLocation }) => ({
+                    name: routeLocation.params.name,
+                    version: routeLocation.params.version,
+                }),
+            }, {
+                execute: triggerFetchComponentTypes,
+            }],
+        },
+    ],
     executeOnRoute: [{
         execute: () => {
             const { getState } = getStore();

@@ -25,14 +25,24 @@ export function fetchConnections({ pagination, filter, sort }: IFetchConnections
             ...filter,
             sort,
         },
-        mapResponse: ({ data }) => {
-            console.log('DATA : ', data);
-            return {
-                // eslint-disable-next-line no-underscore-dangle
-                connections: data._embedded.connectionDtoList,
-                page: data.page,
-            };
+        mapResponse: ({ data }) => ({
+            // eslint-disable-next-line no-underscore-dangle
+            connections: data._embedded.connectionDtoList,
+            page: data.page,
+        }),
+    });
+}
+
+export function fetchConnection({ name }: IConnectionByNamePayload) {
+    return get<IConnection>({
+        isIesiApi: true,
+        needsAuthentication: true,
+        url: API_URLS.CONNECTION_BY_NAME,
+        pathParams: {
+            name,
         },
+        // eslint-disable-next-line no-underscore-dangle
+        mapResponse: ({ data }) => data,
     });
 }
 

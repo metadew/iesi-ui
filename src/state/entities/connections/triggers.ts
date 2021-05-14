@@ -16,7 +16,46 @@ export const triggerFetchConnections = (payload: IFetchConnectionsListPayload) =
             resetDataOnTrigger: false,
         },
         extraInputSelector: () => payload,
-        notificationsToTrigger: [StateChangeNotification.DESIGN_CONNECTIONS_LIST],
+        notificationsToTrigger: [StateChangeNotification.CONNECTIVITY_CONNECTIONS_LIST],
+    });
+
+export const triggerFetchConnectionDetail = (payload: IConnectionByNamePayload) =>
+    entitiesStateManager.triggerAsyncEntityFetch<{}>({
+        asyncEntityToFetch: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.connectionDetail,
+            refreshMode: 'always',
+            resetDataOnTrigger: true,
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.CONNECTIVITY_CONNECTION_DETAIL],
+    });
+
+export const triggerCreateConnectionDetail = (payload: IConnection) =>
+    entitiesStateManager.triggerAsyncEntityCreate<{}>({
+        asyncEntityToCreate: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.connectionDetail,
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.CONNECTIVITY_CONNECTION_DETAIL],
+    });
+
+export const triggerUpdateConnectionDetail = (payload: IConnection) =>
+    entitiesStateManager.triggerAsyncEntityUpdate<{}>({
+        asyncEntityToUpdate: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.connectionDetail,
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.CONNECTIVITY_CONNECTION_DETAIL],
+        onSuccess: ({ dispatch }) => {
+            dispatch(triggerFlashMessage({
+                translationKey: 'flash_messages.connection.edit',
+                type: 'success',
+            }));
+        },
+        onFail: ({ dispatch }) => dispatch(triggerFlashMessage({
+            translationKey: 'flash_messages.error',
+            type: 'error',
+        })),
     });
 
 export const triggerDeleteConnectionDetail = (payload: IConnectionByNamePayload) =>
@@ -25,7 +64,7 @@ export const triggerDeleteConnectionDetail = (payload: IConnectionByNamePayload)
             asyncEntityKey: ASYNC_ENTITY_KEYS.connectionDetail,
         },
         extraInputSelector: () => payload,
-        notificationsToTrigger: [StateChangeNotification.DESIGN_CONNECTION_DETAIL],
+        notificationsToTrigger: [StateChangeNotification.CONNECTIVITY_CONNECTION_DETAIL],
     });
 
 export const triggerUpdateConnection = (payload: IConnection | IConnection[], bulk?: boolean) =>
