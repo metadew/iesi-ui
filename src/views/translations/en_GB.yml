@@ -63,6 +63,10 @@ flash_messages:
   component:
     edit: 'The component has been updated'
     error: 'An error has occured : {error}'
+  connection:
+    create: 'The connection has been created successfully'
+    edit: 'The connection has been updated successfully'
+    error: 'An error has occured: {error}'
 scripts:
   overview:
     delete_script_dialog:
@@ -385,7 +389,7 @@ connections:
     list:
       labels:
         name: Name
-        type: type
+        type: Type
         environments: Environments
         description: Description
       fetch_error: Something went wrong while loading the connections, please try again.
@@ -405,12 +409,22 @@ connections:
     save_connection_dialog:
       title: Save connection
       text: Do you want to overwrite the current version or create a new version with the current changes?
-      update_current_connection: Update current connection
+      create: Creation connection
+      update: Update connection
     side:
       connection_type: Type
       connection_description: Description
       connection_name: Name
       connection_environment: Environment
+      environments:
+        title: Environments
+        empty: No environments
+        add_button: Add environment
+        add_dialog:
+          title: Add an environment
+          select_title: Choose an environment
+          cancel: Cancel
+          add: Add
     main:
       no_parameters:
         title: No parameters yet

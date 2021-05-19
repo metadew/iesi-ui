@@ -195,10 +195,9 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
                 execute: triggerFetchConnectionDetail as () => unknown,
                 executeInputSelector: ({ routeLocation }) => ({
                     name: routeLocation.params.name,
-                    version: routeLocation.params.version,
                 }),
             }, {
-                execute: triggerFetchComponentTypes,
+                execute: triggerFetchConnectionTypes,
             }],
         },
     ],

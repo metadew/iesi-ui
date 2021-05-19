@@ -15,6 +15,7 @@ import {
     ListItemText,
     ListItemSecondaryAction,
     IconButton,
+    FormHelperText,
 } from '@material-ui/core';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -28,6 +29,8 @@ import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { StateChangeNotification } from 'models/state.models';
 import { checkAuthorityGeneral, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import { Delete } from '@material-ui/icons';
+import { TRequiredFieldsState } from 'models/form.models';
+import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 
 const useStyles = makeStyles(({ palette }: Theme) => ({
     textField: {
@@ -58,6 +61,7 @@ const useStyles = makeStyles(({ palette }: Theme) => ({
 
 interface IPublicProps {
     environments: IConnectionEnvironment[];
+    selectedIndex: number;
     isCreateConnectionRoute: boolean;
     onEnvironmentSelected: (index: number) => void;
     onSubmit: (environment: IConnectionEnvironment) => void;
@@ -66,6 +70,7 @@ interface IPublicProps {
 
 function EditEnvironmentsDialog({
     environments,
+    selectedIndex,
     isCreateConnectionRoute,
     state,
     onEnvironmentSelected,
@@ -75,7 +80,12 @@ function EditEnvironmentsDialog({
     const classes = useStyles();
     const translator = getTranslator(state);
     const [open, setOpen] = useState(false);
-    const [environmentName, setEnvironmentName] = useState('');
+    const [environment, setEnvironment] = useState<IConnectionEnvironment>({ environment: '', parameters: [] });
+    const [requiredFieldsState, setRequiredFieldsState] = useState<TRequiredFieldsState<IConnectionEnvironment>>({
+        environment: {
+            showError: false,
+        },
+    });
     const environmentsAsync = getAsyncEnvironments(state);
 
     // Trigger Fetch envs on open dialog
@@ -89,22 +99,36 @@ function EditEnvironmentsDialog({
     }, [open]);
 
     const handleSubmit = () => {
-        onSubmit({ environment: environmentName, parameters: [] });
-        setOpen(false);
+        const { passed: passedRequired, requiredFieldsState: requireFields } = requiredFieldsCheck({
+            data: environment,
+            requiredFields: ['environment'],
+        });
+        if (passedRequired) {
+            onSubmit(environment);
+            setOpen(false);
+        } else {
+            setRequiredFieldsState(requireFields);
+        }
     };
+
+    const getEnvironmentsItems = () => (environmentsAsync.data
+        // eslint-disable-next-line max-len
+        ? environmentsAsync.data.filter((env) => !environments.some((envExisting) => env.name === envExisting.environment))
+        : []);
 
     return (
         <>
             {environments.length > 0
                 ? (
                     <List>
-                        {environments.map((environment, index) => (
+                        {environments.map((env, index) => (
                             <ListItem
-                                key={environment.environment}
+                                key={env.environment}
+                                selected={index === selectedIndex}
                                 onClick={() => onEnvironmentSelected(index)}
                                 button
                             >
-                                <ListItemText primary={environment.environment} />
+                                <ListItemText primary={env.environment} />
                                 <ListItemSecondaryAction>
                                     <IconButton
                                         size="small"
@@ -125,19 +149,22 @@ function EditEnvironmentsDialog({
                     </List>
                 ) : (
                     <Typography variant="body2">
-                        <Translate msg="scripts.detail.side.labels.empty" />
+                        <Translate msg="connections.detail.side.environments.empty" />
                     </Typography>
                 )}
             <Button
-                color="secondary"
+                variant="outlined"
+                color="default"
+                size="small"
+                disableElevation
                 onClick={() => setOpen(true)}
             >
-                Add environment
+                <Translate msg="connections.detail.side.environments.add_button" />
             </Button>
             <ClosableDialog
                 onClose={() => setOpen(false)}
                 open={open}
-                title={translator('doc.dialog.edit.connection.title')}
+                title={translator('connections.detail.side.environments.add_dialog.title')}
                 maxWidth="lg"
             >
                 <Loader show={environmentsAsync.fetch.status === AsyncStatus.Busy} />
@@ -150,26 +177,32 @@ function EditEnvironmentsDialog({
                         width="100%"
                     >
                         <Box marginBottom={2} width="100%">
-                            <FormControl className={classes.select}>
+                            <FormControl className={classes.select} error={requiredFieldsState.environment.showError}>
                                 <InputLabel id="connection-environment-label">Environment</InputLabel>
                                 <Select
                                     labelId="connection-environment-label"
                                     id="connection-environment"
                                     defaultValue="Choose an environment"
-                                    onBlur={(e) => setEnvironmentName(e.target.value)}
+                                    // eslint-disable-next-line max-len
+                                    onBlur={(e) => setEnvironment({ ...environment, environment: e.target.value })}
                                 >
                                     <MenuItem value="Choose an environment" disabled>
-                                        Choose an environment
+                                        <Translate msg="connections.detail.side.environments.add_dialog.select_title" />
                                     </MenuItem>
-                                    {environmentsAsync.data && environmentsAsync.data.map((env) => (
-                                        <MenuItem
-                                            key={JSON.stringify(env.name)}
-                                            value={env.name}
-                                        >
-                                            {env.name}
-                                        </MenuItem>
-                                    ))}
+                                    {
+                                        getEnvironmentsItems().map((env) => (
+                                            <MenuItem
+                                                key={JSON.stringify(env.name)}
+                                                value={env.name}
+                                            >
+                                                {env.name}
+                                            </MenuItem>
+                                        ))
+                                    }
                                 </Select>
+                                {requiredFieldsState.environment.showError && (
+                                    <FormHelperText>Environment name is required</FormHelperText>
+                                )}
                             </FormControl>
                         </Box>
                     </Box>
@@ -183,7 +216,7 @@ function EditEnvironmentsDialog({
                             onClick={() => setOpen(false)}
                         >
                             <Translate
-                                msg="doc.dialog.edit.connection.footer.cancel"
+                                msg="connections.detail.side.environments.add_dialog.cancel"
                             />
                         </Button>
                         <Button
@@ -193,7 +226,7 @@ function EditEnvironmentsDialog({
                             onClick={handleSubmit}
                         >
                             <Translate
-                                msg="doc.dialog.edit.connection.footer.save"
+                                msg="connections.detail.side.environments.add_dialog.add"
                             />
                         </Button>
                     </ButtonGroup>

@@ -37,6 +37,16 @@ export const triggerCreateConnectionDetail = (payload: IConnection) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.CONNECTIVITY_CONNECTION_DETAIL],
+        onSuccess: ({ dispatch }) => {
+            dispatch(triggerFlashMessage({
+                translationKey: 'flash_messages.connection.create',
+                type: 'success',
+            }));
+        },
+        onFail: ({ dispatch }) => dispatch(triggerFlashMessage({
+            translationKey: 'flash_messages.error',
+            type: 'error',
+        })),
     });
 
 export const triggerUpdateConnectionDetail = (payload: IConnection) =>

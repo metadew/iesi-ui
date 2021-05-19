@@ -15,6 +15,7 @@ import {
     MenuItem,
     ListItemIcon,
     darken,
+    Icon,
 } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import {
@@ -161,6 +162,22 @@ const useStyles = makeStyles(({ palette, shape, typography, spacing }: Theme) =>
         minHeight: typography.pxToRem(20),
         minWidth: typography.pxToRem(40),
         borderRadius: shape.borderRadius,
+    },
+    tooltipIcon: {
+        position: 'relative',
+        top: '-1px',
+        marginLeft: spacing(0.5),
+        verticalAlign: 'middle',
+        lineHeight: 0,
+        '&.small': {
+            fontSize: typography.pxToRem(17),
+        },
+        '&.inherit': {
+            fontSize: 'inherit',
+        },
+        '& > svg': {
+            fontSize: 'inherit',
+        },
     },
 }));
 
@@ -377,9 +394,9 @@ export default function GenericTableRow<ColumnNames>({
                                             )}
                                             style={{ justifySelf: 'flex-end' }}
                                         >
-                                            <IconButton>
+                                            <Icon className={classNames(classes.tooltipIcon, 'small')}>
                                                 <Info fontSize="small" />
-                                            </IconButton>
+                                            </Icon>
                                         </Tooltip>
                                     )
                                 }

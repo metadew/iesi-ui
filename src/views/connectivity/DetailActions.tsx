@@ -64,72 +64,65 @@ function DetailActions({
     );
 
     return (
-        <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="flex-start"
-            marginX={2.2}
-            width="100%"
-        >
-            <Box display="flex" alignItems="center" justifyContent="space-between" width="100%" mt={2}>
-                <Box flex="0 0 auto">
-                    {isCreateRoute || checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
-                        ? (
-                            <Tooltip
-                                title={translator('connections.detail.main.actions.add_parameter')}
-                                enterDelay={1000}
-                                enterNextDelay={1000}
+
+        <Box display="flex" alignItems="center" justifyContent="space-between" width="100%" paddingX={2.2}>
+            <Box flex="0 0 auto">
+                {isCreateRoute || checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                    ? (
+                        <Tooltip
+                            title={translator('connections.detail.main.actions.add_parameter')}
+                            enterDelay={1000}
+                            enterNextDelay={1000}
+                        >
+                            <IconButton
+                                aria-label={translator('connections.detail.main.actions.add_parameter')}
+                                className={classes.addButton}
+                                onClick={onAdd}
+                                color="default"
                             >
-                                <IconButton
-                                    aria-label={translator('connections.detail.main.actions.add_parameter')}
-                                    className={classes.addButton}
-                                    onClick={onAdd}
-                                    color="default"
+                                <AddIcon />
+                            </IconButton>
+                        </Tooltip>
+                    )
+                    : null}
+            </Box>
+            <Box flex="0 0 auto">
+                <Paper elevation={0} className={classes.actions}>
+                    <Box display="inline" marginRight={1}>
+                        {isCreateRoute
+                            || checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                            ? (
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    size="small"
+                                    startIcon={<SaveIcon />}
+                                    onClick={onSave}
                                 >
-                                    <AddIcon />
-                                </IconButton>
-                            </Tooltip>
-                        )
-                        : null}
-                </Box>
-                <Box flex="0 0 auto">
-                    <Paper elevation={0} className={classes.actions}>
-                        <Box display="inline" marginRight={1}>
-                            {isCreateRoute
-                                || checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                                    <Translate msg="connections.detail.main.actions.save" />
+                                </Button>
+                            )
+                            : null}
+                    </Box>
+                    {isCreateRoute ? (
+                        <>
+                            {DeleteButton}
+                        </>
+                    ) : (
+                        <>
+                            {checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                                 ? (
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        size="small"
-                                        startIcon={<SaveIcon />}
-                                        onClick={onSave}
+                                    <Tooltip
+                                        title={translator('connections.detail.main.actions.delete')}
+                                        enterDelay={1000}
+                                        enterNextDelay={1000}
                                     >
-                                        <Translate msg="connections.detail.main.actions.save" />
-                                    </Button>
-                                )
-                                : null}
-                        </Box>
-                        {isCreateRoute ? (
-                            <>
-                                {DeleteButton}
-                            </>
-                        ) : (
-                            <>
-                                {checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
-                                    ? (
-                                        <Tooltip
-                                            title={translator('connections.detail.main.actions.delete')}
-                                            enterDelay={1000}
-                                            enterNextDelay={1000}
-                                        >
-                                            {DeleteButton}
-                                        </Tooltip>
-                                    ) : null}
-                            </>
-                        )}
-                    </Paper>
-                </Box>
+                                        {DeleteButton}
+                                    </Tooltip>
+                                ) : null}
+                        </>
+                    )}
+                </Paper>
             </Box>
         </Box>
     );

@@ -22,14 +22,19 @@ import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/ent
 import { getAsyncConnectionTypes } from 'state/entities/constants/selectors';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel';
-import { getRouteKeyByPath, ROUTE_KEYS } from 'views/routes';
+import { getRouteKeyByPath, redirectTo, ROUTE_KEYS } from 'views/routes';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { Alert, Autocomplete } from '@material-ui/lab';
 import { IConnectionType } from 'models/state/constants.models';
 import { IListItem, ListColumns } from 'models/list.models';
 import { checkAuthorityGeneral, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
-import { triggerCreateConnectionDetail, triggerUpdateConnectionDetail } from 'state/entities/connections/triggers';
+import {
+    triggerCreateConnectionDetail,
+    triggerDeleteConnectionDetail,
+    triggerUpdateConnectionDetail,
+} from 'state/entities/connections/triggers';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
+import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import TextInput from 'views/common/input/TextInput';
 import { getTranslator } from 'state/i18n/selectors';
@@ -101,26 +106,35 @@ const ConnectionDetail = withStyles(styles)(
                 },
             };
 
+            // eslint-disable-next-line max-len
+            this.updateConnectionInStateIfNewConnectionWasLoaded = this.updateConnectionInStateIfNewConnectionWasLoaded.bind(this);
+            this.navigateToComponentAfterCreation = this.navigateToComponentAfterCreation.bind(this);
+            this.navigateToConnectionAfterDeletion = this.navigateToConnectionAfterDeletion.bind(this);
             this.renderConnectionDetailPanel = this.renderConnectionDetailPanel.bind(this);
             this.renderEditParameterContent = this.renderEditParameterContent.bind(this);
             this.renderConnectionDetailContent = this.renderConnectionDetailContent.bind(this);
+            this.onDeleteConnection = this.onDeleteConnection.bind(this);
             this.isCreateConnectionRoute = this.isCreateConnectionRoute.bind(this);
             this.getEditParameter = this.getEditParameter.bind(this);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
             this.updateConnectionInStateIfNewConnectionWasLoaded(prevProps);
+            this.navigateToComponentAfterCreation(prevProps);
+            this.navigateToConnectionAfterDeletion(prevProps);
         }
 
         public render() {
             const {
                 newConnectionDetail,
                 isAddingParameter,
+                isConfirmDeleteConnectionOpen,
                 isSaveDialogOpen,
             } = this.state;
             const { state } = this.props;
             const connectionDetailAsyncStatus = getAsyncConnectionDetail(state).fetch.status;
             const connectionTypeAsyncStatus = getAsyncConnectionTypes(state).fetch.status;
+            const deleteStatus = getAsyncConnectionDetail(state).remove.status;
             const parameter = this.getEditParameter();
             const translator = getTranslator(state);
             return (
@@ -132,8 +146,8 @@ const ConnectionDetail = withStyles(styles)(
                         }
                     />
                     <ContentWithSidePanel
-                        panel={this.renderConnectionDetailPanel}
-                        content={this.renderConnectionDetailContent}
+                        panel={this.renderConnectionDetailPanel()}
+                        content={this.renderConnectionDetailContent()}
                         goBackTo={ROUTE_KEYS.R_CONNECTIONS}
                         contentOverlay={(parameter || isAddingParameter) && (
                             this.renderEditParameterContent()
@@ -141,15 +155,23 @@ const ConnectionDetail = withStyles(styles)(
                         contentOverlayOpen={!!(isAddingParameter || parameter)}
                         toggleLabel={<Translate msg="connections.detail.side.toggle_button" />}
                     />
+                    <ConfirmationDialog
+                        title={translator('connections.detail.delete_connection_dialog.title')}
+                        text={translator('connections.detail.delete_connection_dialog.text')}
+                        open={isConfirmDeleteConnectionOpen}
+                        onClose={() => this.setState({ isConfirmDeleteConnectionOpen: false })}
+                        onConfirm={this.onDeleteConnection}
+                        showLoader={deleteStatus === AsyncStatus.Busy}
+                    />
                     <ClosableDialog
-                        title={translator('connections.detail.save_connections_dialog.title')}
+                        title={translator('connections.detail.save_connection_dialog.title')}
                         open={isSaveDialogOpen}
                         onClose={() => this.setState({ isSaveDialogOpen: false })}
                     >
                         <Typography>
-                            <Translate msg="connections.detail.save_component_dialog.text" />
+                            <Translate msg="connections.detail.save_connection_dialog.text" />
                         </Typography>
-                        <Box display="flex" alignItems="center" justifyContent="space-between" marginTop={2}>
+                        <Box display="flex" alignItems="center" justifyContent="center" marginTop={2}>
                             <Box paddingRight={1}>
                                 <Button
                                     id="save-update-connection"
@@ -165,7 +187,13 @@ const ConnectionDetail = withStyles(styles)(
                                     color="secondary"
                                     disabled={!checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)}
                                 >
-                                    <Translate msg="connections.detail.save_connection_dialog.update_current_version" />
+                                    {
+                                        this.isCreateConnectionRoute() ? (
+                                            <Translate msg="connections.detail.save_connection_dialog.create" />
+                                        ) : (
+                                            <Translate msg="connections.detail.save_connection_dialog.update" />
+                                        )
+                                    }
                                 </Button>
                             </Box>
                         </Box>
@@ -177,6 +205,7 @@ const ConnectionDetail = withStyles(styles)(
         private renderConnectionDetailPanel() {
             const {
                 newConnectionDetail,
+                environmentIndex,
                 requiredFieldsState,
             } = this.state;
             const { state } = this.props;
@@ -251,7 +280,7 @@ const ConnectionDetail = withStyles(styles)(
                                         && !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
                                     disableUnderline: true,
                                 }}
-                                value={newConnectionDetail.description}
+                                value={newConnectionDetail.description || ''}
                                 onChange={(e) => this.updateConnection({
                                     description: e.target.value,
                                 })}
@@ -260,9 +289,10 @@ const ConnectionDetail = withStyles(styles)(
                         <DescriptionList
                             noLineAfterListItem
                             items={[].concat({
-                                label: <Translate msg="components.detail.side.environments.title" />,
+                                label: <Translate msg="connections.detail.side.environments.title" />,
                                 value: <EditEnvironments
                                     environments={newConnectionDetail && newConnectionDetail.environments}
+                                    selectedIndex={environmentIndex}
                                     onEnvironmentSelected={(index) => this.setState({ environmentIndex: index })}
                                     onSubmit={(newEnvironment) => {
                                         this.updateConnection({
@@ -277,7 +307,13 @@ const ConnectionDetail = withStyles(styles)(
                                             }],
                                         });
                                     }}
-                                    onDelete={() => {}}
+                                    onDelete={(index) => {
+                                        const environments = [...newConnectionDetail.environments];
+                                        environments.splice(index, 1);
+                                        this.updateConnection({
+                                            environments,
+                                        });
+                                    }}
                                     isCreateConnectionRoute={this.isCreateConnectionRoute()}
                                 />,
                             })}
@@ -470,6 +506,7 @@ const ConnectionDetail = withStyles(styles)(
                 if (connectionDetailDeepClone) {
                     this.setState({
                         newConnectionDetail: connectionDetail,
+                        environmentIndex: connectionDetail.environments[0] ? 0 : -1,
                     });
                 }
             }
@@ -483,6 +520,39 @@ const ConnectionDetail = withStyles(styles)(
                 },
                 hasChangesToCheck: true,
             }));
+        }
+
+        private onDeleteConnection() {
+            const { state } = this.props;
+            const detail = getAsyncConnectionDetail(state).data;
+            if (detail) {
+                triggerDeleteConnectionDetail({ name: detail.name });
+            }
+        }
+
+        private navigateToComponentAfterCreation(prevProps: TProps & IObserveProps) {
+            const { newConnectionDetail } = this.state;
+            const { status } = getAsyncConnectionDetail(this.props.state).create;
+            const prevStatus = getAsyncConnectionDetail(prevProps.state).create.status;
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                redirectTo({
+                    routeKey: ROUTE_KEYS.R_CONNECTION_DETAIL,
+                    params: {
+                        name: newConnectionDetail.name,
+                    },
+                });
+            }
+        }
+
+        private navigateToConnectionAfterDeletion(prevProps: TProps & IObserveProps) {
+            const { status } = getAsyncConnectionDetail(this.props.state).remove;
+            const prevStatus = getAsyncConnectionDetail(prevProps.state).remove.status;
+
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                redirectTo({
+                    routeKey: ROUTE_KEYS.R_CONNECTIONS,
+                });
+            }
         }
 
         private getEditParameter() {
@@ -546,5 +616,6 @@ function mapConnectionTypeToListItems(items: IConnectionType[]): IListItem<IConn
 }
 
 export default observe([
+    StateChangeNotification.CONNECTIVITY_CONNECTION_DETAIL,
     StateChangeNotification.CONSTANTS_CONNECTION_TYPES,
 ], withRouter(ConnectionDetail));

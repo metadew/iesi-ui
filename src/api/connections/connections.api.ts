@@ -60,8 +60,11 @@ export function updateConnection(connection: IConnection) {
     return put<IConnection>({
         needsAuthentication: true,
         isIesiApi: true,
-        url: API_URLS.CONNECTIONS,
-        body: [connection],
+        url: API_URLS.CONNECTION_BY_NAME,
+        pathParams: {
+            name: connection.name,
+        },
+        body: connection,
         contentType: 'application/json',
     });
 }
