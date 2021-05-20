@@ -35,6 +35,7 @@ import {
     triggerCreateScriptDetail,
     triggerDeleteScriptDetail,
     triggerExportScriptDetail,
+    triggerFetchScriptDetail,
 } from 'state/entities/scripts/triggers';
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
@@ -147,6 +148,7 @@ const ScriptDetail = withStyles(styles)(
             this.isCreateScriptRoute = this.isCreateScriptRoute.bind(this);
 
             this.updateScriptInStateIfNewScriptWasLoaded = this.updateScriptInStateIfNewScriptWasLoaded.bind(this);
+            this.refreshPageAfterUpdate = this.refreshPageAfterUpdate.bind(this);
             this.navigateToScriptAfterCreation = this.navigateToScriptAfterCreation.bind(this);
             this.navigateToScriptAfterDeletion = this.navigateToScriptAfterDeletion.bind(this);
 
@@ -159,6 +161,7 @@ const ScriptDetail = withStyles(styles)(
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
             this.updateScriptInStateIfNewScriptWasLoaded(prevProps);
+            this.refreshPageAfterUpdate(prevProps);
             this.navigateToScriptAfterCreation(prevProps);
             this.navigateToScriptAfterDeletion(prevProps);
         }
@@ -676,6 +679,19 @@ const ScriptDetail = withStyles(styles)(
                 const scriptDetailDeepClone = clone(scriptDetail);
                 // eslint-disable-next-line react/no-did-update-set-state
                 this.setState({ newScriptDetail: scriptDetailDeepClone });
+            }
+        }
+
+        private refreshPageAfterUpdate(prevProps: TProps & IObserveProps) {
+            const currentScriptDetail = getAsyncScriptDetail(this.props.state);
+            const prevScriptDetail = getAsyncScriptDetail(prevProps.state);
+            if (
+                currentScriptDetail.update.status === AsyncStatus.Success
+                && prevScriptDetail.update.status !== AsyncStatus.Success) {
+                triggerFetchScriptDetail({
+                    name: currentScriptDetail.data.name,
+                    version: currentScriptDetail.data.version.number,
+                });
             }
         }
 

@@ -7,6 +7,7 @@ import {
 } from 'models/state/scripts.models';
 import { StateChangeNotification } from 'models/state.models';
 import { triggerFlashMessage } from 'state/ui/actions';
+import { AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 
 export const triggerFetchScripts = (payload: IFetchScriptsListPayload) =>
     entitiesStateManager.triggerAsyncEntityFetch<{}>({
@@ -68,4 +69,21 @@ export const triggerExportScriptDetail = (payload: IScriptByNameAndVersionPayloa
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_DETAIL],
+    });
+
+export const triggerResetAsyncScriptDetail = ({
+    resetDataOnTrigger,
+    operation,
+}: {
+    resetDataOnTrigger?: boolean;
+    operation: AsyncOperation;
+}) =>
+    entitiesStateManager.triggerAsyncEntityReset({
+        asyncEntityToReset: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetail,
+            resetDataOnTrigger,
+        },
+        extraInputSelector: () => ({}),
+        notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_DETAIL],
+        operation,
     });
