@@ -39,9 +39,6 @@ export interface IListItem<ColumnNames, Data = TObjectWithProps> {
     data?: Data;
     isHandled?: boolean;
     canBeDeleted?: boolean;
-    cellDetail?: {
-        [key in keyof Partial<ColumnNames>]: string;
-    };
 }
 
 export enum SortOrder {

@@ -50,5 +50,5 @@ export interface IConnectionColumnNamesBase {
     name: string;
     type: string;
     description: string;
-    environmentCount: number;
+    environments: number;
 }

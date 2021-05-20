@@ -10,11 +10,6 @@ import {
     ButtonGroup,
     Theme,
     Typography,
-    List,
-    ListItem,
-    ListItemText,
-    ListItemSecondaryAction,
-    IconButton,
     FormHelperText,
 } from '@material-ui/core';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
@@ -28,9 +23,9 @@ import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/ent
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { StateChangeNotification } from 'models/state.models';
 import { checkAuthorityGeneral, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
-import { Delete } from '@material-ui/icons';
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
+import OrderedList from 'views/common/list/OrderedList';
 
 const useStyles = makeStyles(({ palette }: Theme) => ({
     textField: {
@@ -120,33 +115,17 @@ function EditEnvironmentsDialog({
         <>
             {environments.length > 0
                 ? (
-                    <List>
-                        {environments.map((env, index) => (
-                            <ListItem
-                                key={env.environment}
-                                selected={index === selectedIndex}
-                                onClick={() => onEnvironmentSelected(index)}
-                                button
-                            >
-                                <ListItemText primary={env.environment} />
-                                <ListItemSecondaryAction>
-                                    <IconButton
-                                        size="small"
-                                        onClick={() => {
-                                            if (isCreateConnectionRoute
-                                                || checkAuthorityGeneral(
-                                                    SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
-                                                )) {
-                                                onDelete(index);
-                                            }
-                                        }}
-                                    >
-                                        <Delete />
-                                    </IconButton>
-                                </ListItemSecondaryAction>
-                            </ListItem>
-                        ))}
-                    </List>
+                    <OrderedList
+                        items={environments.map((env, index) => ({
+                            content: env.environment,
+                            selected: selectedIndex === index,
+                            button: true,
+                            onSelect: () => onEnvironmentSelected(index),
+                            onDelete: isCreateConnectionRoute
+                            || checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                                ? () => onDelete(index) : null,
+                        }))}
+                    />
                 ) : (
                     <Typography variant="body2">
                         <Translate msg="connections.detail.side.environments.empty" />

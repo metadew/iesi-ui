@@ -39,6 +39,7 @@ import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/ent
 import GenericList from 'views/common/list/GenericList';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import { StateChangeNotification } from 'models/state.models';
+import OrderedList from 'views/common/list/OrderedList';
 
 const styles = (({ palette, typography }: Theme) => ({
     header: {
@@ -237,7 +238,7 @@ const ConnectionOverview = withStyles(styles)(
                     className: classes.connectionType,
                     fixedWidth: '15%',
                 },
-                environmentCount: {
+                environments: {
                     label: <Translate msg="connections.overview.list.labels.environments" />,
                     className: classes.connectionEnvironment,
                     noWrap: true,
@@ -414,13 +415,22 @@ function mapConnectionsToListItems(connections: IConnection[]): IListItem<IConne
             name: connection.name,
             description: connection.description,
             type: connection.type,
-            environmentCount: connection.environments.length,
+            environments: {
+                value: connection.environments.length,
+                tooltip: connection.environments.length > 0 && (
+                    <Typography>
+                        <OrderedList
+                            items={connection.environments
+                                .map((environment) => ({
+                                    content: environment.environment,
+                                }))}
+                        />
+                    </Typography>
+                ),
+            },
         },
         data: {
             environments: connection.environments,
-        },
-        cellDetail: {
-            environmentCount: connection.environments.map((env) => env.environment).join('\n'),
         },
     }));
 }
