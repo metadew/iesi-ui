@@ -142,6 +142,17 @@ scripts:
         cancel: Discard changes
         save: Update action
         go_back: Go back
+    duplicate_action_dialog:
+      title: Duplicating "{actionName}"
+      confirm: Duplicate action
+      init_error:  Can't duplicate current action at this time. Please try again later.
+      error: Something went wrong during the duplication of your action.
+      success:
+        text: Action is duplicated.
+        close_button: Back to detail
+      form:
+        name: Name
+      text: Please specify the name for the new duplicated action.
     side:
       script_description: Script description
       script_name: Script name
