@@ -131,15 +131,20 @@ function EditEnvironmentsDialog({
                         <Translate msg="connections.detail.side.environments.empty" />
                     </Typography>
                 )}
-            <Button
-                variant="outlined"
-                color="default"
-                size="small"
-                disableElevation
-                onClick={() => setOpen(true)}
-            >
-                <Translate msg="connections.detail.side.environments.add_button" />
-            </Button>
+            { checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                ? (
+                    <Button
+                        variant="outlined"
+                        color="default"
+                        size="small"
+                        disableElevation
+                        onClick={() => setOpen(true)}
+                    >
+                        <Translate msg="connections.detail.side.environments.add_button" />
+                    </Button>
+                ) : (
+                    <></>
+                )}
             <ClosableDialog
                 onClose={() => setOpen(false)}
                 open={open}
