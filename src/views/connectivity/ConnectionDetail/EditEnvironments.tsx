@@ -132,7 +132,7 @@ function EditEnvironmentsDialog({
                     </Typography>
                 )}
             { checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
-                ? (
+                && (
                     <Button
                         variant="outlined"
                         color="default"
@@ -142,9 +142,7 @@ function EditEnvironmentsDialog({
                     >
                         <Translate msg="connections.detail.side.environments.add_button" />
                     </Button>
-                ) : (
-                    <></>
-                )}
+                ) }
             <ClosableDialog
                 onClose={() => setOpen(false)}
                 open={open}

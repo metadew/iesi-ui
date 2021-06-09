@@ -223,7 +223,8 @@ const ConnectionDetail = withStyles(styles)(
                                 options={connectionTypeListItems}
                                 value={autoComplete || null}
                                 getOptionLabel={(option) => option.data.type}
-                                disabled={!checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)}
+                                getOptionDisabled={() =>
+                                    !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)}
                                 renderInput={(params) => (
                                     <TextInput
                                         {...params}
@@ -260,8 +261,8 @@ const ConnectionDetail = withStyles(styles)(
                                 id="connection-name"
                                 label={translator('connections.detail.side.connection_name')}
                                 InputProps={{
-                                    readOnly: !this.isCreateConnectionRoute() && newConnectionDetail !== undefined
-                                        && !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
+                                    readOnly: !this.isCreateConnectionRoute() && newConnectionDetail !== undefined,
+                                    //    && !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
                                     disableUnderline: true,
                                 }}
                                 value={newConnectionDetail.name}
@@ -276,11 +277,12 @@ const ConnectionDetail = withStyles(styles)(
                                 multiline
                                 rows={8}
                                 InputProps={{
-                                    readOnly: !this.isCreateConnectionRoute && newConnectionDetail !== undefined
-                                        && !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
+                                    readOnly: (!this.isCreateConnectionRoute && newConnectionDetail !== undefined)
+                                        || !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
                                     disableUnderline: true,
+
                                 }}
-                                value={newConnectionDetail.description || ''}
+                                value={newConnectionDetail.description}
                                 onChange={(e) => this.updateConnection({
                                     description: e.target.value,
                                 })}

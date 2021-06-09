@@ -304,10 +304,7 @@ const ComponentDetail = withStyles(styles)(
                                 id="component-name"
                                 label={translator('components.detail.side.component_name')}
                                 InputProps={{
-
-                                    readOnly: !this.isCreateComponentRoute() && newComponentDetail !== undefined
-                                        && !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
-                                    // readOnly: !this.isCreateComponentRoute(),
+                                    readOnly: !this.isCreateComponentRoute() && newComponentDetail !== undefined,
                                     disableUnderline: true,
                                 }}
                                 value={newComponentDetail.name}
@@ -322,8 +319,8 @@ const ComponentDetail = withStyles(styles)(
                                 multiline
                                 rows={8}
                                 InputProps={{
-                                    readOnly: !this.isCreateComponentRoute && newComponentDetail !== undefined
-                                        && !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
+                                    readOnly: (!this.isCreateComponentRoute && newComponentDetail !== undefined)
+                                        || !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
                                     // readOnly: (!this.isCreateComponentRoute && newComponentDetail !== undefined)
                                     //    || !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
                                     disableUnderline: true,
