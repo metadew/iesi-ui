@@ -11,7 +11,7 @@ import { IListResponse, IPageData } from 'models/state/iesiGeneric.models';
 
 interface IComponentsResponse {
     _embedded: {
-        componentDtoList: IComponent[];
+        components: IComponent[];
     };
     page: IPageData;
 }
@@ -28,7 +28,7 @@ export function fetchComponents({ pagination, filter, sort }: IFetchComponentsLi
         },
         mapResponse: ({ data }) => ({
             // eslint-disable-next-line no-underscore-dangle
-            components: data._embedded.componentDtoList,
+            components: data._embedded.components,
             page: data.page,
         }),
     });
