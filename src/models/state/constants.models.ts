@@ -35,3 +35,7 @@ export interface IComponentType {
     parameters: IConstantParameter[];
     category: string;
 }
+
+export interface IComponentTypeFilters {
+    name: string;
+}

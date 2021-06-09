@@ -32,6 +32,12 @@ export default function getMockState({
                     page: 1,
                     sortedColumn: null,
                 },
+                components: {
+                    filters: null,
+                    onlyShowLatestVersion: true,
+                    page: 1,
+                    sortedColumn: null,
+                },
                 executions: {
                     filters: null,
                     page: 1,
@@ -108,6 +114,20 @@ export default function getMockState({
                 },
             },
             scriptExecutionDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            components: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            componentDetail: {
                 data: null,
                 fetch: {
                     status: AsyncStatus.Initial,

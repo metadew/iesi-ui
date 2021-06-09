@@ -59,7 +59,7 @@ interface IPublicProps<ColumnNames> {
 }
 
 const useStyles = makeStyles(({ palette, shape, typography, spacing }: Theme) => ({
-    tableRow: (props: { isHandled: boolean}) => ({
+    tableRow: (props: { isHandled: boolean }) => ({
         background: props.isHandled ? THEME_COLORS.GREY_LIGHT : palette.background.paper,
         height: '100%',
     }),
@@ -215,7 +215,7 @@ export default function GenericTableRow<ColumnNames>({
                     ) : renderPlaceholderCellContent()}
                 </TableCell>
             )}
-            { isPlaceholder ? renderPlaceholderCells() : renderDataCells() }
+            { isPlaceholder ? renderPlaceholderCells() : renderDataCells()}
             {listActions && (
                 <>
                     <TableCell
@@ -236,7 +236,6 @@ export default function GenericTableRow<ColumnNames>({
                                                     area-label={action.label}
                                                     onClick={() => action.onClick(item.id, rowIndex)}
                                                     className={classes.actionIcon}
-                                                    disabled={isHandled}
                                                 >
                                                     {action.icon}
                                                 </IconButton>

@@ -6,6 +6,7 @@ import { IScript, IScriptsEntity } from 'models/state/scripts.models';
 import { IExecutionRequest, IExecutionRequestsEntity } from './executionRequests.models';
 import { IActionType, IComponentType, IConnectionType } from './constants.models';
 import { IOpenAPIEntity } from './openapi.model';
+import { IComponent, IComponentEntity } from './components.model';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ICustomAsyncEntity<Data> extends IAsyncEntity<Data, ITraceableApiError> {}
@@ -22,19 +23,21 @@ export enum ASYNC_ENTITY_KEYS {
     connections = 'connections',
     connectionDetail = 'connectionDetail',
 
-    components = 'components',
-    componentDetail = 'componentDetail',
-
     scripts = 'scripts',
     scriptDetail = 'scriptDetail',
     scriptDetailExport = 'scriptDetailExport',
+
+    components = 'components',
+    componentDetail = 'componentDetail',
 
     executionRequests = 'executionRequests',
     executionRequestDetail = 'executionRequestDetail',
 
     scriptExecutionDetail = 'scriptExecutionDetail',
 
-    openapi = 'openapi'
+    openapi = 'openapi',
+    openapiComponents = 'openapiComponents',
+    openapiComponentDetail = 'openapiComponentDetail',
 }
 
 /* Keep the keys in sync with ASYNC_ENTITY_KEYS !! */
@@ -46,6 +49,8 @@ export interface IEntitiesState {
     scripts: ICustomAsyncEntity<IScriptsEntity>;
     scriptDetail: ICustomAsyncEntity<IScript>;
     scriptDetailExport: ICustomAsyncEntity<IScript>;
+    components: ICustomAsyncEntity<IComponentEntity>;
+    componentDetail: ICustomAsyncEntity<IComponent>;
     executionRequests: ICustomAsyncEntity<IExecutionRequestsEntity>;
     executionRequestDetail: ICustomAsyncEntity<IExecutionRequest>;
     scriptExecutionDetail: ICustomAsyncEntity<IScriptExecutionDetail>;

@@ -38,6 +38,7 @@ export interface IListItem<ColumnNames, Data = TObjectWithProps> {
     };
     data?: Data;
     isHandled?: boolean;
+    canBeDeleted?: boolean;
 }
 
 export enum SortOrder {

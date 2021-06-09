@@ -11,7 +11,7 @@ import { getUniqueIdFromConnection } from 'utils/connections/connectionUtils';
 import { getUniqueIdFromComponent } from 'utils/components/componentUtils';
 import { ReactText } from 'react';
 import { IConnectionEntity } from 'models/state/connections.model';
-import { IComponentEntity } from 'models/state/components.model';
+import { IComponent, IComponentColumnNamesBase } from 'models/state/components.model';
 
 export const triggerFlashMessage = (payload: ITriggerFlashMessagePayload) => createAction<ITriggerFlashMessagePayload>({
     type: 'TRIGGER_FLASH_MESSAGE',
@@ -186,6 +186,37 @@ export const setExecutionsListFilter = (payload: {
     },
 });
 
+export const setComponentsListFilter = (payload: {
+    filters?: ListFilters<Partial<IComponentColumnNamesBase>>;
+    onlyShowLatestVersion?: boolean;
+    page?: number;
+    sortedColumn?: ISortedColumn<IComponentColumnNamesBase>;
+}) => createAction<{
+    filters?: ListFilters<Partial<IComponentColumnNamesBase>>;
+    onlyShowLatestVersion?: boolean;
+    page?: number;
+    sortedColumn?: ISortedColumn<IComponentColumnNamesBase>;
+}>({
+    type: 'UPDATE_COMPONENTS_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.components = {
+                    filters: payload.filters || draftState.ui.listFilters.components.filters,
+                    onlyShowLatestVersion: typeof payload.onlyShowLatestVersion !== 'undefined'
+                        ? payload.onlyShowLatestVersion
+                        : draftState.ui.listFilters.components.onlyShowLatestVersion,
+                    page: payload.page || draftState.ui.listFilters.components.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.components.sortedColumn,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_COMPONENTS],
+        });
+    },
+});
+
 export const handleConnection = (payload: {
     currentConnection: IConnectionEntity;
 }) => createAction<{
@@ -244,9 +275,9 @@ export const deleteComponent = (payload: { id: ReactText }) => createAction<{ id
 });
 
 export const handleComponent = (payload: {
-    currentComponent: IComponentEntity;
+    currentComponent: IComponent;
 }) => createAction<{
-    currentComponent: IComponentEntity;
+    currentComponent: IComponent;
 }>({
     type: 'COMPONENT.HANDLE',
     payload,
@@ -296,11 +327,11 @@ export const editConnection = (payload: {
 });
 
 export const editComponent = (payload: {
-    newComponent: IComponentEntity;
-    currentComponent: IComponentEntity;
+    newComponent: IComponent;
+    currentComponent: IComponent;
 }) => createAction<{
-    newComponent: IComponentEntity;
-    currentComponent: IComponentEntity;
+    newComponent: IComponent;
+    currentComponent: IComponent;
 }>({
     type: 'COMPONENT.EDIT',
     payload,
