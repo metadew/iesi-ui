@@ -266,7 +266,8 @@ const ComponentDetail = withStyles(styles)(
                                 options={listItems}
                                 value={autoCompleteValue || null}
                                 getOptionLabel={(option) => option.data.type}
-                                disabled={!checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
+                                // disabled={!checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
+                                getOptionDisabled={() => !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
                                 renderInput={(params) => (
                                     <TextInput
                                         {...params}
@@ -275,6 +276,11 @@ const ComponentDetail = withStyles(styles)(
                                         error={requiredFieldsState.type.showError}
                                         // eslint-disable-next-line max-len
                                         helperText={requiredFieldsState.type.showError && 'Component type is a required field'}
+                                        InputProps={{
+                                            ...params.InputProps,
+                                            readOnly: !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
+                                            disableUnderline: true,
+                                        }}
                                     />
                                 )}
                                 onChange={(
@@ -292,13 +298,16 @@ const ComponentDetail = withStyles(styles)(
 
                                     });
                                 }}
+                                disableClearable
                             />
                             <TextInput
                                 id="component-name"
                                 label={translator('components.detail.side.component_name')}
                                 InputProps={{
+
                                     readOnly: !this.isCreateComponentRoute() && newComponentDetail !== undefined
                                         && !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
+                                    // readOnly: !this.isCreateComponentRoute(),
                                     disableUnderline: true,
                                 }}
                                 value={newComponentDetail.name}
@@ -315,6 +324,8 @@ const ComponentDetail = withStyles(styles)(
                                 InputProps={{
                                     readOnly: !this.isCreateComponentRoute && newComponentDetail !== undefined
                                         && !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
+                                    // readOnly: (!this.isCreateComponentRoute && newComponentDetail !== undefined)
+                                    //    || !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
                                     disableUnderline: true,
                                 }}
                                 value={newComponentDetail.version.description}
@@ -329,11 +340,10 @@ const ComponentDetail = withStyles(styles)(
                                 this.isCreateComponentRoute() ? (
                                     <TextInput
                                         id="component-version"
+                                        type="number"
                                         label={translator('components.detail.side.component_version')}
-                                        multiline
-                                        rows={8}
-                                        value={(newComponentDetail && newComponentDetail.description)
-                                            ? newComponentDetail.description : ''}
+                                        value={(newComponentDetail && newComponentDetail.version.number)
+                                            ? newComponentDetail.version.number : 0}
                                         onChange={(e) => this.updateComponent({
                                             version: {
                                                 ...newComponentDetail.version,
@@ -341,11 +351,10 @@ const ComponentDetail = withStyles(styles)(
                                             },
                                         })}
                                         InputProps={{
-                                            readOnly: !this.isCreateComponentRoute() && newComponentDetail
-                                                && !checkAuthorityGeneral(
-                                                    SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
-                                                ),
                                             disableUnderline: true,
+                                            inputProps: {
+                                                min: 0,
+                                            },
                                         }}
 
                                     />

@@ -86,42 +86,47 @@ function DetailActions({
                     : null}
             </Box>
             <Box flex="0 0 auto">
-                <Paper elevation={0} className={classes.actions}>
-                    <Box display="inline" marginRight={1}>
-                        {isCreateRoute
-                            || checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
-                            ? (
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    size="small"
-                                    startIcon={<SaveIcon />}
-                                    onClick={onSave}
-                                >
-                                    <Translate msg="components.detail.main.actions.save" />
-                                </Button>
-                            )
-                            : null}
-                    </Box>
-                    {isCreateRoute ? (
-                        <>
-                            {DeleteButton}
-                        </>
-                    ) : (
-                        <>
-                            {checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
-                                ? (
-                                    <Tooltip
-                                        title={translator('components.detail.main.actions.delete')}
-                                        enterDelay={1000}
-                                        enterNextDelay={1000}
-                                    >
-                                        {DeleteButton}
-                                    </Tooltip>
-                                ) : null}
-                        </>
-                    )}
-                </Paper>
+                {
+                    checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE) && (
+                        <Paper elevation={0} className={classes.actions}>
+                            <Box display="inline" marginRight={1}>
+                                {isCreateRoute
+                                    || checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                    ? (
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            size="small"
+                                            startIcon={<SaveIcon />}
+                                            onClick={onSave}
+                                        >
+                                            <Translate msg="components.detail.main.actions.save" />
+                                        </Button>
+                                    )
+                                    : null}
+                            </Box>
+                            {isCreateRoute ? (
+                                <>
+                                    {DeleteButton}
+                                </>
+                            ) : (
+                                <>
+                                    {checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                        ? (
+                                            <Tooltip
+                                                title={translator('components.detail.main.actions.delete')}
+                                                enterDelay={1000}
+                                                enterNextDelay={1000}
+                                            >
+                                                {DeleteButton}
+                                            </Tooltip>
+                                        ) : null}
+                                </>
+                            )}
+                        </Paper>
+                    )
+                }
+
             </Box>
         </Box>
     );

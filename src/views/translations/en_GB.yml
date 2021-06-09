@@ -319,7 +319,7 @@ components:
     list:
       labels:
         name: Name
-        type: type
+        type: Type
         version: Version
         description: Description
       fetch_error: Something went wrong while loading the components, please try again.
