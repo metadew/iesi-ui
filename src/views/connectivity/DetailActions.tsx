@@ -12,7 +12,7 @@ import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
 import { checkAuthorityGeneral, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
-import { IComponent } from 'models/state/components.model';
+import { IConnection } from 'models/state/connections.model';
 
 interface IPublicProps {
     onPlay?: () => void;
@@ -22,7 +22,7 @@ interface IPublicProps {
     onViewReport?: () => void;
     onExport?: () => void;
     isCreateRoute?: boolean;
-    newComponentDetail?: IComponent;
+    newConnectionDetail?: IConnection;
 }
 
 const useStyles = makeStyles(({ palette, spacing }) => ({
@@ -56,7 +56,7 @@ function DetailActions({
     const DeleteButton = (
         <IconButton
             disabled={isCreateRoute}
-            aria-label={translator('components.details.main.actions.delete')}
+            aria-label={translator('connections.details.main.actions.delete')}
             onClick={onDelete}
         >
             <DeleteIcon />
@@ -64,17 +64,18 @@ function DetailActions({
     );
 
     return (
+
         <Box display="flex" alignItems="center" justifyContent="space-between" width="100%" paddingX={2.2}>
             <Box flex="0 0 auto">
-                {isCreateRoute || checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                {isCreateRoute || checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                     ? (
                         <Tooltip
-                            title={translator('components.detail.main.actions.add_parameter')}
+                            title={translator('connections.detail.main.actions.add_parameter')}
                             enterDelay={1000}
                             enterNextDelay={1000}
                         >
                             <IconButton
-                                aria-label={translator('components.detail.main.actions.add_parameter')}
+                                aria-label={translator('connections.detail.main.actions.add_parameter')}
                                 className={classes.addButton}
                                 onClick={onAdd}
                                 color="default"
@@ -91,7 +92,7 @@ function DetailActions({
                         <Paper elevation={0} className={classes.actions}>
                             <Box display="inline" marginRight={1}>
                                 {isCreateRoute
-                                    || checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                    || checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                                     ? (
                                         <Button
                                             variant="contained"
@@ -100,7 +101,7 @@ function DetailActions({
                                             startIcon={<SaveIcon />}
                                             onClick={onSave}
                                         >
-                                            <Translate msg="components.detail.main.actions.save" />
+                                            <Translate msg="connections.detail.main.actions.save" />
                                         </Button>
                                     )
                                     : null}
@@ -111,10 +112,10 @@ function DetailActions({
                                 </>
                             ) : (
                                 <>
-                                    {checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                    {checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                                         ? (
                                             <Tooltip
-                                                title={translator('components.detail.main.actions.delete')}
+                                                title={translator('connections.detail.main.actions.delete')}
                                                 enterDelay={1000}
                                                 enterNextDelay={1000}
                                             >
@@ -126,7 +127,6 @@ function DetailActions({
                         </Paper>
                     )
                 }
-
             </Box>
         </Box>
     );
