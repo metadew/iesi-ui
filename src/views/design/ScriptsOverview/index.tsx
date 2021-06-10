@@ -58,7 +58,6 @@ import {
     checkAuthority,
     checkAuthorityGeneral,
 } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
-import TransformDocumentationDialog from 'views/design/common/TransformDocumentationDialog';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -207,29 +206,19 @@ const ScriptsOverview = withStyles(styles)(
                                     </Box>
                                     {checkAuthorityGeneral(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)
                                         ? (
-                                            <Box display="flex" alignItems="center">
-                                                <Box flex="0 0 auto" mr="8px" width="250px">
-                                                    <TransformDocumentationDialog
-                                                        open={this.state.loadDocDialogOpen}
-                                                        onOpen={this.onLoadDocDialogOpen}
-                                                        onClose={this.onLoadDocDialogClose}
-                                                    />
-                                                </Box>
-                                                <Box flex="0 0 auto">
-                                                    <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        size="small"
-                                                        startIcon={<AddRounded />}
-                                                        onClick={() => {
-                                                            redirectTo({ routeKey: ROUTE_KEYS.R_SCRIPT_NEW });
-                                                        }}
-                                                    >
-                                                        <Translate msg="scripts.overview.header.add_button" />
-                                                    </Button>
-                                                </Box>
+                                            <Box display="flex" alignItems="center" flex="0 0 auto">
+                                                <Button
+                                                    variant="contained"
+                                                    color="secondary"
+                                                    size="small"
+                                                    startIcon={<AddRounded />}
+                                                    onClick={() => {
+                                                        redirectTo({ routeKey: ROUTE_KEYS.R_SCRIPT_NEW });
+                                                    }}
+                                                >
+                                                    <Translate msg="scripts.overview.header.add_button" />
+                                                </Button>
                                             </Box>
-
                                         ) : null}
 
                                 </Box>
