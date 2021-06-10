@@ -4,6 +4,8 @@ app_shell:
       home: Home
       reports: Reports
       scripts: Scripts
+      components: Components
+      connections: Connections
     title: iesi
 common:
   yes: Yes
@@ -58,6 +60,14 @@ flash_messages:
     connections_unknown_error: 'Unknown error for the one or more connections'
     component_unknown_error: 'Unknown error for the component "{componentName}"'
     components_unknown_error: 'Unknown error for the one or more connections'
+  component:
+    edit: 'The component has been updated'
+    error: 'An error has occured : {error}'
+  connection:
+    create: 'The connection has been created successfully'
+    edit: 'The connection has been updated successfully'
+    error: 'An error has occured: {error}'
+  error: 'An error has occured'
 scripts:
   overview:
     delete_script_dialog:
@@ -293,10 +303,169 @@ script_reports:
         output:
           label: Output
           none: '-'
-        username:
-          label: Username
-          none: '-'
-
+        requestor:
+          label: Requestor
+          none: 'anonymous'
+components:
+  overview:
+    delete_component_dialog:
+      text: Are you sure you want to delete this component?
+      title: Delete component
+      form:
+        description: Description
+        name: Name
+        environment: Environment
+        input_param:
+          add:
+            name: Name
+            value: Value
+            button: Add
+            title: Add input parameter
+          empty: No input params defined yet.
+          title: Input parameters
+    header:
+      amount: 'You have {amount} components'
+      add_button: Create new component
+      generate_button: "Load from OpenAPI documentation"
+    list:
+      labels:
+        name: Name
+        type: Type
+        version: Version
+        description: Description
+      fetch_error: Something went wrong while loading the components, please try again.
+      actions:
+        delete: Delete
+        edit: Edit
+      filter:
+       component_name: Component name
+      sort:
+        component_name: Component name
+        version: Version
+  detail:
+    add_parameter: 'Add new parameter'
+    delete_component_dialog:
+      text: Are you sure you want to delete this component?
+      title: Delete component
+    save_component_dialog:
+      title: Save component
+      text: Do you want to overwrite the current version or create a new version with the current changes?
+      update_current_version: Update current version
+      save_as_new_version: Save as new version
+    side:
+      component_type: Type
+      component_description: Description
+      component_name: Name
+      component_version: Version
+    main:
+      no_parameters:
+        title: No parameters yet
+      actions:
+        add_parameter: Add new parameter
+        add_attribute: Add new attribute
+        delete: Delete component
+        save: Save
+        export: Export component
+        view: View
+      list:
+        labels:
+          name: Name
+          value: Value
+          mandatory: Mandatory
+          environment: Environment
+        actions:
+          edit: Edit
+          delete: Delete
+      alert:
+        save_changes: You made changes to this component. Don't forget to save them.
+    edit:
+      name: Name
+      value: Value
+      environment: Environment
+      footer:
+        cancel: Cancel
+        save: Save
+        update: Update
+    error:
+      save: Failed to save changes
+connections:
+  overview:
+    delete_connection_dialog:
+      text: Are you sure you want to delete this connection?
+      title: Delete connection
+    header:
+      amount: 'You have {amount} connections'
+      add_button: Create new connection
+      generate_button: "Load from OpenAPI documentation"
+    list:
+      labels:
+        name: Name
+        type: Type
+        environments: Environments
+        description: Description
+      fetch_error: Something went wrong while loading the connections, please try again.
+      actions:
+        delete: Delete
+        edit: Edit
+      filter:
+       connection_name: Connection name
+      sort:
+        connection_name: Connection name
+        version: Version
+  detail:
+    add_parameter: 'Add new parameter'
+    delete_connection_dialog:
+      text: Are you sure you want to delete this connection?
+      title: Delete connection
+    save_connection_dialog:
+      title: Save connection
+      text: Do you want to overwrite the current version or create a new version with the current changes?
+      create: Creation connection
+      update: Update connection
+    side:
+      connection_type: Type
+      connection_description: Description
+      connection_name: Name
+      connection_environment: Environment
+      toggle_button: Details
+      environments:
+        title: Environments
+        empty: No environments
+        add_button: Add environment
+        add_dialog:
+          title: Add an environment
+          select_title: Choose an environment
+          cancel: Cancel
+          add: Add
+    main:
+      no_parameters:
+        title: No parameters yet
+      actions:
+        delete: Delete connection
+        save: Save
+        export: Export connection
+        view: View
+      list:
+        labels:
+          name: Name
+          value: Value
+          mandatory: Mandatory
+          environment: Environment
+        actions:
+          edit: Edit
+          delete: Delete
+      alert:
+        save_changes: You made changes to this connection. Don't forget to save them.
+    edit:
+      name: Name
+      value: Value
+      environment: Environment
+      footer:
+        cancel: Cancel
+        save: Save
+        update: Update
+    error:
+      save: Failed to save changes
 doc:
   dialog:
     transform:

@@ -13,7 +13,7 @@ import { getTranslator } from 'state/i18n/selectors';
 import { IObserveProps, observe } from 'views/observe';
 import { editComponent } from 'state/ui/actions';
 import { StateChangeNotification } from 'models/state.models';
-import { IComponentEntity } from 'models/state/components.model';
+import { IComponent } from 'models/state/components.model';
 import { getAsyncComponentTypes } from 'state/entities/constants/selectors';
 import ExpandableParameter from 'views/design/ScriptDetail/EditAction/ExpandableParameter';
 import TextInput from 'views/common/input/TextInput';
@@ -44,7 +44,7 @@ const useStyles = makeStyles(({ palette }: Theme) => ({
 interface IPublicProps {
     open: boolean;
     onClose: () => void;
-    component: IComponentEntity | undefined;
+    component: IComponent | undefined;
 }
 
 function EditComponentDialog({ onClose, open, state, dispatch, component }: IPublicProps & IObserveProps) {

@@ -15,12 +15,12 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import GenericList from 'views/common/list/GenericList';
 import { IListItem, ListColumns } from 'models/list.models';
-import { IConnectionEntity, IConnectionColumnNames } from 'models/state/connections.model';
+import { IConnection, IConnectionColumnNames } from 'models/state/connections.model';
 import { getUniqueIdFromConnection } from 'utils/connections/connectionUtils';
 import { Save, Edit, Delete, ArrowBack } from '@material-ui/icons';
 import { getTranslator } from 'state/i18n/selectors';
 import { getAsyncTransformResultEntity } from 'state/entities/openapi/selectors';
-import { IComponentColumnNames, IComponentEntity } from 'models/state/components.model';
+import { IComponentColumnNames, IComponent } from 'models/state/components.model';
 import { getUniqueIdFromComponent } from 'utils/components/componentUtils';
 import { triggerCreateConnection } from 'state/entities/connections/triggers';
 import { triggerCreateComponent } from 'state/entities/components/triggers';
@@ -62,8 +62,8 @@ const styles = ({ palette, typography }: Theme) =>
 interface IComponentState {
     isConnectionEditDialogOpen: boolean;
     isComponentEditDialogOpen: boolean;
-    connectionToEdit?: IConnectionEntity | undefined;
-    componentToEdit?: IComponentEntity | undefined;
+    connectionToEdit?: IConnection | undefined;
+    componentToEdit?: IComponent | undefined;
 }
 type TProps = WithStyles<typeof styles>;
 
@@ -285,6 +285,7 @@ const OpenAPIOverview = withStyles(styles)(
                             icon: <Delete />,
                             label: translator('doc.overview.action_buttons.delete'),
                             onClick: (id) => this.props.dispatch(deleteConnection({ id })),
+                            hideAction: (item) => item.isHandled,
                         },
                     ]}
                     columns={columns}
@@ -342,6 +343,7 @@ const OpenAPIOverview = withStyles(styles)(
                             icon: <Delete />,
                             label: translator('doc.overview.action_buttons.delete'),
                             onClick: (id) => this.props.dispatch(deleteComponent({ id })),
+                            hideAction: (item) => item.isHandled,
                         },
                     ]}
                     columns={columns}
@@ -350,14 +352,14 @@ const OpenAPIOverview = withStyles(styles)(
             );
         }
 
-        public onOpenConnectionDialog(connection: IConnectionEntity) {
+        public onOpenConnectionDialog(connection: IConnection) {
             this.setState({
                 isConnectionEditDialogOpen: true,
                 connectionToEdit: connection,
             });
         }
 
-        public onOpenComponentDialog(component: IComponentEntity) {
+        public onOpenComponentDialog(component: IComponent) {
             this.setState({ isComponentEditDialogOpen: true, componentToEdit: component });
         }
 
@@ -371,23 +373,23 @@ const OpenAPIOverview = withStyles(styles)(
     },
 );
 
-function mapConnectionsToListItems(connections: IConnectionEntity[]): IListItem<IConnectionColumnNames>[] {
+function mapConnectionsToListItems(connections: IConnection[]): IListItem<IConnectionColumnNames>[] {
     return connections.map((connection) => ({
         id: getUniqueIdFromConnection(connection),
         columns: {
             name: connection.name,
             description: connection.description,
-            host: connection.parameters.find((p) => p.name === 'host'),
-            port: connection.parameters.find((p) => p.name === 'port'),
-            baseUrl: connection.parameters.find((p) => p.name === 'baseUrl'),
-            tls: connection.parameters.find((p) => p.name === 'tls'),
-            environment: connection.environment,
+            host: '', // connection.parameters.find((p) => p.name === 'host'),
+            port: '', // connection.parameters.find((p) => p.name === 'port'),
+            baseUrl: '', // connection.parameters.find((p) => p.name === 'baseUrl'),
+            tls: '', // connection.parameters.find((p) => p.name === 'tls'),
+            environment: '',
         },
         isHandled: connection.isHandled,
     }));
 }
 
-function mapComponentsToListItems(components: IComponentEntity[]): IListItem<IComponentColumnNames>[] {
+function mapComponentsToListItems(components: IComponent[]): IListItem<IComponentColumnNames>[] {
     return components.map((component) => ({
         id: getUniqueIdFromComponent(component),
         columns: {
