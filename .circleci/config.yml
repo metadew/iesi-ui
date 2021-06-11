@@ -52,19 +52,20 @@ jobs:
         working_directory: .
 
     - run:
-        name: Compress builc
+        name: Compress build
         command: |
           cd build
           zip -r iesi-ui-dist-v1.2.1.zip ./*
           mv iesi-ui-dist-v1.2.1.zip ..
           tar -czvf iesi-ui-dist-v1.2.1.tar.gz ./*
           mv iesi-ui-dist-v1.2.1.tar.gz ..
+          pwd
 
     - store_artifacts:
-        path: ~/repo/build/iesi-ui-dist-v1.2.1.zip
+        path: ~/project/build/iesi-ui-dist-v1.2.1.zip
 
     - store_artifacts:
-        path: ~/repo/build/iesi-ui-dist-v1.2.1.tar.gz
+        path: ~/project/build/iesi-ui-dist-v1.2.1.tar.gz
 
     - save_cache:
         key: node-deps-v1-{{ .Branch }}-{{ checksum "./package-lock.json" }}
