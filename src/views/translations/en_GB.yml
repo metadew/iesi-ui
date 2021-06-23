@@ -353,7 +353,7 @@ components:
       update_current_version: Update current version
       save_as_new_version: Save as new version
     side:
-      toggle_button: Components Details
+      toggle_button: Details
       component_type: Type
       component_description: Description
       component_name: Name
