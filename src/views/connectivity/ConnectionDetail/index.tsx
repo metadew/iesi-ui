@@ -233,6 +233,11 @@ const ConnectionDetail = withStyles(styles)(
                                         error={requiredFieldsState.type.showError}
                                         // eslint-disable-next-line max-len
                                         helperText={requiredFieldsState.type.showError && 'Connection type is a required field'}
+                                        InputProps={{
+                                            ...params.InputProps,
+                                            readOnly: !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
+                                            disableUnderline: true,
+                                        }}
                                     />
                                 )}
                                 onChange={(
