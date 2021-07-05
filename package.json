@@ -2,7 +2,7 @@
   "name": "iesi-ui",
   "version": "1.2.1",
   "description": "Visual user interface for the IESI automation framework.",
-  "private": true,
+  "private": false,
   "scripts": {
     "start": "craco start",
     "build": "node bin/init/validateEnvConfigForBuild.js --url=$npm_config_url --timeout=$npm_config_timeout && craco build && node bin/init/generateEnvConfigForBuild.js --url=$npm_config_url --timeout=$npm_config_timeout",
