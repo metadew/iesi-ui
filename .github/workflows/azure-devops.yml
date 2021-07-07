@@ -1,0 +1,22 @@
+name: AZURE-BUILD-IESIUI-PIPELINE 
+
+# Run this workflow every time a commit is pushed to develop or a pull request is opened against develop
+on:
+    push:
+        branches:
+            - develop
+    pull_request:
+        branches:
+            - develop
+
+jobs:
+    build:
+        name: Trigger Azure Pipeline
+        runs-on: ubuntu-latest
+        steps:
+            - name: Azure Pipelines Action
+              uses: Azure/pipelines@v1
+              with:
+                  azure-devops-project-url: https://dev.azure.com/IESI/IESI
+                  azure-pipeline-name: 'Build IESI UI'
+                  azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
