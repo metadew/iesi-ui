@@ -235,7 +235,7 @@ const ConnectionDetail = withStyles(styles)(
                                         helperText={requiredFieldsState.type.showError && 'Connection type is a required field'}
                                         InputProps={{
                                             ...params.InputProps,
-                                            readOnly: !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
+                                            readOnly: !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
                                             disableUnderline: true,
                                         }}
                                     />
