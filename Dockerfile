@@ -9,7 +9,7 @@ WORKDIR /app/
 RUN npm install
 RUN npm run init-env-config
 RUN npm rebuild node-sass
-RUN npm run build --url='https://localhost:8080/api' --timeout=10
+RUN npm run build --url='http://localhost:8080/api' --timeout=10
 
 # Stage 2 - Create the runtime image
 FROM nginx
