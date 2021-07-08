@@ -1,1 +1,1 @@
-{"iesi_api_base_url":$API_URL,"iesi_api_timeout_in_seconds":$API_TIMEOUT,"translation_label_overrides":{"en_GB":{}}}
+{"iesi_api_base_url":"$API_URL","iesi_api_timeout_in_seconds":$API_TIMEOUT,"translation_label_overrides":{"en_GB":{}}}
