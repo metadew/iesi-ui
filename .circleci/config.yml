@@ -66,7 +66,3 @@ jobs:
     - store_artifacts:
         path: ./iesi-ui-dist-v1.2.1.tar.gz
 
-    - save_cache:
-        key: node-deps-v1-{{ .Branch }}-{{ checksum "./package-lock.json" }}
-        paths:
-        - ~/project/node_modules
