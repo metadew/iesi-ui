@@ -106,7 +106,6 @@ function EditAction({
     const [condition, setCondition] = useState(action.condition);
     const actionTypes = getAsyncActionTypes(state).data || [];
     const matchingActionType = actionTypes.find((item) => action.type === item.type);
-
     return (
         <Box className={classes.dialog}>
             <Box
@@ -199,7 +198,6 @@ function EditAction({
                 <Box>
                     {matchingActionType.parameters.map((constantParameter) => {
                         const parameter = parameters.find((p) => p.name === constantParameter.name);
-
                         return (
                             <ExpandableParameter
                                 key={constantParameter.name}

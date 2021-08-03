@@ -32,6 +32,17 @@ export default function getMockState({
                     page: 1,
                     sortedColumn: null,
                 },
+                components: {
+                    filters: null,
+                    onlyShowLatestVersion: true,
+                    page: 1,
+                    sortedColumn: null,
+                },
+                connections: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                },
                 executions: {
                     filters: null,
                     page: 1,
@@ -48,6 +59,20 @@ export default function getMockState({
         },
         entities: {
             actionTypes: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            connectionTypes: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            componentTypes: {
                 data: null,
                 fetch: {
                     status: AsyncStatus.Initial,
@@ -100,7 +125,42 @@ export default function getMockState({
                     error: null,
                 },
             },
+            components: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            componentDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            connections: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            connectionDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
             environments: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            openapi: {
                 data: null,
                 fetch: {
                     status: AsyncStatus.Initial,

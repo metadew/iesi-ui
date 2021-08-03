@@ -55,13 +55,14 @@ interface IPublicProps<ColumnNames> {
         showDraggableCell: boolean;
         showIndexCell: boolean;
     };
+    isHandled?: boolean;
 }
 
 const useStyles = makeStyles(({ palette, shape, typography, spacing }: Theme) => ({
-    tableRow: {
-        background: palette.background.paper,
+    tableRow: (props: { isHandled: boolean }) => ({
+        background: props.isHandled ? THEME_COLORS.GREY_LIGHT : palette.background.paper,
         height: '100%',
-    },
+    }),
     tableRowElevated: {
         boxShadow: '0 2px 22px rgba(0, 0, 0, .10)',
         borderRadius: shape.borderRadius,
@@ -172,8 +173,9 @@ export default function GenericTableRow<ColumnNames>({
     className,
     index: rowIndex,
     placeholderProps,
+    isHandled,
 }: IPublicProps<ColumnNames>) {
-    const classes = useStyles();
+    const classes = useStyles({ isHandled });
     const [anchorEl, setAnchorEl] = useState(null);
     const [compactViewActive, setCompactViewActive] = useState(compactView);
     const open = Boolean(anchorEl);
@@ -213,7 +215,7 @@ export default function GenericTableRow<ColumnNames>({
                     ) : renderPlaceholderCellContent()}
                 </TableCell>
             )}
-            { isPlaceholder ? renderPlaceholderCells() : renderDataCells() }
+            { isPlaceholder ? renderPlaceholderCells() : renderDataCells()}
             {listActions && (
                 <>
                     <TableCell

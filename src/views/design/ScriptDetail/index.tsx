@@ -8,6 +8,7 @@ import {
     Edit as EditIcon,
     Delete as DeleteIcon,
     Visibility,
+    FileCopy,
 } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import { IScript, IScriptAction } from 'models/state/scripts.models';
@@ -46,6 +47,7 @@ import DetailActions from './DetailActions';
 import AddAction from './AddAction';
 import EditAction from './EditAction';
 import EditLabels from './EditLabels';
+import DuplicateActionDialog from './DuplicateActionDialog';
 
 interface IColumnNames {
     type: string;
@@ -91,6 +93,7 @@ interface IComponentState {
     requiredFieldsState: TRequiredFieldsState<IScript>;
     scriptIdToExecute: string;
     actionIndexToDelete: number;
+    actionIndexToDuplicate: number;
 }
 
 const ScriptDetail = withStyles(styles)(
@@ -102,6 +105,7 @@ const ScriptDetail = withStyles(styles)(
                 isAddOpen: false,
                 isConfirmDeleteScriptOpen: false,
                 actionIndexToDelete: null,
+                actionIndexToDuplicate: null,
                 isSaveDialogOpen: false,
                 editActionIndex: -1,
                 newScriptDetail: {
@@ -143,6 +147,7 @@ const ScriptDetail = withStyles(styles)(
             this.updateScript = this.updateScript.bind(this);
 
             this.getEditAction = this.getEditAction.bind(this);
+            this.getDuplicateAction = this.getDuplicateAction.bind(this);
 
             this.isCreateScriptRoute = this.isCreateScriptRoute.bind(this);
 
@@ -172,14 +177,13 @@ const ScriptDetail = withStyles(styles)(
                 newScriptDetail,
                 scriptIdToExecute,
                 actionIndexToDelete,
+                actionIndexToDuplicate,
             } = this.state;
-
             // State
             const scriptDetailAsyncStatus = getAsyncScriptDetail(state).fetch.status;
             const actionTypesAsyncStatus = getAsyncActionTypes(state).fetch.status;
             const translator = getTranslator(state);
             const deleteStatus = getAsyncScriptDetail(this.props.state).remove.status;
-
             const editAction = this.getEditAction();
 
             return (
@@ -213,6 +217,13 @@ const ScriptDetail = withStyles(styles)(
                         onClose={() => this.setState({ actionIndexToDelete: null })}
                         onConfirm={this.onDeleteAction}
                     />
+                    <DuplicateActionDialog
+                        action={this.getDuplicateAction()}
+                        open={actionIndexToDuplicate !== null}
+                        onClose={() => this.setState({ actionIndexToDuplicate: null })}
+                        onDuplicate={(action) => this.onAddActions([action])}
+                    />
+
                     <ExecuteScriptDialog
                         scriptUniqueId={getUniqueIdFromScript(newScriptDetail)}
                         open={!!scriptIdToExecute}
@@ -399,15 +410,15 @@ const ScriptDetail = withStyles(styles)(
                                     />,
                                 },
                             )}
-                            // Hide schedules for now
-                            // {
-                            //     label: <Translate msg="scripts.detail.side.schedules.title" />,
-                            //     value: <EditSchedules
-                            //         schedules={newScriptDetail && newScriptDetail.scheduling
-                            //             ? newScriptDetail.scheduling : []}
-                            //         onChange={(scheduling) => this.updateScript({ scheduling })}
-                            //     />,
-                            // },
+                        // Hide schedules for now
+                        // {
+                        //     label: <Translate msg="scripts.detail.side.schedules.title" />,
+                        //     value: <EditSchedules
+                        //         schedules={newScriptDetail && newScriptDetail.scheduling
+                        //             ? newScriptDetail.scheduling : []}
+                        //         onChange={(scheduling) => this.updateScript({ scheduling })}
+                        //     />,
+                        // },
                         />
                     </Box>
                 </Box>
@@ -558,10 +569,22 @@ const ScriptDetail = withStyles(styles)(
                                         this.setState({ actionIndexToDelete: index });
                                     },
                                     hideAction: () => !this.isCreateScriptRoute()
-                                    && !(newScriptDetail && checkAuthority(
-                                        SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                        newScriptDetail.securityGroupName,
-                                    )),
+                                        && !(newScriptDetail && checkAuthority(
+                                            SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                            newScriptDetail.securityGroupName,
+                                        )),
+                                },
+                                {
+                                    icon: <FileCopy />,
+                                    label: translator('scripts.detail.main.list.item.actions.duplicate'),
+                                    onClick: (index: number) => {
+                                        this.setState({ actionIndexToDuplicate: index });
+                                    },
+                                    hideAction: () => !this.isCreateScriptRoute()
+                                        && !(newScriptDetail && checkAuthority(
+                                            SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                            newScriptDetail.securityGroupName,
+                                        )),
                                 },
                             )}
                             onOrder={(list) => {
@@ -650,6 +673,16 @@ const ScriptDetail = withStyles(styles)(
             }
         }
 
+        private getDuplicateAction() {
+            const { newScriptDetail, actionIndexToDuplicate } = this.state;
+            if (actionIndexToDuplicate === -1) {
+                return null;
+            }
+            return newScriptDetail
+                && newScriptDetail.actions
+                && clone(newScriptDetail.actions[actionIndexToDuplicate]);
+        }
+
         private getEditAction() {
             const { newScriptDetail, editActionIndex } = this.state;
             if (editActionIndex === -1) {
@@ -672,6 +705,7 @@ const ScriptDetail = withStyles(styles)(
         private updateScriptInStateIfNewScriptWasLoaded(prevProps: TProps & IObserveProps) {
             const scriptDetail = getAsyncScriptDetail(this.props.state).data;
             const prevScriptDetail = getAsyncScriptDetail(prevProps.state).data;
+            // eslint-disable-next-line max-len
             if (getUniqueIdFromScript(scriptDetail) !== getUniqueIdFromScript(prevScriptDetail)) {
                 const scriptDetailDeepClone = clone(scriptDetail);
                 // eslint-disable-next-line react/no-did-update-set-state

@@ -254,6 +254,12 @@ function ExecutionDetail({ state }: IObserveProps) {
         const executionListItems: IDescriptionListItem[] = [
             ...(scriptExecutionData && asyncExecutionRequest.status === AsyncStatus.Success) ? [
                 {
+                    label: translator('script_reports.detail.side.execution.requestor.label'),
+                    value: scriptExecutionData.username
+                        ? scriptExecutionData.username
+                        : <Translate msg="script_reports.detail.side.execution.requestor.none" />,
+                },
+                {
                     label: translator('script_reports.detail.side.execution.script_name.label'),
                     value: scriptExecutionData.scriptName,
                 },

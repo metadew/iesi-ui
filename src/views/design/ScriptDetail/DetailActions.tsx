@@ -18,12 +18,12 @@ import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/com
 import { IScript } from 'models/state/scripts.models';
 
 interface IPublicProps {
-    onPlay: () => void;
-    onDelete: () => void;
-    onAdd: () => void;
-    onSave: () => void;
-    onViewReport: () => void;
-    onExport: () => void;
+    onPlay?: () => void;
+    onDelete?: () => void;
+    onAdd?: () => void;
+    onSave?: () => void;
+    onViewReport?: () => void;
+    onExport?: () => void;
     isCreateRoute?: boolean;
     newScriptDetail?: IScript;
 }
