@@ -47,7 +47,7 @@ jobs:
         name: Run tests
 
     - run:
-        command: CI=false npm run build --url=http://localhost:8080
+        command: CI=false npm run build --url=http://localhost:8080/api
         name: Compile project
         working_directory: .
 
