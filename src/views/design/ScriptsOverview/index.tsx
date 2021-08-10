@@ -553,7 +553,7 @@ function mapScriptsToListItems(scripts: IScript[]): IListItem<IColumnNames>[] {
         columns: {
             name: script.name,
             securityGroupName: script.securityGroupName,
-            description: script.description,
+            description: script.version.description,
             version: (script.version.number).toString(),
             labels: {
                 value: script.labels.length,

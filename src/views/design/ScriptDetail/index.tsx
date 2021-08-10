@@ -332,9 +332,14 @@ const ScriptDetail = withStyles(styles)(
                                 label={translator('scripts.detail.side.script_description')}
                                 multiline
                                 rows={8}
-                                value={newScriptDetail && newScriptDetail.description
-                                    ? newScriptDetail.description : ''}
-                                onChange={(e) => this.updateScript({ description: e.target.value })}
+                                value={newScriptDetail && newScriptDetail.version.description
+                                    ? newScriptDetail.version.description : ''}
+                                onChange={(e) => this.updateScript({ 
+                                    version: {
+                                        ...newScriptDetail.version,
+                                        description: e.target.value,
+                                    },
+                                })}
                                 InputProps={{
                                     readOnly: !this.isCreateScriptRoute() && newScriptDetail && !checkAuthority(
                                         SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
