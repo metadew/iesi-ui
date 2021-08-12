@@ -7,7 +7,7 @@ export function fetchEnvironments() {
     return get<IEnvironment[], IListResponse<IEnvironment>>({
         isIesiApi: true,
         needsAuthentication: true,
-        url: API_URLS.ENVIRONMENTS,
+        url: API_URLS.ENVIRONMENTS_LIST,
         // eslint-disable-next-line no-underscore-dangle
         mapResponse: ({ data }) => data._embedded,
     });

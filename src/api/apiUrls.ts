@@ -8,6 +8,7 @@ const API_URLS = {
     COMPONENT_TYPES: '/component-types',
 
     ENVIRONMENTS: '/environments',
+    ENVIRONMENTS_LIST: '/environments/list',
     ENVIRONMENT_BY_NAME: '/environments/{name}',
 
     EXECUTION_REQUESTS: '/execution-requests',
