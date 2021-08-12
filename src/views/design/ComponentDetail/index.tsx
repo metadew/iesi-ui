@@ -751,7 +751,9 @@ function getParametersFromComponentDetails(detail: IComponent, componentType: IC
             mandatory: parameter.mandatory,
         },
         canBeDeleted: !parameter.mandatory,
-    }));
+    }))
+        .sort((a: any, b: any) => a.columns.name.localeCompare(b.columns.name));
+
     return newListItems;
 }
 
