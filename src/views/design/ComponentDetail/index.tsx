@@ -730,7 +730,6 @@ const ComponentDetail = withStyles(styles)(
 function getParametersFromComponentDetails(detail: IComponent, componentType: IComponentType) {
     const parameters = detail
         ? detail.parameters
-            .sort((a: any, b: any) => a.name.localeCompare(b.name))
             .map((parameter) => ({
                 name: parameter.name,
                 value: parameter.value,
@@ -741,7 +740,17 @@ function getParametersFromComponentDetails(detail: IComponent, componentType: IC
             }))
         : [];
 
-    const newListItems: IListItem<IComponentParameter>[] = parameters.map((parameter, index) => ({
+    const mandatoryParams = parameters
+        .filter((p: any) => p.mandatory)
+        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+
+    const nonMandatoryParams = parameters
+        .filter((p: any) => !p.mandatory)
+        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+
+    const allParams = mandatoryParams.concat(nonMandatoryParams);
+
+    const newListItems: IListItem<IComponentParameter>[] = allParams.map((parameter, index) => ({
         id: index,
         columns: {
             name: parameter.name.concat(parameter.mandatory ? '*' : ''),
@@ -754,7 +763,6 @@ function getParametersFromComponentDetails(detail: IComponent, componentType: IC
         },
         canBeDeleted: !parameter.mandatory,
     }));
-
     return newListItems;
 }
 
