@@ -334,7 +334,7 @@ const ScriptDetail = withStyles(styles)(
                                 rows={8}
                                 value={newScriptDetail && newScriptDetail.version.description
                                     ? newScriptDetail.version.description : ''}
-                                onChange={(e) => this.updateScript({ 
+                                onChange={(e) => this.updateScript({
                                     version: {
                                         ...newScriptDetail.version,
                                         description: e.target.value,

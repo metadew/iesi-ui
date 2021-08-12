@@ -752,6 +752,7 @@ function getParametersFromComponentDetails(detail: IComponent, componentType: IC
         },
         canBeDeleted: !parameter.mandatory,
     }));
+
     return newListItems;
 }
 
