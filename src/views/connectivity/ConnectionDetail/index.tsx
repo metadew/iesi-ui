@@ -592,7 +592,18 @@ function getParametersFromEnvironment(environment: IConnectionEnvironment, conne
                     : false,
             }))
         : [];
-    const newListItems: IListItem<IConnectionParameter>[] = parameters.map((parameter, index) => ({
+
+    const mandatoryParams = parameters
+        .filter((p: any) => p.mandatory)
+        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+
+    const nonMandatoryParams = parameters
+        .filter((p: any) => !p.mandatory)
+        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+
+    const allParams = mandatoryParams.concat(nonMandatoryParams);
+
+    const newListItems: IListItem<IConnectionParameter>[] = allParams.map((parameter, index) => ({
         id: index,
         columns: {
             name: parameter.name.concat(parameter.mandatory ? '*' : ''),
