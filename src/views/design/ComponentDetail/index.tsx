@@ -599,8 +599,10 @@ const ComponentDetail = withStyles(styles)(
                     onEdit={(newParameter) => {
                         const newParameters = isAddingParameter
                             ? [...newComponentDetail.parameters, newParameter] : [...newComponentDetail.parameters];
-                        newParameters[editParameterIndex] = newParameter;
-                        const orderedParameters = orderParameter(newParameters, matchingComponentType);
+                        if (!isAddingParameter) {
+                            newParameters[editParameterIndex] = newParameter;
+                        }
+                        const orderedParameters = orderComponentParameters(newParameters, matchingComponentType);
                         this.updateComponent({
                             parameters: orderedParameters,
                         });
@@ -689,7 +691,7 @@ const ComponentDetail = withStyles(styles)(
                     const componentTypes = getAsyncComponentTypes(this.props.state).data || [];
                     const matchingComponentType = componentTypes
                         .find((item) => item.type === componentDetailDeepClone.type);
-                    const orderedParameters = orderParameter(
+                    const orderedParameters = orderComponentParameters(
                         componentDetailDeepClone.parameters, matchingComponentType,
                     );
                     // eslint-disable-next-line react/no-did-update-set-state
@@ -806,7 +808,7 @@ function mapComponentTypeToListItems(items: IComponentType[]) {
     return listItems;
 }
 
-function orderParameter(items: IComponentParameter[], componentType: IComponentType) {
+function orderComponentParameters(items: IComponentParameter[], componentType: IComponentType) {
     const parameters = items
         ? items
             .map((parameter) => ({
@@ -824,7 +826,7 @@ function orderParameter(items: IComponentParameter[], componentType: IComponentT
     const nonMandatoryParameters = parameters
         .filter((p: any) => !p.mandatory)
         .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
-    const orderedParameters = mandatoryParameters
+    const orderedParameters: IComponentParameter[] = mandatoryParameters
         .concat(nonMandatoryParameters)
         .map((p: any) => ({
             name: p.name,
