@@ -583,7 +583,6 @@ const ComponentDetail = withStyles(styles)(
                 name: '',
                 value: '',
             };
-
             const componentTypes = getAsyncComponentTypes(state).data || [];
             const matchingComponentType = componentTypes
                 .find((item) => item.type === newComponentDetail?.type);
@@ -599,13 +598,38 @@ const ComponentDetail = withStyles(styles)(
                     isCreateParameter={isAddingParameter}
                     onEdit={(newParameter) => {
                         const newParameters = [...newComponentDetail.parameters];
+                        console.log(`newParameters: ${JSON.stringify(newParameters)}`);
+                        console.log(`newParameter: ${JSON.stringify(newParameter)}`);
                         if (!isAddingParameter) {
                             newParameters[editParameterIndex] = newParameter;
                         }
+                        const parameters = newParameters
+                            ? newParameters
+                                .map((p) => ({
+                                    name: p.name,
+                                    value: p.value,
+                                    mandatory: matchingComponentType
+                                        ? matchingComponentType.parameters
+                                            .some((type) => type.name === p.name && type.mandatory === true)
+                                        : false,
+                                }))
+                            : [];
+                        const mandatoryParameters = parameters
+                            .filter((p: any) => p.mandatory)
+                            .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+                        const nonMandatoryParameters = parameters
+                            .filter((p: any) => !p.mandatory)
+                            .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+                        const parameters2 = mandatoryParameters
+                            .concat(nonMandatoryParameters)
+                            .map((p: any) => ({
+                                name: p.name,
+                                value: p.value,
+                            }));
                         this.updateComponent({
                             parameters: isAddingParameter
                                 ? [...newComponentDetail.parameters, newParameter]
-                                : newParameters,
+                                : parameters2,
                         });
                     }}
                 />
@@ -689,9 +713,36 @@ const ComponentDetail = withStyles(styles)(
             if (getUniqueIdFromComponent(componentDetail) !== getUniqueIdFromComponent(prevComponentDetail)) {
                 const componentDetailDeepClone = clone(componentDetail);
                 if (componentDetailDeepClone) {
+                    const componentTypes = getAsyncComponentTypes(this.props.state).data || [];
+                    const matchingComponentType = componentTypes
+                        .find((item) => item.type === componentDetailDeepClone.type);
+                    const parameters = componentDetailDeepClone
+                        ? componentDetailDeepClone.parameters
+                            .map((parameter) => ({
+                                name: parameter.name,
+                                value: parameter.value,
+                                mandatory: matchingComponentType
+                                    ? matchingComponentType.parameters
+                                        .some((type) => type.name === parameter.name && type.mandatory === true)
+                                    : false,
+                            }))
+                        : [];
+                    const mandatoryParameters = parameters
+                        .filter((p: any) => p.mandatory)
+                        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+                    const nonMandatoryParameters = parameters
+                        .filter((p: any) => !p.mandatory)
+                        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+                    const parameters2 = mandatoryParameters.concat(nonMandatoryParameters);
                     // eslint-disable-next-line react/no-did-update-set-state
                     this.setState({
-                        newComponentDetail: componentDetailDeepClone,
+                        newComponentDetail: {
+                            ...componentDetailDeepClone,
+                            parameters: parameters2.map((parameter: any) => ({
+                                name: parameter.name,
+                                value: parameter.value,
+                            })),
+                        },
                     });
                 }
             }
@@ -740,17 +791,17 @@ function getParametersFromComponentDetails(detail: IComponent, componentType: IC
             }))
         : [];
 
-    const mandatoryParams = parameters
-        .filter((p: any) => p.mandatory)
-        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+    // const mandatoryParameters = parameters
+    //     .filter((p: any) => p.mandatory)
+    //     .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
 
-    const nonMandatoryParams = parameters
-        .filter((p: any) => !p.mandatory)
-        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+    // const nonMandatoryParameters = parameters
+    //     .filter((p: any) => !p.mandatory)
+    //     .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
 
-    const allParams = mandatoryParams.concat(nonMandatoryParams);
+    // const allParameters = mandatoryParameters.concat(nonMandatoryParameters);
 
-    const newListItems: IListItem<IComponentParameter>[] = allParams.map((parameter, index) => ({
+    const newListItems: IListItem<IComponentParameter>[] = parameters.map((parameter, index) => ({
         id: index,
         columns: {
             name: parameter.name.concat(parameter.mandatory ? '*' : ''),
