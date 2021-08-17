@@ -597,22 +597,13 @@ const ComponentDetail = withStyles(styles)(
                     mandatory={mandatory}
                     isCreateParameter={isAddingParameter}
                     onEdit={(newParameter) => {
-                        if (!isAddingParameter) {
-                            const newParameters = [...newComponentDetail.parameters];
-                            newParameters[editParameterIndex] = newParameter;
-                            const orderedParameters = orderComponentParameter(newParameters, matchingComponentType);
-                            this.updateComponent({
-                                parameters: orderedParameters,
-                            });
-                        }
-                        if (isAddingParameter) {
-                            const newParameters = [...newComponentDetail.parameters, newParameter];
-                            newParameters[editParameterIndex] = newParameter;
-                            const orderedParameters = orderComponentParameter(newParameters, matchingComponentType);
-                            this.updateComponent({
-                                parameters: orderedParameters,
-                            });
-                        }
+                        const newParameters = isAddingParameter
+                            ? [...newComponentDetail.parameters, newParameter] : [...newComponentDetail.parameters];
+                        newParameters[editParameterIndex] = newParameter;
+                        const orderedParameters = orderParameter(newParameters, matchingComponentType);
+                        this.updateComponent({
+                            parameters: orderedParameters,
+                        });
                     }}
                 />
             );
@@ -698,7 +689,9 @@ const ComponentDetail = withStyles(styles)(
                     const componentTypes = getAsyncComponentTypes(this.props.state).data || [];
                     const matchingComponentType = componentTypes
                         .find((item) => item.type === componentDetailDeepClone.type);
-                    const orderedParameters = orderComponent(componentDetailDeepClone, matchingComponentType);
+                    const orderedParameters = orderParameter(
+                        componentDetailDeepClone.parameters, matchingComponentType,
+                    );
                     // eslint-disable-next-line react/no-did-update-set-state
                     this.setState({
                         newComponentDetail: {
@@ -813,36 +806,9 @@ function mapComponentTypeToListItems(items: IComponentType[]) {
     return listItems;
 }
 
-function orderComponentParameter(items: IComponentParameter[], componentType: IComponentType) {
+function orderParameter(items: IComponentParameter[], componentType: IComponentType) {
     const parameters = items
         ? items
-            .map((parameter) => ({
-                name: parameter.name,
-                value: parameter.value,
-                mandatory: componentType
-                    ? componentType.parameters
-                        .some((type) => type.name === parameter.name && type.mandatory === true)
-                    : false,
-            }))
-        : [];
-    const mandatoryParameters = parameters
-        .filter((p: any) => p.mandatory)
-        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
-    const nonMandatoryParameters = parameters
-        .filter((p: any) => !p.mandatory)
-        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
-    const orderedParameters = mandatoryParameters
-        .concat(nonMandatoryParameters)
-        .map((p: any) => ({
-            name: p.name,
-            value: p.value,
-        }));
-    return orderedParameters;
-}
-
-function orderComponent(items: IComponent, componentType: IComponentType) {
-    const parameters = items
-        ? items.parameters
             .map((parameter) => ({
                 name: parameter.name,
                 value: parameter.value,
