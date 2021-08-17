@@ -600,61 +600,17 @@ const ComponentDetail = withStyles(styles)(
                         if (!isAddingParameter) {
                             const newParameters = [...newComponentDetail.parameters];
                             newParameters[editParameterIndex] = newParameter;
-                            const parameters = newParameters
-                                ? newParameters
-                                    .map((p) => ({
-                                        name: p.name,
-                                        value: p.value,
-                                        mandatory: matchingComponentType
-                                            ? matchingComponentType.parameters
-                                                .some((type) => type.name === p.name && type.mandatory === true)
-                                            : false,
-                                    }))
-                                : [];
-                            const mandatoryParameters = parameters
-                                .filter((p: any) => p.mandatory)
-                                .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
-                            const nonMandatoryParameters = parameters
-                                .filter((p: any) => !p.mandatory)
-                                .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
-                            const sortedParameters = mandatoryParameters
-                                .concat(nonMandatoryParameters)
-                                .map((p: any) => ({
-                                    name: p.name,
-                                    value: p.value,
-                                }));
+                            const orderedParameters = orderComponentParameter(newParameters, matchingComponentType);
                             this.updateComponent({
-                                parameters: sortedParameters,
+                                parameters: orderedParameters,
                             });
                         }
                         if (isAddingParameter) {
                             const newParameters = [...newComponentDetail.parameters, newParameter];
                             newParameters[editParameterIndex] = newParameter;
-                            const parameters = newParameters
-                                ? newParameters
-                                    .map((p) => ({
-                                        name: p.name,
-                                        value: p.value,
-                                        mandatory: matchingComponentType
-                                            ? matchingComponentType.parameters
-                                                .some((type) => type.name === p.name && type.mandatory === true)
-                                            : false,
-                                    }))
-                                : [];
-                            const mandatoryParameters = parameters
-                                .filter((p: any) => p.mandatory)
-                                .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
-                            const nonMandatoryParameters = parameters
-                                .filter((p: any) => !p.mandatory)
-                                .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
-                            const sortedParameters = mandatoryParameters
-                                .concat(nonMandatoryParameters)
-                                .map((p: any) => ({
-                                    name: p.name,
-                                    value: p.value,
-                                }));
+                            const orderedParameters = orderComponentParameter(newParameters, matchingComponentType);
                             this.updateComponent({
-                                parameters: sortedParameters,
+                                parameters: orderedParameters,
                             });
                         }
                     }}
@@ -742,34 +698,12 @@ const ComponentDetail = withStyles(styles)(
                     const componentTypes = getAsyncComponentTypes(this.props.state).data || [];
                     const matchingComponentType = componentTypes
                         .find((item) => item.type === componentDetailDeepClone.type);
-                    const parameters = componentDetailDeepClone
-                        ? componentDetailDeepClone.parameters
-                            .map((parameter) => ({
-                                name: parameter.name,
-                                value: parameter.value,
-                                mandatory: matchingComponentType
-                                    ? matchingComponentType.parameters
-                                        .some((type) => type.name === parameter.name && type.mandatory === true)
-                                    : false,
-                            }))
-                        : [];
-                    const mandatoryParameters = parameters
-                        .filter((p: any) => p.mandatory)
-                        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
-                    const nonMandatoryParameters = parameters
-                        .filter((p: any) => !p.mandatory)
-                        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
-                    const parameters2 = mandatoryParameters
-                        .concat(nonMandatoryParameters)
-                        .map((parameter: any) => ({
-                            name: parameter.name,
-                            value: parameter.value,
-                        }));
+                    const orderedParameters = orderComponent(componentDetailDeepClone, matchingComponentType);
                     // eslint-disable-next-line react/no-did-update-set-state
                     this.setState({
                         newComponentDetail: {
                             ...componentDetailDeepClone,
-                            parameters: parameters2,
+                            parameters: orderedParameters,
                         },
                     });
                 }
@@ -818,17 +752,6 @@ function getParametersFromComponentDetails(detail: IComponent, componentType: IC
                     : false,
             }))
         : [];
-
-    // const mandatoryParameters = parameters
-    //     .filter((p: any) => p.mandatory)
-    //     .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
-
-    // const nonMandatoryParameters = parameters
-    //     .filter((p: any) => !p.mandatory)
-    //     .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
-
-    // const allParameters = mandatoryParameters.concat(nonMandatoryParameters);
-
     const newListItems: IListItem<IComponentParameter>[] = parameters.map((parameter, index) => ({
         id: index,
         columns: {
@@ -888,6 +811,60 @@ function mapComponentTypeToListItems(items: IComponentType[]) {
             return listItem;
         }) : [];
     return listItems;
+}
+
+function orderComponentParameter(items: IComponentParameter[], componentType: IComponentType) {
+    const parameters = items
+        ? items
+            .map((parameter) => ({
+                name: parameter.name,
+                value: parameter.value,
+                mandatory: componentType
+                    ? componentType.parameters
+                        .some((type) => type.name === parameter.name && type.mandatory === true)
+                    : false,
+            }))
+        : [];
+    const mandatoryParameters = parameters
+        .filter((p: any) => p.mandatory)
+        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+    const nonMandatoryParameters = parameters
+        .filter((p: any) => !p.mandatory)
+        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+    const orderedParameters = mandatoryParameters
+        .concat(nonMandatoryParameters)
+        .map((p: any) => ({
+            name: p.name,
+            value: p.value,
+        }));
+    return orderedParameters;
+}
+
+function orderComponent(items: IComponent, componentType: IComponentType) {
+    const parameters = items
+        ? items.parameters
+            .map((parameter) => ({
+                name: parameter.name,
+                value: parameter.value,
+                mandatory: componentType
+                    ? componentType.parameters
+                        .some((type) => type.name === parameter.name && type.mandatory === true)
+                    : false,
+            }))
+        : [];
+    const mandatoryParameters = parameters
+        .filter((p: any) => p.mandatory)
+        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+    const nonMandatoryParameters = parameters
+        .filter((p: any) => !p.mandatory)
+        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+    const orderedParameters = mandatoryParameters
+        .concat(nonMandatoryParameters)
+        .map((p: any) => ({
+            name: p.name,
+            value: p.value,
+        }));
+    return orderedParameters;
 }
 
 export default observe([
