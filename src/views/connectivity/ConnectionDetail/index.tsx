@@ -481,10 +481,13 @@ const ConnectionDetail = withStyles(styles)(
                     mandatory={mandatory}
                     isCreateParameter={isAddingParameter}
                     onEdit={(newParameter) => {
-                        const newParameters = [...newConnectionDetail.environments[environmentIndex].parameters];
+                        const newParameters = isAddingParameter
+                            ? [...newConnectionDetail.environments[environmentIndex].parameters, newParameter]
+                            : [...newConnectionDetail.environments[environmentIndex].parameters];
                         if (!isAddingParameter) {
                             newParameters[editParameterIndex] = newParameter;
                         }
+                        const orderedConnections = orderConnectionParameters(newParameters, matchingconnectionTypes)
                         this.updateConnection({
                             environments: isAddingParameter
                                 ? newConnectionDetail.environments.map((env, index) => {
@@ -631,6 +634,33 @@ function mapConnectionTypeToListItems(items: IConnectionType[]): IListItem<IConn
             type: item.type,
         },
     })) : [];
+}
+
+function orderConnectionParameters(items: IConnectionParameter[], connectionType: IConnectionType) {
+    const parameters = items
+        ? items
+            .map((parameter) => ({
+                name: parameter.name,
+                value: parameter.value,
+                mandatory: connectionType
+                    ? connectionType.parameters
+                        .some((type) => type.name === parameter.name && type.mandatory === true)
+                    : false,
+            }))
+        : [];
+    const mandatoryParameters = parameters
+        .filter((p: any) => p.mandatory)
+        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+    const nonMandatoryParameters = parameters
+        .filter((p: any) => !p.mandatory)
+        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+    const orderedParameters: IConnectionParameter[] = mandatoryParameters
+        .concat(nonMandatoryParameters)
+        .map((p: any) => ({
+            name: p.name,
+            value: p.value,
+        }));
+    return orderedParameters;
 }
 
 export default observe([
