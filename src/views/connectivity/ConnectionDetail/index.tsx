@@ -457,8 +457,8 @@ const ConnectionDetail = withStyles(styles)(
         private renderEditParameterContent() {
             const {
                 newConnectionDetail,
-                editParameterIndex,
                 environmentIndex,
+                editParameterIndex,
                 isAddingParameter,
             } = this.state;
             const { state } = this.props;
@@ -487,21 +487,18 @@ const ConnectionDetail = withStyles(styles)(
                         if (!isAddingParameter) {
                             newParameters[editParameterIndex] = newParameter;
                         }
-                        const orderedConnections = orderConnectionParameters(newParameters, matchingconnectionTypes)
+                        const orderedConnections: IConnectionEnvironment[] = newConnectionDetail.environments
+                            .map((environmentDetail: IConnectionEnvironment) => {
+                                const newOrderedParameters: IConnectionParameter[] = orderConnectionParameters(
+                                    environmentDetail.parameters, matchingconnectionTypes,
+                                );
+                                return {
+                                    ...environmentDetail,
+                                    parameters: newOrderedParameters,
+                                };
+                            });
                         this.updateConnection({
-                            environments: isAddingParameter
-                                ? newConnectionDetail.environments.map((env, index) => {
-                                    if (index === environmentIndex) {
-                                        return { ...env, parameters: [...env.parameters, newParameter] };
-                                    }
-                                    return env;
-                                })
-                                : newConnectionDetail.environments.map((env, index) => {
-                                    if (index === environmentIndex) {
-                                        return { ...env, parameters: newParameters };
-                                    }
-                                    return env;
-                                }),
+                            environments: orderedConnections,
                         });
                     }}
                 />
@@ -514,9 +511,24 @@ const ConnectionDetail = withStyles(styles)(
             if (getUniqueIdFromConnection(connectionDetail) !== getUniqueIdFromConnection(prevConnectionDetail)) {
                 const connectionDetailDeepClone = clone(connectionDetail);
                 if (connectionDetailDeepClone) {
+                    const connectionTypes = getAsyncConnectionTypes(this.props.state).data || [];
+                    const matchingConnectionType = connectionTypes
+                        .find((item) => item.type === connectionDetailDeepClone.type);
+                    const orderedEnvironmentDetails: IConnectionEnvironment[] = connectionDetailDeepClone.environments
+                        .map((environmentDetail: IConnectionEnvironment) => {
+                            const newOrderedParameters: IConnectionParameter[] = orderConnectionParameters(
+                                environmentDetail.parameters, matchingConnectionType,
+                            );
+                            return {
+                                ...environmentDetail,
+                                parameters: newOrderedParameters,
+                            };
+                        });
                     this.setState({
-                        newConnectionDetail: connectionDetail,
-                        environmentIndex: connectionDetail.environments[0] ? 0 : -1,
+                        newConnectionDetail: {
+                            ...connectionDetailDeepClone,
+                            environments: orderedEnvironmentDetails,
+                        },
                     });
                 }
             }
