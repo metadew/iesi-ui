@@ -18,6 +18,8 @@ type UserSession = {
     isAuthenticated: () => boolean;
 };
 
+// TODO: move to state (auth)
+
 export const UserSessionContext = React.createContext<Partial<UserSession>>({});
 
 export function UserSessionProvider({ children }: IUserSessionContextProps) {

@@ -27,7 +27,8 @@ const API_URLS = {
     COMPONENT_BY_NAME: '/components/{name}',
     COMPONENT_BY_NAME_VERSION: '/components/{name}/{version}',
 
-    SECURITY_LOGON: '/users/login',
+    USER_LOGON: '/users/login',
+    USER_BY_UUID: '/users/{uuid}',
 
     OPEN_API_TRANSFORM: '/openapi/transform',
 

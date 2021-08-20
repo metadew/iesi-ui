@@ -8,6 +8,7 @@ import { IActionType, IComponentType, IConnectionType } from './constants.models
 import { IOpenAPIEntity } from './openapi.model';
 import { IComponent, IComponentEntity } from './components.model';
 import { IConnectionEntity, IConnection } from './connections.model';
+import { IAuthState } from './auth.models';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ICustomAsyncEntity<Data> extends IAsyncEntity<Data, ITraceableApiError> {}
@@ -41,6 +42,8 @@ export enum ASYNC_ENTITY_KEYS {
     openapiComponentDetail = 'openapiComponentDetail',
     openapiConnections = 'openapiConnections',
     openapiConnectionDetail = 'openapiConnectionDetail',
+
+    authentication = 'authentication'
 }
 
 /* Keep the keys in sync with ASYNC_ENTITY_KEYS !! */

@@ -10,6 +10,7 @@ import { logon } from '../../../api/security/security.api';
 
 function Login() {
     const history = useHistory();
+    // TODO: fetch from state
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [hasSubmitErrors, setHasSubmitErrors] = useState(false);
@@ -27,8 +28,8 @@ function Login() {
                 .then(async (response) => {
                     // eslint-disable-next-line max-len
                     // check for error response
+                    // TODO: set state
                     if (response.accessToken) {
-                        console.log(from);
                         userSession.setAuthenticated(response.accessToken);
                         history.replace(from.pathname);
                     }
