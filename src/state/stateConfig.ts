@@ -31,15 +31,26 @@ export const initialState: IState = {
                 page: 1,
                 sortedColumn: null,
             },
+            components: {
+                filters: null,
+                onlyShowLatestVersion: true,
+                page: 1,
+                sortedColumn: null,
+            },
+            connections: {
+                filters: null,
+                page: 1,
+                sortedColumn: null,
+            },
         },
     },
     auth: {
         // Dummy auth
         username: 'dummy-test-user',
-        permissions: {
-            edit: true,
-            execute: true,
-        },
+        permissions: [{
+            group: 'public',
+            privilege: 'CONNECTIONS_READ',
+        }],
     },
     entities: entitiesConfigManager.getEntitiesInititialState() as unknown as IEntitiesState,
 };

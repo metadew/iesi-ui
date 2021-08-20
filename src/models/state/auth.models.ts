@@ -1,15 +1,62 @@
+export interface IAuthenticationRequest {
+    username: string;
+    password: string;
+}
+
+export interface IAuthenticationResponse {
+    accessToken: string;
+    expiresIn: number;
+}
+
 export interface IAuthState {
     username: string;
-    permissions?: IAccessLevel[];
+    accessToken: string;
+    permissions: IAccessLevel[];
 }
 
-// TODO once authentication mechanism
 export interface IAccessLevel {
-    privilege: PRIVILEGES;
-    securityGroup: string;
+    group: string;
+    privilege: SECURITY_PRIVILEGES;
 }
 
-export enum PRIVILEGES {
+export interface IUserByIdPayload {
+    uuid: string;
+}
+
+export interface IUser {
+    username: string;
+    id: string;
+    enabled: boolean;
+    expired: boolean;
+    credentialsExpired: boolean;
+    locked: boolean;
+    roles: IUserRole[] ;
+}
+
+export interface IUserRole {
+    id: string;
+    name: string;
+    team: IRoleTeam;
+    privileges: IPrivilege[];
+}
+
+export interface IRoleTeam {
+    id: string;
+    name: string;
+    securityGroups: ITeamSecurityGroup[];
+}
+
+export interface ITeamSecurityGroup {
+    id: string;
+    name: string;
+}
+
+export interface IPrivilege {
+    id: string;
+    privilege: string;
+}
+
+export enum SECURITY_PRIVILEGES {
 
     S_SCRIPTS_READ = 'SCRIPTS_READ',
     S_SCRIPTS_WRITE = 'SCRIPTS_WRITE',

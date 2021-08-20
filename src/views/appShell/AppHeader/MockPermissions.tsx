@@ -3,7 +3,7 @@ import { FormControlLabel, Switch, withStyles } from '@material-ui/core';
 import { red, green } from '@material-ui/core/colors';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
-import { IAccessLevel } from 'models/state/auth.models';
+import { IAccessLevel, SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { getStore } from 'state';
 import { getUserPermissions } from 'state/auth/selectors';
 import { updateUserPermission } from 'state/auth/actions';
@@ -28,14 +28,17 @@ const CustomSwitch = withStyles({
 })(Switch);
 
 function MockPermissions({ state }: IObserveProps) {
-    const permissions = ['execute', 'edit'];
+    const permissions = [{group: 'PUBLIC',
+     privilege: SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE}];
     const userPermissions = getUserPermissions(state);
 
     return (
         <div>
             {permissions.map((p) => {
-                const permission = p as keyof IAccessLevel;
-                const hasPermission = userPermissions[permission];
+                // TODO: figure out update of user rights
+                const permission = p as IAccessLevel;
+                // const hasPermission = userPermissions[permission];
+                const hasPermission = true;
 
                 return (
                     <FormControlLabel
