@@ -110,49 +110,6 @@ const styles = ({ palette, typography }: Theme) =>
                 color: palette.primary.main,
             },
         },
-        // expansionPanel: {
-        //     background: 'none',
-        //     boxShadow: 'none',
-        //     borderTop: '2px solid',
-        //     borderTopColor: palette.background.default,
-        //     paddingLeft: spacing(5),
-        //     paddingRight: spacing(1.5),
-        //     '&:before': {
-        //         display: 'none',
-        //     },
-        //     '&.Mui-expanded': {
-        //         margin: 0,
-        //     },
-        // },
-        // expansionPanelLabel: {
-        //     fontSize: typography.pxToRem(18),
-        //     fontWeight: typography.fontWeightBold,
-        // },
-        // expansionPanelSummary: {
-        //     paddingLeft: 0,
-        //     paddingRight: 0,
-        //     minHeight: spacing(6.2),
-        //     '& .MuiExpansionPanelSummary-content': {
-        //         margin: 0,
-        //         alignItems: 'center',
-        //     },
-        //     '& .close-icon': {
-        //         display: 'none',
-        //     },
-        //     '&.Mui-expanded': {
-        //         minHeight: spacing(6.2),
-        //         '& .close-icon': {
-        //             display: 'block',
-        //         },
-        //         '& .open-icon': {
-        //             display: 'none',
-        //         },
-        //     },
-        // },
-        // expansionPanelDetail: {
-        //     paddingLeft: 0,
-        //     paddingRight: spacing(3.5),
-        // },
     });
 
 const filterConfig: FilterConfig<Partial<IColumnNames>> = {
@@ -414,7 +371,7 @@ const ScriptReportsOverview = withStyles(styles)(
                     label: (
                         <Translate msg="script_reports.overview.list.labels.parameters" />
                     ),
-                    className: classes.executionParameters,
+                    className: classes.scriptVersion,
                     hideOnCompactView: true,
                     hide: true,
                     fixedWidth: '10%',
