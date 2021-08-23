@@ -229,6 +229,7 @@ script_reports:
         script_version: Script version
         environment: Environment
         labels: Label
+        run_id: Run Id
       labels:
         environment: Environment
         labels: Labels
