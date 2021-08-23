@@ -110,6 +110,49 @@ const styles = ({ palette, typography }: Theme) =>
                 color: palette.primary.main,
             },
         },
+        // expansionPanel: {
+        //     background: 'none',
+        //     boxShadow: 'none',
+        //     borderTop: '2px solid',
+        //     borderTopColor: palette.background.default,
+        //     paddingLeft: spacing(5),
+        //     paddingRight: spacing(1.5),
+        //     '&:before': {
+        //         display: 'none',
+        //     },
+        //     '&.Mui-expanded': {
+        //         margin: 0,
+        //     },
+        // },
+        // expansionPanelLabel: {
+        //     fontSize: typography.pxToRem(18),
+        //     fontWeight: typography.fontWeightBold,
+        // },
+        // expansionPanelSummary: {
+        //     paddingLeft: 0,
+        //     paddingRight: 0,
+        //     minHeight: spacing(6.2),
+        //     '& .MuiExpansionPanelSummary-content': {
+        //         margin: 0,
+        //         alignItems: 'center',
+        //     },
+        //     '& .close-icon': {
+        //         display: 'none',
+        //     },
+        //     '&.Mui-expanded': {
+        //         minHeight: spacing(6.2),
+        //         '& .close-icon': {
+        //             display: 'block',
+        //         },
+        //         '& .open-icon': {
+        //             display: 'none',
+        //         },
+        //     },
+        // },
+        // expansionPanelDetail: {
+        //     paddingLeft: 0,
+        //     paddingRight: spacing(3.5),
+        // },
     });
 
 const filterConfig: FilterConfig<Partial<IColumnNames>> = {
@@ -129,6 +172,10 @@ const filterConfig: FilterConfig<Partial<IColumnNames>> = {
     labels: {
         label: <Translate msg="script_reports.overview.list.filter.labels" />,
         filterType: FilterType.KeyValue,
+    },
+    runId: {
+        label: <Translate msg="script_reports.overview.list.filter.run_id" />,
+        filterType: FilterType.Search,
     },
 };
 
@@ -363,6 +410,15 @@ const ScriptReportsOverview = withStyles(styles)(
                     hideOnCompactView: true,
                     fixedWidth: '10%',
                 },
+                runId: {
+                    label: (
+                        <Translate msg="script_reports.overview.list.labels.parameters" />
+                    ),
+                    className: classes.executionParameters,
+                    hideOnCompactView: true,
+                    hide: true,
+                    fixedWidth: '10%',
+                },
             };
 
             const asyncExecutionRequestsEntity = getAsyncExecutionRequestsEntity(this.props.state);
@@ -460,6 +516,8 @@ const ScriptReportsOverview = withStyles(styles)(
                         && filters.environment.values[0].toString(),
                     label: filters.labels.values.length > 0
                         && filters.labels.values[0].toString(),
+                    'run-id': filters.runId.values.length > 0
+                        && filters.runId.values[0].toString(),
                 },
                 sort: formatSortQueryParameter(sortedColumn),
             });
@@ -515,6 +573,7 @@ function mapExecutionsToListItems(
                                 </Typography>
                             ),
                         },
+                        runId: scriptExecution.runId ? scriptExecution.runId : '',
                     },
                     data: {
                         runId: scriptExecution.runId,
