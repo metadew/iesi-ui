@@ -462,6 +462,7 @@ const ConnectionDetail = withStyles(styles)(
                 isAddingParameter,
             } = this.state;
             const { state } = this.props;
+            // if editing, get current parameters else (adding new parameter) create an empty parameter
             const parameter = editParameterIndex > -1 ? this.getEditParameter() : {
                 name: '',
                 value: '',
@@ -481,16 +482,24 @@ const ConnectionDetail = withStyles(styles)(
                     mandatory={mandatory}
                     isCreateParameter={isAddingParameter}
                     onEdit={(newParameter) => {
-                        const newParameters = isAddingParameter
-                            ? [...newConnectionDetail.environments[environmentIndex].parameters, newParameter]
-                            : [...newConnectionDetail.environments[environmentIndex].parameters];
-                        if (!isAddingParameter) {
+                        // if adding a new parameter, then the new parameter should be added to the current parameters
+                        // in the correct place
+                        // if editing an existing parameter, then the existing parameter should be edited.
+                        // Note: if the name of the existing parameter
+                        // edited, the existing parameter should be repositioned according to the new name
+                        let newParameters: IConnectionParameter[];
+                        if (isAddingParameter) {
+                            newParameters = [
+                                ...newConnectionDetail.environments[environmentIndex].parameters, newParameter,
+                            ];
+                        } else {
+                            newParameters = [...newConnectionDetail.environments[environmentIndex].parameters];
                             newParameters[editParameterIndex] = newParameter;
                         }
                         const orderedConnections: IConnectionEnvironment[] = newConnectionDetail.environments
                             .map((environmentDetail: IConnectionEnvironment) => {
                                 const newOrderedParameters: IConnectionParameter[] = orderConnectionParameters(
-                                    environmentDetail.parameters, matchingconnectionTypes,
+                                    newParameters, matchingconnectionTypes,
                                 );
                                 return {
                                     ...environmentDetail,
