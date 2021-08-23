@@ -21,6 +21,8 @@ import { getTranslator } from 'state/i18n/selectors';
 import { StateChangeNotification } from 'models/state.models';
 import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import ExpandableParameter from './ExpandableParameter';
+// import { IParameter } from 'models/state/iesiGeneric.models';
+// import { IActionType } from 'models/state/constants.models';
 
 interface IPublicProps {
     action: IScriptAction;
@@ -308,6 +310,33 @@ function EditAction({
         });
         onClose();
     }
+
+    // function orderScriptParameters(items: IParameter[], connectionType: IActionType) {
+    //     const parameters = items
+    //         ? items
+    //             .map((parameter) => ({
+    //                 name: parameter.name,
+    //                 value: parameter.value,
+    //                 mandatory: connectionType
+    //                     ? connectionType.parameters
+    //                         .some((type) => type.name === parameter.name && type.mandatory === true)
+    //                     : false,
+    //             }))
+    //         : [];
+    //     const mandatoryParameters = parameters
+    //         .filter((p: any) => p.mandatory)
+    //         .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+    //     const nonMandatoryParameters = parameters
+    //         .filter((p: any) => !p.mandatory)
+    //         .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+    //     const orderedParameters: IParameter[] = mandatoryParameters
+    //         .concat(nonMandatoryParameters)
+    //         .map((p: any) => ({
+    //             name: p.name,
+    //             value: p.value,
+    //         }));
+    //     return orderedParameters;
+    // }
 }
 
 export default observe<IPublicProps>([StateChangeNotification.I18N_TRANSLATIONS], EditAction);
