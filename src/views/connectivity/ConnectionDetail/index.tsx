@@ -482,11 +482,6 @@ const ConnectionDetail = withStyles(styles)(
                     mandatory={mandatory}
                     isCreateParameter={isAddingParameter}
                     onEdit={(newParameter) => {
-                        // if adding a new parameter, then the new parameter should be added to the current parameters
-                        // in the correct place
-                        // if editing an existing parameter, then the existing parameter should be edited.
-                        // Note: if the name of the existing parameter
-                        // edited, the existing parameter should be repositioned according to the new name
                         let newParameters: IConnectionParameter[];
                         if (isAddingParameter) {
                             newParameters = [
@@ -630,17 +625,19 @@ function getParametersFromEnvironment(environment: IConnectionEnvironment, conne
     return newListItems;
 }
 
-function mapConnectionTypeToListItems(items: IConnectionType[]): IListItem<IConnectionTypeColumnNames, IListData>[] {
-    return items ? items.map((item) => ({
-        id: item.type,
-        columns: {
-            name: item.name,
-            type: item.type,
-        },
-        data: {
-            type: item.type,
-        },
-    })) : [];
+function mapConnectionTypeToListItems(items: IConnectionType[]) {
+    const connectionToList: IListItem<IConnectionTypeColumnNames, IListData>[] = items
+        ? items.map((item) => ({
+            id: item.type,
+            columns: {
+                name: item.name,
+                type: item.type,
+            },
+            data: {
+                type: item.type,
+            },
+        })) : [];
+    return connectionToList;
 }
 
 function orderConnectionParameters(items: IConnectionParameter[], connectionType: IConnectionType) {
