@@ -821,14 +821,14 @@ function orderComponentParameters(items: IComponentParameter[], componentType: I
             }))
         : [];
     const mandatoryParameters = parameters
-        .filter((p: any) => p.mandatory)
-        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+        .filter((p) => p.mandatory)
+        .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
     const nonMandatoryParameters = parameters
-        .filter((p: any) => !p.mandatory)
-        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+        .filter((p) => !p.mandatory)
+        .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
     const orderedParameters: IComponentParameter[] = mandatoryParameters
         .concat(nonMandatoryParameters)
-        .map((p: any) => ({
+        .map((p) => ({
             name: p.name,
             value: p.value,
         }));

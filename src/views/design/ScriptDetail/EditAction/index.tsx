@@ -20,8 +20,7 @@ import { getAsyncActionTypes } from 'state/entities/constants/selectors';
 import { getTranslator } from 'state/i18n/selectors';
 import { StateChangeNotification } from 'models/state.models';
 import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
-import { IConstantParameter } from 'models/state/constants.models';
-import { IActionType } from 'models/state/constants.models';
+import { IConstantParameter, IActionType } from 'models/state/constants.models';
 import ExpandableParameter from './ExpandableParameter';
 
 interface IPublicProps {
@@ -328,14 +327,14 @@ function EditAction({
                 }))
             : [];
         const mandatoryParameters: IConstantParameter[] = constantParameters
-            .filter((p: any) => p.mandatory)
-            .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+            .filter((p) => p.mandatory)
+            .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
         const nonMandatoryParameters: IConstantParameter[] = constantParameters
-            .filter((p: any) => !p.mandatory)
-            .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+            .filter((p) => !p.mandatory)
+            .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
         const orderedParameters: IConstantParameter[] = mandatoryParameters
             .concat(nonMandatoryParameters)
-            .map((p: any) => ({
+            .map((p) => ({
                 name: p.name,
                 description: p.description,
                 type: p.type,

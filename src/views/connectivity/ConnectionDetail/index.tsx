@@ -618,12 +618,12 @@ function getParametersFromEnvironment(environment: IConnectionEnvironment, conne
         : [];
 
     const mandatoryParams = parameters
-        .filter((p: any) => p.mandatory)
-        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+        .filter((p) => p.mandatory)
+        .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
 
     const nonMandatoryParams = parameters
-        .filter((p: any) => !p.mandatory)
-        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+        .filter((p) => !p.mandatory)
+        .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
 
     const allParams = mandatoryParams.concat(nonMandatoryParams);
 
@@ -670,14 +670,14 @@ function orderConnectionParameters(items: IConnectionParameter[], connectionType
             }))
         : [];
     const mandatoryParameters = parameters
-        .filter((p: any) => p.mandatory)
-        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+        .filter((p) => p.mandatory)
+        .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
     const nonMandatoryParameters = parameters
-        .filter((p: any) => !p.mandatory)
-        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+        .filter((p) => !p.mandatory)
+        .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
     const orderedParameters: IConnectionParameter[] = mandatoryParameters
         .concat(nonMandatoryParameters)
-        .map((p: any) => ({
+        .map((p) => ({
             name: p.name,
             value: p.value,
         }));
