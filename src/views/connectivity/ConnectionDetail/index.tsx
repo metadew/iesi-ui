@@ -496,16 +496,9 @@ const ConnectionDetail = withStyles(styles)(
                             newParameters = [...newConnectionDetail.environments[environmentIndex].parameters];
                             newParameters[editParameterIndex] = newParameter;
                         }
-                        const orderedConnections: IConnectionEnvironment[] = newConnectionDetail.environments
-                            .map((environmentDetail: IConnectionEnvironment) => {
-                                const newOrderedParameters: IConnectionParameter[] = orderConnectionParameters(
-                                    newParameters, matchingconnectionTypes,
-                                );
-                                return {
-                                    ...environmentDetail,
-                                    parameters: newOrderedParameters,
-                                };
-                            });
+                        const orderedConnections = orderEnvironmentDetails(
+                            newConnectionDetail, matchingconnectionTypes, newParameters,
+                        );
                         this.updateConnection({
                             environments: orderedConnections,
                         });
@@ -523,16 +516,9 @@ const ConnectionDetail = withStyles(styles)(
                     const connectionTypes = getAsyncConnectionTypes(this.props.state).data || [];
                     const matchingConnectionType = connectionTypes
                         .find((item) => item.type === connectionDetailDeepClone.type);
-                    const orderedEnvironmentDetails: IConnectionEnvironment[] = connectionDetailDeepClone.environments
-                        .map((environmentDetail: IConnectionEnvironment) => {
-                            const newOrderedParameters: IConnectionParameter[] = orderConnectionParameters(
-                                environmentDetail.parameters, matchingConnectionType,
-                            );
-                            return {
-                                ...environmentDetail,
-                                parameters: newOrderedParameters,
-                            };
-                        });
+                    const orderedEnvironmentDetails = orderEnvironmentDetails(
+                        connectionDetailDeepClone, matchingConnectionType,
+                    );
                     this.setState({
                         newConnectionDetail: {
                             ...connectionDetailDeepClone,
@@ -682,6 +668,22 @@ function orderConnectionParameters(items: IConnectionParameter[], connectionType
             value: p.value,
         }));
     return orderedParameters;
+}
+
+function orderEnvironmentDetails(
+    connection: IConnection, connectionType: IConnectionType, connectionParameter?: IConnectionParameter[],
+) {
+    const orderedEnvironmentDetails: IConnectionEnvironment[] = connection.environments
+        .map((environmentDetail) => {
+            const newOrderedParameters: IConnectionParameter[] = orderConnectionParameters(
+                connectionParameter || environmentDetail.parameters, connectionType,
+            );
+            return {
+                ...environmentDetail,
+                parameters: newOrderedParameters,
+            };
+        });
+    return orderedEnvironmentDetails;
 }
 
 export default observe([
