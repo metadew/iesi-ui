@@ -371,10 +371,8 @@ const ScriptReportsOverview = withStyles(styles)(
                     label: (
                         <Translate msg="script_reports.overview.list.labels.parameters" />
                     ),
-                    className: classes.scriptVersion,
                     hideOnCompactView: true,
                     hide: true,
-                    fixedWidth: '10%',
                 },
             };
 
