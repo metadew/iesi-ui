@@ -20,9 +20,9 @@ import { getAsyncActionTypes } from 'state/entities/constants/selectors';
 import { getTranslator } from 'state/i18n/selectors';
 import { StateChangeNotification } from 'models/state.models';
 import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import { IConstantParameter } from 'models/state/constants.models';
+import { IActionType } from 'models/state/constants.models';
 import ExpandableParameter from './ExpandableParameter';
-// import { IParameter } from 'models/state/iesiGeneric.models';
-// import { IActionType } from 'models/state/constants.models';
 
 interface IPublicProps {
     action: IScriptAction;
@@ -108,6 +108,7 @@ function EditAction({
     const [condition, setCondition] = useState(action.condition);
     const actionTypes = getAsyncActionTypes(state).data || [];
     const matchingActionType = actionTypes.find((item) => action.type === item.type);
+    const orderedConstantParameters = orderConstantParameters(matchingActionType.parameters, matchingActionType);
     return (
         <Box className={classes.dialog}>
             <Box
@@ -198,13 +199,14 @@ function EditAction({
                     </Paper>
                 </Box>
                 <Box>
-                    {matchingActionType.parameters.map((constantParameter) => {
+                    {orderedConstantParameters.map((constantParameter) => {
                         const parameter = parameters.find((p) => p.name === constantParameter.name);
                         return (
                             <ExpandableParameter
                                 key={constantParameter.name}
                                 onChange={(value) => {
-                                    const index = parameters.findIndex((p) => p.name === constantParameter.name);
+                                    const index = parameters
+                                        .findIndex((p) => p.name === constantParameter.name);
                                     const newParameters = [...parameters];
                                     if (index === -1) {
                                         newParameters.push({
@@ -311,32 +313,37 @@ function EditAction({
         onClose();
     }
 
-    // function orderScriptParameters(items: IParameter[], connectionType: IActionType) {
-    //     const parameters = items
-    //         ? items
-    //             .map((parameter) => ({
-    //                 name: parameter.name,
-    //                 value: parameter.value,
-    //                 mandatory: connectionType
-    //                     ? connectionType.parameters
-    //                         .some((type) => type.name === parameter.name && type.mandatory === true)
-    //                     : false,
-    //             }))
-    //         : [];
-    //     const mandatoryParameters = parameters
-    //         .filter((p: any) => p.mandatory)
-    //         .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
-    //     const nonMandatoryParameters = parameters
-    //         .filter((p: any) => !p.mandatory)
-    //         .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
-    //     const orderedParameters: IParameter[] = mandatoryParameters
-    //         .concat(nonMandatoryParameters)
-    //         .map((p: any) => ({
-    //             name: p.name,
-    //             value: p.value,
-    //         }));
-    //     return orderedParameters;
-    // }
+    function orderConstantParameters(items: IConstantParameter[], connectionType: IActionType) {
+        const constantParameters = items
+            ? items
+                .map((constantParameter) => ({
+                    name: constantParameter.name,
+                    description: constantParameter.description,
+                    type: constantParameter.type,
+                    mandatory: connectionType
+                        ? connectionType.parameters
+                            .some((type) => type.name === constantParameter.name && type.mandatory === true)
+                        : false,
+                    encrypted: constantParameter.encrypted,
+                }))
+            : [];
+        const mandatoryParameters: IConstantParameter[] = constantParameters
+            .filter((p: any) => p.mandatory)
+            .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+        const nonMandatoryParameters: IConstantParameter[] = constantParameters
+            .filter((p: any) => !p.mandatory)
+            .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
+        const orderedParameters: IConstantParameter[] = mandatoryParameters
+            .concat(nonMandatoryParameters)
+            .map((p: any) => ({
+                name: p.name,
+                description: p.description,
+                type: p.type,
+                mandatory: p.mandatory,
+                encrypted: p.encrypted,
+            }));
+        return orderedParameters;
+    }
 }
 
 export default observe<IPublicProps>([StateChangeNotification.I18N_TRANSLATIONS], EditAction);
