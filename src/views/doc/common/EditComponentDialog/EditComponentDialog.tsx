@@ -145,6 +145,7 @@ function EditComponentDialog({ onClose, open, state, dispatch, component }: IPub
                             return parameter && (
                                 <ExpandableParameter
                                     key={constantParameter.name}
+                                    state={state}
                                     onChange={(value) => {
                                         const index = parameters.findIndex((p) => p.name === constantParameter.name);
                                         const newParameters = [...parameters];

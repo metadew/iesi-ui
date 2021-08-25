@@ -14,8 +14,9 @@ import Tooltip from 'views/common/tooltips/Tooltip';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
-import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import { IScript } from 'models/state/scripts.models';
+import { checkAuthority } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 interface IPublicProps {
     onPlay?: () => void;
@@ -103,7 +104,11 @@ function DetailActions({
     return (
         <Box display="flex" alignItems="center" justifyContent="space-between" marginX={2.2}>
             <Box flex="0 0 auto">
-                {isCreateRoute || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, newScriptDetail.securityGroupName)
+                {isCreateRoute || checkAuthority(
+                    state,
+                    SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                    newScriptDetail.securityGroupName,
+                )
                     ? (
                         <Tooltip
                             title={translator('scripts.detail.main.actions.add_action')}
@@ -125,8 +130,11 @@ function DetailActions({
             <Box flex="0 0 auto">
                 <Paper elevation={0} className={classes.actions}>
                     <Box display="inline" marginRight={1}>
-                        {isCreateRoute
-                            || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, newScriptDetail.securityGroupName)
+                        {isCreateRoute || checkAuthority(
+                            state,
+                            SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                            newScriptDetail.securityGroupName,
+                        )
                             ? (
                                 <Button
                                     variant="contained"
@@ -150,6 +158,7 @@ function DetailActions({
                     ) : (
                         <>
                             {checkAuthority(
+                                state,
                                 SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_WRITE,
                                 newScriptDetail.securityGroupName,
                             )
@@ -163,6 +172,7 @@ function DetailActions({
                                     </Tooltip>
                                 ) : null}
                             {checkAuthority(
+                                state,
                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                 newScriptDetail.securityGroupName,
                             )
@@ -176,6 +186,7 @@ function DetailActions({
                                     </Tooltip>
                                 ) : null}
                             {checkAuthority(
+                                state,
                                 SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_READ,
                                 newScriptDetail.securityGroupName,
                             )
@@ -189,6 +200,7 @@ function DetailActions({
                                     </Tooltip>
                                 ) : null}
                             {checkAuthority(
+                                state,
                                 SECURITY_PRIVILEGES.S_SCRIPTS_READ,
                                 newScriptDetail.securityGroupName,
                             )

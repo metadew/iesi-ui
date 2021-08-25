@@ -10,6 +10,8 @@ import {
     Visibility,
     FileCopy,
 } from '@material-ui/icons';
+import { checkAuthority } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { Alert } from '@material-ui/lab';
 import { IScript, IScriptAction } from 'models/state/scripts.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -40,7 +42,6 @@ import {
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 // eslint-disable-next-line max-len
-import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import ExecuteScriptDialog from '../common/ExecuteScriptDialog';
 
 import DetailActions from './DetailActions';
@@ -250,6 +251,7 @@ const ScriptDetail = withStyles(styles)(
                                     color="secondary"
                                     disabled={this.isCreateScriptRoute()
                                         || (newScriptDetail && !checkAuthority(
+                                            state,
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                             newScriptDetail.securityGroupName,
                                         ))}
@@ -275,6 +277,7 @@ const ScriptDetail = withStyles(styles)(
                                     color="secondary"
                                     variant="outlined"
                                     disabled={newScriptDetail && !checkAuthority(
+                                        state,
                                         SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                         newScriptDetail.securityGroupName,
                                     )}
@@ -337,6 +340,7 @@ const ScriptDetail = withStyles(styles)(
                                 onChange={(e) => this.updateScript({ description: e.target.value })}
                                 InputProps={{
                                     readOnly: !this.isCreateScriptRoute() && newScriptDetail && !checkAuthority(
+                                        state,
                                         SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                         newScriptDetail.securityGroupName,
                                     ),
@@ -530,6 +534,7 @@ const ScriptDetail = withStyles(styles)(
                     </Box>
                     <Box marginY={1}>
                         <GenericDraggableList
+                            state={state}
                             listItems={listItems}
                             columns={columns}
                             listActions={[].concat(
@@ -541,6 +546,7 @@ const ScriptDetail = withStyles(styles)(
                                     },
                                     hideAction: () =>
                                         !this.isCreateScriptRoute() && !(newScriptDetail && checkAuthority(
+                                            state,
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                             newScriptDetail.securityGroupName,
                                         )),
@@ -554,10 +560,12 @@ const ScriptDetail = withStyles(styles)(
                                     hideAction: () =>
                                         this.isCreateScriptRoute() || !(newScriptDetail
                                             && !checkAuthority(
+                                                state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                                 newScriptDetail.securityGroupName,
                                             )
                                             && checkAuthority(
+                                                state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_READ,
                                                 newScriptDetail.securityGroupName,
                                             )),
@@ -570,6 +578,7 @@ const ScriptDetail = withStyles(styles)(
                                     },
                                     hideAction: () => !this.isCreateScriptRoute()
                                         && !(newScriptDetail && checkAuthority(
+                                            state,
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                             newScriptDetail.securityGroupName,
                                         )),
@@ -582,6 +591,7 @@ const ScriptDetail = withStyles(styles)(
                                     },
                                     hideAction: () => !this.isCreateScriptRoute()
                                         && !(newScriptDetail && checkAuthority(
+                                            state,
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                             newScriptDetail.securityGroupName,
                                         )),

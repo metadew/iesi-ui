@@ -1,12 +1,25 @@
 export interface IAuthState {
     username: string;
+    accessToken: string;
     permissions: IAccessLevel[];
+}
+
+export interface IAccessToken {
+    sub: string;
+    iss: string;
+    exp: number;
+    iat: number;
+    uuid: string;
 }
 
 // TODO once authentication mechanism
 export interface IAccessLevel {
     group: string;
     privilege: SECURITY_PRIVILEGES;
+}
+
+export interface IUserByIdPayload {
+    uuid: string;
 }
 
 export interface IUser {
@@ -16,7 +29,7 @@ export interface IUser {
     expired: boolean;
     credentialsExpired: boolean;
     locked: boolean;
-    roles: IUserRole[] ;
+    roles: IUserRole[];
 }
 
 export interface IUserRole {

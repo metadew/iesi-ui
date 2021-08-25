@@ -14,12 +14,15 @@ import { ExpandMore } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { IParameter } from 'models/state/iesiGeneric.models';
 import { IConstantParameter } from 'models/state/constants.models';
-import { SECURITY_PRIVILEGES, checkAuthorityGeneral } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
+import { IState } from 'models/state.models';
 
 interface IPublicProps {
     onChange: (value: string) => void;
     parameter: IParameter;
     constantParameter: IConstantParameter;
+    state: IState;
 }
 
 const useStyles = makeStyles(({ palette, spacing }) => ({
@@ -55,7 +58,7 @@ const useStyles = makeStyles(({ palette, spacing }) => ({
     },
 }));
 
-export default function ExpandableParameter({ parameter, onChange, constantParameter }: IPublicProps) {
+export default function ExpandableParameter({ parameter, onChange, constantParameter, state }: IPublicProps) {
     const classes = useStyles();
 
     if (!constantParameter) {
@@ -92,7 +95,7 @@ export default function ExpandableParameter({ parameter, onChange, constantParam
                         value={parameter ? parameter.value : ''}
                         onChange={(e) => onChange(e.target.value)}
                         multiline
-                        readOnly={!checkAuthorityGeneral(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)}
+                        readOnly={!checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)}
                     />
                 </FormControl>
             </ExpansionPanelDetails>

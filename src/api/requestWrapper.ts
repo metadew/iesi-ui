@@ -73,6 +73,7 @@ export const requestWrapper = getRequestWrapper<ICustomApiConfig, ITraceableApiE
 export function get<Result, ResponseData = Result>(
     config: IGetRequestConfig<Result, ResponseData> & ICustomApiConfig,
 ): Promise<Result> {
+    // TODO: if needsAuthentication get IAUTHSTATE and include accessToken
     if (config.isIesiApi && config.needsAuthentication) {
         return requestWrapper.get({ ...config,
             headers: {

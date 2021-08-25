@@ -4,7 +4,6 @@ import GenericFilter from 'views/common/list/GenericFilter';
 import { Box, Button, Theme, Typography, WithStyles, withStyles, createStyles } from '@material-ui/core';
 import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import { checkAuthorityGeneral, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import { getComponentsListFilter } from 'state/ui/selectors';
 import GenericSort from 'views/common/list/GenericSort';
@@ -19,6 +18,8 @@ import {
     SortOrder,
     SortType,
 } from 'models/list.models';
+import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import { IComponent, IComponentColumnNamesBase } from 'models/state/components.model';
 import GenericList from 'views/common/list/GenericList';
@@ -154,7 +155,7 @@ const ComponentsOverview = withStyles(styles)(
                                         />
                                     </Box>
                                     {
-                                        checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                        checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
                                         && (
                                             <Box display="flex" alignItems="center">
                                                 <Box flex="0 0 auto" mr="8px" width="250px">
@@ -281,7 +282,7 @@ const ComponentsOverview = withStyles(styles)(
                                                 });
                                             },
                                             hideAction: () => (
-                                                !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                                !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
                                             ),
                                         }, {
                                             icon: <Visibility />,
@@ -299,14 +300,14 @@ const ComponentsOverview = withStyles(styles)(
                                                 });
                                             },
                                             hideAction: () => (
-                                                checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                                checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
                                             ),
                                         }, {
                                             icon: <Delete />,
                                             label: translator('components.overview.list.actions.delete'),
                                             onClick: this.setComponentToDelete,
                                             hideAction: () => (
-                                                !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                                !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
                                             ),
                                         },
                                     )}

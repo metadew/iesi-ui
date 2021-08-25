@@ -1,6 +1,6 @@
+import { IUser, IUserByIdPayload } from 'models/state/auth.models';
 import { get, post } from '../requestWrapper';
 import API_URLS from '../apiUrls';
-import { IUser, IUserByIdPayload } from 'models/state/auth.models';
 
 interface IAuthenticationRequest {
     username: string;
@@ -24,7 +24,6 @@ export function logon(credentials: IAuthenticationRequest) {
         body: credentials,
     });
 }
-
 
 export function fetchUserByUuid({ uuid }: IUserByIdPayload) {
     return get<IUser>({

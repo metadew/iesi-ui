@@ -57,6 +57,7 @@ export default function getMockState({
                 group: 'PUBLIC',
                 privilege: SECURITY_PRIVILEGES.S_CONNECTIONS_READ,
             }],
+            accessToken: '',
         },
         entities: {
             actionTypes: {

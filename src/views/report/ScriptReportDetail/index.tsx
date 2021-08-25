@@ -24,11 +24,12 @@ import {
     triggerFetchScriptExecutionDetail,
     triggerResetScriptExecutionDetail,
 } from 'state/entities/scriptExecutions/triggers';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
+import { checkAuthority } from 'state/auth/selectors';
 import { getAsyncScriptExecutionDetail } from 'state/entities/scriptExecutions/selectors';
 import { ListColumns, IListItem, ISortedColumn, SortOrder, SortType } from 'models/list.models';
 import { THEME_COLORS } from 'config/themes/colors';
 import sortListItems from 'utils/list/sortListItems';
-import { checkAuthority, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import ScriptExecutionDetailActions from './ScriptExecutionDetailActions';
 import ShowLabels from './ShowLabels';
 import { IExecutionDetailPathParams } from './shared';
@@ -226,6 +227,7 @@ function ExecutionDetail({ state }: IObserveProps) {
                                 },
                             })}
                             hidden={!checkAuthority(
+                                state,
                                 SECURITY_PRIVILEGES.S_SCRIPTS_READ,
                                 scriptExecutionData.securityGroupName,
                             )}

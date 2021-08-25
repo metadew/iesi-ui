@@ -4,11 +4,7 @@ import { red, green } from '@material-ui/core/colors';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { IAccessLevel } from 'models/state/auth.models';
-import { getStore } from 'state';
 import { getUserPermissions } from 'state/auth/selectors';
-import { updateUserPermission } from 'state/auth/actions';
-
-const { dispatch } = getStore();
 
 const CustomSwitch = withStyles({
     switchBase: {
@@ -35,15 +31,14 @@ function MockPermissions({ state }: IObserveProps) {
         <div>
             {permissions.map((p) => {
                 const permission = p as keyof IAccessLevel;
-                const hasPermission = userPermissions[permission];
+                // const hasPermission = userPermissions[permission];
 
                 return (
                     <FormControlLabel
                         key={`switch-${permission}-permission`}
                         control={(
                             <CustomSwitch
-                                checked={hasPermission}
-                                onClick={() => dispatch(updateUserPermission({ permission }))}
+                                // checked={hasPermission}
                                 color="default"
                             />
                         )}

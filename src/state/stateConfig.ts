@@ -47,10 +47,8 @@ export const initialState: IState = {
     auth: {
         // Dummy auth
         username: 'dummy-test-user',
-        permissions: [{
-            group: 'public',
-            permission: 'CONNECTIONS_READ',
-        }],
+        accessToken: '',
+        permissions: [],
     },
     entities: entitiesConfigManager.getEntitiesInititialState() as unknown as IEntitiesState,
 };

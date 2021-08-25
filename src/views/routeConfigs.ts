@@ -26,7 +26,6 @@ import ScriptDetail from './design/ScriptDetail';
 import ScriptReportsTemplate from './report/ScriptReportsTemplate';
 import ScriptReportsOverview from './report/ScriptReportsOverview';
 import ScriptReportDetail from './report/ScriptReportDetail';
-import Login from './appShell/AppLogIn/LoginPage';
 import OpenAPI from './doc/OpenAPIOverview';
 import OpenAPITemplate from './doc/OpenAPITemplate';
 import ComponentsTemplate from './design/ComponentsTemplate';
@@ -35,6 +34,7 @@ import ComponentDetail from './design/ComponentDetail';
 import ConnectionTemplate from './connectivity/ConnectionTemplate';
 import ConnectionOverview from './connectivity/ConnectionOverview';
 import ConnectionDetail from './connectivity/ConnectionDetail';
+import LoginView from './appShell/AppLogIn/LoginPage';
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
@@ -45,7 +45,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_LOGIN,
     path: '/login',
     exact: true,
-    component: Login,
+    component: LoginView,
 }, {
     routeKey: ROUTE_KEYS.R_SCRIPTS,
     path: '/scripts',
