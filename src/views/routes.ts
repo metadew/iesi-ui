@@ -133,6 +133,8 @@ export function redirectTo({ routeKey, params, queryParams }: INavigateToRoute) 
     }
 }
 
+// Create copy of above and provide simple url
+
 export function registerRouteObserver(onRoute: (routeLocation: IRouteLocation) => void) {
     routeObserverManager.registerObserver({
         onNotify: onRoute,

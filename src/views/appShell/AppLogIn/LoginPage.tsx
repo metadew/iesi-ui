@@ -45,13 +45,14 @@ const LoginView = withStyles(styles)(
     class extends React.Component<TProps & IObserveProps, ILoginState> {
         public constructor(props: TProps & IObserveProps) {
             super(props);
-            //TODO: include redirection info for successful authentication
+            // TODO: include redirection info for successful authentication
             // use redirect to?
             this.state = {
                 hasSubmitErrors: false,
                 username: '',
                 password: '',
             };
+            // retrieve calling url from query param using https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
             this.setHasSubmitErrors = this.setHasSubmitErrors.bind(this);
             this.handleSubmit = this.handleSubmit.bind(this);
             this.renderAlert = this.renderAlert.bind(this);
@@ -151,7 +152,7 @@ const LoginView = withStyles(styles)(
                                         auth: { permissions: extractAccessLevelFromUser(user) },
                                     }));
 
-                                    // userSession.setAuthenticated(response.accessToken);
+                                    // TODO: do redirectTo(...)
                                     history.replace(from.pathname + from.search);
                                 })
                                 .catch((error) => {
