@@ -118,6 +118,12 @@ interface IScriptState {
     loadDocDialogOpen: boolean;
 }
 
+const defaultSortedColumn: ISortedColumn<IColumnNames> = {
+    name: 'name',
+    sortOrder: SortOrder.Descending,
+    sortType: SortType.String,
+};
+
 type TProps = WithStyles<typeof styles>;
 
 const ScriptsOverview = withStyles(styles)(
@@ -146,9 +152,18 @@ const ScriptsOverview = withStyles(styles)(
             this.closeDeleteScriptDialogAfterSuccessfulDelete = this.closeDeleteScriptDialogAfterSuccessfulDelete.bind(this);
 
             this.fetchScriptsWithFilterAndPagination = this.fetchScriptsWithFilterAndPagination.bind(this);
+            this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
 
             this.onLoadDocDialogOpen = this.onLoadDocDialogOpen.bind(this);
             this.onLoadDocDialogClose = this.onLoadDocDialogClose.bind(this);
+        }
+
+        public componentDidMount() {
+            const { dispatch } = this.props;
+            const initialFilters = this.combineFiltersFromUrlAndCurrentFilters();
+
+            this.fetchScriptsWithFilterAndPagination({ newListFilters: initialFilters, newPage: 1 });
+            dispatch(setScriptsListFilter({ filters: initialFilters }));
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
@@ -482,6 +497,36 @@ const ScriptsOverview = withStyles(styles)(
             dispatch(setScriptsListFilter({ filters: listFilters }));
         }
 
+        private combineFiltersFromUrlAndCurrentFilters() {
+            const { state } = this.props;
+            const filterFromState = getScriptsListFilter(state);
+            const searchParams = new URLSearchParams(window.location.search);
+            const defaultFilters = filterFromState.filters || getIntialFiltersFromFilterConfig(filterConfig);
+            const hasValidUrlParams = Array.from(searchParams.keys()).some((r) =>
+                Object.keys(filterConfig).includes(r));
+
+            if (hasValidUrlParams) {
+                // reset filters in redux state & only set url params
+                const filtersByUrlSearchParams = getIntialFiltersFromFilterConfig(filterConfig);
+                Array.from(searchParams.keys()).forEach(
+                    (searchParamKey: string) => {
+                        if (Object.keys(filterConfig).includes(searchParamKey)) {
+                            const filterValue = searchParams.get(searchParamKey);
+                            if (
+                                !filtersByUrlSearchParams[searchParamKey as keyof IColumnNames]
+                                    .values.includes(filterValue)
+                            ) {
+                                filtersByUrlSearchParams[searchParamKey as keyof IColumnNames].values.push(filterValue);
+                            }
+                        }
+                    },
+                );
+                return filtersByUrlSearchParams;
+            }
+
+            return defaultFilters;
+        }
+
         private fetchScriptsWithFilterAndPagination({
             newPage,
             newListFilters,
@@ -504,7 +549,7 @@ const ScriptsOverview = withStyles(styles)(
             const page = newListFilters ? 1 : newPage || pageData.number;
             const onlyShowLatestVersion = isSet(newOnlyShowLatestVersion)
                 ? newOnlyShowLatestVersion : filtersFromState.onlyShowLatestVersion;
-            const sortedColumn = newSortedColumn || filtersFromState.sortedColumn;
+            const sortedColumn = newSortedColumn || filtersFromState.sortedColumn || defaultSortedColumn;
 
             triggerFetchScripts({
                 pagination: { page },

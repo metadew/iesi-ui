@@ -130,6 +130,10 @@ const filterConfig: FilterConfig<Partial<IColumnNames>> = {
         label: <Translate msg="script_reports.overview.list.filter.labels" />,
         filterType: FilterType.KeyValue,
     },
+    runId: {
+        label: <Translate msg="script_reports.overview.list.filter.run_id" />,
+        filterType: FilterType.Search,
+    },
 };
 
 const sortActions: SortActions<Partial<IColumnNames>> = {
@@ -363,6 +367,13 @@ const ScriptReportsOverview = withStyles(styles)(
                     hideOnCompactView: true,
                     fixedWidth: '10%',
                 },
+                runId: {
+                    label: (
+                        <Translate msg="script_reports.overview.list.labels.parameters" />
+                    ),
+                    hideOnCompactView: true,
+                    hide: true,
+                },
             };
 
             const asyncExecutionRequestsEntity = getAsyncExecutionRequestsEntity(this.props.state);
@@ -460,6 +471,8 @@ const ScriptReportsOverview = withStyles(styles)(
                         && filters.environment.values[0].toString(),
                     label: filters.labels.values.length > 0
                         && filters.labels.values[0].toString(),
+                    'run-id': filters.runId.values.length > 0
+                        && filters.runId.values[0].toString(),
                 },
                 sort: formatSortQueryParameter(sortedColumn),
             });
@@ -515,6 +528,7 @@ function mapExecutionsToListItems(
                                 </Typography>
                             ),
                         },
+                        runId: scriptExecution.runId ? scriptExecution.runId : '',
                     },
                     data: {
                         runId: scriptExecution.runId,

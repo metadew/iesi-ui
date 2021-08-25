@@ -14,7 +14,7 @@ function Login() {
     const [password, setPassword] = useState('');
     const [hasSubmitErrors, setHasSubmitErrors] = useState(false);
     // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/41674
-    const { from } = useLocation().state as any || { from: { pathname: '/' } };
+    const { from } = useLocation().state as any || { from: { pathname: '/', search: '' } };
     const userSession = useContext(UserSessionContext);
 
     const handleSubmit = () => {
@@ -28,9 +28,8 @@ function Login() {
                     // eslint-disable-next-line max-len
                     // check for error response
                     if (response.accessToken) {
-                        console.log(from);
                         userSession.setAuthenticated(response.accessToken);
-                        history.replace(from.pathname);
+                        history.replace(from.pathname + from.search);
                     }
                 })
                 .catch((error) => {
