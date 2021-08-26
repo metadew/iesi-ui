@@ -41,9 +41,6 @@ import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 // eslint-disable-next-line max-len
 import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
-// import { IParameter } from 'models/state/iesiGeneric.models';
-import { IActionType } from 'models/state/constants.models';
-import { IParameter } from 'models/state/iesiGeneric.models';
 import ExecuteScriptDialog from '../common/ExecuteScriptDialog';
 
 import DetailActions from './DetailActions';
@@ -335,9 +332,14 @@ const ScriptDetail = withStyles(styles)(
                                 label={translator('scripts.detail.side.script_description')}
                                 multiline
                                 rows={8}
-                                value={newScriptDetail && newScriptDetail.description
-                                    ? newScriptDetail.description : ''}
-                                onChange={(e) => this.updateScript({ description: e.target.value })}
+                                value={newScriptDetail && newScriptDetail.version.description
+                                    ? newScriptDetail.version.description : ''}
+                                onChange={(e) => this.updateScript({
+                                    version: {
+                                        ...newScriptDetail.version,
+                                        description: e.target.value,
+                                    },
+                                })}
                                 InputProps={{
                                     readOnly: !this.isCreateScriptRoute() && newScriptDetail && !checkAuthority(
                                         SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
@@ -707,24 +709,12 @@ const ScriptDetail = withStyles(styles)(
 
         private updateScriptInStateIfNewScriptWasLoaded(prevProps: TProps & IObserveProps) {
             const scriptDetail = getAsyncScriptDetail(this.props.state).data;
-            console.log(`scriptDetail : ${JSON.stringify(scriptDetail)}`);
             const prevScriptDetail = getAsyncScriptDetail(prevProps.state).data;
             // eslint-disable-next-line max-len
             if (getUniqueIdFromScript(scriptDetail) !== getUniqueIdFromScript(prevScriptDetail)) {
                 const scriptDetailDeepClone = clone(scriptDetail);
-                if (scriptDetailDeepClone) {
-                    const actionTypes = getAsyncActionTypes(this.props.state).data || [];
-                    const orderedScriptDetails = orderScriptDetails(
-                        scriptDetailDeepClone, actionTypes,
-                    );
-                    // eslint-disable-next-line react/no-did-update-set-state
-                    this.setState({
-                        newScriptDetail: {
-                            ...scriptDetailDeepClone,
-                            actions: orderedScriptDetails,
-                        },
-                    });
-                }
+                // eslint-disable-next-line react/no-did-update-set-state
+                this.setState({ newScriptDetail: scriptDetailDeepClone });
             }
         }
 
@@ -780,51 +770,6 @@ function getSortedListItemsFromScriptDetail(detail: IScript) {
             }))
         : [];
     return newListItems;
-}
-
-function orderScriptParameters(items: IParameter[], connectionType: IActionType) {
-    const parameters: any = items
-        ? items
-            .map((action: any) => ({
-                name: action.name,
-                value: action.value,
-                mandatory: connectionType
-                    ? connectionType.parameters
-                        .some((type) => type.name === action.name && type.mandatory === true)
-                    : false,
-            }))
-        : [];
-    const mandatoryParameters = parameters
-        .filter((p: any) => p.mandatory)
-        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
-    const nonMandatoryParameters = parameters
-        .filter((p: any) => !p.mandatory)
-        .sort((a: any, b: any) => a.name.toLowerCase().localeCompare(b.name));
-    const orderedParameters: IScriptAction[] = mandatoryParameters
-        .concat(nonMandatoryParameters)
-        .map((p: any) => ({
-            name: p.name,
-            value: p.value,
-        }));
-    return orderedParameters;
-}
-
-function orderScriptDetails(
-    script: IScript, actionType: IActionType[],
-) {
-    const orderedScriptActions = script.actions
-        .map((actionDetail) => {
-            const matchingActionType = actionType
-                .find((item) => item.type === actionDetail.type);
-            const newOrderedScriptActions = orderScriptParameters(
-                actionDetail.parameters, matchingActionType,
-            );
-            return {
-                ...actionDetail,
-                actions: newOrderedScriptActions,
-            };
-        });
-    return orderedScriptActions;
 }
 
 export default observe([

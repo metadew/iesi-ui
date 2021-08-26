@@ -20,6 +20,7 @@ import { getAsyncActionTypes } from 'state/entities/constants/selectors';
 import { getTranslator } from 'state/i18n/selectors';
 import { StateChangeNotification } from 'models/state.models';
 import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import { IConstantParameter, IActionType } from 'models/state/constants.models';
 import ExpandableParameter from './ExpandableParameter';
 
 interface IPublicProps {
@@ -106,6 +107,7 @@ function EditAction({
     const [condition, setCondition] = useState(action.condition);
     const actionTypes = getAsyncActionTypes(state).data || [];
     const matchingActionType = actionTypes.find((item) => action.type === item.type);
+    const orderedConstantParameters = orderConstantParameters(matchingActionType.parameters, matchingActionType);
     return (
         <Box className={classes.dialog}>
             <Box
@@ -196,7 +198,7 @@ function EditAction({
                     </Paper>
                 </Box>
                 <Box>
-                    {matchingActionType.parameters.map((constantParameter) => {
+                    {orderedConstantParameters.map((constantParameter) => {
                         const parameter = parameters.find((p) => p.name === constantParameter.name);
                         return (
                             <ExpandableParameter
@@ -308,6 +310,38 @@ function EditAction({
             errorExpected: errorExpectedChecked,
         });
         onClose();
+    }
+
+    function orderConstantParameters(items: IConstantParameter[], connectionType: IActionType) {
+        const constantParameters = items
+            ? items
+                .map((constantParameter) => ({
+                    name: constantParameter.name,
+                    description: constantParameter.description,
+                    type: constantParameter.type,
+                    mandatory: connectionType
+                        ? connectionType.parameters
+                            .some((type) => type.name === constantParameter.name && type.mandatory === true)
+                        : false,
+                    encrypted: constantParameter.encrypted,
+                }))
+            : [];
+        const mandatoryParameters: IConstantParameter[] = constantParameters
+            .filter((p) => p.mandatory)
+            .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
+        const nonMandatoryParameters: IConstantParameter[] = constantParameters
+            .filter((p) => !p.mandatory)
+            .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
+        const orderedParameters: IConstantParameter[] = mandatoryParameters
+            .concat(nonMandatoryParameters)
+            .map((p) => ({
+                name: p.name,
+                description: p.description,
+                type: p.type,
+                mandatory: p.mandatory,
+                encrypted: p.encrypted,
+            }));
+        return orderedParameters;
     }
 }
 
