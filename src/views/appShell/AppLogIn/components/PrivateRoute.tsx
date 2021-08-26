@@ -15,7 +15,6 @@ interface IPrivateRouteProps extends RouteProps {
 
 const PrivateRoute = (props: IPrivateRouteProps) => {
     const { component: Component, children, state, ...rest } = props;
-
     return (
         <Route
             {...rest}
@@ -29,7 +28,7 @@ const PrivateRoute = (props: IPrivateRouteProps) => {
                 ) : (
                     <Redirect
                         to={{
-                            pathname: '/login',
+                            pathname: `/login?url=${routeProps.location}`,
                             state: { from: routeProps.location },
                         }}
                     />

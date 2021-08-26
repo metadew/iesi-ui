@@ -53,6 +53,9 @@ const LoginView = withStyles(styles)(
                 password: '',
             };
             // retrieve calling url from query param using https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
+            console.log(window.location.search);
+            var searchParams = new URLSearchParams(window.location.search);
+            searchParams.forEach((searchParam) => console.log(searchParam));
             this.setHasSubmitErrors = this.setHasSubmitErrors.bind(this);
             this.handleSubmit = this.handleSubmit.bind(this);
             this.renderAlert = this.renderAlert.bind(this);
