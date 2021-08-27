@@ -469,10 +469,10 @@ const ConnectionDetail = withStyles(styles)(
             };
 
             const connectionTypes = getAsyncConnectionTypes(state).data || [];
-            const matchingconnectionTypes = connectionTypes
+            const matchingConnectionType = connectionTypes
                 .find((item) => item.type === newConnectionDetail?.type);
-            const mandatory = matchingconnectionTypes
-                ? matchingconnectionTypes.parameters
+            const mandatory = matchingConnectionType
+                ? matchingConnectionType.parameters
                     .some((item) => item.name === parameter.name && item.mandatory)
                 : false;
             return (
@@ -491,8 +491,8 @@ const ConnectionDetail = withStyles(styles)(
                             newParameters = [...newConnectionDetail.environments[environmentIndex].parameters];
                             newParameters[editParameterIndex] = newParameter;
                         }
-                        const orderedConnections = orderEnvironmentDetails(
-                            newConnectionDetail, matchingconnectionTypes, newParameters,
+                        const orderedConnections = orderConnectionDetails(
+                            newConnectionDetail, matchingConnectionType, newParameters,
                         );
                         this.updateConnection({
                             environments: orderedConnections,
@@ -511,7 +511,7 @@ const ConnectionDetail = withStyles(styles)(
                     const connectionTypes = getAsyncConnectionTypes(this.props.state).data || [];
                     const matchingConnectionType = connectionTypes
                         .find((item) => item.type === connectionDetailDeepClone.type);
-                    const orderedEnvironmentDetails = orderEnvironmentDetails(
+                    const orderedEnvironmentDetails = orderConnectionDetails(
                         connectionDetailDeepClone, matchingConnectionType,
                     );
                     this.setState({
@@ -598,17 +598,17 @@ function getParametersFromEnvironment(environment: IConnectionEnvironment, conne
             }))
         : [];
 
-    const mandatoryParams = parameters
+    const mandatoryParameters = parameters
         .filter((p) => p.mandatory)
         .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
 
-    const nonMandatoryParams = parameters
+    const nonMandatoryParameters = parameters
         .filter((p) => !p.mandatory)
         .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
 
-    const allParams = mandatoryParams.concat(nonMandatoryParams);
+    const allParameters = mandatoryParameters.concat(nonMandatoryParameters);
 
-    const newListItems: IListItem<IConnectionParameter>[] = allParams.map((parameter, index) => ({
+    const newListItems: IListItem<IConnectionParameter>[] = allParameters.map((parameter, index) => ({
         id: index,
         columns: {
             name: parameter.name.concat(parameter.mandatory ? '*' : ''),
@@ -667,7 +667,7 @@ function orderConnectionParameters(items: IConnectionParameter[], connectionType
     return orderedParameters;
 }
 
-function orderEnvironmentDetails(
+function orderConnectionDetails(
     connection: IConnection, connectionType: IConnectionType, connectionParameter?: IConnectionParameter[],
 ) {
     const orderedEnvironmentDetails: IConnectionEnvironment[] = connection.environments
