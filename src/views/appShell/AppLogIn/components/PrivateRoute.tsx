@@ -18,8 +18,11 @@ const PrivateRoute = (props: IPrivateRouteProps) => {
     return (
         <Route
             {...rest}
-            render={(routeProps) =>
-                (isAuthenticated(state) ? (
+            render={(routeProps) => {
+                const { pathname, search } = routeProps.location as any || { pathname: '/', search: '' };
+                console.log(state);
+                console.log(isAuthenticated(state));
+                return (isAuthenticated(state) ? (
                     Component ? (
                         <Component {... routeProps} />
                     ) : (
@@ -28,11 +31,15 @@ const PrivateRoute = (props: IPrivateRouteProps) => {
                 ) : (
                     <Redirect
                         to={{
-                            pathname: `/login?url=${routeProps.location}`,
+                            pathname: '/login',
+                            search: `?url=${encodeURIComponent(
+                                `${pathname}${search}`,
+                            )}`,
                             state: { from: routeProps.location },
                         }}
                     />
-                ))}
+                ));
+            }}
         />
     );
 };

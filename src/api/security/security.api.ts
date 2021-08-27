@@ -1,7 +1,6 @@
 import { IUser, IUserByIdPayload } from 'models/state/auth.models';
 import { get, post } from '../requestWrapper';
 import API_URLS from '../apiUrls';
-import configuredStore from 'state/setup/configuredStore';
 
 interface IAuthenticationRequest {
     username: string;
@@ -30,7 +29,6 @@ export function fetchUserByUuid({ uuid }: IUserByIdPayload) {
     return get<IUser>({
         isIesiApi: true,
         needsAuthentication: true,
-        accessToken: configuredStore.getState().auth.accessToken,
         url: API_URLS.USER_BY_UUID,
         pathParams: {
             uuid,

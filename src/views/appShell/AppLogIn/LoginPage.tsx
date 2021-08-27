@@ -7,9 +7,9 @@ import { Button, Container, Typography, Box, createStyles, Theme, WithStyles, wi
 import TextInput from 'views/common/input/TextInput';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { Alert } from '@material-ui/lab';
+import { redirectToPath } from 'views/routes';
 import { ReactComponent as IesiLogo } from './logo.svg';
 import { fetchUserByUuid, logon } from '../../../api/security/security.api';
-// import { redirectTo, redirectToPath } from 'views/routes';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -36,10 +36,16 @@ const styles = ({ palette, typography }: Theme) =>
 
 type TProps = WithStyles<typeof styles>;
 
+interface IRedirectUri {
+    pathname: string;
+    search: string;
+}
+
 interface ILoginState {
     hasSubmitErrors: boolean;
     username: string;
     password: string;
+    redirectUri: IRedirectUri;
 }
 
 const LoginView = withStyles(styles)(
@@ -48,16 +54,24 @@ const LoginView = withStyles(styles)(
             super(props);
             // TODO: include redirection info for successful authentication
             // use redirect to?
+            const searchParams = new URLSearchParams(window.location.search);
+            const redirectUri = searchParams.get('url') || '/';
+            console.log(redirectUri.split('?'));
+            const pathname: string = redirectUri.split('?')[0] || '/';
+            const search: string = redirectUri.split('?')[1] || '';
+            console.log(pathname);
+            console.log(search);
             this.state = {
                 hasSubmitErrors: false,
                 username: '',
                 password: '',
+                redirectUri: {
+                    pathname,
+                    search,
+                },
             };
             // retrieve calling url from query param using
             // https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
-            console.log(window.location.search);
-            const searchParams = new URLSearchParams(window.location.search);
-            searchParams.forEach((searchParam) => console.log(searchParam));
             this.setHasSubmitErrors = this.setHasSubmitErrors.bind(this);
             this.handleSubmit = this.handleSubmit.bind(this);
             this.renderAlert = this.renderAlert.bind(this);
@@ -123,7 +137,7 @@ const LoginView = withStyles(styles)(
         }
 
         private handleSubmit = () => {
-            const { username, password } = this.state;
+            const { username, password, redirectUri } = this.state;
             if (username !== '' && password !== '') {
                 this.setHasSubmitErrors(false);
 
@@ -147,6 +161,7 @@ const LoginView = withStyles(styles)(
                                 ...state,
                                 auth: { accessToken: response.accessToken, username: accessToken.sub },
                             }));
+                            sessionStorage.setItem('token', response.accessToken);
                             fetchUserByUuid({ uuid: accessToken.uuid })
                                 .then(async (user: IUser) => {
                                     // Decode JWT token
@@ -157,7 +172,7 @@ const LoginView = withStyles(styles)(
                                     }));
 
                                     // TODO: do redirectTo(...)
-                                    // redirectToPath();
+                                    redirectToPath(redirectUri.pathname, redirectUri.search);
                                     // history.replace(from.pathname + from.search);
                                 })
                                 .catch((error) => {

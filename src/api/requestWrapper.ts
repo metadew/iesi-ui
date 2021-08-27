@@ -78,7 +78,7 @@ export function get<Result, ResponseData = Result>(
         return requestWrapper.get({ ...config,
             headers: {
                 ...config.headers,
-                Authorization: `Bearer ${config.accessToken}`,
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
             } });
     }
     return requestWrapper.get(config);
@@ -91,7 +91,7 @@ export function post<Result, ResponseData = Result>(
         return requestWrapper.post({ ...config,
             headers: {
                 ...config.headers,
-                Authorization: `Bearer ${config.accessToken}`,
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
             } });
     }
     return requestWrapper.post(config);
@@ -104,7 +104,7 @@ export function put<Result, ResponseData = Result>(
         return requestWrapper.put({ ...config,
             headers: {
                 ...config.headers,
-                Authorization: `Bearer ${config.accessToken}`,
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
             } });
     }
     return requestWrapper.put(config);
@@ -117,7 +117,7 @@ export function remove<Result, ResponseData = Result>(
         return requestWrapper.remove({ ...config,
             headers: {
                 ...config.headers,
-                Authorization: `Bearer ${config.accessToken}`,
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
             } });
     }
     return requestWrapper.remove(config);
