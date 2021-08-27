@@ -179,13 +179,6 @@ const ComponentsOverview = withStyles(styles)(
                                                         onClose={this.onLoadDocDialogClose}
                                                     />
                                                 </Box>
-                                                <Box flex="0 0 auto" mr="8px" width="250px">
-                                                    <TransformDocumentationDialog
-                                                        open={this.state.loadDocDialogOpen}
-                                                        onOpen={this.onLoadDocDialogOpen}
-                                                        onClose={this.onLoadDocDialogClose}
-                                                    />
-                                                </Box>
                                                 <Box flex="0 0 auto">
                                                     <Button
                                                         variant="contained"
