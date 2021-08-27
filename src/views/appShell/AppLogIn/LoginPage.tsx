@@ -3,12 +3,13 @@ import { extractAccessLevelFromUser, getUserUuidFromToken } from 'state/auth/sel
 import { IObserveProps } from 'views/observe';
 import { IAccessToken, IUser } from 'models/state/auth.models';
 import { Button, Container, Typography, Box, createStyles, Theme, WithStyles, withStyles } from '@material-ui/core';
-import { useHistory, useLocation } from 'react-router-dom';
+// import { useHistory, useLocation } from 'react-router-dom';
 import TextInput from 'views/common/input/TextInput';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { Alert } from '@material-ui/lab';
 import { ReactComponent as IesiLogo } from './logo.svg';
 import { fetchUserByUuid, logon } from '../../../api/security/security.api';
+// import { redirectTo, redirectToPath } from 'views/routes';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -52,9 +53,10 @@ const LoginView = withStyles(styles)(
                 username: '',
                 password: '',
             };
-            // retrieve calling url from query param using https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
+            // retrieve calling url from query param using
+            // https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
             console.log(window.location.search);
-            var searchParams = new URLSearchParams(window.location.search);
+            const searchParams = new URLSearchParams(window.location.search);
             searchParams.forEach((searchParam) => console.log(searchParam));
             this.setHasSubmitErrors = this.setHasSubmitErrors.bind(this);
             this.handleSubmit = this.handleSubmit.bind(this);
@@ -122,8 +124,6 @@ const LoginView = withStyles(styles)(
 
         private handleSubmit = () => {
             const { username, password } = this.state;
-            const history = useHistory();
-            const { from } = useLocation().state as any || { from: { pathname: '/', search: '' } };
             if (username !== '' && password !== '') {
                 this.setHasSubmitErrors(false);
 
@@ -142,6 +142,7 @@ const LoginView = withStyles(styles)(
                         // TODO: set state
                         if (response.accessToken) {
                             const accessToken: IAccessToken = getUserUuidFromToken(response.accessToken);
+                            console.log(response.accessToken);
                             this.setState((state) => ({
                                 ...state,
                                 auth: { accessToken: response.accessToken, username: accessToken.sub },
@@ -156,7 +157,8 @@ const LoginView = withStyles(styles)(
                                     }));
 
                                     // TODO: do redirectTo(...)
-                                    history.replace(from.pathname + from.search);
+                                    // redirectToPath();
+                                    // history.replace(from.pathname + from.search);
                                 })
                                 .catch((error) => {
                                     console.error('There was an error!', error);

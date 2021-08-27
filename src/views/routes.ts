@@ -132,6 +132,17 @@ export function redirectTo({ routeKey, params, queryParams }: INavigateToRoute) 
         });
     }
 }
+export function redirectToPath(pathname: string, search: string) {
+    if (browserHistory) {
+        // Do this on the next frame to make sure everything routeObserverManager has been registered
+        window.requestAnimationFrame(() => {
+            browserHistory.push({
+                pathname,
+                search,
+            });
+        });
+    }
+}
 
 // Create copy of above and provide simple url
 
