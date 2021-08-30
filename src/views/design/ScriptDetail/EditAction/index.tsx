@@ -107,7 +107,7 @@ function EditAction({
     const [condition, setCondition] = useState(action.condition);
     const actionTypes = getAsyncActionTypes(state).data || [];
     const matchingActionType = actionTypes.find((item) => action.type === item.type);
-    const orderedConstantParameters = orderParameters(matchingActionType.parameters, matchingActionType);
+    const orderedActionTypeParameters = orderActionTypeParameters(matchingActionType.parameters, matchingActionType);
     return (
         <Box className={classes.dialog}>
             <Box
@@ -198,7 +198,7 @@ function EditAction({
                     </Paper>
                 </Box>
                 <Box>
-                    {orderedConstantParameters.map((constantParameter) => {
+                    {orderedActionTypeParameters.map((constantParameter) => {
                         const parameter = parameters.find((p) => p.name === constantParameter.name);
                         return (
                             <ExpandableParameter
@@ -312,15 +312,15 @@ function EditAction({
         onClose();
     }
 
-    function orderParameters(items: IConstantParameter[], connectionType: IActionType) {
+    function orderActionTypeParameters(items: IConstantParameter[], actionType: IActionType) {
         const constantParameters = items
             ? items
                 .map((constantParameter) => ({
                     name: constantParameter.name,
                     description: constantParameter.description,
                     type: constantParameter.type,
-                    mandatory: connectionType
-                        ? connectionType.parameters
+                    mandatory: actionType
+                        ? actionType.parameters
                             .some((type) => type.name === constantParameter.name && type.mandatory === true)
                         : false,
                     encrypted: constantParameter.encrypted,

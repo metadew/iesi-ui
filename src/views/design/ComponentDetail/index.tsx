@@ -583,9 +583,9 @@ const ComponentDetail = withStyles(styles)(
                 name: '',
                 value: '',
             };
-            const componentTypeMatch = matchComponentType(state, newComponentDetail);
-            const mandatory = componentTypeMatch
-                ? componentTypeMatch.parameters
+            const matchingComponentType = matchComponentType(state, newComponentDetail);
+            const mandatory = matchingComponentType
+                ? matchingComponentType.parameters
                     .some((item) => item.name === parameter.name && item.mandatory)
                 : false;
             return (
@@ -600,7 +600,7 @@ const ComponentDetail = withStyles(styles)(
                         if (!isAddingParameter) {
                             newParameters[editParameterIndex] = newParameter;
                         }
-                        const orderedParameters = orderParameters(newParameters, componentTypeMatch);
+                        const orderedParameters = orderComponentParameters(newParameters, matchingComponentType);
                         this.updateComponent({
                             parameters: orderedParameters,
                         });
@@ -686,15 +686,15 @@ const ComponentDetail = withStyles(styles)(
             if (getUniqueIdFromComponent(componentDetail) !== getUniqueIdFromComponent(prevComponentDetail)) {
                 const componentDetailDeepClone = clone(componentDetail);
                 if (componentDetailDeepClone) {
-                    const componentTypeMatch = matchComponentType(this.props.state, componentDetailDeepClone);
-                    const orderedParameters = orderParameters(
-                        componentDetailDeepClone.parameters, componentTypeMatch,
+                    const matchingComponentType = matchComponentType(this.props.state, componentDetailDeepClone);
+                    const orderedComponentParameters = orderComponentParameters(
+                        componentDetailDeepClone.parameters, matchingComponentType,
                     );
                     // eslint-disable-next-line react/no-did-update-set-state
                     this.setState({
                         newComponentDetail: {
                             ...componentDetailDeepClone,
-                            parameters: orderedParameters,
+                            parameters: orderedComponentParameters,
                         },
                     });
                 }
@@ -804,7 +804,7 @@ function mapComponentTypeToListItems(items: IComponentType[]) {
     return listItems;
 }
 
-function orderParameters(items: IComponentParameter[], componentType: IComponentType) {
+function orderComponentParameters(items: IComponentParameter[], componentType: IComponentType) {
     const parameters = items
         ? items
             .map((parameter) => ({
