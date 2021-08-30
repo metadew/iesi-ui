@@ -1,4 +1,6 @@
 import React from 'react';
+import { getStore } from 'state';
+import { IState } from 'models/state.models';
 import { extractAccessLevelFromUser, getUserUuidFromToken } from 'state/auth/selectors';
 import { IObserveProps } from 'views/observe';
 import { IAccessToken, IUser } from 'models/state/auth.models';
@@ -157,19 +159,30 @@ const LoginView = withStyles(styles)(
                         if (response.accessToken) {
                             const accessToken: IAccessToken = getUserUuidFromToken(response.accessToken);
                             console.log(response.accessToken);
-                            this.setState((state) => ({
-                                ...state,
-                                auth: { accessToken: response.accessToken, username: accessToken.sub },
-                            }));
+                            getStore().setState({
+                                newState: (currentState: IState) => ({
+                                    ...currentState,
+                                    auth: {
+                                        ...currentState.auth,
+                                        accessToken: response.accessToken,
+                                        username: accessToken.sub,
+                                    },
+                                }),
+                            });
                             sessionStorage.setItem('token', response.accessToken);
                             fetchUserByUuid({ uuid: accessToken.uuid })
                                 .then(async (user: IUser) => {
                                     // Decode JWT token
                                     // extract user uuid and fetch user roles
-                                    this.setState((state) => ({
-                                        ...state,
-                                        auth: { permissions: extractAccessLevelFromUser(user) },
-                                    }));
+                                    getStore().setState({
+                                        newState: (currentState: IState) => ({
+                                            ...currentState,
+                                            auth: {
+                                                ...currentState.auth,
+                                                permissions: extractAccessLevelFromUser(user),
+                                            },
+                                        }),
+                                    });
 
                                     // TODO: do redirectTo(...)
                                     redirectToPath(redirectUri.pathname, redirectUri.search);
