@@ -491,11 +491,11 @@ const ConnectionDetail = withStyles(styles)(
                             newParameters = [...newConnectionDetail.environments[environmentIndex].parameters];
                             newParameters[editParameterIndex] = newParameter;
                         }
-                        const orderedConnections = orderEnvironment(
+                        const orderedEnvironment = orderEnvironment(
                             newConnectionDetail, matchingConnectionType, newParameters,
                         );
                         this.updateConnection({
-                            environments: orderedConnections,
+                            environments: orderedEnvironment,
                         });
                     }}
                 />
