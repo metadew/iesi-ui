@@ -491,7 +491,7 @@ const ConnectionDetail = withStyles(styles)(
                             newParameters = [...newConnectionDetail.environments[environmentIndex].parameters];
                             newParameters[editParameterIndex] = newParameter;
                         }
-                        const orderedConnections = orderConnectionDetails(
+                        const orderedConnections = orderEnvironment(
                             newConnectionDetail, matchingConnectionType, newParameters,
                         );
                         this.updateConnection({
@@ -511,13 +511,13 @@ const ConnectionDetail = withStyles(styles)(
                     const connectionTypes = getAsyncConnectionTypes(this.props.state).data || [];
                     const matchingConnectionType = connectionTypes
                         .find((item) => item.type === connectionDetailDeepClone.type);
-                    const orderedEnvironmentDetails = orderConnectionDetails(
+                    const orderedEnvironment = orderEnvironment(
                         connectionDetailDeepClone, matchingConnectionType,
                     );
                     this.setState({
                         newConnectionDetail: {
                             ...connectionDetailDeepClone,
-                            environments: orderedEnvironmentDetails,
+                            environments: orderedEnvironment,
                         },
                     });
                 }
@@ -640,7 +640,7 @@ function mapConnectionTypeToListItems(items: IConnectionType[]) {
     return connectionToList;
 }
 
-function orderConnectionParameters(items: IConnectionParameter[], connectionType: IConnectionType) {
+function orderParameters(items: IConnectionParameter[], connectionType: IConnectionType) {
     const parameters = items
         ? items
             .map((parameter) => ({
@@ -667,12 +667,12 @@ function orderConnectionParameters(items: IConnectionParameter[], connectionType
     return orderedParameters;
 }
 
-function orderConnectionDetails(
+function orderEnvironment(
     connection: IConnection, connectionType: IConnectionType, connectionParameter?: IConnectionParameter[],
 ) {
-    const orderedEnvironmentDetails: IConnectionEnvironment[] = connection.environments
+    const orderedEnvironment: IConnectionEnvironment[] = connection.environments
         .map((environmentDetail) => {
-            const newOrderedParameters: IConnectionParameter[] = orderConnectionParameters(
+            const newOrderedParameters: IConnectionParameter[] = orderParameters(
                 connectionParameter || environmentDetail.parameters, connectionType,
             );
             return {
@@ -680,7 +680,7 @@ function orderConnectionDetails(
                 parameters: newOrderedParameters,
             };
         });
-    return orderedEnvironmentDetails;
+    return orderedEnvironment;
 }
 
 export default observe([

@@ -107,7 +107,7 @@ function EditAction({
     const [condition, setCondition] = useState(action.condition);
     const actionTypes = getAsyncActionTypes(state).data || [];
     const matchingActionType = actionTypes.find((item) => action.type === item.type);
-    const orderedConstantParameters = orderConstantParameters(matchingActionType.parameters, matchingActionType);
+    const orderedConstantParameters = orderParameters(matchingActionType.parameters, matchingActionType);
     return (
         <Box className={classes.dialog}>
             <Box
@@ -312,7 +312,7 @@ function EditAction({
         onClose();
     }
 
-    function orderConstantParameters(items: IConstantParameter[], connectionType: IActionType) {
+    function orderParameters(items: IConstantParameter[], connectionType: IActionType) {
         const constantParameters = items
             ? items
                 .map((constantParameter) => ({

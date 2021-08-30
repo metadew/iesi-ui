@@ -600,7 +600,7 @@ const ComponentDetail = withStyles(styles)(
                         if (!isAddingParameter) {
                             newParameters[editParameterIndex] = newParameter;
                         }
-                        const orderedParameters = orderComponentParameters(newParameters, componentTypeMatch);
+                        const orderedParameters = orderParameters(newParameters, componentTypeMatch);
                         this.updateComponent({
                             parameters: orderedParameters,
                         });
@@ -687,7 +687,7 @@ const ComponentDetail = withStyles(styles)(
                 const componentDetailDeepClone = clone(componentDetail);
                 if (componentDetailDeepClone) {
                     const componentTypeMatch = matchComponentType(this.props.state, componentDetailDeepClone);
-                    const orderedParameters = orderComponentParameters(
+                    const orderedParameters = orderParameters(
                         componentDetailDeepClone.parameters, componentTypeMatch,
                     );
                     // eslint-disable-next-line react/no-did-update-set-state
@@ -804,7 +804,7 @@ function mapComponentTypeToListItems(items: IComponentType[]) {
     return listItems;
 }
 
-function orderComponentParameters(items: IComponentParameter[], componentType: IComponentType) {
+function orderParameters(items: IComponentParameter[], componentType: IComponentType) {
     const parameters = items
         ? items
             .map((parameter) => ({
