@@ -33,7 +33,7 @@ import { getAsyncComponentTypes } from 'state/entities/constants/selectors';
 import { IComponentType } from 'models/state/constants.models';
 import { IListItem, ListColumns } from 'models/list.models';
 import { Alert, Autocomplete } from '@material-ui/lab';
-import { StateChangeNotification } from 'models/state.models';
+import { IState, StateChangeNotification } from 'models/state.models';
 import GenericList from 'views/common/list/GenericList';
 import { getAsyncScriptDetail } from 'state/entities/scripts/selectors';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
@@ -583,10 +583,7 @@ const ComponentDetail = withStyles(styles)(
                 name: '',
                 value: '',
             };
-
-            const componentTypes = getAsyncComponentTypes(state).data || [];
-            const matchingComponentType = componentTypes
-                .find((item) => item.type === newComponentDetail?.type);
+            const matchingComponentType = matchComponentType(state, newComponentDetail);
             const mandatory = matchingComponentType
                 ? matchingComponentType.parameters
                     .some((item) => item.name === parameter.name && item.mandatory)
@@ -598,14 +595,14 @@ const ComponentDetail = withStyles(styles)(
                     mandatory={mandatory}
                     isCreateParameter={isAddingParameter}
                     onEdit={(newParameter) => {
-                        const newParameters = [...newComponentDetail.parameters];
+                        const newParameters = isAddingParameter
+                            ? [...newComponentDetail.parameters, newParameter] : [...newComponentDetail.parameters];
                         if (!isAddingParameter) {
                             newParameters[editParameterIndex] = newParameter;
                         }
+                        const orderedParameters = orderComponentParameters(newParameters, matchingComponentType);
                         this.updateComponent({
-                            parameters: isAddingParameter
-                                ? [...newComponentDetail.parameters, newParameter]
-                                : newParameters,
+                            parameters: orderedParameters,
                         });
                     }}
                 />
@@ -689,9 +686,16 @@ const ComponentDetail = withStyles(styles)(
             if (getUniqueIdFromComponent(componentDetail) !== getUniqueIdFromComponent(prevComponentDetail)) {
                 const componentDetailDeepClone = clone(componentDetail);
                 if (componentDetailDeepClone) {
+                    const matchingComponentType = matchComponentType(this.props.state, componentDetailDeepClone);
+                    const orderedComponentParameters = orderComponentParameters(
+                        componentDetailDeepClone.parameters, matchingComponentType,
+                    );
                     // eslint-disable-next-line react/no-did-update-set-state
                     this.setState({
-                        newComponentDetail: componentDetailDeepClone,
+                        newComponentDetail: {
+                            ...componentDetailDeepClone,
+                            parameters: orderedComponentParameters,
+                        },
                     });
                 }
             }
@@ -798,6 +802,40 @@ function mapComponentTypeToListItems(items: IComponentType[]) {
             return listItem;
         }) : [];
     return listItems;
+}
+
+function orderComponentParameters(items: IComponentParameter[], componentType: IComponentType) {
+    const parameters = items
+        ? items
+            .map((parameter) => ({
+                name: parameter.name,
+                value: parameter.value,
+                mandatory: componentType
+                    ? componentType.parameters
+                        .some((type) => type.name === parameter.name && type.mandatory === true)
+                    : false,
+            }))
+        : [];
+    const mandatoryParameters = parameters
+        .filter((p) => p.mandatory)
+        .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
+    const nonMandatoryParameters = parameters
+        .filter((p) => !p.mandatory)
+        .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
+    const orderedParameters: IComponentParameter[] = mandatoryParameters
+        .concat(nonMandatoryParameters)
+        .map((p) => ({
+            name: p.name,
+            value: p.value,
+        }));
+    return orderedParameters;
+}
+
+function matchComponentType(state: IState, component: IComponent) {
+    const componentTypes = getAsyncComponentTypes(state).data || [];
+    const matchingComponentType = componentTypes
+        .find((item) => item.type === component?.type);
+    return matchingComponentType;
 }
 
 export default observe([
