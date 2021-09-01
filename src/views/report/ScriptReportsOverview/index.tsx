@@ -279,7 +279,6 @@ const ScriptReportsOverview = withStyles(styles)(
                         }
                     },
                 );
-                console.log(filtersByUrlSearchParams);
                 return filtersByUrlSearchParams;
             }
 
