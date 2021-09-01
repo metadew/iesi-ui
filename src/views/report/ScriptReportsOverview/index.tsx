@@ -134,6 +134,10 @@ const filterConfig: FilterConfig<Partial<IColumnNames>> = {
         label: <Translate msg="script_reports.overview.list.filter.run_id" />,
         filterType: FilterType.Search,
     },
+    runStatus: {
+        label: <Translate msg="script_reports.overview.list.filter.runStatus" />,
+        filterType: FilterType.Search,
+    },
 };
 
 const sortActions: SortActions<Partial<IColumnNames>> = {
@@ -209,7 +213,8 @@ const ScriptReportsOverview = withStyles(styles)(
                     && (filterFromState.filters.script.values.length > 0
                         || filterFromState.filters.version.values.length > 0
                         || filterFromState.filters.environment.values.length > 0
-                        || filterFromState.filters.labels.values.length > 0));
+                        || filterFromState.filters.labels.values.length > 0
+                        || filterFromState.filters.runStatus.values.length > 0));
 
             return (
                 <>
@@ -274,6 +279,7 @@ const ScriptReportsOverview = withStyles(styles)(
                         }
                     },
                 );
+                console.log(filtersByUrlSearchParams);
                 return filtersByUrlSearchParams;
             }
 
@@ -473,6 +479,8 @@ const ScriptReportsOverview = withStyles(styles)(
                         && filters.labels.values[0].toString(),
                     'run-id': filters.runId.values.length > 0
                         && filters.runId.values[0].toString(),
+                    runStatus: filters.runStatus.values.length > 0
+                        && filters.runStatus.values[0].toString(),
                 },
                 sort: formatSortQueryParameter(sortedColumn),
             });
