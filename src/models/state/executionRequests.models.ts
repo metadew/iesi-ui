@@ -79,7 +79,7 @@ interface IFetchExecutionRequestListFilter {
     label?: string;
     environment?: string;
     'run-id'?: string;
-    runStatus: string;
+    'run-status'?: string;
 }
 
 export interface IExecutionRequestsEntity {

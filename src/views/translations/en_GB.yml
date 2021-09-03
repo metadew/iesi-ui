@@ -230,7 +230,7 @@ script_reports:
         environment: Environment
         labels: Label
         run_id: Run Id
-        runStatus: Status
+        run_status: Status
       labels:
         environment: Environment
         labels: Labels

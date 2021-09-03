@@ -45,7 +45,7 @@ import {
 } from 'state/entities/executionRequests/selectors';
 import { triggerFetchExecutionRequests } from 'state/entities/executionRequests/triggers';
 import { formatSortQueryParameter } from 'utils/core/string/format';
-import { getEnvironmentsForDropdown } from 'state/entities/environments/selectors';
+import { getEnvironmentsForDropdown, getScriptForDropdown } from 'state/entities/environments/selectors';
 import { getTranslator } from 'state/i18n/selectors';
 import { getExecutionsListFilter } from 'state/ui/selectors';
 import { setExecutionsListFilter } from 'state/ui/actions';
@@ -135,8 +135,9 @@ const filterConfig: FilterConfig<Partial<IColumnNames>> = {
         filterType: FilterType.Search,
     },
     runStatus: {
-        label: <Translate msg="script_reports.overview.list.filter.runStatus" />,
-        filterType: FilterType.Search,
+        label: <Translate msg="script_reports.overview.list.filter.run_status" />,
+        filterType: FilterType.Dropdown,
+        getDropdownOptions: getScriptForDropdown,
     },
 };
 
@@ -213,8 +214,7 @@ const ScriptReportsOverview = withStyles(styles)(
                     && (filterFromState.filters.script.values.length > 0
                         || filterFromState.filters.version.values.length > 0
                         || filterFromState.filters.environment.values.length > 0
-                        || filterFromState.filters.labels.values.length > 0
-                        || filterFromState.filters.runStatus.values.length > 0));
+                        || filterFromState.filters.labels.values.length > 0));
 
             return (
                 <>
@@ -478,7 +478,7 @@ const ScriptReportsOverview = withStyles(styles)(
                         && filters.labels.values[0].toString(),
                     'run-id': filters.runId.values.length > 0
                         && filters.runId.values[0].toString(),
-                    runStatus: filters.runStatus.values.length > 0
+                    'run-status': filters.runStatus.values.length > 0
                         && filters.runStatus.values[0].toString(),
                 },
                 sort: formatSortQueryParameter(sortedColumn),

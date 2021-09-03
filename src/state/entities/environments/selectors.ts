@@ -8,3 +8,8 @@ export const getEnvironmentsForDropdown = (state: IState) => {
     const environments = asyncEnvironments.data || [] as IEnvironment[];
     return environments.map((environment) => environment.name);
 };
+
+export const getScriptForDropdown = () => {
+    const scriptExecutionStatus = ['RUNNING', 'SUCCESS', 'WARNING', 'ERROR', 'STOPPED', 'SKIPPED'];
+    return scriptExecutionStatus.map((status) => status);
+};
