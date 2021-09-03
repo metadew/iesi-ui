@@ -64,3 +64,12 @@ function configureIesiApi(envConfig: IEnvConfig) {
     setIesiApiBaseUrl(envConfig.iesi_api_base_url);
     setIesiApiTimeoutInSeconds(envConfig.iesi_api_timeout_in_seconds);
 }
+
+
+const updateLogon = (payload: IEnvConfig) => createAction<IEnvConfig>({
+    type: 'TEST',
+    payload,
+    async process({ getState, setStateImmutable, api }) {
+    }
+
+});

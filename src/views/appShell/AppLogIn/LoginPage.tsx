@@ -183,7 +183,8 @@ const LoginView = withStyles(styles)(
                                             },
                                         }),
                                     });
-
+                                    console.log('login page state:');
+                                    console.log(getStore().getState());
                                     // TODO: do redirectTo(...)
                                     redirectToPath(redirectUri.pathname, redirectUri.search);
                                     // history.replace(from.pathname + from.search);

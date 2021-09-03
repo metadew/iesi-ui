@@ -20,6 +20,7 @@ const PrivateRoute = (props: IPrivateRouteProps) => {
             {...rest}
             render={(routeProps) => {
                 const { pathname, search } = routeProps.location as any || { pathname: '/', search: '' };
+                console.log('redirect state');
                 console.log(state);
                 console.log(isAuthenticated(state));
                 return (isAuthenticated(state) ? (
