@@ -12,7 +12,8 @@ import {
 } from '@material-ui/core';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import { Delete } from '@material-ui/icons';
-import { triggerCreateTransformDocumentation } from 'state/entities/openapi/triggers';
+// import { triggerCreateTransformDocumentation } from 'state/entities/openapi/triggers';
+import { triggerCreateScriptDetail } from 'state/entities/scripts/triggers';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getTranslator } from 'state/i18n/selectors';
 import { IObserveProps, observe } from 'views/observe';
@@ -207,10 +208,10 @@ function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicP
         if (formValues.fileDoc) {
             const formData = new FormData();
             formData.append('file', formValues.fileDoc);
-            triggerCreateTransformDocumentation({ value: formData });
+            triggerCreateScriptDetail({ value: formData });
             return;
         }
-        triggerCreateTransformDocumentation({ value: formValues.textDoc });
+        triggerCreateScriptDetail({ value: formValues.textDoc });
     }
 }
 

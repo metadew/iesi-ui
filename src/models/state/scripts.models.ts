@@ -45,6 +45,10 @@ export interface IScriptBase {
     labels: ILabel[];
 }
 
+export interface IScriptImport {
+    value: string | FormData;
+}
+
 export interface IScript extends IScriptBase {
     execution?: IScriptExecutionSummary;
     scheduling?: IScriptSchedule[];

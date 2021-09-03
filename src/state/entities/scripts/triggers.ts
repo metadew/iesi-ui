@@ -3,6 +3,7 @@ import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import {
     IScriptByNameAndVersionPayload,
     IScriptBase,
+    IScriptImport,
     IFetchScriptsListPayload,
 } from 'models/state/scripts.models';
 import { StateChangeNotification } from 'models/state.models';
@@ -43,7 +44,7 @@ export const triggerUpdateScriptDetail = (payload: IScriptBase) =>
         })),
     });
 
-export const triggerCreateScriptDetail = (payload: IScriptBase) =>
+export const triggerCreateScriptDetail = (payload: IScriptBase | IScriptImport) =>
     entitiesStateManager.triggerAsyncEntityCreate<{}>({
         asyncEntityToCreate: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetail,

@@ -3,12 +3,14 @@ import {
     IFetchScriptsOptions,
     IScriptBase,
     IScript,
+    IScriptImport,
     IScriptByNamePayload,
     IScriptByNameAndVersionPayload, IExpandScriptsResponseWith, IFetchScriptsListPayload, IScriptsEntity,
 } from 'models/state/scripts.models';
 import { IListResponse, IPageData } from 'models/state/iesiGeneric.models';
 import FileSaver from 'file-saver';
 import { get, post, put, remove } from 'api/requestWrapper';
+import { IOpenAPIEntityScript } from 'models/state/openapi.model';
 import API_URLS from '../apiUrls';
 
 interface IScriptsResponse {
@@ -98,13 +100,35 @@ export async function fetchScriptByNameAndVersionDownload({
  * Makes a new 'script-version-combo', which can either be the first version of a totally new script,
  * OR an extra version of an existing script.
  */
-export function createScriptVersion(script: IScriptBase) {
-    return post<IScriptBase>({
-        needsAuthentication: true,
-        isIesiApi: true,
-        url: API_URLS.SCRIPTS,
-        body: script,
-    });
+export function createScriptVersion(script: IScriptBase | IScriptImport) {
+    if (instanceOfIScriptBase(script)) {
+        return post<IScriptBase>({
+            needsAuthentication: true,
+            isIesiApi: true,
+            url: API_URLS.SCRIPTS,
+            body: script,
+        });
+    }
+    if (instanceOfIScriptImport(script)) {
+        return post<IOpenAPIEntityScript>({
+            needsAuthentication: true,
+            isIesiApi: true,
+            url: API_URLS.OPEN_API_TRANSFORM,
+            body: script.value,
+            contentType: script.value instanceof FormData ? 'multipart/form-data' : 'application/json',
+            headers: {
+                'Content-Type': script.value instanceof FormData ? 'multipart/form-data' : 'application/json',
+            },
+            mapResponse: ({ data }) => ({
+                ...data,
+                scripts: data.scripts.map((item) => ({
+                    ...item,
+                    isHandled: false,
+                })),
+            }),
+        });
+    }
+    return null;
 }
 
 /**
@@ -168,4 +192,12 @@ function toExpandQueryParam(expandScriptsResponseWith: IExpandScriptsResponseWit
     return {
         expand: expandItems.join(','),
     };
+}
+
+function instanceOfIScriptBase(data: any): data is IScriptBase {
+    return data;
+}
+
+function instanceOfIScriptImport(data: any): data is IScriptImport {
+    return data.value;
 }
