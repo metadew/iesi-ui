@@ -1,5 +1,6 @@
 import { IState } from 'models/state.models';
 import { IEnvironment } from 'models/state/environments.models';
+import { ExecutionActionStatus } from 'models/state/executionActionStatus.models';
 
 export const getAsyncEnvironments = (state: IState) => state.entities.environments;
 
@@ -10,6 +11,6 @@ export const getEnvironmentsForDropdown = (state: IState) => {
 };
 
 export const getScriptForDropdown = () => {
-    const scriptExecutionStatus = ['RUNNING', 'SUCCESS', 'WARNING', 'ERROR', 'STOPPED', 'SKIPPED'];
+    const scriptExecutionStatus = Object.values(ExecutionActionStatus);
     return scriptExecutionStatus.map((status) => status);
 };
