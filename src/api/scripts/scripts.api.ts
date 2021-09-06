@@ -101,7 +101,11 @@ export async function fetchScriptByNameAndVersionDownload({
  * OR an extra version of an existing script.
  */
 export function createScriptVersion(script: IScriptBase | IScriptImport) {
+    console.log(typeof script);
+    console.log(JSON.stringify(script));
+    // console.log(instanceOfIScriptBase(script));
     if (instanceOfIScriptBase(script)) {
+        console.log('script :');
         return post<IScriptBase>({
             needsAuthentication: true,
             isIesiApi: true,
@@ -110,6 +114,9 @@ export function createScriptVersion(script: IScriptBase | IScriptImport) {
         });
     }
     if (instanceOfIScriptImport(script)) {
+        console.log(instanceOfIScriptImport(script));
+        console.log('import :');
+        console.log(JSON.stringify(script.value));
         return post<IOpenAPIEntityScript>({
             needsAuthentication: true,
             isIesiApi: true,
@@ -194,10 +201,10 @@ function toExpandQueryParam(expandScriptsResponseWith: IExpandScriptsResponseWit
     };
 }
 
-function instanceOfIScriptBase(data: any): data is IScriptBase {
-    return data;
+function instanceOfIScriptBase(object: any): object is IScriptBase {
+    return object in object;
 }
 
-function instanceOfIScriptImport(data: any): data is IScriptImport {
-    return data.value;
+function instanceOfIScriptImport(object: any): object is IScriptImport {
+    return 'value' in object;
 }
