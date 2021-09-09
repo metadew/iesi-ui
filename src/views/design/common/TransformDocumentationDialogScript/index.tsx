@@ -3,16 +3,16 @@ import {
     Button,
     ButtonGroup,
     Box,
-    Typography,
-    IconButton,
+    // Typography,
+    // IconButton,
     TextField,
     makeStyles,
     Tooltip,
     Theme,
 } from '@material-ui/core';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
-import { Delete } from '@material-ui/icons';
-import { triggerCreateTransformDocumentation } from 'state/entities/openapi/triggers';
+// import { Delete } from '@material-ui/icons';
+import { triggerCreateScriptDetail } from 'state/entities/scripts/triggers';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getTranslator } from 'state/i18n/selectors';
 import { IObserveProps, observe } from 'views/observe';
@@ -35,6 +35,9 @@ const useStyles = makeStyles(({ palette, typography }: Theme) => ({
         marginBottom: 2,
         fontSize: typography.pxToRem(12),
         color: palette.grey[500],
+    },
+    buttonGroup: {
+        marginTop: 8,
     },
     validateButton: {
         marginRight: 8,
@@ -69,24 +72,24 @@ function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicP
         setFormValues((currentState) => ({ ...currentState, textDoc: e.target.value }));
     };
 
-    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-        // const newFile = e.target.files[0];
-        e.persist();
-        if (e.target.files[0] && formValues.textDoc.length > 0) {
-            setFormValues((currentState) => ({ ...currentState, fileDoc: e.target.files[0], textDoc: '' }));
-            return;
-        }
-        setFormValues((currentState) => ({ ...currentState, fileDoc: e.target.files[0] }));
-    };
+    // const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    //     // const newFile = e.target.files[0];
+    //     e.persist();
+    //     if (e.target.files[0] && formValues.textDoc.length > 0) {
+    //         setFormValues((currentState) => ({ ...currentState, fileDoc: e.target.files[0], textDoc: '' }));
+    //         return;
+    //     }
+    //     setFormValues((currentState) => ({ ...currentState, fileDoc: e.target.files[0] }));
+    // };
 
-    const onDeleteFile = () => {
-        setFormValues((currentState) => ({ ...currentState, fileDoc: undefined }));
-    };
+    // const onDeleteFile = () => {
+    //     setFormValues((currentState) => ({ ...currentState, fileDoc: undefined }));
+    // };
 
     return (
         <>
             <Tooltip
-                title={translator('scripts.overview.header.transform_openapi_tooltip')}
+                title={translator('scripts.overview.header.transform_script_tooltip')}
                 placement="top"
                 classes={{
                     tooltip: classes.generateTooltip,
@@ -101,14 +104,14 @@ function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicP
                     onClick={onOpen}
                 >
                     <Translate
-                        msg="scripts.overview.header.generate_button"
+                        msg="scripts.overview.header.generate_script_button"
                     />
                 </Button>
             </Tooltip>
             <ClosableDialog
                 onClose={onClose}
                 open={open}
-                title={translator('doc.dialog.transform.title')}
+                title={translator('doc.dialog.transform.scriptTitle')}
             >
                 <Box marginX="auto" width="100%">
                     <Box
@@ -130,7 +133,7 @@ function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicP
                             />
                         </Box>
 
-                        <Typography variant="body1" className={classes.inputDivider}>OR</Typography>
+                        {/* <Typography variant="body1" className={classes.inputDivider}>OR</Typography>
                         <Box
                             display="flex"
                             flexDirection="column"
@@ -171,11 +174,11 @@ function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicP
                                 )
                             }
 
-                        </Box>
+                        </Box> */}
                     </Box>
                 </Box>
                 <Box display="flex" width="100%" justifyContent="flex-end">
-                    <ButtonGroup size="small">
+                    <ButtonGroup size="small" className={classes.buttonGroup}>
                         <Button
                             variant="outlined"
                             color="default"
@@ -192,7 +195,7 @@ function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicP
                             className={classes.validateButton}
                         >
                             <Translate
-                                msg="doc.dialog.transform.validate"
+                                msg="doc.dialog.transform.import"
                             />
                         </Button>
                     </ButtonGroup>
@@ -207,10 +210,10 @@ function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicP
         if (formValues.fileDoc) {
             const formData = new FormData();
             formData.append('file', formValues.fileDoc);
-            triggerCreateTransformDocumentation({ value: formData });
+            triggerCreateScriptDetail({ value: formData });
             return;
         }
-        triggerCreateTransformDocumentation({ value: formValues.textDoc });
+        triggerCreateScriptDetail({ value: formValues.textDoc });
     }
 }
 

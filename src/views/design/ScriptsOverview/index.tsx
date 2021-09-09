@@ -58,7 +58,7 @@ import {
     checkAuthority,
     checkAuthorityGeneral,
 } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
-import TransformDocumentationDialog from '../common/TransformDocumentationDialog';
+import TransformDocumentationDialogScript from '../common/TransformDocumentationDialogScript';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -224,7 +224,7 @@ const ScriptsOverview = withStyles(styles)(
                                         ? (
                                             <Box display="flex" alignItems="center" flex="0 0 auto">
                                                 <Box flex="0 0 auto" mr="8px" width="250px">
-                                                    <TransformDocumentationDialog
+                                                    <TransformDocumentationDialogScript
                                                         open={this.state.loadDocDialogOpen}
                                                         onOpen={this.onLoadDocDialogOpen}
                                                         onClose={this.onLoadDocDialogClose}

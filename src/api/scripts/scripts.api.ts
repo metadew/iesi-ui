@@ -10,7 +10,7 @@ import {
 import { IListResponse, IPageData } from 'models/state/iesiGeneric.models';
 import FileSaver from 'file-saver';
 import { get, post, put, remove } from 'api/requestWrapper';
-import { IOpenAPIEntityScript } from 'models/state/openapi.model';
+// import { IOpenAPIEntityScript } from 'models/state/openapi.model';
 import API_URLS from '../apiUrls';
 
 interface IScriptsResponse {
@@ -101,10 +101,9 @@ export async function fetchScriptByNameAndVersionDownload({
  * OR an extra version of an existing script.
  */
 export function createScriptVersion(script: IScriptBase | IScriptImport) {
-    console.log(typeof script);
     console.log(JSON.stringify(script));
     // console.log(instanceOfIScriptBase(script));
-    if (instanceOfIScriptBase(script)) {
+    if (!instanceOfIScriptImport(script)) {
         console.log('script :');
         return post<IScriptBase>({
             needsAuthentication: true,
@@ -113,29 +112,24 @@ export function createScriptVersion(script: IScriptBase | IScriptImport) {
             body: script,
         });
     }
-    if (instanceOfIScriptImport(script)) {
-        console.log(instanceOfIScriptImport(script));
-        console.log('import :');
-        console.log(JSON.stringify(script.value));
-        return post<IOpenAPIEntityScript>({
-            needsAuthentication: true,
-            isIesiApi: true,
-            url: API_URLS.OPEN_API_TRANSFORM,
-            body: script.value,
-            contentType: script.value instanceof FormData ? 'multipart/form-data' : 'application/json',
-            headers: {
-                'Content-Type': script.value instanceof FormData ? 'multipart/form-data' : 'application/json',
-            },
-            mapResponse: ({ data }) => ({
-                ...data,
-                scripts: data.scripts.map((item) => ({
-                    ...item,
-                    isHandled: false,
-                })),
-            }),
-        });
-    }
-    return null;
+    console.log('import :');
+    return post<IScriptBase>({
+        needsAuthentication: true,
+        isIesiApi: true,
+        url: API_URLS.SCRIPTS,
+        body: script.value,
+        contentType: script.value instanceof FormData ? 'multipart/form-data' : 'application/json',
+        headers: {
+            'Content-Type': script.value instanceof FormData ? 'multipart/form-data' : 'application/json',
+        },
+        // mapResponse: ({ data }) => ({
+        //     ...data,
+        //     scripts: data.scripts.map((item) => ({
+        //         ...item,
+        //         isHandled: false,
+        //     })),
+        // }),
+    });
 }
 
 /**
@@ -201,9 +195,9 @@ function toExpandQueryParam(expandScriptsResponseWith: IExpandScriptsResponseWit
     };
 }
 
-function instanceOfIScriptBase(object: any): object is IScriptBase {
-    return object in object;
-}
+// function instanceOfIScriptBase(object: any): object is IScriptBase {
+//     return 'value' in object;
+// }
 
 function instanceOfIScriptImport(object: any): object is IScriptImport {
     return 'value' in object;
