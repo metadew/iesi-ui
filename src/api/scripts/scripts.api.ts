@@ -10,7 +10,6 @@ import {
 import { IListResponse, IPageData } from 'models/state/iesiGeneric.models';
 import FileSaver from 'file-saver';
 import { get, post, put, remove } from 'api/requestWrapper';
-// import { IOpenAPIEntityScript } from 'models/state/openapi.model';
 import API_URLS from '../apiUrls';
 
 interface IScriptsResponse {
@@ -101,10 +100,7 @@ export async function fetchScriptByNameAndVersionDownload({
  * OR an extra version of an existing script.
  */
 export function createScriptVersion(script: IScriptBase | IScriptImport) {
-    console.log(JSON.stringify(script));
-    // console.log(instanceOfIScriptBase(script));
     if (!instanceOfIScriptImport(script)) {
-        console.log('script :');
         return post<IScriptBase>({
             needsAuthentication: true,
             isIesiApi: true,
@@ -112,7 +108,6 @@ export function createScriptVersion(script: IScriptBase | IScriptImport) {
             body: script,
         });
     }
-    console.log('import :');
     return post<IScriptBase>({
         needsAuthentication: true,
         isIesiApi: true,
@@ -194,10 +189,6 @@ function toExpandQueryParam(expandScriptsResponseWith: IExpandScriptsResponseWit
         expand: expandItems.join(','),
     };
 }
-
-// function instanceOfIScriptBase(object: any): object is IScriptBase {
-//     return 'value' in object;
-// }
 
 function instanceOfIScriptImport(object: any): object is IScriptImport {
     return 'value' in object;
