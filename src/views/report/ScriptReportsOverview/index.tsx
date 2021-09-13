@@ -33,7 +33,7 @@ import { StateChangeNotification } from 'models/state.models';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { IColumnNames, IExecutionRequest } from 'models/state/executionRequests.models';
 import { ExecutionRequestStatus } from 'models/state/executionRequestStatus.models';
-import { ExecutionActionStatus } from 'models/state/executionActionStatus.models';
+import { ExecutionActionStatus, getScriptExecutionStatusForDropdown } from 'models/state/executionActionStatus.models';
 import { Alert } from '@material-ui/lab';
 import { parseISO, format as formatDate } from 'date-fns';
 import OrderedList from 'views/common/list/OrderedList';
@@ -45,11 +45,11 @@ import {
 } from 'state/entities/executionRequests/selectors';
 import { triggerFetchExecutionRequests } from 'state/entities/executionRequests/triggers';
 import { formatSortQueryParameter } from 'utils/core/string/format';
-import { getEnvironmentsForDropdown } from 'state/entities/environments/selectors';
 import { getTranslator } from 'state/i18n/selectors';
 import { getExecutionsListFilter } from 'state/ui/selectors';
 import { setExecutionsListFilter } from 'state/ui/actions';
 import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import { getEnvironmentsForDropdown } from 'state/entities/environments/selectors';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -133,6 +133,11 @@ const filterConfig: FilterConfig<Partial<IColumnNames>> = {
     runId: {
         label: <Translate msg="script_reports.overview.list.filter.run_id" />,
         filterType: FilterType.Search,
+    },
+    runStatus: {
+        label: <Translate msg="script_reports.overview.list.filter.run_status" />,
+        filterType: FilterType.Dropdown,
+        getDropdownOptions: getScriptExecutionStatusForDropdown,
     },
 };
 
@@ -473,6 +478,8 @@ const ScriptReportsOverview = withStyles(styles)(
                         && filters.labels.values[0].toString(),
                     'run-id': filters.runId.values.length > 0
                         && filters.runId.values[0].toString(),
+                    'run-status': filters.runStatus.values.length > 0
+                        && filters.runStatus.values[0].toString(),
                 },
                 sort: formatSortQueryParameter(sortedColumn),
             });
