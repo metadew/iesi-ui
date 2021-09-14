@@ -60,13 +60,17 @@ flash_messages:
     connections_unknown_error: 'Unknown error for the one or more connections'
     component_unknown_error: 'Unknown error for the component "{componentName}"'
     components_unknown_error: 'Unknown error for the one or more connections'
-  component:
+  component: 
     edit: 'The component has been updated'
     error: 'An error has occured : {error}'
   connection:
     create: 'The connection has been created successfully'
     edit: 'The connection has been updated successfully'
     error: 'An error has occured: {error}'
+  script: 
+    create: 'The script has been successfully created !'
+    edit: 'The script has been updated'
+    error: 'An error has occured'
   error: 'An error has occured'
 scripts:
   overview:

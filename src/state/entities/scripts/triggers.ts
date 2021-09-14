@@ -51,6 +51,40 @@ export const triggerCreateScriptDetail = (payload: IScriptBase | IScriptImport) 
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_DETAIL],
+        onSuccess: ({ dispatch, currentEntity }) => {
+            dispatch(triggerFlashMessage({
+                translationKey: 'flash_messages.script.create',
+                translationPlaceholders: {
+                    componentName: currentEntity
+                        ? (currentEntity as IScriptBase).name
+                        : (payload as IScriptBase).name,
+                },
+                type: 'success',
+            }));
+        },
+        onFail: ({ dispatch, error }) => {
+            let message = 'Unknown error';
+            if (error.status) {
+                switch (error.status) {
+                    case 404:
+                        triggerUpdateScriptDetail(payload as IScriptBase);
+                        return;
+                    case -1:
+                        message = 'Cannot connect to the server';
+                        break;
+                    default:
+                        message = error.response?.message;
+                        break;
+                }
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.script.error',
+                    translationPlaceholders: {
+                        message,
+                    },
+                    type: 'error',
+                }));
+            }
+        },
     });
 
 export const triggerDeleteScriptDetail = (payload: IScriptByNameAndVersionPayload) =>
