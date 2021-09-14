@@ -214,6 +214,7 @@ function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicP
             return;
         }
         triggerCreateScriptDetail({ value: formValues.textDoc });
+        onClose();
     }
 }
 

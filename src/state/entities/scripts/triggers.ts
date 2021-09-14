@@ -51,14 +51,9 @@ export const triggerCreateScriptDetail = (payload: IScriptBase | IScriptImport) 
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_DETAIL],
-        onSuccess: ({ dispatch, currentEntity }) => {
+        onSuccess: ({ dispatch }) => {
             dispatch(triggerFlashMessage({
                 translationKey: 'flash_messages.script.create',
-                translationPlaceholders: {
-                    componentName: currentEntity
-                        ? (currentEntity as IScriptBase).name
-                        : (payload as IScriptBase).name,
-                },
                 type: 'success',
             }));
         },
