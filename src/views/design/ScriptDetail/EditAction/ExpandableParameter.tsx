@@ -9,12 +9,19 @@ import {
     FormControl,
     InputLabel,
     FilledInput,
+    Button,
 } from '@material-ui/core';
-import { ExpandMore } from '@material-ui/icons';
+import {
+    ExpandMore,
+    ChevronRightRounded,
+} from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { IParameter } from 'models/state/iesiGeneric.models';
 import { IConstantParameter } from 'models/state/constants.models';
 import { SECURITY_PRIVILEGES, checkAuthorityGeneral } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+// import { redirectTo, ROUTE_KEYS } from 'views/routes';
+
+const CHILD_SCRIPT_PARAMETER = 'script';
 
 interface IPublicProps {
     onChange: (value: string) => void;
@@ -53,6 +60,9 @@ const useStyles = makeStyles(({ palette, spacing }) => ({
         paddingLeft: 0,
         paddingRight: 0,
     },
+    button: {
+        marginLeft: 385,
+    },
 }));
 
 export default function ExpandableParameter({ parameter, onChange, constantParameter }: IPublicProps) {
@@ -61,6 +71,8 @@ export default function ExpandableParameter({ parameter, onChange, constantParam
     if (!constantParameter) {
         return null;
     }
+
+    console.log(constantParameter);
 
     return (
         <ExpansionPanel className={classes.expansionPanel}>
@@ -77,6 +89,27 @@ export default function ExpandableParameter({ parameter, onChange, constantParam
                         {constantParameter.description}
                     </Typography>
                 </Box>
+                {
+                    constantParameter.name === CHILD_SCRIPT_PARAMETER && (
+                        <Button
+                            className={classes.button}
+                            variant="contained"
+                            color="secondary"
+                            size="small"
+                            endIcon={<ChevronRightRounded />}
+                            // onClick={() => redirectTo({
+                            //     routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
+                            //     params: {
+                            //         executionRequestId,
+                            //         runId: item.data.runId,
+                            //         processId: item.data.processId,
+                            //     },
+                            // })}
+                        >
+                            <Translate msg="script_reports.detail.main.action.go_to_script_detail" />
+                        </Button>
+                    )
+                }
             </ExpansionPanelSummary>
             <ExpansionPanelDetails className={classes.expansionPanelDetail}>
                 <FormControl
