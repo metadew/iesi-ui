@@ -21,6 +21,9 @@ import { getTranslator } from 'state/i18n/selectors';
 import { StateChangeNotification } from 'models/state.models';
 import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import { IConstantParameter, IActionType } from 'models/state/constants.models';
+import { ChevronRightRounded } from '@material-ui/icons';
+import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { IParameter } from 'models/state/iesiGeneric.models';
 import ExpandableParameter from './ExpandableParameter';
 
 interface IPublicProps {
@@ -86,6 +89,10 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
             width: '1px',
             backgroundColor: THEME_COLORS.GREY,
         },
+    },
+    button: {
+        display: 'flex',
+        justifyContent: 'flex-end',
     },
 }));
 
@@ -159,6 +166,30 @@ function EditAction({
                 </Box>
             </Box>
             <Box padding={2}>
+                <Box marginBottom={2} className={classes.button}>
+                    <Button
+                        variant="contained"
+                        color={
+                            getScriptNameOrValue(parameters, 'script') && getScriptNameOrValue(parameters, 'version')
+                                ? 'secondary' : 'default'
+                        }
+                        size="small"
+                        endIcon={<ChevronRightRounded />}
+                        onClick={
+                            getScriptNameOrValue(parameters, 'script') && getScriptNameOrValue(parameters, 'version')
+                                ? () => redirectTo({
+                                    routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                    params: {
+                                        name: getScriptNameOrValue(parameters, 'script').value || '',
+                                        version: getScriptNameOrValue(parameters, 'version').value || '',
+                                    },
+                                })
+                                : null
+                        }
+                    >
+                        <Translate msg="script_reports.detail.main.action.go_to_script" />
+                    </Button>
+                </Box>
                 <Box marginBottom={2}>
                     <Paper>
                         <TextInput
@@ -342,6 +373,20 @@ function EditAction({
                 encrypted: p.encrypted,
             }));
         return orderedParameters;
+    }
+
+    // function getScriptNameAndVersion(actionParameters: IParameter[]) {
+    //     const script = actionParameters.find((parameter) => parameter.name === 'script');
+    //     const version = actionParameters.find((parameter) => parameter.name === 'version');
+    //     return {
+    //         name: script ? script.value : '',
+    //         version: version ? version.value : '',
+    //     };
+    // }
+
+    function getScriptNameOrValue(actionParameters: IParameter[], param: string) {
+        const nameOrValue = actionParameters.find((parameter) => parameter.name === param);
+        return nameOrValue;
     }
 }
 
