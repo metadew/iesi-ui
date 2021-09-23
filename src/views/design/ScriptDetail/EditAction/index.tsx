@@ -10,6 +10,7 @@ import {
     ButtonGroup,
     Paper,
     TextField,
+    Tooltip,
 } from '@material-ui/core';
 import { IScriptAction } from 'models/state/scripts.models';
 import { formatNumberWithTwoDigits } from 'utils/number/format';
@@ -96,6 +97,20 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
     },
 }));
 
+const useStylesBootstrap = makeStyles((theme) => ({
+    arrow: {
+        color: theme.palette.common.black,
+    },
+    tooltip: {
+        backgroundColor: theme.palette.common.black,
+    },
+}));
+
+function BootstrapTooltip(props: any) {
+    const classes = useStylesBootstrap();
+    return <Tooltip arrow classes={classes} {...props} />;
+}
+
 function EditAction({
     onClose,
     action,
@@ -167,28 +182,39 @@ function EditAction({
             </Box>
             <Box padding={2}>
                 <Box marginBottom={2} className={classes.button}>
-                    <Button
-                        variant="contained"
-                        color={
-                            getScriptNameOrValue(parameters, 'script') && getScriptNameOrValue(parameters, 'version')
-                                ? 'secondary' : 'default'
+                    <BootstrapTooltip
+                        title={
+                            getScriptNameOrValue(parameters, 'script')
+                                && getScriptNameOrValue(parameters, 'version')
+                                ? '' : 'Missing informations'
                         }
-                        size="small"
-                        endIcon={<ChevronRightRounded />}
-                        onClick={
-                            getScriptNameOrValue(parameters, 'script') && getScriptNameOrValue(parameters, 'version')
-                                ? () => redirectTo({
-                                    routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                    params: {
-                                        name: getScriptNameOrValue(parameters, 'script').value || '',
-                                        version: getScriptNameOrValue(parameters, 'version').value || '',
-                                    },
-                                })
-                                : null
-                        }
+                        placement="left"
                     >
-                        <Translate msg="script_reports.detail.main.action.go_to_script" />
-                    </Button>
+                        <Button
+                            variant="contained"
+                            color={
+                                getScriptNameOrValue(parameters, 'script')
+                                    && getScriptNameOrValue(parameters, 'version')
+                                    ? 'secondary' : 'default'
+                            }
+                            size="small"
+                            endIcon={<ChevronRightRounded />}
+                            onClick={
+                                getScriptNameOrValue(parameters, 'script')
+                                    && getScriptNameOrValue(parameters, 'version')
+                                    ? () => redirectTo({
+                                        routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                        params: {
+                                            name: getScriptNameOrValue(parameters, 'script').value || '',
+                                            version: getScriptNameOrValue(parameters, 'version').value || '',
+                                        },
+                                    })
+                                    : null
+                            }
+                        >
+                            <Translate msg="script_reports.detail.main.action.go_to_script" />
+                        </Button>
+                    </BootstrapTooltip>
                 </Box>
                 <Box marginBottom={2}>
                     <Paper>
