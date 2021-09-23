@@ -278,6 +278,7 @@ script_reports:
     side:
       toggle_button: Details
       execution:
+        rerun: Re-run script
         title: Execution data
         script_name:
           label: Script name

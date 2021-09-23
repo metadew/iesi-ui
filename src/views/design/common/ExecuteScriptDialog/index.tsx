@@ -31,6 +31,7 @@ import isSet from '@snipsonian/core/es/is/isSet';
 import { IExecutionRequest } from 'models/state/executionRequests.models';
 import { getAsyncExecutionRequestDetail } from 'state/entities/executionRequests/selectors';
 import { addPollingExecutionRequest } from 'state/ui/actions';
+import isEmptyObject from '@snipsonian/core/es/object/isEmptyObject';
 
 const useStyles = makeStyles(({ spacing, typography }) => ({
     formControl: {
@@ -64,12 +65,16 @@ function ExecuteScriptDialog({
     dispatch,
 }: IPublicProps & IObserveProps) {
     const classes = useStyles();
+    const executionRequestDetail = getAsyncExecutionRequestDetail(state).data || {} as IExecutionRequest;
     const [formValues, setFormValues] = useState<IFormValues>({
-        name: '',
-        description: '',
-        environment: '',
-        parameters: [],
-        executionRequestLabels: [],
+        name: !isEmptyObject(executionRequestDetail) ? executionRequestDetail.name : '',
+        description: !isEmptyObject(executionRequestDetail) ? executionRequestDetail.description : '',
+        environment: !isEmptyObject(executionRequestDetail)
+            ? executionRequestDetail.scriptExecutionRequests[0].environment : '',
+        parameters: !isEmptyObject(executionRequestDetail)
+            ? executionRequestDetail.scriptExecutionRequests[0].parameters : [],
+        executionRequestLabels: !isEmptyObject(executionRequestDetail)
+            ? executionRequestDetail.executionRequestLabels : [],
     });
 
     const [newParameter, setNewParameter] = useState<IParameter>({
@@ -91,7 +96,6 @@ function ExecuteScriptDialog({
     const environmentsAsyncInfo = entitiesStateManager.getAsyncEntity({
         asyncEntityKey: ASYNC_ENTITY_KEYS.environments,
     }).fetch;
-    const executionRequestDetail = getAsyncExecutionRequestDetail(state).data || {} as IExecutionRequest;
 
     // Trigger Fetch envs on open dialog
     useEffect(() => {
@@ -100,13 +104,13 @@ function ExecuteScriptDialog({
         } else {
             // Reset form & async status
         }
+
         return () => {};
     }, [open]);
 
     if (createAsyncInfo.status === AsyncStatus.Success && executionRequestDetail) {
         dispatch(addPollingExecutionRequest({ id: executionRequestDetail.executionRequestId }));
     }
-
     return (
         <ClosableDialog
             onClose={onClose}
@@ -132,7 +136,7 @@ function ExecuteScriptDialog({
                 ) : (
                     <>
                         <Loader show={createAsyncInfo.status === AsyncStatus.Busy} />
-                        {!isSet(script) && (
+                        {!isSet(script) && isEmptyObject(executionRequestDetail) && (
                             <Box marginBottom={2}>
                                 <Alert severity="error">
                                     <Translate msg="scripts.overview.execute_script_dialog.init_error" />
@@ -389,7 +393,7 @@ function ExecuteScriptDialog({
                                 color="secondary"
                                 onClick={createExecutionRequest}
                                 disabled={
-                                    !isSet(script)
+                                    (!isSet(script) && isEmptyObject(executionRequestDetail))
                                         || !formValues.name.trim()
                                         || !formValues.environment.trim()
                                 }
@@ -413,14 +417,23 @@ function ExecuteScriptDialog({
             scope: '', // May be ignored for now
             scriptExecutionRequests: [
                 {
-                    scriptName: script.name,
+                    scriptName: script
+                        ? script.name : executionRequestDetail.scriptExecutionRequests[0].scriptName,
                     environment: formValues.environment,
                     exit: false,
                     impersonations: [], // TODO
                     parameters: formValues.parameters,
-                    scriptVersion: script.version.number,
+                    scriptVersion: script
+                        ? script.version.number : executionRequestDetail.scriptExecutionRequests[0].scriptVersion,
                 },
             ],
+        });
+        setFormValues({
+            name: '',
+            description: '',
+            environment: '',
+            parameters: [],
+            executionRequestLabels: [],
         });
     }
 }
