@@ -5,6 +5,7 @@ import App from './views/appShell/App/index';
 import * as serviceWorker from './serviceWorker';
 import { ROOT_ELEMENT_ID } from './config/dom.config';
 
+console.log('retest signed commits')
 ReactDOM.render(
     <App />,
     document.getElementById(ROOT_ELEMENT_ID),
