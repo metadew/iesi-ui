@@ -14,10 +14,14 @@ import {
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { observe, IObserveProps } from 'views/observe';
 import { getScriptByUniqueIdFromDetailOrList } from 'state/entities/scripts/selectors';
-import { triggerCreateExecutionRequest } from 'state/entities/executionRequests/triggers';
+import {
+    triggerCreateExecutionRequest,
+    triggerFetchExecutionRequestDetail,
+    triggerResetAsyncExecutionRequest,
+} from 'state/entities/executionRequests/triggers';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
-import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import { AsyncOperation, AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import Loader from 'views/common/waiting/Loader';
 import { Alert } from '@material-ui/lab';
 import entitiesStateManager from 'state/entities/entitiesStateManager';
@@ -31,6 +35,8 @@ import isSet from '@snipsonian/core/es/is/isSet';
 import { IExecutionRequest } from 'models/state/executionRequests.models';
 import { getAsyncExecutionRequestDetail } from 'state/entities/executionRequests/selectors';
 import { addPollingExecutionRequest } from 'state/ui/actions';
+import isEmptyObject from '@snipsonian/core/es/object/isEmptyObject';
+import { useParams } from 'react-router';
 
 const useStyles = makeStyles(({ spacing, typography }) => ({
     formControl: {
@@ -43,7 +49,8 @@ const useStyles = makeStyles(({ spacing, typography }) => ({
 }));
 
 interface IPublicProps {
-    scriptUniqueId: string;
+    scriptUniqueId?: string;
+    executionRequestUniqueId?: string;
     open: boolean;
     onClose: () => void;
 }
@@ -59,6 +66,7 @@ interface IFormValues {
 function ExecuteScriptDialog({
     onClose,
     scriptUniqueId,
+    executionRequestUniqueId,
     open,
     state,
     dispatch,
@@ -81,7 +89,7 @@ function ExecuteScriptDialog({
         name: '',
         value: '',
     });
-
+    const params = useParams<{ executionRequestId: string }>();
     const translator = getTranslator(state);
     const script = getScriptByUniqueIdFromDetailOrList(state, scriptUniqueId);
     const createAsyncInfo = entitiesStateManager.getAsyncEntity({
@@ -92,20 +100,48 @@ function ExecuteScriptDialog({
         asyncEntityKey: ASYNC_ENTITY_KEYS.environments,
     }).fetch;
     const executionRequestDetail = getAsyncExecutionRequestDetail(state).data || {} as IExecutionRequest;
+    const executionRequestDetailAsyncInfo = entitiesStateManager.getAsyncEntity({
+        asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequestDetail,
+    }).fetch;
 
     // Trigger Fetch envs on open dialog
     useEffect(() => {
         if (open) {
-            triggerFetchEnvironments();
-        } else {
-            // Reset form & async status
+            if (environmentsAsyncInfo.status === AsyncStatus.Initial) {
+                triggerFetchEnvironments();
+            }
+            if (!scriptUniqueId) {
+                if (executionRequestDetailAsyncInfo.status === AsyncStatus.Initial
+                    && isEmptyObject(executionRequestDetail)) {
+                    triggerFetchExecutionRequestDetail({ id: executionRequestUniqueId });
+                } else if (executionRequestDetailAsyncInfo.status === AsyncStatus.Success
+                    && !isEmptyObject(executionRequestDetail)) {
+                    setFormValues({
+                        name: executionRequestDetail.name,
+                        description: executionRequestDetail.description,
+                        environment: executionRequestDetail.scriptExecutionRequests[0].environment,
+                        parameters: executionRequestDetail.scriptExecutionRequests[0].parameters,
+                        executionRequestLabels: executionRequestDetail.executionRequestLabels,
+                    });
+                }
+            }
         }
-        return () => {};
-    }, [open]);
-
-    if (createAsyncInfo.status === AsyncStatus.Success && executionRequestDetail) {
-        dispatch(addPollingExecutionRequest({ id: executionRequestDetail.executionRequestId }));
-    }
+        return () => {
+            if (
+                executionRequestDetailAsyncInfo.status === AsyncStatus.Success
+                && params.executionRequestId !== executionRequestUniqueId) {
+                triggerResetAsyncExecutionRequest({ operation: AsyncOperation.fetch });
+            }
+        };
+    }, [
+        open,
+        environmentsAsyncInfo,
+        executionRequestDetail,
+        executionRequestDetailAsyncInfo,
+        executionRequestUniqueId,
+        scriptUniqueId,
+        params,
+    ]);
 
     return (
         <ClosableDialog
@@ -123,7 +159,7 @@ function ExecuteScriptDialog({
                             <Button
                                 variant="contained"
                                 color="primary"
-                                onClick={onClose}
+                                onClick={onRequestSuccess}
                             >
                                 <Translate msg="scripts.overview.execute_script_dialog.success.close_button" />
                             </Button>
@@ -131,8 +167,12 @@ function ExecuteScriptDialog({
                     </>
                 ) : (
                     <>
-                        <Loader show={createAsyncInfo.status === AsyncStatus.Busy} />
-                        {!isSet(script) && (
+                        <Loader show={
+                            createAsyncInfo.status === AsyncStatus.Busy
+                            || executionRequestDetailAsyncInfo.status === AsyncStatus.Busy
+                        }
+                        />
+                        {!isSet(script) && !isSet(executionRequestDetail) && (
                             <Box marginBottom={2}>
                                 <Alert severity="error">
                                     <Translate msg="scripts.overview.execute_script_dialog.init_error" />
@@ -389,9 +429,9 @@ function ExecuteScriptDialog({
                                 color="secondary"
                                 onClick={createExecutionRequest}
                                 disabled={
-                                    !isSet(script)
-                                        || !formValues.name.trim()
-                                        || !formValues.environment.trim()
+                                    (!isSet(script) && !isSet(executionRequestDetail))
+                                    || !formValues.name.trim()
+                                    || !formValues.environment.trim()
                                 }
                             >
                                 <Translate msg="scripts.overview.execute_script_dialog.confirm" />
@@ -403,6 +443,12 @@ function ExecuteScriptDialog({
         </ClosableDialog>
     );
 
+    function onRequestSuccess() {
+        if (executionRequestDetail.executionRequestId) {
+            dispatch(addPollingExecutionRequest({ id: executionRequestDetail.executionRequestId }));
+        }
+        onClose();
+    }
     function createExecutionRequest() {
         triggerCreateExecutionRequest({
             context: '', // May be ignored for now
@@ -413,14 +459,23 @@ function ExecuteScriptDialog({
             scope: '', // May be ignored for now
             scriptExecutionRequests: [
                 {
-                    scriptName: script.name,
+                    scriptName: script
+                        ? script.name : executionRequestDetail.scriptExecutionRequests[0].scriptName,
                     environment: formValues.environment,
                     exit: false,
                     impersonations: [], // TODO
                     parameters: formValues.parameters,
-                    scriptVersion: script.version.number,
+                    scriptVersion: script
+                        ? script.version.number : executionRequestDetail.scriptExecutionRequests[0].scriptVersion,
                 },
             ],
+        });
+        setFormValues({
+            name: '',
+            description: '',
+            environment: '',
+            parameters: [],
+            executionRequestLabels: [],
         });
     }
 }
@@ -428,5 +483,6 @@ function ExecuteScriptDialog({
 export default observe<IPublicProps>([
     StateChangeNotification.I18N_TRANSLATIONS,
     StateChangeNotification.EXECUTION_REQUESTS_CREATE,
+    StateChangeNotification.EXECUTION_REQUESTS_DETAIL,
     StateChangeNotification.ENVIRONMENTS,
 ], ExecuteScriptDialog);
