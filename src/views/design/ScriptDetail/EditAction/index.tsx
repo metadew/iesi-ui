@@ -159,7 +159,7 @@ function EditAction({
                     {
                         matchingActionType.type === 'fwk.executeScript'
                         && (
-                            <Box marginBottom={2} className={classes.buttonContainer}>
+                            <Box paddingX={2} paddingY={1.1} className={classes.buttonContainer}>
                                 <Button
                                     variant="contained"
                                     color="secondary"
