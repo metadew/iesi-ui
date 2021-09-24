@@ -377,15 +377,6 @@ function EditAction({
         return orderedParameters;
     }
 
-    // function getScriptNameAndVersion(actionParameters: IParameter[]) {
-    //     const script = actionParameters.find((parameter) => parameter.name === 'script');
-    //     const version = actionParameters.find((parameter) => parameter.name === 'version');
-    //     return {
-    //         name: script ? script.value : '',
-    //         version: version ? version.value : '',
-    //     };
-    // }
-
     function getScriptNameOrValue(actionParameters: IParameter[], param: string) {
         const nameOrValue = actionParameters.find((parameter) => parameter.name === param);
         return nameOrValue || { name: '', value: '' };
