@@ -128,7 +128,7 @@ function EditAction({
                 display="flex"
                 justifyContent="space-between"
                 alignItems="center"
-                padding={1}
+                padding={2}
             >
                 <Box
                     paddingX={3}
@@ -159,7 +159,7 @@ function EditAction({
                     {
                         matchingActionType.type === 'fwk.executeScript'
                         && (
-                            <Box paddingX={2} paddingY={1.1} className={classes.buttonContainer}>
+                            <Box paddingX={2} className={classes.buttonContainer}>
                                 <Button
                                     variant="contained"
                                     color="secondary"
