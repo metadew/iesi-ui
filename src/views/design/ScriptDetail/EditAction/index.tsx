@@ -92,7 +92,10 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
     },
     buttonContainer: {
         display: 'flex',
-        justifyContent: 'flex-end',
+        flexDirection: 'column',
+        alignItems: 'end',
+        color: palette.grey[500],
+        fontSize: '.7rem',
     },
 }));
 
@@ -191,6 +194,13 @@ function EditAction({
                     >
                         <Translate msg="script_reports.detail.main.action.go_to_script" />
                     </Button>
+                    {
+                        !(getScriptNameOrValue(parameters, 'script').value.length
+                        && getScriptNameOrValue(parameters, 'version').value.length)
+                        && (
+                            <Translate msg="Script name and version are required to see the script" />
+                        )
+                    }
                 </Box>
                 <Box marginBottom={2}>
                     <Paper>
