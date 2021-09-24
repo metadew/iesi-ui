@@ -9,7 +9,6 @@ import {
     Button,
     ButtonGroup,
     Paper,
-    TextField,
 } from '@material-ui/core';
 import { IScriptAction } from 'models/state/scripts.models';
 import { formatNumberWithTwoDigits } from 'utils/number/format';
@@ -66,6 +65,10 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
     },
     nameTextField: {
         width: '100%',
+        marginTop: 0,
+        '& .MuiFilledInput-root': {
+            background: palette.background.paper,
+        },
     },
     conditionTextField: {
         width: '100%',
@@ -153,54 +156,62 @@ function EditAction({
                     className={classnames(classes.actionName)}
                     width="60%"
                 >
-                    <TextField
-                        id="action-name"
-                        label={translator('scripts.detail.edit_action.name')}
-                        defaultValue={name}
-                        onBlur={(e) => setName(e.target.value)}
-                        className={classes.nameTextField}
-                        InputProps={{
-                            readOnly: !isCreateScriptRoute
-                                && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
-                            disableUnderline: !isCreateScriptRoute
-                                && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
-                        }}
-                    />
+                    {
+                        matchingActionType.type === 'fwk.executeScript'
+                        && (
+                            <Box marginBottom={2} className={classes.buttonContainer}>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    disabled={
+                                        !(getScriptNameOrValue(parameters, 'script').value.length
+                                            && getScriptNameOrValue(parameters, 'version').value.length)
+                                    }
+                                    size="small"
+                                    endIcon={<ChevronRightRounded />}
+                                    onClick={
+                                        getScriptNameOrValue(parameters, 'script')
+                                            && getScriptNameOrValue(parameters, 'version')
+                                            ? () => redirectTo({
+                                                routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                                params: {
+                                                    name: getScriptNameOrValue(parameters, 'script').value || '',
+                                                    version: getScriptNameOrValue(parameters, 'version').value || '',
+                                                },
+                                            })
+                                            : null
+                                    }
+                                >
+                                    <Translate msg="script_reports.detail.main.action.go_to_script" />
+                                </Button>
+                                {
+                                    !(getScriptNameOrValue(parameters, 'script').value.length
+                                    && getScriptNameOrValue(parameters, 'version').value.length)
+                                    && (
+                                        <Translate msg="Script name and version are required to see the script" />
+                                    )
+                                }
+                            </Box>
+                        )
+                    }
                 </Box>
             </Box>
             <Box padding={2}>
-                <Box marginBottom={2} className={classes.buttonContainer}>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        disabled={
-                            !(getScriptNameOrValue(parameters, 'script').value.length
-                                && getScriptNameOrValue(parameters, 'version').value.length)
-                        }
-                        size="small"
-                        endIcon={<ChevronRightRounded />}
-                        onClick={
-                            getScriptNameOrValue(parameters, 'script')
-                                && getScriptNameOrValue(parameters, 'version')
-                                ? () => redirectTo({
-                                    routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                    params: {
-                                        name: getScriptNameOrValue(parameters, 'script').value || '',
-                                        version: getScriptNameOrValue(parameters, 'version').value || '',
-                                    },
-                                })
-                                : null
-                        }
-                    >
-                        <Translate msg="script_reports.detail.main.action.go_to_script" />
-                    </Button>
-                    {
-                        !(getScriptNameOrValue(parameters, 'script').value.length
-                        && getScriptNameOrValue(parameters, 'version').value.length)
-                        && (
-                            <Translate msg="Script name and version are required to see the script" />
-                        )
-                    }
+                <Box marginBottom={2}>
+                    <Paper>
+                        <TextInput
+                            id="action-name"
+                            label={translator('scripts.detail.edit_action.name')}
+                            defaultValue={name}
+                            onBlur={(e) => setName(e.target.value)}
+                            className={classes.nameTextField}
+                            InputProps={{
+                                readOnly: !isCreateScriptRoute
+                                    && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
+                                disableUnderline: true,
+                            }}
+                        />
+                    </Paper>
                 </Box>
                 <Box marginBottom={2}>
                     <Paper>
