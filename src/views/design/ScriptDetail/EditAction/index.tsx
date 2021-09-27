@@ -142,10 +142,7 @@ function EditAction({
                 <Box
                     paddingX={3}
                     paddingY={1.1}
-                    className={classnames(
-                        classes.tableCell,
-                        classes.actionType,
-                    )}
+                    className={classnames(classes.actionType)}
                     width="40%"
                 >
                     {action.type}
