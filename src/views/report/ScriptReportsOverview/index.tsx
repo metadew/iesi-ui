@@ -11,7 +11,7 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
-import { Replay, WatchLater } from '@material-ui/icons';
+import { PlayArrow, WatchLater } from '@material-ui/icons';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import ReportIcon from 'views/common/icons/Report';
 import {
@@ -437,8 +437,8 @@ const ScriptReportsOverview = withStyles(styles)(
                                 );
                             },
                         }, {
-                            icon: <Replay />,
-                            label: translator('script_reports.overview.list.actions.report'),
+                            icon: <PlayArrow />,
+                            label: translator('script_reports.overview.list.actions.rerun'),
                             onClick: (id: number) => {
                                 this.setState({ executionRequestIdtoExecute: id.toString() });
                             },

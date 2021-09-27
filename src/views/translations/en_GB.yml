@@ -114,7 +114,6 @@ scripts:
         view: View
         execute: Run script
         report: Reporting
-        rerun: Re-run
       filter:
         last_run_status: Last run status
         script_name: Script name
@@ -224,6 +223,7 @@ script_reports:
     list:
       actions:
         report: Reporting
+        rerun: Re-run
       fetch_error: Something went wrong while loading the script executions, please try again.
       filter:
         script_name: Script name

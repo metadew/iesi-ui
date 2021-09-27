@@ -37,6 +37,12 @@ import { getAsyncExecutionRequestDetail } from 'state/entities/executionRequests
 import { addPollingExecutionRequest } from 'state/ui/actions';
 import isEmptyObject from '@snipsonian/core/es/object/isEmptyObject';
 import { useParams } from 'react-router';
+import { getAsyncScriptExecutionDetail } from 'state/entities/scriptExecutions/selectors';
+import { IScriptExecutionDetail } from 'models/state/scriptExecutions.models';
+import {
+    triggerFetchScriptExecutionDetail,
+    triggerResetScriptExecutionDetail,
+} from 'state/entities/scriptExecutions/triggers';
 
 const useStyles = makeStyles(({ spacing, typography }) => ({
     formControl: {
@@ -61,6 +67,12 @@ interface IFormValues {
     environment: string;
     parameters: IParameter[];
     executionRequestLabels: ILabel[];
+}
+
+interface IExecutionReportDetailRouteParams {
+    executionRequestId: string;
+    runId: string;
+    processId: string;
 }
 
 function ExecuteScriptDialog({
@@ -89,7 +101,7 @@ function ExecuteScriptDialog({
         name: '',
         value: '',
     });
-    const params = useParams<{ executionRequestId: string }>();
+    const params = useParams<IExecutionReportDetailRouteParams>();
     const translator = getTranslator(state);
     const script = getScriptByUniqueIdFromDetailOrList(state, scriptUniqueId);
     const createAsyncInfo = entitiesStateManager.getAsyncEntity({
@@ -103,6 +115,10 @@ function ExecuteScriptDialog({
     const executionRequestDetailAsyncInfo = entitiesStateManager.getAsyncEntity({
         asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequestDetail,
     }).fetch;
+    const scriptExecutionDetail = getAsyncScriptExecutionDetail(state).data || {} as IScriptExecutionDetail;
+    const scriptExecutionAsyncInfo = entitiesStateManager.getAsyncEntity({
+        asyncEntityKey: ASYNC_ENTITY_KEYS.scriptExecutionDetail,
+    }).fetch;
 
     // Trigger Fetch envs on open dialog
     useEffect(() => {
@@ -112,25 +128,36 @@ function ExecuteScriptDialog({
             }
             if (!scriptUniqueId) {
                 if (executionRequestDetailAsyncInfo.status === AsyncStatus.Initial
-                    && isEmptyObject(executionRequestDetail)) {
+                    && isEmptyObject(scriptExecutionDetail)) {
                     triggerFetchExecutionRequestDetail({ id: executionRequestUniqueId });
                 } else if (executionRequestDetailAsyncInfo.status === AsyncStatus.Success
                     && !isEmptyObject(executionRequestDetail)) {
-                    setFormValues({
-                        name: executionRequestDetail.name,
-                        description: executionRequestDetail.description,
-                        environment: executionRequestDetail.scriptExecutionRequests[0].environment,
-                        parameters: executionRequestDetail.scriptExecutionRequests[0].parameters,
-                        executionRequestLabels: executionRequestDetail.executionRequestLabels,
-                    });
+                    if (scriptExecutionAsyncInfo.status === AsyncStatus.Initial
+                        && isEmptyObject(scriptExecutionDetail)) {
+                        triggerFetchScriptExecutionDetail({
+                            runId: executionRequestDetail.scriptExecutionRequests[0].runId,
+                            processId: -1,
+                        });
+                    } else if (!isEmptyObject(scriptExecutionDetail)) {
+                        setFormValues({
+                            name: executionRequestDetail.name,
+                            description: executionRequestDetail.description,
+                            environment: scriptExecutionDetail.environment,
+                            parameters: scriptExecutionDetail.inputParameters,
+                            executionRequestLabels: scriptExecutionDetail.executionLabels,
+                        });
+                    }
                 }
             }
         }
         return () => {
             if (
                 executionRequestDetailAsyncInfo.status === AsyncStatus.Success
-                && params.executionRequestId !== executionRequestUniqueId) {
+                && scriptExecutionAsyncInfo.status === AsyncStatus.Success
+                && params.executionRequestId !== executionRequestUniqueId
+            ) {
                 triggerResetAsyncExecutionRequest({ operation: AsyncOperation.fetch });
+                triggerResetScriptExecutionDetail({ operation: AsyncOperation.fetch });
             }
         };
     }, [
@@ -138,6 +165,8 @@ function ExecuteScriptDialog({
         environmentsAsyncInfo,
         executionRequestDetail,
         executionRequestDetailAsyncInfo,
+        scriptExecutionDetail,
+        scriptExecutionAsyncInfo,
         executionRequestUniqueId,
         scriptUniqueId,
         params,
@@ -147,7 +176,7 @@ function ExecuteScriptDialog({
         <ClosableDialog
             onClose={onClose}
             open={open}
-            title={script && script.name}
+            title={script ? script.name : scriptExecutionDetail.scriptName}
         >
             <Box textAlign="left" maxWidth={400} marginX="auto">
                 {createAsyncInfo.status === AsyncStatus.Success ? (
@@ -459,8 +488,7 @@ function ExecuteScriptDialog({
             scope: '', // May be ignored for now
             scriptExecutionRequests: [
                 {
-                    scriptName: script
-                        ? script.name : executionRequestDetail.scriptExecutionRequests[0].scriptName,
+                    scriptName: script ? script.name : scriptExecutionDetail.scriptName,
                     environment: formValues.environment,
                     exit: false,
                     impersonations: [], // TODO
@@ -484,5 +512,6 @@ export default observe<IPublicProps>([
     StateChangeNotification.I18N_TRANSLATIONS,
     StateChangeNotification.EXECUTION_REQUESTS_CREATE,
     StateChangeNotification.EXECUTION_REQUESTS_DETAIL,
+    StateChangeNotification.SCRIPT_EXECUTION_DETAIL,
     StateChangeNotification.ENVIRONMENTS,
 ], ExecuteScriptDialog);

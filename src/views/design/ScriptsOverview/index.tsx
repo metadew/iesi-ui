@@ -261,11 +261,16 @@ const ScriptsOverview = withStyles(styles)(
                         onConfirm={this.onDeleteScript}
                         showLoader={deleteStatus === AsyncStatus.Busy}
                     />
-                    <ExecuteScriptDialog
-                        scriptUniqueId={scriptIdToExecute}
-                        open={!!scriptIdToExecute}
-                        onClose={this.onCloseExecuteDialog}
-                    />
+                    {
+                        scriptIdToExecute && (
+                            <ExecuteScriptDialog
+                                scriptUniqueId={scriptIdToExecute}
+                                open={!!scriptIdToExecute}
+                                onClose={this.onCloseExecuteDialog}
+                            />
+                        )
+                    }
+
                 </>
             );
         }

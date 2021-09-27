@@ -4,7 +4,7 @@ import { format as formatDate, parseISO } from 'date-fns';
 import isSet from '@snipsonian/core/es/is/isSet';
 import isEmptyObject from '@snipsonian/core/es/object/isEmptyObject';
 import { Box, Button, makeStyles, Typography } from '@material-ui/core';
-import { ChevronLeftRounded, ChevronRight } from '@material-ui/icons';
+import { ChevronLeftRounded, ChevronRight, PlayArrow } from '@material-ui/icons';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import useExecuteOnUnmount from 'utils/hooks/useExecuteOnUnmount';
@@ -46,7 +46,7 @@ const useStyles = makeStyles(({ palette, typography }) => ({
         display: 'none',
     },
     rerunButton: {
-        alignSelf: 'end',
+        marginleft: 'auto',
     },
     scriptName: {
         fontWeight: typography.fontWeightBold,
@@ -97,9 +97,9 @@ function ExecutionDetail({ state }: IObserveProps) {
     useEffect(() => {
         if (
             !runId
-                && asyncExecutionRequest.status === AsyncStatus.Success
-                && executionRequestDetail.scriptExecutionRequests.length > 0
-                && executionRequestDetail.scriptExecutionRequests[0].runId
+            && asyncExecutionRequest.status === AsyncStatus.Success
+            && executionRequestDetail.scriptExecutionRequests.length > 0
+            && executionRequestDetail.scriptExecutionRequests[0].runId
         ) {
             redirectTo({
                 routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
@@ -109,26 +109,26 @@ function ExecutionDetail({ state }: IObserveProps) {
                 },
             });
         }
-        return () => {};
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        return () => { };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [asyncExecutionRequest]);
 
     useEffect(() => {
         if (
             asyncExecutionRequest.status === AsyncStatus.Success
-                && asyncScriptExecutionData.status !== AsyncStatus.Busy
-                && (!isSet(scriptExecutionData)
-                    || scriptExecutionData.runId !== runId
-                    || (processId && scriptExecutionData.processId !== parseInt(processId, 10)))
-                && runId
+            && asyncScriptExecutionData.status !== AsyncStatus.Busy
+            && (!isSet(scriptExecutionData)
+                || scriptExecutionData.runId !== runId
+                || (processId && scriptExecutionData.processId !== parseInt(processId, 10)))
+            && runId
         ) {
             triggerFetchScriptExecutionDetail({
                 runId,
                 processId: processId ? parseInt(processId, 10) : -1,
             });
         }
-        return () => {};
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        return () => { };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [scriptExecutionData, runId, processId, asyncExecutionRequest]);
 
     useExecuteOnUnmount({
@@ -142,8 +142,7 @@ function ExecutionDetail({ state }: IObserveProps) {
     const isLoading = asyncExecutionRequest.status === AsyncStatus.Busy
         || asyncScriptExecutionData.status === AsyncStatus.Busy
         || (asyncExecutionRequest.status === AsyncStatus.Success
-                && asyncScriptExecutionData.status === AsyncStatus.Initial);
-
+            && asyncScriptExecutionData.status === AsyncStatus.Initial);
     return (
         <>
             <Loader show={isLoading} />
@@ -347,21 +346,23 @@ function ExecutionDetail({ state }: IObserveProps) {
 
         return (
             <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    size="small"
-                    endIcon={<ChevronRight />}
-                    onClick={() => setExecuteScriptDialogOpen(true)}
-                    className={classes.rerunButton}
-
-                >
-                    <Translate msg="script_reports.detail.side.execution.rerun" />
-                </Button>
                 <Box flex="0 1 auto" marginBottom={3}>
-                    <Typography variant="h4">
-                        <Translate msg="script_reports.detail.side.execution.title" />
-                    </Typography>
+                    <Box display="flex" flexDirection="row" justifyContent="space-between">
+                        <Typography variant="h4">
+                            <Translate msg="script_reports.detail.side.execution.title" />
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            size="small"
+                            endIcon={<PlayArrow />}
+                            onClick={() => setExecuteScriptDialogOpen(true)}
+                            className={classes.rerunButton}
+
+                        >
+                            <Translate msg="script_reports.detail.side.execution.rerun" />
+                        </Button>
+                    </Box>
                     <DescriptionList items={executionListItems} noLineAfterListItem />
                 </Box>
             </Box>
