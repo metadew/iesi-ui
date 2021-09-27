@@ -70,7 +70,8 @@ flash_messages:
   script: 
     create: 'The script has been successfully created !'
     edit: 'The script has been updated'
-    error: 'An error has occured'
+    error: 'Missing informations or empty documentation'
+    import: 'The script has been successfully imported !'
   error: 'An error has occured'
 scripts:
   overview:
@@ -109,7 +110,7 @@ scripts:
       amount: 'You have {amount} scripts'
       add_button: Create new script
       generate_button: "Load OpenAPI documentation"
-      generate_script_button: "Load Script documentation"
+      generate_script_button: "Import script documentation"
       transform_openapi_tooltip: "Transform an OpenAPI documentation into IESI connections and components"
       transform_script_tooltip: "Transform a ScriptDetail documentation into IESI scripts"
     list:
@@ -478,7 +479,7 @@ doc:
   dialog:
     transform:
       title: Provide an OpenAPI documentation to perform the transformation
-      scriptTitle: Provide a ScriptDetail documentation to perform the transformation
+      scriptTitle: Provide JSON representation of the script
       json_content_label: Json Content
       file_label: 'Choose a file'
       file_helper: 'Only .JSON and .YAML are accepted'

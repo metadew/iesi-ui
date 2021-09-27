@@ -7,7 +7,6 @@ import {
     // IconButton,
     TextField,
     makeStyles,
-    Tooltip,
     Theme,
 } from '@material-ui/core';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
@@ -88,26 +87,16 @@ function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicP
 
     return (
         <>
-            <Tooltip
-                title={translator('scripts.overview.header.transform_script_tooltip')}
-                placement="top"
-                classes={{
-                    tooltip: classes.generateTooltip,
-                    arrow: classes.generateTooltipArrow,
-                }}
-                arrow
+            <Button
+                variant="contained"
+                color="secondary"
+                size="small"
+                onClick={onOpen}
             >
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    size="small"
-                    onClick={onOpen}
-                >
-                    <Translate
-                        msg="scripts.overview.header.generate_script_button"
-                    />
-                </Button>
-            </Tooltip>
+                <Translate
+                    msg="scripts.overview.header.generate_script_button"
+                />
+            </Button>
             <ClosableDialog
                 onClose={onClose}
                 open={open}
