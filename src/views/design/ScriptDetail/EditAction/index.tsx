@@ -154,6 +154,9 @@ function EditAction({
                     width="60%"
                 >
                     {
+                        console.log(actionTypes)
+                    }
+                    {
                         matchingActionType.type === 'fwk.executeScript'
                         && (
                             <Box paddingX={2} className={classes.buttonContainer}>
@@ -167,16 +170,22 @@ function EditAction({
                                     size="small"
                                     endIcon={<ChevronRightRounded />}
                                     onClick={
-                                        getScriptNameOrValue(parameters, 'script')
-                                            && getScriptNameOrValue(parameters, 'version')
+                                        actionTypes.find((element) =>
+                                            getScriptNameOrValue(parameters, 'script').value === element.type)
+                                            && Number.isInteger(parseInt(
+                                                getScriptNameOrValue(parameters, 'version').value,
+                                                10,
+                                            ))
                                             ? () => redirectTo({
                                                 routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
                                                 params: {
-                                                    name: getScriptNameOrValue(parameters, 'script').value || '',
-                                                    version: getScriptNameOrValue(parameters, 'version').value || '',
+                                                    name: getScriptNameOrValue(parameters, 'script').value,
+                                                    version: getScriptNameOrValue(parameters, 'version').value,
                                                 },
                                             })
-                                            : null
+                                            : () => redirectTo({
+                                                routeKey: ROUTE_KEYS.R_NOT_FOUND,
+                                            })
                                     }
                                 >
                                     <Translate msg="script_reports.detail.main.action.go_to_script" />

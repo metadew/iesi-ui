@@ -264,7 +264,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     }],
 }, {
     routeKey: ROUTE_KEYS.R_NOT_FOUND,
-    path: '*',
+    path: '/*',
     component: NotFound,
 },
 ];
