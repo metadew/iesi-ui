@@ -121,6 +121,8 @@ function EditAction({
     const actionTypes = getAsyncActionTypes(state).data || [];
     const matchingActionType = actionTypes.find((item) => action.type === item.type);
     const orderedActionTypeParameters = orderActionTypeParameters(matchingActionType.parameters, matchingActionType);
+    const parameterScript = getParameterDetail(parameters, 'script');
+    const parameterVersion = getParameterDetail(parameters, 'version');
     return (
         <Box className={classes.dialog}>
             <Box
@@ -154,9 +156,6 @@ function EditAction({
                     width="60%"
                 >
                     {
-                        console.log(actionTypes)
-                    }
-                    {
                         matchingActionType.type === 'fwk.executeScript'
                         && (
                             <Box paddingX={2} className={classes.buttonContainer}>
@@ -164,23 +163,23 @@ function EditAction({
                                     variant="contained"
                                     color="secondary"
                                     disabled={
-                                        !(getScriptNameOrValue(parameters, 'script').value.length
-                                            && getScriptNameOrValue(parameters, 'version').value.length)
+                                        !(parameterScript.value.length
+                                            && parameterVersion.value.length)
                                     }
                                     size="small"
                                     endIcon={<ChevronRightRounded />}
                                     onClick={
                                         actionTypes.find((element) =>
-                                            getScriptNameOrValue(parameters, 'script').value === element.type)
+                                            parameterScript.value === element.type)
                                             && Number.isInteger(parseInt(
-                                                getScriptNameOrValue(parameters, 'version').value,
+                                                parameterVersion.value,
                                                 10,
                                             ))
                                             ? () => redirectTo({
                                                 routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
                                                 params: {
-                                                    name: getScriptNameOrValue(parameters, 'script').value,
-                                                    version: getScriptNameOrValue(parameters, 'version').value,
+                                                    name: parameterScript.value,
+                                                    version: parameterVersion.value,
                                                 },
                                             })
                                             : () => redirectTo({
@@ -191,8 +190,8 @@ function EditAction({
                                     <Translate msg="script_reports.detail.main.action.go_to_script" />
                                 </Button>
                                 {
-                                    !(getScriptNameOrValue(parameters, 'script').value.length
-                                    && getScriptNameOrValue(parameters, 'version').value.length)
+                                    !(parameterScript.value.length
+                                    && parameterVersion.value.length)
                                     && (
                                         <Translate msg="Script name and version are required to see the script" />
                                     )
@@ -404,9 +403,9 @@ function EditAction({
         return orderedParameters;
     }
 
-    function getScriptNameOrValue(actionParameters: IParameter[], param: string) {
-        const nameOrValue = actionParameters.find((parameter) => parameter.name === param);
-        return nameOrValue || { name: '', value: '' };
+    function getParameterDetail(actionParameters: IParameter[], param: string) {
+        const parameterDetail = actionParameters.find((parameter) => parameter.name === param);
+        return parameterDetail || { name: '', value: '' };
     }
 }
 
