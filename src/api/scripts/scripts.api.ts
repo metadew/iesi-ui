@@ -100,30 +100,19 @@ export async function fetchScriptByNameAndVersionDownload({
  * OR an extra version of an existing script.
  */
 export function createScriptVersion(script: IScriptBase | IScriptImport) {
-    if (!instanceOfIScriptImport(script)) {
-        return post<IScriptBase>({
-            needsAuthentication: true,
-            isIesiApi: true,
-            url: API_URLS.SCRIPTS,
-            body: script,
-        });
-    }
-    return post<IScriptBase>({
+    return post<IScriptBase | IScriptImport>({
         needsAuthentication: true,
         isIesiApi: true,
         url: API_URLS.SCRIPTS,
-        body: script.value,
-        contentType: script.value instanceof FormData ? 'multipart/form-data' : 'application/json',
+        body: 'value' in script ? script.value : script,
+        contentType: 'value' in script
+            && script.value instanceof FormData
+            ? 'multipart/form-data' : 'application/json',
         headers: {
-            'Content-Type': script.value instanceof FormData ? 'multipart/form-data' : 'application/json',
+            'Content-Type': 'value' in script
+                && script.value instanceof FormData
+                ? 'multipart/form-data' : 'application/json',
         },
-        // mapResponse: ({ data }) => ({
-        //     ...data,
-        //     scripts: data.scripts.map((item) => ({
-        //         ...item,
-        //         isHandled: false,
-        //     })),
-        // }),
     });
 }
 
@@ -188,8 +177,4 @@ function toExpandQueryParam(expandScriptsResponseWith: IExpandScriptsResponseWit
     return {
         expand: expandItems.join(','),
     };
-}
-
-function instanceOfIScriptImport(object: any): object is IScriptImport {
-    return 'value' in object;
 }

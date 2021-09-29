@@ -3,14 +3,11 @@ import {
     Button,
     ButtonGroup,
     Box,
-    // Typography,
-    // IconButton,
     TextField,
     makeStyles,
     Theme,
 } from '@material-ui/core';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
-// import { Delete } from '@material-ui/icons';
 import { triggerCreateScriptDetail } from 'state/entities/scripts/triggers';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getTranslator } from 'state/i18n/selectors';
