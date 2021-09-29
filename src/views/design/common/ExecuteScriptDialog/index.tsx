@@ -13,15 +13,12 @@ import {
 } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { observe, IObserveProps } from 'views/observe';
-import { getScriptByUniqueIdFromDetailOrList } from 'state/entities/scripts/selectors';
 import {
     triggerCreateExecutionRequest,
-    triggerFetchExecutionRequestDetail,
-    triggerResetAsyncExecutionRequest,
 } from 'state/entities/executionRequests/triggers';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
-import { AsyncOperation, AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import Loader from 'views/common/waiting/Loader';
 import { Alert } from '@material-ui/lab';
 import entitiesStateManager from 'state/entities/entitiesStateManager';
@@ -35,14 +32,6 @@ import isSet from '@snipsonian/core/es/is/isSet';
 import { IExecutionRequest } from 'models/state/executionRequests.models';
 import { getAsyncExecutionRequestDetail } from 'state/entities/executionRequests/selectors';
 import { addPollingExecutionRequest } from 'state/ui/actions';
-import isEmptyObject from '@snipsonian/core/es/object/isEmptyObject';
-import { useParams } from 'react-router';
-import { getAsyncScriptExecutionDetail } from 'state/entities/scriptExecutions/selectors';
-import { IScriptExecutionDetail } from 'models/state/scriptExecutions.models';
-import {
-    triggerFetchScriptExecutionDetail,
-    triggerResetScriptExecutionDetail,
-} from 'state/entities/scriptExecutions/triggers';
 
 const useStyles = makeStyles(({ spacing, typography }) => ({
     formControl: {
@@ -55,10 +44,10 @@ const useStyles = makeStyles(({ spacing, typography }) => ({
 }));
 
 interface IPublicProps {
-    scriptUniqueId?: string;
-    executionRequestUniqueId?: string;
-    open: boolean;
     onClose: () => void;
+    initialFormValues?: IFormValues;
+    scriptName: string;
+    scriptVersion: number;
 }
 
 interface IFormValues {
@@ -77,14 +66,14 @@ interface IExecutionReportDetailRouteParams {
 
 function ExecuteScriptDialog({
     onClose,
-    scriptUniqueId,
-    executionRequestUniqueId,
-    open,
+    initialFormValues,
+    scriptName,
+    scriptVersion,
     state,
     dispatch,
 }: IPublicProps & IObserveProps) {
     const classes = useStyles();
-    const [formValues, setFormValues] = useState<IFormValues>({
+    const [formValues, setFormValues] = useState<IFormValues>(initialFormValues || {
         name: '',
         description: '',
         environment: '',
@@ -101,9 +90,7 @@ function ExecuteScriptDialog({
         name: '',
         value: '',
     });
-    const params = useParams<IExecutionReportDetailRouteParams>();
     const translator = getTranslator(state);
-    const script = getScriptByUniqueIdFromDetailOrList(state, scriptUniqueId);
     const createAsyncInfo = entitiesStateManager.getAsyncEntity({
         asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequestDetail,
     }).create;
@@ -115,68 +102,20 @@ function ExecuteScriptDialog({
     const executionRequestDetailAsyncInfo = entitiesStateManager.getAsyncEntity({
         asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequestDetail,
     }).fetch;
-    const scriptExecutionDetail = getAsyncScriptExecutionDetail(state).data || {} as IScriptExecutionDetail;
-    const scriptExecutionAsyncInfo = entitiesStateManager.getAsyncEntity({
-        asyncEntityKey: ASYNC_ENTITY_KEYS.scriptExecutionDetail,
-    }).fetch;
 
     // Trigger Fetch envs on open dialog
     useEffect(() => {
-        if (open) {
-            if (environmentsAsyncInfo.status === AsyncStatus.Initial) {
-                triggerFetchEnvironments();
-            }
-            if (!scriptUniqueId) {
-                if (executionRequestDetailAsyncInfo.status === AsyncStatus.Initial
-                    && isEmptyObject(scriptExecutionDetail)) {
-                    triggerFetchExecutionRequestDetail({ id: executionRequestUniqueId });
-                } else if (executionRequestDetailAsyncInfo.status === AsyncStatus.Success
-                    && !isEmptyObject(executionRequestDetail)) {
-                    if (scriptExecutionAsyncInfo.status === AsyncStatus.Initial
-                        && isEmptyObject(scriptExecutionDetail)) {
-                        triggerFetchScriptExecutionDetail({
-                            runId: executionRequestDetail.scriptExecutionRequests[0].runId,
-                            processId: -1,
-                        });
-                    } else if (!isEmptyObject(scriptExecutionDetail)) {
-                        setFormValues({
-                            name: executionRequestDetail.name,
-                            description: executionRequestDetail.description,
-                            environment: scriptExecutionDetail.environment,
-                            parameters: scriptExecutionDetail.inputParameters,
-                            executionRequestLabels: scriptExecutionDetail.executionLabels,
-                        });
-                    }
-                }
-            }
+        if (environmentsAsyncInfo.status === AsyncStatus.Initial) {
+            triggerFetchEnvironments();
         }
-        return () => {
-            if (
-                executionRequestDetailAsyncInfo.status === AsyncStatus.Success
-                && scriptExecutionAsyncInfo.status === AsyncStatus.Success
-                && params.executionRequestId !== executionRequestUniqueId
-            ) {
-                triggerResetAsyncExecutionRequest({ operation: AsyncOperation.fetch });
-                triggerResetScriptExecutionDetail({ operation: AsyncOperation.fetch });
-            }
-        };
-    }, [
-        open,
-        environmentsAsyncInfo,
-        executionRequestDetail,
-        executionRequestDetailAsyncInfo,
-        scriptExecutionDetail,
-        scriptExecutionAsyncInfo,
-        executionRequestUniqueId,
-        scriptUniqueId,
-        params,
-    ]);
+        return () => { };
+    }, [environmentsAsyncInfo]);
 
     return (
         <ClosableDialog
             onClose={onClose}
-            open={open}
-            title={script ? script.name : scriptExecutionDetail.scriptName}
+            title={scriptName}
+            open
         >
             <Box textAlign="left" maxWidth={400} marginX="auto">
                 {createAsyncInfo.status === AsyncStatus.Success ? (
@@ -201,13 +140,6 @@ function ExecuteScriptDialog({
                             || executionRequestDetailAsyncInfo.status === AsyncStatus.Busy
                         }
                         />
-                        {!isSet(script) && !isSet(executionRequestDetail) && (
-                            <Box marginBottom={2}>
-                                <Alert severity="error">
-                                    <Translate msg="scripts.overview.execute_script_dialog.init_error" />
-                                </Alert>
-                            </Box>
-                        )}
                         <Box marginBottom={2}>
                             <Translate msg="scripts.overview.execute_script_dialog.text" />
                         </Box>
@@ -457,11 +389,7 @@ function ExecuteScriptDialog({
                                 variant="contained"
                                 color="secondary"
                                 onClick={createExecutionRequest}
-                                disabled={
-                                    (!isSet(script) && !isSet(executionRequestDetail))
-                                    || !formValues.name.trim()
-                                    || !formValues.environment.trim()
-                                }
+                                disabled={!formValues.name.trim() || !formValues.environment.trim()}
                             >
                                 <Translate msg="scripts.overview.execute_script_dialog.confirm" />
                             </Button>
@@ -488,22 +416,14 @@ function ExecuteScriptDialog({
             scope: '', // May be ignored for now
             scriptExecutionRequests: [
                 {
-                    scriptName: script ? script.name : scriptExecutionDetail.scriptName,
+                    scriptName,
+                    scriptVersion,
                     environment: formValues.environment,
                     exit: false,
                     impersonations: [], // TODO
                     parameters: formValues.parameters,
-                    scriptVersion: script
-                        ? script.version.number : executionRequestDetail.scriptExecutionRequests[0].scriptVersion,
                 },
             ],
-        });
-        setFormValues({
-            name: '',
-            description: '',
-            environment: '',
-            parameters: [],
-            executionRequestLabels: [],
         });
     }
 }

@@ -168,7 +168,7 @@ const defaultSortedColumn: ISortedColumn<IColumnNames> = {
 
 type TProps = WithStyles<typeof styles>;
 type TState = {
-    executionRequestIdtoExecute: string;
+    selectedExecutionRequest: IExecutionRequest;
 };
 
 const ScriptReportsOverview = withStyles(styles)(
@@ -177,7 +177,7 @@ const ScriptReportsOverview = withStyles(styles)(
             super(props);
 
             this.state = {
-                executionRequestIdtoExecute: null,
+                selectedExecutionRequest: null,
             };
 
             this.renderPanel = this.renderPanel.bind(this);
@@ -188,6 +188,7 @@ const ScriptReportsOverview = withStyles(styles)(
 
             // eslint-disable-next-line max-len
             this.fetchExecutionRequestsWithFilterAndPagination = this.fetchExecutionRequestsWithFilterAndPagination.bind(this);
+            this.onOpenExecuteDialog = this.onOpenExecuteDialog.bind(this);
             this.onCloseExecuteDialog = this.onCloseExecuteDialog.bind(this);
         }
 
@@ -210,7 +211,7 @@ const ScriptReportsOverview = withStyles(styles)(
 
         public render() {
             const { classes, state } = this.props;
-
+            const { selectedExecutionRequest } = this.state;
             const filterFromState = getExecutionsListFilter(state);
             const pageData = getAsyncExecutionRequestsPageData(state);
             const executions = getAsyncExecutionRequests(state);
@@ -263,11 +264,19 @@ const ScriptReportsOverview = withStyles(styles)(
                             initialIsOpenState={initialIsOpenStateFilterPanel}
                         />
                         {
-                            this.state.executionRequestIdtoExecute && (
+                            selectedExecutionRequest && (
                                 <ExecuteScriptDialog
-                                    executionRequestUniqueId={this.state.executionRequestIdtoExecute}
-                                    open={!!this.state.executionRequestIdtoExecute}
                                     onClose={this.onCloseExecuteDialog}
+                                    scriptName={selectedExecutionRequest.scriptExecutionRequests[0].scriptName}
+                                    scriptVersion={selectedExecutionRequest.scriptExecutionRequests[0].scriptVersion}
+                                    initialFormValues={{
+                                        name: selectedExecutionRequest.name,
+                                        description: selectedExecutionRequest.description,
+                                        environment: selectedExecutionRequest.scriptExecutionRequests[0].environment,
+                                        parameters: selectedExecutionRequest.scriptExecutionRequests[0].parameters,
+                                        executionRequestLabels: selectedExecutionRequest.executionRequestLabels,
+
+                                    }}
                                 />
                             )
                         }
@@ -440,7 +449,7 @@ const ScriptReportsOverview = withStyles(styles)(
                             icon: <PlayArrow />,
                             label: translator('script_reports.overview.list.actions.rerun'),
                             onClick: (id: number) => {
-                                this.setState({ executionRequestIdtoExecute: id.toString() });
+                                this.onOpenExecuteDialog(id.toString());
                             },
                         })}
                         columns={columns}
@@ -513,9 +522,17 @@ const ScriptReportsOverview = withStyles(styles)(
             });
         }
 
+        private onOpenExecuteDialog(id: string) {
+            const { state } = this.props;
+            const executionRequests = getAsyncExecutionRequests(state);
+            const selectedExecutionRequest = executionRequests.find((item) =>
+                item.executionRequestId === id);
+            this.setState({ selectedExecutionRequest });
+        }
+
         private onCloseExecuteDialog() {
             triggerResetAsyncExecutionRequest({ operation: AsyncOperation.create });
-            this.setState({ executionRequestIdtoExecute: null });
+            this.setState({ selectedExecutionRequest: null });
         }
     },
 );
@@ -583,5 +600,6 @@ function mapExecutionsToListItems(
 
 export default observe<TProps>([
     StateChangeNotification.EXECUTION_REQUESTS_LIST,
+    StateChangeNotification.SCRIPT_EXECUTION_DETAIL,
     StateChangeNotification.LIST_FILTER_EXECUTIONS,
 ], ScriptReportsOverview);

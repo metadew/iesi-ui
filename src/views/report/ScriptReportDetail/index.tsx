@@ -149,8 +149,16 @@ function ExecutionDetail({ state }: IObserveProps) {
             {
                 scriptExecutionData && executeScriptDialogOpen && (
                     <ExecuteScriptDialog
-                        executionRequestUniqueId={executionRequestId}
-                        open={!!executeScriptDialogOpen}
+                        initialFormValues={{
+                            name: executionRequestDetail.name,
+                            description: executionRequestDetail.description,
+                            environment: scriptExecutionData.environment,
+                            parameters: scriptExecutionData.inputParameters,
+                            executionRequestLabels: scriptExecutionData.executionLabels,
+
+                        }}
+                        scriptName={scriptExecutionData.scriptName}
+                        scriptVersion={scriptExecutionData.scriptVersion}
                         onClose={onCloseExecuteDialog}
                     />
                 )
