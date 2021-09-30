@@ -224,11 +224,15 @@ const ScriptsOverview = withStyles(styles)(
                                         ? (
                                             <Box display="flex" alignItems="center" flex="0 0 auto">
                                                 <Box flex="0 0 auto" mr="8px" width="250px">
-                                                    <TransformDocumentationDialogScript
-                                                        open={this.state.loadDocDialogOpen}
-                                                        onOpen={this.onLoadDocDialogOpen}
-                                                        onClose={this.onLoadDocDialogClose}
-                                                    />
+                                                    {
+                                                        this.state.loadDocDialogOpen && (
+                                                            <TransformDocumentationDialogScript
+                                                                open={this.state.loadDocDialogOpen}
+                                                                onOpen={this.onLoadDocDialogOpen}
+                                                                onClose={this.onLoadDocDialogClose}
+                                                            />
+                                                        )
+                                                    }
                                                 </Box>
                                                 <Box flex="0 0 auto">
                                                     <Button
