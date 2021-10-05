@@ -79,7 +79,7 @@ scripts:
       error: Something went wrong during the creation of your execution request.
       success:
         text: Execution request is created.
-        close_button: Back to overview
+        close_button: Back
       form:
         description: Description
         name: Name
@@ -223,6 +223,7 @@ script_reports:
     list:
       actions:
         report: Reporting
+        rerun: Re-run
       fetch_error: Something went wrong while loading the script executions, please try again.
       filter:
         script_name: Script name
@@ -278,6 +279,7 @@ script_reports:
     side:
       toggle_button: Details
       execution:
+        rerun: Re-run script
         title: Execution data
         script_name:
           label: Script name

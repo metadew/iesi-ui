@@ -27,7 +27,7 @@ import {
     IListItem,
     SortOrder,
 } from 'models/list.models';
-import { IScript, IExpandScriptsResponseWith, IColumnNames } from 'models/state/scripts.models';
+import { IScript, IExpandScriptsResponseWith, IColumnNames, IScriptBase } from 'models/state/scripts.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
@@ -114,8 +114,7 @@ const sortActions: SortActions<Partial<IColumnNames>> = {
 
 interface IScriptState {
     scriptIdToDelete: string;
-    scriptIdToExecute: string;
-    loadDocDialogOpen: boolean;
+    selectedScript: IScriptBase;
 }
 
 const defaultSortedColumn: ISortedColumn<IColumnNames> = {
@@ -133,8 +132,7 @@ const ScriptsOverview = withStyles(styles)(
 
             this.state = {
                 scriptIdToDelete: null,
-                scriptIdToExecute: null,
-                loadDocDialogOpen: false,
+                selectedScript: null,
             };
 
             this.renderPanel = this.renderPanel.bind(this);
@@ -145,7 +143,7 @@ const ScriptsOverview = withStyles(styles)(
             this.clearScriptToDelete = this.clearScriptToDelete.bind(this);
             this.setScriptToDelete = this.setScriptToDelete.bind(this);
             this.onCloseExecuteDialog = this.onCloseExecuteDialog.bind(this);
-            this.setScriptToExecute = this.setScriptToExecute.bind(this);
+            this.setExecuteScriptDialogOpen = this.setExecuteScriptDialogOpen.bind(this);
 
             this.onDeleteScript = this.onDeleteScript.bind(this);
             // eslint-disable-next-line max-len
@@ -153,9 +151,6 @@ const ScriptsOverview = withStyles(styles)(
 
             this.fetchScriptsWithFilterAndPagination = this.fetchScriptsWithFilterAndPagination.bind(this);
             this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
-
-            this.onLoadDocDialogOpen = this.onLoadDocDialogOpen.bind(this);
-            this.onLoadDocDialogClose = this.onLoadDocDialogClose.bind(this);
         }
 
         public componentDidMount() {
@@ -185,7 +180,7 @@ const ScriptsOverview = withStyles(styles)(
 
         public render() {
             const { classes, state } = this.props;
-            const { scriptIdToDelete, scriptIdToExecute } = this.state;
+            const { scriptIdToDelete, selectedScript } = this.state;
             const filterFromState = getScriptsListFilter(state);
 
             const scripts = getAsyncScripts(this.props.state);
@@ -261,11 +256,16 @@ const ScriptsOverview = withStyles(styles)(
                         onConfirm={this.onDeleteScript}
                         showLoader={deleteStatus === AsyncStatus.Busy}
                     />
-                    <ExecuteScriptDialog
-                        scriptUniqueId={scriptIdToExecute}
-                        open={!!scriptIdToExecute}
-                        onClose={this.onCloseExecuteDialog}
-                    />
+                    {
+                        selectedScript && (
+                            <ExecuteScriptDialog
+                                onClose={this.onCloseExecuteDialog}
+                                scriptName={selectedScript.name}
+                                scriptVersion={selectedScript.version.number}
+                            />
+                        )
+                    }
+
                 </>
             );
         }
@@ -353,7 +353,7 @@ const ScriptsOverview = withStyles(styles)(
                                     {
                                         icon: <PlayArrowRounded />,
                                         label: translator('scripts.overview.list.actions.execute'),
-                                        onClick: this.setScriptToExecute,
+                                        onClick: this.setExecuteScriptDialogOpen,
                                         hideAction: (item: IListItem<IColumnNames>) =>
                                             !checkAuthority(
                                                 SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_WRITE,
@@ -573,21 +573,16 @@ const ScriptsOverview = withStyles(styles)(
             this.setState({ scriptIdToDelete: id as string });
         }
 
+        private setExecuteScriptDialogOpen(id: ReactText) {
+            const scripts = getAsyncScripts(this.props.state);
+            const selectedScript = scripts.find((item) =>
+                getUniqueIdFromScript(item) === id);
+            this.setState({ selectedScript });
+        }
+
         private onCloseExecuteDialog() {
             triggerResetAsyncExecutionRequest({ operation: AsyncOperation.create });
-            this.setState({ scriptIdToExecute: null });
-        }
-
-        private setScriptToExecute(id: ReactText) {
-            this.setState({ scriptIdToExecute: id as string });
-        }
-
-        private onLoadDocDialogOpen() {
-            this.setState((state) => ({ ...state, loadDocDialogOpen: true }));
-        }
-
-        private onLoadDocDialogClose() {
-            this.setState((state) => ({ ...state, loadDocDialogOpen: false }));
+            this.setState({ selectedScript: null });
         }
     },
 );

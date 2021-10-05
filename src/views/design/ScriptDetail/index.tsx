@@ -1,4 +1,4 @@
-import React, { ReactText } from 'react';
+import React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { clone } from 'ramda';
 import { getTranslator } from 'state/i18n/selectors';
@@ -86,12 +86,12 @@ interface IComponentState {
     isAddOpen: boolean;
     isConfirmDeleteScriptOpen: boolean;
     isSaveDialogOpen: boolean;
+    isExecuteDialogOpen: boolean;
     editActionIndex: number;
     newScriptDetail: IScript;
     hasChangesToCheck: boolean;
     hasActionsWithDuplicateNames: boolean;
     requiredFieldsState: TRequiredFieldsState<IScript>;
-    scriptIdToExecute: string;
     actionIndexToDelete: number;
     actionIndexToDuplicate: number;
 }
@@ -107,6 +107,7 @@ const ScriptDetail = withStyles(styles)(
                 actionIndexToDelete: null,
                 actionIndexToDuplicate: null,
                 isSaveDialogOpen: false,
+                isExecuteDialogOpen: false,
                 editActionIndex: -1,
                 newScriptDetail: {
                     actions: [],
@@ -135,7 +136,6 @@ const ScriptDetail = withStyles(styles)(
                         showError: false,
                     },
                 },
-                scriptIdToExecute: null,
             };
 
             this.renderAddScriptContent = this.renderAddScriptContent.bind(this);
@@ -173,9 +173,9 @@ const ScriptDetail = withStyles(styles)(
             const {
                 isAddOpen,
                 isConfirmDeleteScriptOpen,
+                isExecuteDialogOpen,
                 isSaveDialogOpen,
                 newScriptDetail,
-                scriptIdToExecute,
                 actionIndexToDelete,
                 actionIndexToDuplicate,
             } = this.state;
@@ -223,12 +223,16 @@ const ScriptDetail = withStyles(styles)(
                         onClose={() => this.setState({ actionIndexToDuplicate: null })}
                         onDuplicate={(action) => this.onAddActions([action])}
                     />
+                    {
+                        isExecuteDialogOpen && (
+                            <ExecuteScriptDialog
+                                onClose={this.onCloseExecuteDialog}
+                                scriptName={newScriptDetail.name}
+                                scriptVersion={newScriptDetail.version.number}
+                            />
+                        )
+                    }
 
-                    <ExecuteScriptDialog
-                        scriptUniqueId={getUniqueIdFromScript(newScriptDetail)}
-                        open={!!scriptIdToExecute}
-                        onClose={this.onCloseExecuteDialog}
-                    />
                     <ClosableDialog
                         title={translator('scripts.detail.save_script_dialog.title')}
                         open={isSaveDialogOpen}
@@ -517,7 +521,7 @@ const ScriptDetail = withStyles(styles)(
                             onSave={handleSaveAction}
                             onDelete={() => this.setState({ isConfirmDeleteScriptOpen: true })}
                             onAdd={() => this.setState({ isAddOpen: true })}
-                            onPlay={() => this.setScriptToExecute(getUniqueIdFromScript(newScriptDetail))}
+                            onPlay={() => this.setState({ isExecuteDialogOpen: true })}
                             onExport={() => this.onExportScript()}
                             onViewReport={() => {
                                 redirectTo({
@@ -698,13 +702,9 @@ const ScriptDetail = withStyles(styles)(
                 && clone(newScriptDetail.actions[editActionIndex]);
         }
 
-        private setScriptToExecute(id: ReactText) {
-            this.setState({ scriptIdToExecute: id as string });
-        }
-
         private onCloseExecuteDialog() {
             triggerResetAsyncExecutionRequest({ operation: AsyncOperation.create });
-            this.setState({ scriptIdToExecute: null });
+            this.setState({ isExecuteDialogOpen: false });
         }
 
         private updateScriptInStateIfNewScriptWasLoaded(prevProps: TProps & IObserveProps) {

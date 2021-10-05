@@ -1,21 +1,21 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { parseISO, format as formatDate } from 'date-fns';
+import { format as formatDate, parseISO } from 'date-fns';
 import isSet from '@snipsonian/core/es/is/isSet';
 import isEmptyObject from '@snipsonian/core/es/object/isEmptyObject';
-import { Box, makeStyles, Button, Typography } from '@material-ui/core';
-import { ChevronLeftRounded, ChevronRight } from '@material-ui/icons';
+import { Box, Button, makeStyles, Typography } from '@material-ui/core';
+import { ChevronLeftRounded, ChevronRight, PlayArrow } from '@material-ui/icons';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import useExecuteOnUnmount from 'utils/hooks/useExecuteOnUnmount';
 import DescriptionList, { IDescriptionListItem } from 'views/common/list/DescriptionList';
-import { ROUTE_KEYS, redirectTo } from 'views/routes';
+import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel/index';
 import StatusIcon from 'views/common/icons/StatusIcon';
 import { getAsyncExecutionRequestDetail } from 'state/entities/executionRequests/selectors';
-import { observe, IObserveProps } from 'views/observe';
+import { IObserveProps, observe } from 'views/observe';
 import Loader from 'views/common/waiting/Loader';
-import { AsyncStatus, AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import { AsyncOperation, AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
 import { IExecutionRequest } from 'models/state/executionRequests.models';
@@ -25,10 +25,12 @@ import {
     triggerResetScriptExecutionDetail,
 } from 'state/entities/scriptExecutions/triggers';
 import { getAsyncScriptExecutionDetail } from 'state/entities/scriptExecutions/selectors';
-import { ListColumns, IListItem, ISortedColumn, SortOrder, SortType } from 'models/list.models';
+import { IListItem, ISortedColumn, ListColumns, SortOrder, SortType } from 'models/list.models';
 import { THEME_COLORS } from 'config/themes/colors';
 import sortListItems from 'utils/list/sortListItems';
 import { checkAuthority, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
+import { triggerResetAsyncExecutionRequest } from 'state/entities/executionRequests/triggers';
 import ScriptExecutionDetailActions from './ScriptExecutionDetailActions';
 import ShowLabels from './ShowLabels';
 import { IExecutionDetailPathParams } from './shared';
@@ -42,6 +44,9 @@ interface IColumnNames {
 const useStyles = makeStyles(({ palette, typography }) => ({
     processId: {
         display: 'none',
+    },
+    rerunButton: {
+        marginleft: 'auto',
     },
     scriptName: {
         fontWeight: typography.fontWeightBold,
@@ -81,6 +86,7 @@ const useStyles = makeStyles(({ palette, typography }) => ({
 function ExecutionDetail({ state }: IObserveProps) {
     const classes = useStyles();
     const { executionRequestId, runId, processId } = useParams<IExecutionDetailPathParams>();
+    const [executeScriptDialogOpen, setExecuteScriptDialogOpen] = useState(false);
 
     const asyncExecutionRequest = getAsyncExecutionRequestDetail(state).fetch;
     const executionRequestDetail = getAsyncExecutionRequestDetail(state).data || {} as IExecutionRequest;
@@ -91,9 +97,9 @@ function ExecutionDetail({ state }: IObserveProps) {
     useEffect(() => {
         if (
             !runId
-                && asyncExecutionRequest.status === AsyncStatus.Success
-                && executionRequestDetail.scriptExecutionRequests.length > 0
-                && executionRequestDetail.scriptExecutionRequests[0].runId
+            && asyncExecutionRequest.status === AsyncStatus.Success
+            && executionRequestDetail.scriptExecutionRequests.length > 0
+            && executionRequestDetail.scriptExecutionRequests[0].runId
         ) {
             redirectTo({
                 routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
@@ -103,30 +109,32 @@ function ExecutionDetail({ state }: IObserveProps) {
                 },
             });
         }
-        return () => {};
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        return () => { };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [asyncExecutionRequest]);
 
     useEffect(() => {
         if (
             asyncExecutionRequest.status === AsyncStatus.Success
-                && asyncScriptExecutionData.status !== AsyncStatus.Busy
-                && (!isSet(scriptExecutionData)
-                    || scriptExecutionData.runId !== runId
-                    || (processId && scriptExecutionData.processId !== parseInt(processId, 10)))
-                && runId
+            && asyncScriptExecutionData.status !== AsyncStatus.Busy
+            && (!isSet(scriptExecutionData)
+                || scriptExecutionData.runId !== runId
+                || (processId && scriptExecutionData.processId !== parseInt(processId, 10)))
+            && runId
         ) {
             triggerFetchScriptExecutionDetail({
                 runId,
                 processId: processId ? parseInt(processId, 10) : -1,
             });
         }
-        return () => {};
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        return () => { };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [scriptExecutionData, runId, processId, asyncExecutionRequest]);
 
     useExecuteOnUnmount({
         execute: () => {
+            triggerResetAsyncExecutionRequest({ operation: AsyncOperation.create });
+            triggerResetAsyncExecutionRequest({ operation: AsyncOperation.fetch });
             triggerResetScriptExecutionDetail({ operation: AsyncOperation.fetch, resetDataOnTrigger: true });
         },
     });
@@ -134,11 +142,27 @@ function ExecutionDetail({ state }: IObserveProps) {
     const isLoading = asyncExecutionRequest.status === AsyncStatus.Busy
         || asyncScriptExecutionData.status === AsyncStatus.Busy
         || (asyncExecutionRequest.status === AsyncStatus.Success
-                && asyncScriptExecutionData.status === AsyncStatus.Initial);
-
+            && asyncScriptExecutionData.status === AsyncStatus.Initial);
     return (
         <>
             <Loader show={isLoading} />
+            {
+                scriptExecutionData && executeScriptDialogOpen && (
+                    <ExecuteScriptDialog
+                        initialFormValues={{
+                            name: executionRequestDetail.name,
+                            description: executionRequestDetail.description,
+                            environment: scriptExecutionData.environment,
+                            parameters: scriptExecutionData.inputParameters,
+                            executionRequestLabels: scriptExecutionData.executionLabels,
+
+                        }}
+                        scriptName={scriptExecutionData.scriptName}
+                        scriptVersion={scriptExecutionData.scriptVersion}
+                        onClose={onCloseExecuteDialog}
+                    />
+                )
+            }
             <ContentWithSidePanel
                 panel={renderDetailPanel()}
                 content={renderDetailContent()}
@@ -331,13 +355,30 @@ function ExecutionDetail({ state }: IObserveProps) {
         return (
             <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
                 <Box flex="0 1 auto" marginBottom={3}>
-                    <Typography variant="h4">
-                        <Translate msg="script_reports.detail.side.execution.title" />
-                    </Typography>
+                    <Box display="flex" flexDirection="row" justifyContent="space-between">
+                        <Typography variant="h4">
+                            <Translate msg="script_reports.detail.side.execution.title" />
+                        </Typography>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            size="small"
+                            endIcon={<PlayArrow />}
+                            onClick={() => setExecuteScriptDialogOpen(true)}
+                            className={classes.rerunButton}
+
+                        >
+                            <Translate msg="script_reports.detail.side.execution.rerun" />
+                        </Button>
+                    </Box>
                     <DescriptionList items={executionListItems} noLineAfterListItem />
                 </Box>
             </Box>
         );
+    }
+
+    function onCloseExecuteDialog() {
+        setExecuteScriptDialogOpen(false);
     }
 
     function mapActionsToListItemsAndSortByProcessId(items: IScriptExecutionDetailAction[]) {
@@ -378,5 +419,6 @@ export default observe([
     StateChangeNotification.EXECUTION_REQUESTS_DETAIL,
     StateChangeNotification.EXECUTION_REQUESTS_DETAIL,
     StateChangeNotification.SCRIPT_EXECUTION_DETAIL,
+    StateChangeNotification.EXECUTION_REQUESTS_CREATE,
     StateChangeNotification.I18N_TRANSLATIONS,
 ], ExecutionDetail);
