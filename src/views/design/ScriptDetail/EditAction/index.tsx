@@ -168,24 +168,13 @@ function EditAction({
                                     }
                                     size="small"
                                     endIcon={<ChevronRightRounded />}
-                                    onClick={
-                                        actionTypes.find((element) =>
-                                            parameterScript.value === element.type)
-                                            && Number.isInteger(parseInt(
-                                                parameterVersion.value,
-                                                10,
-                                            ))
-                                            ? () => redirectTo({
-                                                routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                                params: {
-                                                    name: parameterScript.value,
-                                                    version: parameterVersion.value,
-                                                },
-                                            })
-                                            : () => redirectTo({
-                                                routeKey: ROUTE_KEYS.R_NOT_FOUND,
-                                            })
-                                    }
+                                    onClick={() => redirectTo({
+                                        routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                        params: {
+                                            name: parameterScript.value,
+                                            version: parameterVersion.value,
+                                        },
+                                    })}
                                 >
                                     <Translate msg="script_reports.detail.main.action.go_to_script" />
                                 </Button>
