@@ -70,7 +70,7 @@ flash_messages:
   script: 
     create: 'The script has been successfully created !'
     edit: 'The script has been updated'
-    error: 'Missing informations or empty documentation'
+    error: 'Uncorrect representation of the script'
     import: 'The script has been successfully imported !'
   error: 'An error has occured'
 scripts:
