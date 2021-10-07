@@ -185,6 +185,13 @@ const ScriptReportsOverview = withStyles(styles)(
 
             this.fetchExecutionRequestsWithFilterAndPagination({ newListFilters: initialFilters, newPage: 1 });
             dispatch(setExecutionsListFilter({ filters: initialFilters }));
+            setInterval(() => {
+                const { dispatch } = this.props;
+                const initialFilters = this.combineFiltersFromUrlAndCurrentFilters();
+
+                this.fetchExecutionRequestsWithFilterAndPagination({ newListFilters: initialFilters, newPage: 1 });
+                dispatch(setExecutionsListFilter({ filters: initialFilters }));
+            }, 10000);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
