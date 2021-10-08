@@ -274,6 +274,7 @@ script_reports:
           name: Name
           value: Value
           none: '-'
+        go_to_script: View script detail
         go_to_script_detail: View script execution
         go_to_parent_script_detail: Back to parent execution
     side:
