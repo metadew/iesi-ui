@@ -116,6 +116,7 @@ const sortActions: SortActions<Partial<IColumnNames>> = {
 interface IScriptState {
     scriptIdToDelete: string;
     selectedScript: IScriptBase;
+    importScriptDialogOpen: boolean;
 }
 
 const defaultSortedColumn: ISortedColumn<IColumnNames> = {
@@ -134,6 +135,7 @@ const ScriptsOverview = withStyles(styles)(
             this.state = {
                 scriptIdToDelete: null,
                 selectedScript: null,
+                importScriptDialogOpen: false,
             };
 
             this.renderPanel = this.renderPanel.bind(this);
@@ -145,6 +147,8 @@ const ScriptsOverview = withStyles(styles)(
             this.setScriptToDelete = this.setScriptToDelete.bind(this);
             this.onCloseExecuteDialog = this.onCloseExecuteDialog.bind(this);
             this.setExecuteScriptDialogOpen = this.setExecuteScriptDialogOpen.bind(this);
+            this.onImportScriptDialogOpen = this.onImportScriptDialogOpen.bind(this);
+            this.onImportScriptDialogClose = this.onImportScriptDialogClose.bind(this);
 
             this.onDeleteScript = this.onDeleteScript.bind(this);
             // eslint-disable-next-line max-len
@@ -220,9 +224,9 @@ const ScriptsOverview = withStyles(styles)(
                                             <Box display="flex" alignItems="center" flex="0 0 auto">
                                                 <Box flex="0 0 auto" mr="8px" width="250px">
                                                     <TransformDocumentationDialogScript
-                                                        open={this.state.loadDocDialogOpen}
-                                                        onOpen={this.onLoadDocDialogOpen}
-                                                        onClose={this.onLoadDocDialogClose}
+                                                        open={this.state.importScriptDialogOpen}
+                                                        onOpen={this.onImportScriptDialogOpen}
+                                                        onClose={this.onImportScriptDialogClose}
                                                     />
                                                 </Box>
                                                 <Box flex="0 0 auto">
@@ -593,6 +597,14 @@ const ScriptsOverview = withStyles(styles)(
         private onCloseExecuteDialog() {
             triggerResetAsyncExecutionRequest({ operation: AsyncOperation.create });
             this.setState({ selectedScript: null });
+        }
+
+        private onImportScriptDialogOpen() {
+            this.setState((state) => ({ ...state, importScriptDialogOpen: true }));
+        }
+
+        private onImportScriptDialogClose() {
+            this.setState((state) => ({ ...state, importScriptDialogOpen: false }));
         }
     },
 );
