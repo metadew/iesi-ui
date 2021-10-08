@@ -60,13 +60,18 @@ flash_messages:
     connections_unknown_error: 'Unknown error for the one or more connections'
     component_unknown_error: 'Unknown error for the component "{componentName}"'
     components_unknown_error: 'Unknown error for the one or more connections'
-  component:
+  component: 
     edit: 'The component has been updated'
     error: 'An error has occured : {error}'
   connection:
     create: 'The connection has been created successfully'
     edit: 'The connection has been updated successfully'
     error: 'An error has occured: {error}'
+  script: 
+    create: 'The script has been successfully created !'
+    edit: 'The script has been updated'
+    error: 'Incorrect representation of the script'
+    import: 'The script has been successfully imported !'
   error: 'An error has occured'
 scripts:
   overview:
@@ -105,7 +110,9 @@ scripts:
       amount: 'You have {amount} scripts'
       add_button: Create new script
       generate_button: "Load OpenAPI documentation"
+      generate_script_button: "Import script documentation"
       transform_openapi_tooltip: "Transform an OpenAPI documentation into IESI connections and components"
+      transform_script_tooltip: "Transform a ScriptDetail documentation into IESI scripts"
     list:
       fetch_error: Something went wrong while loading the scripts, please try again.
       actions:
@@ -476,10 +483,12 @@ doc:
   dialog:
     transform:
       title: Provide an OpenAPI documentation to perform the transformation
+      scriptTitle: Provide JSON representation of the script
       json_content_label: Json Content
       file_label: 'Choose a file'
       file_helper: 'Only .JSON and .YAML are accepted'
       validate: 'Validate'
+      import: 'Import'
     edit:
       connection:
         title: 'Edit the connection values'

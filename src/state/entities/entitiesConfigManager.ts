@@ -14,6 +14,7 @@ import {
     IScriptByNameAndVersionPayload,
     IScriptBase,
     IFetchScriptsListPayload,
+    IScriptImport,
 } from 'models/state/scripts.models';
 import { IOpenAPI } from 'models/state/openapi.model';
 import {
@@ -54,7 +55,7 @@ entitiesConfigManager.register({
             api: api.scripts.createScriptVersion,
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
-            apiInputSelector: ({ extraInput }) => extraInput as IScriptBase,
+            apiInputSelector: ({ extraInput }) => extraInput as IScriptBase | IScriptImport,
         },
         update: {
             // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
