@@ -50,6 +50,7 @@ import { getExecutionsListFilter } from 'state/ui/selectors';
 import { setExecutionsListFilter } from 'state/ui/actions';
 import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import { getEnvironmentsForDropdown } from 'state/entities/environments/selectors';
+import configData from '../../../env-config.json';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -182,16 +183,14 @@ const ScriptReportsOverview = withStyles(styles)(
         public componentDidMount() {
             const { dispatch } = this.props;
             const initialFilters = this.combineFiltersFromUrlAndCurrentFilters();
+            const timeToRefresh = configData.iesi_time_to_refresh_in_seconds * 1000;
 
             this.fetchExecutionRequestsWithFilterAndPagination({ newListFilters: initialFilters, newPage: 1 });
             dispatch(setExecutionsListFilter({ filters: initialFilters }));
             setInterval(() => {
-                const { dispatch } = this.props;
-                const initialFilters = this.combineFiltersFromUrlAndCurrentFilters();
-
                 this.fetchExecutionRequestsWithFilterAndPagination({ newListFilters: initialFilters, newPage: 1 });
                 dispatch(setExecutionsListFilter({ filters: initialFilters }));
-            }, 10000);
+            }, timeToRefresh);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
@@ -390,7 +389,7 @@ const ScriptReportsOverview = withStyles(styles)(
 
             const asyncExecutionRequestsEntity = getAsyncExecutionRequestsEntity(this.props.state);
             const executionsFetchData = asyncExecutionRequestsEntity.fetch;
-            const isFetching = executionsFetchData.status === AsyncStatus.Busy;
+            const isFetching = executionsFetchData.status === AsyncStatus.Initial;
             const hasError = executionsFetchData.status === AsyncStatus.Error;
 
             const executionRequestsData = asyncExecutionRequestsEntity.data;
