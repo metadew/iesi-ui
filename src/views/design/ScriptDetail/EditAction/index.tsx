@@ -9,7 +9,6 @@ import {
     Button,
     ButtonGroup,
     Paper,
-    TextField,
 } from '@material-ui/core';
 import { IScriptAction } from 'models/state/scripts.models';
 import { formatNumberWithTwoDigits } from 'utils/number/format';
@@ -20,6 +19,10 @@ import { getAsyncActionTypes } from 'state/entities/constants/selectors';
 import { getTranslator } from 'state/i18n/selectors';
 import { StateChangeNotification } from 'models/state.models';
 import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import { IConstantParameter, IActionType } from 'models/state/constants.models';
+import { ChevronRightRounded } from '@material-ui/icons';
+import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { IParameter } from 'models/state/iesiGeneric.models';
 import ExpandableParameter from './ExpandableParameter';
 
 interface IPublicProps {
@@ -62,6 +65,10 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
     },
     nameTextField: {
         width: '100%',
+        marginTop: 0,
+        '& .MuiFilledInput-root': {
+            background: palette.background.paper,
+        },
     },
     conditionTextField: {
         width: '100%',
@@ -86,6 +93,13 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
             backgroundColor: THEME_COLORS.GREY,
         },
     },
+    buttonContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'end',
+        color: palette.grey[500],
+        fontSize: '.7rem',
+    },
 }));
 
 function EditAction({
@@ -104,10 +118,11 @@ function EditAction({
     const [description, setDescription] = useState(action.description);
     const [name, setName] = useState(action.name);
     const [condition, setCondition] = useState(action.condition);
-
     const actionTypes = getAsyncActionTypes(state).data || [];
     const matchingActionType = actionTypes.find((item) => action.type === item.type);
-
+    const orderedActionTypeParameters = orderActionTypeParameters(matchingActionType.parameters, matchingActionType);
+    const parameterScript = getParameterDetail(parameters, 'script');
+    const parameterVersion = getParameterDetail(parameters, 'version');
     return (
         <Box className={classes.dialog}>
             <Box
@@ -115,7 +130,7 @@ function EditAction({
                 display="flex"
                 justifyContent="space-between"
                 alignItems="center"
-                padding={1}
+                padding={2}
             >
                 <Box
                     paddingX={3}
@@ -129,10 +144,7 @@ function EditAction({
                 <Box
                     paddingX={3}
                     paddingY={1.1}
-                    className={classnames(
-                        classes.tableCell,
-                        classes.actionType,
-                    )}
+                    className={classnames(classes.actionType)}
                     width="40%"
                 >
                     {action.type}
@@ -143,22 +155,58 @@ function EditAction({
                     className={classnames(classes.actionName)}
                     width="60%"
                 >
-                    <TextField
-                        id="action-name"
-                        label={translator('scripts.detail.edit_action.name')}
-                        defaultValue={name}
-                        onBlur={(e) => setName(e.target.value)}
-                        className={classes.nameTextField}
-                        InputProps={{
-                            readOnly: !isCreateScriptRoute
-                                && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
-                            disableUnderline: !isCreateScriptRoute
-                                && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
-                        }}
-                    />
+                    {
+                        matchingActionType.type === 'fwk.executeScript'
+                        && (
+                            <Box paddingX={2} className={classes.buttonContainer}>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    disabled={
+                                        !(parameterScript.value.length
+                                            && parameterVersion.value.length)
+                                    }
+                                    size="small"
+                                    endIcon={<ChevronRightRounded />}
+                                    onClick={() => redirectTo({
+                                        routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                        params: {
+                                            name: parameterScript.value,
+                                            version: parameterVersion.value,
+                                        },
+                                    })}
+                                >
+                                    <Translate msg="script_reports.detail.main.action.go_to_script" />
+                                </Button>
+                                {
+                                    !(parameterScript.value.length
+                                    && parameterVersion.value.length)
+                                    && (
+                                        <Translate msg="Script name and version are required to see the script" />
+                                    )
+                                }
+                            </Box>
+                        )
+                    }
                 </Box>
             </Box>
             <Box padding={2}>
+                <Box marginBottom={2}>
+                    <Paper>
+                        <TextInput
+                            id="action-name"
+                            label={translator('scripts.detail.edit_action.name')}
+                            defaultValue={name}
+                            onBlur={(e) => setName(e.target.value)}
+                            className={classes.nameTextField}
+                            InputProps={{
+                                readOnly: !isCreateScriptRoute
+                                    && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
+                                disableUnderline: true,
+                            }}
+                        />
+                    </Paper>
+                </Box>
                 <Box marginBottom={2}>
                     <Paper>
                         <TextInput
@@ -198,16 +246,15 @@ function EditAction({
                     </Paper>
                 </Box>
                 <Box>
-                    {matchingActionType.parameters.map((constantParameter) => {
+                    {orderedActionTypeParameters.map((constantParameter) => {
                         const parameter = parameters.find((p) => p.name === constantParameter.name);
-
                         return (
                             <ExpandableParameter
                                 key={constantParameter.name}
                                 onChange={(value) => {
-                                    const index = parameters.findIndex((p) => p.name === constantParameter.name);
+                                    const index = parameters
+                                        .findIndex((p) => p.name === constantParameter.name);
                                     const newParameters = [...parameters];
-
                                     if (index === -1) {
                                         newParameters.push({
                                             name: constantParameter.name,
@@ -254,8 +301,8 @@ function EditAction({
                             onChange={() => {
                                 setErrorExpectedChecked(!errorExpectedChecked);
                             }}
-                            disabled={!isCreateScriptRoute
-                                || !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)}
+                            disabled={!(isCreateScriptRoute
+                                || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName))}
                         />
                     </Box>
 
@@ -310,8 +357,44 @@ function EditAction({
             errorStop: errorStopChecked,
             errorExpected: errorExpectedChecked,
         });
-
         onClose();
+    }
+
+    function orderActionTypeParameters(items: IConstantParameter[], actionType: IActionType) {
+        const constantParameters = items
+            ? items
+                .map((constantParameter) => ({
+                    name: constantParameter.name,
+                    description: constantParameter.description,
+                    type: constantParameter.type,
+                    mandatory: actionType
+                        ? actionType.parameters
+                            .some((type) => type.name === constantParameter.name && type.mandatory === true)
+                        : false,
+                    encrypted: constantParameter.encrypted,
+                }))
+            : [];
+        const mandatoryParameters: IConstantParameter[] = constantParameters
+            .filter((p) => p.mandatory)
+            .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
+        const nonMandatoryParameters: IConstantParameter[] = constantParameters
+            .filter((p) => !p.mandatory)
+            .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
+        const orderedParameters: IConstantParameter[] = mandatoryParameters
+            .concat(nonMandatoryParameters)
+            .map((p) => ({
+                name: p.name,
+                description: p.description,
+                type: p.type,
+                mandatory: p.mandatory,
+                encrypted: p.encrypted,
+            }));
+        return orderedParameters;
+    }
+
+    function getParameterDetail(actionParameters: IParameter[], param: string) {
+        const parameterDetail = actionParameters.find((parameter) => parameter.name === param);
+        return parameterDetail || { name: '', value: '' };
     }
 }
 

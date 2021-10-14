@@ -36,8 +36,6 @@ import ConnectionTemplate from './connectivity/ConnectionTemplate';
 import ConnectionOverview from './connectivity/ConnectionOverview';
 import ConnectionDetail from './connectivity/ConnectionDetail';
 
-// TODO: add required permission to every route key
-
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
     path: '/',
@@ -266,7 +264,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     }],
 }, {
     routeKey: ROUTE_KEYS.R_NOT_FOUND,
-    path: '*',
+    path: '/not-found',
     component: NotFound,
 },
 ];

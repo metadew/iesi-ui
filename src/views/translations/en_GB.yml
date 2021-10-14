@@ -4,12 +4,15 @@ app_shell:
       home: Home
       reports: Reports
       scripts: Scripts
+      components: Components
+      connections: Connections
     title: iesi
 common:
   yes: Yes
   no: No
   action:
     save: Save
+    cancel: Cancel
   confirmation:
     yes: Yes, I am sure
     no: No, take me back
@@ -42,8 +45,34 @@ error:
   timeout: The server did not respond in a timely fashion. Please try again.
   fetch_env: Could not fetch ENV
 flash_messages:
+  common:
+    responseError: '{message}'
   execution_request:
     run_finished: 'Script execution "{scriptName}" is finished!'
+  openapi:
+    connection_successfully_created: 'The connection {connectionName} has been successfully created !'
+    connections_successfully_created: 'The connections have been successfully created ! '
+    connection_successfully_updated: 'The connection {connectionName} has been successfully updated !'
+    component_successfully_created: 'The component {componentName} has been successfully created !'
+    components_successfully_created: 'The components have been successfully created ! '
+    component_successfully_updated: 'The component {componentName} has been successfully updated !'
+    connection_unknown_error: 'Unknown error for the connection "{connectionName}"'
+    connections_unknown_error: 'Unknown error for the one or more connections'
+    component_unknown_error: 'Unknown error for the component "{componentName}"'
+    components_unknown_error: 'Unknown error for the one or more connections'
+  component: 
+    edit: 'The component has been updated'
+    error: 'An error has occured : {error}'
+  connection:
+    create: 'The connection has been created successfully'
+    edit: 'The connection has been updated successfully'
+    error: 'An error has occured: {error}'
+  script: 
+    create: 'The script has been successfully created !'
+    edit: 'The script has been updated'
+    error: 'Incorrect representation of the script'
+    import: 'The script has been successfully imported !'
+  error: 'An error has occured'
 scripts:
   overview:
     delete_script_dialog:
@@ -55,7 +84,7 @@ scripts:
       error: Something went wrong during the creation of your execution request.
       success:
         text: Execution request is created.
-        close_button: Back to overview
+        close_button: Back
       form:
         description: Description
         name: Name
@@ -80,6 +109,10 @@ scripts:
     header:
       amount: 'You have {amount} scripts'
       add_button: Create new script
+      generate_button: "Load OpenAPI documentation"
+      generate_script_button: "Import script documentation"
+      transform_openapi_tooltip: "Transform an OpenAPI documentation into IESI connections and components"
+      transform_script_tooltip: "Transform a ScriptDetail documentation into IESI scripts"
     list:
       fetch_error: Something went wrong while loading the scripts, please try again.
       actions:
@@ -126,6 +159,17 @@ scripts:
         cancel: Discard changes
         save: Update action
         go_back: Go back
+    duplicate_action_dialog:
+      title: Duplicating "{actionName}"
+      confirm: Duplicate action
+      init_error:  Can't duplicate current action at this time. Please try again later.
+      error: Something went wrong during the duplication of your action.
+      success:
+        text: Action is duplicated.
+        close_button: Back to detail
+      form:
+        name: Name
+      text: Please specify the name for the new duplicated action.
     side:
       script_description: Script description
       script_name: Script name
@@ -186,12 +230,15 @@ script_reports:
     list:
       actions:
         report: Reporting
+        rerun: Re-run
       fetch_error: Something went wrong while loading the script executions, please try again.
       filter:
         script_name: Script name
         script_version: Script version
         environment: Environment
         labels: Label
+        run_id: Run Id
+        run_status: Status
       labels:
         environment: Environment
         labels: Labels
@@ -234,11 +281,13 @@ script_reports:
           name: Name
           value: Value
           none: '-'
+        go_to_script: View script detail
         go_to_script_detail: View script execution
         go_to_parent_script_detail: Back to parent execution
     side:
       toggle_button: Details
       execution:
+        rerun: Re-run script
         title: Execution data
         script_name:
           label: Script name
@@ -266,3 +315,229 @@ script_reports:
         output:
           label: Output
           none: '-'
+        requestor:
+          label: Requestor
+          none: 'anonymous'
+components:
+  overview:
+    delete_component_dialog:
+      text: Are you sure you want to delete this component?
+      title: Delete component
+      form:
+        description: Description
+        name: Name
+        environment: Environment
+        input_param:
+          add:
+            name: Name
+            value: Value
+            button: Add
+            title: Add input parameter
+          empty: No input params defined yet.
+          title: Input parameters
+    header:
+      amount: 'You have {amount} components'
+      add_button: Create new component
+      generate_button: "Load from OpenAPI documentation"
+    list:
+      labels:
+        name: Name
+        type: Type
+        version: Version
+        description: Description
+      fetch_error: Something went wrong while loading the components, please try again.
+      actions:
+        delete: Delete
+        edit: Edit
+      filter:
+       component_name: Component name
+      sort:
+        component_name: Component name
+        version: Version
+  detail:
+    add_parameter: 'Add new parameter'
+    delete_component_dialog:
+      text: Are you sure you want to delete this component?
+      title: Delete component
+    save_component_dialog:
+      title: Save component
+      text: Do you want to overwrite the current version or create a new version with the current changes?
+      update_current_version: Update current version
+      save_as_new_version: Save as new version
+    side:
+      toggle_button: Details
+      component_type: Type
+      component_description: Description
+      component_name: Name
+      component_version: Version
+    main:
+      no_parameters:
+        title: No parameters yet
+      actions:
+        add_parameter: Add new parameter
+        add_attribute: Add new attribute
+        delete: Delete component
+        save: Save
+        export: Export component
+        view: View
+      list:
+        labels:
+          name: Name
+          value: Value
+          mandatory: Mandatory
+          environment: Environment
+        actions:
+          edit: Edit
+          delete: Delete
+      alert:
+        save_changes: You made changes to this component. Don't forget to save them.
+    edit:
+      name: Name
+      value: Value
+      environment: Environment
+      footer:
+        cancel: Cancel
+        save: Save
+        update: Update
+    error:
+      save: Failed to save changes
+connections:
+  overview:
+    delete_connection_dialog:
+      text: Are you sure you want to delete this connection?
+      title: Delete connection
+    header:
+      amount: 'You have {amount} connections'
+      add_button: Create new connection
+      generate_button: "Load from OpenAPI documentation"
+    list:
+      labels:
+        name: Name
+        type: Type
+        environments: Environments
+        description: Description
+      fetch_error: Something went wrong while loading the connections, please try again.
+      actions:
+        delete: Delete
+        edit: Edit
+      filter:
+       connection_name: Connection name
+      sort:
+        connection_name: Connection name
+        version: Version
+  detail:
+    add_parameter: 'Add new parameter'
+    delete_connection_dialog:
+      text: Are you sure you want to delete this connection?
+      title: Delete connection
+    save_connection_dialog:
+      title: Save connection
+      text: Do you want to overwrite the current version or create a new version with the current changes?
+      create: Creation connection
+      update: Update connection
+    side:
+      connection_type: Type
+      connection_description: Description
+      connection_name: Name
+      connection_environment: Environment
+      toggle_button: Details
+      environments:
+        title: Environments
+        empty: No environments
+        add_button: Add environment
+        add_dialog:
+          title: Add an environment
+          select_title: Choose an environment
+          cancel: Cancel
+          add: Add
+    main:
+      no_parameters:
+        title: No parameters yet
+      actions:
+        delete: Delete connection
+        save: Save
+        export: Export connection
+        view: View
+      list:
+        labels:
+          name: Name
+          value: Value
+          mandatory: Mandatory
+          environment: Environment
+        actions:
+          edit: Edit
+          delete: Delete
+      alert:
+        save_changes: You made changes to this connection. Don't forget to save them.
+    edit:
+      name: Name
+      value: Value
+      environment: Environment
+      footer:
+        cancel: Cancel
+        save: Save
+        update: Update
+    error:
+      save: Failed to save changes
+doc:
+  dialog:
+    transform:
+      title: Provide an OpenAPI documentation to perform the transformation
+      scriptTitle: Provide JSON representation of the script
+      json_content_label: Json Content
+      file_label: 'Choose a file'
+      file_helper: 'Only .JSON and .YAML are accepted'
+      validate: 'Validate'
+      import: 'Import'
+    edit:
+      connection:
+        title: 'Edit the connection values'
+        name: 'Name'
+        description: 'Description'
+        host: 'Host'
+        port: 'Port'
+        baseUrl: 'BaseUrl'
+        tls: 'Tls'
+        environment: 'Environment'
+        footer:
+          cancel: 'Discard changes'
+          save: 'Update connection'
+      component:
+        title: Edit the component values
+        name: 'Name'
+        description: 'Description'
+        versionNumber: 'Version number'
+        versionDescription: 'Version description'
+        endpoint: 'Endpoint'
+        type: 'Type'
+        connection: 'Connection'
+        footer:
+          cancel: 'Discard changes'
+          save: 'Update component'
+
+  overview:
+    openapi_title: 'Open API Title : {title}'
+    openapi_version:  'Open API Version : {version}'
+    load_doc_button:
+      title: 'Load doc'
+      helper_text: 'Only OpenAPI v3 is required'
+    connection_header_amount: 'You have {amount} connections'
+    component_header_amount: 'You have {amount} components'
+    common_columns:
+      name: 'Name'
+      description: 'Description'
+    connection_columns:
+      host: 'Host'
+      port: 'Port'
+      baseUrl: 'base URL'
+      tls: 'TLS'
+      environment: 'Environment'
+    component_columns:
+      version: 'Version'
+      endpoint: 'Endpoint'
+      type: 'Type'
+      connection: 'Connection'
+    action_buttons:
+      save: 'Save to database, if existing, update it'
+      edit: 'Edit the table cells'
+      delete: 'Delete from the table'

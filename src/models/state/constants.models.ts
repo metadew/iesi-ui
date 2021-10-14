@@ -22,4 +22,20 @@ export interface IActionType {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface IConnectionType extends IConstant {}
+export interface IConnectionType {
+    name: string;
+    type: string;
+    parameters: IConstantParameter[];
+    category: string;
+}
+
+export interface IComponentType {
+    name: string;
+    type: string;
+    parameters: IConstantParameter[];
+    category: string;
+}
+
+export interface IComponentTypeFilters {
+    name: string;
+}

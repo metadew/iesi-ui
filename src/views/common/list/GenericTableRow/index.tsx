@@ -55,13 +55,14 @@ interface IPublicProps<ColumnNames> {
         showDraggableCell: boolean;
         showIndexCell: boolean;
     };
+    isHandled?: boolean;
 }
 
 const useStyles = makeStyles(({ palette, shape, typography, spacing }: Theme) => ({
-    tableRow: {
-        background: palette.background.paper,
+    tableRow: (props: { isHandled: boolean }) => ({
+        background: props.isHandled ? THEME_COLORS.GREY_LIGHT : palette.background.paper,
         height: '100%',
-    },
+    }),
     tableRowElevated: {
         boxShadow: '0 2px 22px rgba(0, 0, 0, .10)',
         borderRadius: shape.borderRadius,
@@ -172,8 +173,9 @@ export default function GenericTableRow<ColumnNames>({
     className,
     index: rowIndex,
     placeholderProps,
+    isHandled,
 }: IPublicProps<ColumnNames>) {
-    const classes = useStyles();
+    const classes = useStyles({ isHandled });
     const [anchorEl, setAnchorEl] = useState(null);
     const [compactViewActive, setCompactViewActive] = useState(compactView);
     const open = Boolean(anchorEl);
@@ -213,7 +215,7 @@ export default function GenericTableRow<ColumnNames>({
                     ) : renderPlaceholderCellContent()}
                 </TableCell>
             )}
-            { isPlaceholder ? renderPlaceholderCells() : renderDataCells() }
+            { isPlaceholder ? renderPlaceholderCells() : renderDataCells()}
             {listActions && (
                 <>
                     <TableCell
@@ -323,45 +325,51 @@ export default function GenericTableRow<ColumnNames>({
                 || (typeof column.tooltip === 'function' ? column.tooltip(value) : column.tooltip);
 
             return (
-                <TableCell
-                    className={classNames(classes.tableCell, {
-                        [classes.hideOnCompactView]: !!column.hideOnCompactView,
-                    })}
-                    style={{ width: column.fixedWidth }}
-                    key={columnName as string}
-                >
-                    <Box display="flex" alignItems="center">
-                        {column.icon && (
-                            <Box flex="0 0 auto" paddingRight={0.5}>
-                                <Typography color="primary" className={classes.cellIcon}>
-                                    {column.icon}
-                                </Typography>
-                            </Box>
-                        )}
-                        <Box flex="1 1 auto">
-                            {column.label && (
-                                <Typography
-                                    display="block"
-                                    className={classes.label}
-                                >
-                                    {column.label}
-                                </Typography>
-                            )}
+                <>
+                    {!column.hide
+                    && (
+                        <TableCell
+                            className={classNames(classes.tableCell, {
+                                [classes.hideOnCompactView]: !!column.hideOnCompactView || !!column.hide,
+
+                            })}
+                            style={{ width: column.fixedWidth }}
+                            key={columnName as string}
+                        >
                             <Box display="flex" alignItems="center">
-                                {column.noWrap ? (
-                                    <TooltipDiv text={value} className={cellClassName} />
-                                ) : (
-                                    <Typography variant="body2" className={cellClassName}>
-                                        {value}
-                                    </Typography>
+                                {column.icon && (
+                                    <Box flex="0 0 auto" paddingRight={0.5}>
+                                        <Typography color="primary" className={classes.cellIcon}>
+                                            {column.icon}
+                                        </Typography>
+                                    </Box>
                                 )}
-                                {tooltip && (
-                                    <InfoTooltip title={tooltip} iconSize="small" />
-                                )}
+                                <Box flex="1 1 auto">
+                                    {column.label && (
+                                        <Typography
+                                            display="block"
+                                            className={classes.label}
+                                        >
+                                            {column.label}
+                                        </Typography>
+                                    )}
+                                    <Box display="flex" alignItems="center">
+                                        {column.noWrap ? (
+                                            <TooltipDiv text={value} className={cellClassName} />
+                                        ) : (
+                                            <Typography variant="body2" className={cellClassName}>
+                                                {value}
+                                            </Typography>
+                                        )}
+                                        {tooltip && (
+                                            <InfoTooltip title={tooltip} iconSize="small" />
+                                        )}
+                                    </Box>
+                                </Box>
                             </Box>
-                        </Box>
-                    </Box>
-                </TableCell>
+                        </TableCell>
+                    )}
+                </>
             );
         });
     }

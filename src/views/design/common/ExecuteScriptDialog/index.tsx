@@ -13,8 +13,9 @@ import {
 } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { observe, IObserveProps } from 'views/observe';
-import { getScriptByUniqueIdFromDetailOrList } from 'state/entities/scripts/selectors';
-import { triggerCreateExecutionRequest } from 'state/entities/executionRequests/triggers';
+import {
+    triggerCreateExecutionRequest,
+} from 'state/entities/executionRequests/triggers';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
@@ -43,9 +44,10 @@ const useStyles = makeStyles(({ spacing, typography }) => ({
 }));
 
 interface IPublicProps {
-    scriptUniqueId: string;
-    open: boolean;
     onClose: () => void;
+    initialFormValues?: IFormValues;
+    scriptName: string;
+    scriptVersion: number;
 }
 
 interface IFormValues {
@@ -56,15 +58,22 @@ interface IFormValues {
     executionRequestLabels: ILabel[];
 }
 
+interface IExecutionReportDetailRouteParams {
+    executionRequestId: string;
+    runId: string;
+    processId: string;
+}
+
 function ExecuteScriptDialog({
     onClose,
-    scriptUniqueId,
-    open,
+    initialFormValues,
+    scriptName,
+    scriptVersion,
     state,
     dispatch,
 }: IPublicProps & IObserveProps) {
     const classes = useStyles();
-    const [formValues, setFormValues] = useState<IFormValues>({
+    const [formValues, setFormValues] = useState<IFormValues>(initialFormValues || {
         name: '',
         description: '',
         environment: '',
@@ -81,9 +90,7 @@ function ExecuteScriptDialog({
         name: '',
         value: '',
     });
-
     const translator = getTranslator(state);
-    const script = getScriptByUniqueIdFromDetailOrList(state, scriptUniqueId);
     const createAsyncInfo = entitiesStateManager.getAsyncEntity({
         asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequestDetail,
     }).create;
@@ -92,26 +99,23 @@ function ExecuteScriptDialog({
         asyncEntityKey: ASYNC_ENTITY_KEYS.environments,
     }).fetch;
     const executionRequestDetail = getAsyncExecutionRequestDetail(state).data || {} as IExecutionRequest;
+    const executionRequestDetailAsyncInfo = entitiesStateManager.getAsyncEntity({
+        asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequestDetail,
+    }).fetch;
 
     // Trigger Fetch envs on open dialog
     useEffect(() => {
-        if (open) {
+        if (environmentsAsyncInfo.status === AsyncStatus.Initial) {
             triggerFetchEnvironments();
-        } else {
-            // Reset form & async status
         }
-        return () => {};
-    }, [open]);
-
-    if (createAsyncInfo.status === AsyncStatus.Success && executionRequestDetail) {
-        dispatch(addPollingExecutionRequest({ id: executionRequestDetail.executionRequestId }));
-    }
+        return () => { };
+    }, [environmentsAsyncInfo]);
 
     return (
         <ClosableDialog
             onClose={onClose}
-            open={open}
-            title={script && script.name}
+            title={scriptName}
+            open
         >
             <Box textAlign="left" maxWidth={400} marginX="auto">
                 {createAsyncInfo.status === AsyncStatus.Success ? (
@@ -123,7 +127,7 @@ function ExecuteScriptDialog({
                             <Button
                                 variant="contained"
                                 color="primary"
-                                onClick={onClose}
+                                onClick={onRequestSuccess}
                             >
                                 <Translate msg="scripts.overview.execute_script_dialog.success.close_button" />
                             </Button>
@@ -131,14 +135,11 @@ function ExecuteScriptDialog({
                     </>
                 ) : (
                     <>
-                        <Loader show={createAsyncInfo.status === AsyncStatus.Busy} />
-                        {!isSet(script) && (
-                            <Box marginBottom={2}>
-                                <Alert severity="error">
-                                    <Translate msg="scripts.overview.execute_script_dialog.init_error" />
-                                </Alert>
-                            </Box>
-                        )}
+                        <Loader show={
+                            createAsyncInfo.status === AsyncStatus.Busy
+                            || executionRequestDetailAsyncInfo.status === AsyncStatus.Busy
+                        }
+                        />
                         <Box marginBottom={2}>
                             <Translate msg="scripts.overview.execute_script_dialog.text" />
                         </Box>
@@ -388,11 +389,7 @@ function ExecuteScriptDialog({
                                 variant="contained"
                                 color="secondary"
                                 onClick={createExecutionRequest}
-                                disabled={
-                                    !isSet(script)
-                                        || !formValues.name.trim()
-                                        || !formValues.environment.trim()
-                                }
+                                disabled={!formValues.name.trim() || !formValues.environment.trim()}
                             >
                                 <Translate msg="scripts.overview.execute_script_dialog.confirm" />
                             </Button>
@@ -403,6 +400,12 @@ function ExecuteScriptDialog({
         </ClosableDialog>
     );
 
+    function onRequestSuccess() {
+        if (executionRequestDetail.executionRequestId) {
+            dispatch(addPollingExecutionRequest({ id: executionRequestDetail.executionRequestId }));
+        }
+        onClose();
+    }
     function createExecutionRequest() {
         triggerCreateExecutionRequest({
             context: '', // May be ignored for now
@@ -413,12 +416,12 @@ function ExecuteScriptDialog({
             scope: '', // May be ignored for now
             scriptExecutionRequests: [
                 {
-                    scriptName: script.name,
+                    scriptName,
+                    scriptVersion,
                     environment: formValues.environment,
                     exit: false,
                     impersonations: [], // TODO
                     parameters: formValues.parameters,
-                    scriptVersion: script.version.number,
                 },
             ],
         });
@@ -428,5 +431,7 @@ function ExecuteScriptDialog({
 export default observe<IPublicProps>([
     StateChangeNotification.I18N_TRANSLATIONS,
     StateChangeNotification.EXECUTION_REQUESTS_CREATE,
+    StateChangeNotification.EXECUTION_REQUESTS_DETAIL,
+    StateChangeNotification.SCRIPT_EXECUTION_DETAIL,
     StateChangeNotification.ENVIRONMENTS,
 ], ExecuteScriptDialog);

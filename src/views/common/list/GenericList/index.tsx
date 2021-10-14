@@ -131,6 +131,7 @@ export default function GenericList<ColumnNames>({
                                         listActions={listActions}
                                         columns={columns}
                                         compactView={compactView}
+                                        isHandled={item.isHandled}
                                     />
                                 ))}
                             </>

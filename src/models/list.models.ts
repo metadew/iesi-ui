@@ -11,6 +11,7 @@ export interface IColumn<ColumnNames> {
     fixedWidth?: ReactText;
     hideOnCompactView?: boolean;
     icon?: ReactElement;
+    hide?: boolean;
 }
 
 export type ListColumns<ColumnNames> = {
@@ -37,6 +38,8 @@ export interface IListItem<ColumnNames, Data = TObjectWithProps> {
         [key in keyof ColumnNames]: ReactText | IListItemValueWithSortValue
     };
     data?: Data;
+    isHandled?: boolean;
+    canBeDeleted?: boolean;
 }
 
 export enum SortOrder {

@@ -11,3 +11,23 @@ export const triggerFetchActionTypes = () => entitiesStateManager.triggerAsyncEn
     extraInputSelector: () => ({}),
     notificationsToTrigger: [StateChangeNotification.CONSTANTS_ACTION_TYPES],
 });
+
+export const triggerFetchConnectionTypes = () => entitiesStateManager.triggerAsyncEntityFetch<{}>({
+    asyncEntityToFetch: {
+        asyncEntityKey: ASYNC_ENTITY_KEYS.connectionTypes,
+        refreshMode: 'always',
+        resetDataOnTrigger: false,
+    },
+    extraInputSelector: () => ({}),
+    notificationsToTrigger: [StateChangeNotification.CONSTANTS_CONNECTION_TYPES],
+});
+
+export const triggerFetchComponentTypes = () => entitiesStateManager.triggerAsyncEntityFetch<{}>({
+    asyncEntityToFetch: {
+        asyncEntityKey: ASYNC_ENTITY_KEYS.componentTypes,
+        refreshMode: 'always',
+        resetDataOnTrigger: false,
+    },
+    extraInputSelector: () => ({}),
+    notificationsToTrigger: [StateChangeNotification.CONSTANTS_COMPONENT_TYPES],
+});

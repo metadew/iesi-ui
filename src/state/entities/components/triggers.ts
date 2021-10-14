@@ -56,7 +56,7 @@ export const triggerUpdateComponentDetail = (payload: IComponent) =>
             type: 'error',
         })),
     });
-    
+
 export const triggerDeleteComponentDetail = (payload: IComponentByNameAndVersionPayload) =>
     entitiesStateManager.triggerAsyncEntityRemove<{}>({
         asyncEntityToRemove: {

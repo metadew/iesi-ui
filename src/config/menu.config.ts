@@ -16,6 +16,14 @@ export const MAIN_NAV_ITEMS: IMenuItem[] = [
         routeKey: ROUTE_KEYS.R_REPORTS,
         translationKeySuffix: 'reports',
     }),
+    toMenuItem({
+        routeKey: ROUTE_KEYS.R_COMPONENTS,
+        translationKeySuffix: 'components',
+    }),
+    toMenuItem({
+        routeKey: ROUTE_KEYS.R_CONNECTIONS,
+        translationKeySuffix: 'connections',
+    }),
 ];
 
 function toMenuItem({
