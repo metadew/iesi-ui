@@ -183,14 +183,13 @@ const ScriptReportsOverview = withStyles(styles)(
         public componentDidMount() {
             const { dispatch } = this.props;
             const initialFilters = this.combineFiltersFromUrlAndCurrentFilters();
-            const timeToRefresh = configData.iesi_time_to_refresh_in_seconds * 1000;
 
             this.fetchExecutionRequestsWithFilterAndPagination({ newListFilters: initialFilters, newPage: 1 });
             dispatch(setExecutionsListFilter({ filters: initialFilters }));
             setInterval(() => {
-                this.fetchExecutionRequestsWithFilterAndPagination({ newListFilters: initialFilters, newPage: 1 });
-                dispatch(setExecutionsListFilter({ filters: initialFilters }));
-            }, timeToRefresh);
+                const pageData = getAsyncExecutionRequestsPageData(this.props.state);
+                this.fetchExecutionRequestsWithFilterAndPagination({ newPage: pageData.number || 1 });
+            }, configData.iesi_time_to_refresh_in_seconds * 1000);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
