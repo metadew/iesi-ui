@@ -50,7 +50,7 @@ import { getExecutionsListFilter } from 'state/ui/selectors';
 import { setExecutionsListFilter } from 'state/ui/actions';
 import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import { getEnvironmentsForDropdown } from 'state/entities/environments/selectors';
-// import configData from '../../../env-config.json';
+import configData from '../../../env-config.json';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -163,7 +163,7 @@ const defaultSortedColumn: ISortedColumn<IColumnNames> = {
     sortType: SortType.String,
 };
 
-let pageInterval: ReturnType<typeof setInterval>;
+let pageInterval: NodeJS.Timeout;
 
 type TProps = WithStyles<typeof styles>;
 
@@ -191,8 +191,7 @@ const ScriptReportsOverview = withStyles(styles)(
             pageInterval = setInterval(() => {
                 const pageData = getAsyncExecutionRequestsPageData(this.props.state);
                 this.fetchExecutionRequestsWithFilterAndPagination({ newPage: pageData.number || 1 });
-                console.log('hello');
-            }, 3000);
+            }, configData.iesi_time_to_refresh_in_seconds * 1000);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
