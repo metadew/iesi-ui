@@ -27,7 +27,11 @@ import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import { triggerDeleteConnectionDetail, triggerFetchConnections } from 'state/entities/connections/triggers';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { setConnectionsListFilter } from 'state/ui/actions';
-import { checkAuthorityGeneral, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import {
+    checkAuthority,
+    checkAuthorityGeneral,
+    SECURITY_PRIVILEGES,
+} from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import TransformDocumentationDialog from 'views/design/common/TransformDocumentationDialog';
 import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
@@ -58,6 +62,10 @@ const styles = (({ palette, typography }: Theme) => ({
         fontWeight: typography.fontWeightBold,
     },
     connectionDescription: {
+        fontWeight: typography.fontWeightBold,
+        fontSize: typography.pxToRem(12),
+    },
+    connectionSecurityGroupName: {
         fontWeight: typography.fontWeightBold,
         fontSize: typography.pxToRem(12),
     },
@@ -246,12 +254,12 @@ const ConnectionOverview = withStyles(styles)(
                 name: {
                     label: <Translate msg="connections.overview.list.labels.name" />,
                     className: classes.connectionName,
-                    fixedWidth: '40%',
+                    fixedWidth: '35%',
                 },
                 type: {
                     label: <Translate msg="connections.overview.list.labels.type" />,
                     className: classes.connectionType,
-                    fixedWidth: '15%',
+                    fixedWidth: '10%',
                 },
                 environments: {
                     label: <Translate msg="connections.overview.list.labels.environments" />,
@@ -264,6 +272,10 @@ const ConnectionOverview = withStyles(styles)(
                     className: classes.connectionDescription,
                     fixedWidth: '40%',
                     noWrap: true,
+                },
+                securityGroupName: {
+                    className: classes.connectionSecurityGroupName,
+                    fixedWidth: '10%',
                 },
             };
 
@@ -295,9 +307,13 @@ const ConnectionOverview = withStyles(styles)(
                                                     },
                                                 });
                                             },
-                                            hideAction: () => (
-                                                !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
-                                            ),
+                                            hideAction: (item: IListItem<IConnectionColumnNamesBase>) => {
+                                                console.log('GROUPNAME : ', item.columns.securityGroupName);
+                                                return !checkAuthority(
+                                                    SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
+                                                    item.columns.securityGroupName.toString(),
+                                                );
+                                            },
                                         }, {
                                             icon: <Visibility />,
                                             label: translator('connections.overview.list.actions.view'),
@@ -312,8 +328,11 @@ const ConnectionOverview = withStyles(styles)(
                                                     },
                                                 });
                                             },
-                                            hideAction: () => (
-                                                checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                                            hideAction: (item: IListItem<IConnectionColumnNamesBase>) => (
+                                                !checkAuthority(
+                                                    SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
+                                                    item.data.securityGroupName,
+                                                )
                                             ),
                                         }, {
                                             icon: <Delete />,
@@ -459,6 +478,7 @@ function mapConnectionsToListItems(connections: IConnection[]): IListItem<IConne
         id: getUniqueIdFromConnection(connection),
         columns: {
             name: connection.name,
+            securityGroupName: connection.securityGroupName,
             description: connection.description,
             type: connection.type,
             environments: {

@@ -433,13 +433,14 @@ connections:
     save_connection_dialog:
       title: Save connection
       text: Do you want to overwrite the current version or create a new version with the current changes?
-      create: Creation connection
+      create: Create connection
       update: Update connection
     side:
       connection_type: Type
       connection_description: Description
       connection_name: Name
       connection_environment: Environment
+      connection_security: Security group
       toggle_button: Details
       environments:
         title: Environments
