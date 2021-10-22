@@ -261,12 +261,6 @@ const ConnectionOverview = withStyles(styles)(
                     className: classes.connectionType,
                     fixedWidth: '10%',
                 },
-                environments: {
-                    label: <Translate msg="connections.overview.list.labels.environments" />,
-                    className: classes.connectionEnvironment,
-                    noWrap: true,
-                    fixedWidth: '5%',
-                },
                 description: {
                     label: <Translate msg="connections.overview.list.labels.description" />,
                     className: classes.connectionDescription,
@@ -277,6 +271,12 @@ const ConnectionOverview = withStyles(styles)(
                     className: classes.connectionSecurityGroupName,
                     fixedWidth: '10%',
                 },
+                environments: {
+                    label: <Translate msg="connections.overview.list.labels.environments" />,
+                    className: classes.connectionEnvironment,
+                    noWrap: true,
+                    fixedWidth: '5%',
+                }, 
             };
 
             const asyncConnectionsEntity = getAsyncConnectionsEntity(state);
