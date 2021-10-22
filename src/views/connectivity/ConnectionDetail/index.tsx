@@ -27,7 +27,11 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { Alert, Autocomplete } from '@material-ui/lab';
 import { IConnectionType } from 'models/state/constants.models';
 import { IListItem, ListColumns } from 'models/list.models';
-import { checkAuthority, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import {
+    checkAuthority,
+    checkAuthorityGeneral,
+    SECURITY_PRIVILEGES,
+} from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import {
     triggerCreateConnectionDetail,
     triggerDeleteConnectionDetail,
@@ -173,7 +177,27 @@ const ConnectionDetail = withStyles(styles)(
                         onClose={() => this.setState({ isSaveDialogOpen: false })}
                     >
                         <Typography>
-                            <Translate msg="connections.detail.save_connection_dialog.text" />
+                            {
+                                checkAuthority(
+                                    SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
+                                    newConnectionDetail.securityGroupName,
+                                )
+                                    ? (
+                                        <Translate
+                                            msg="connections.detail.save_connection_dialog.text"
+                                            placeholders={{
+                                                connectionName: newConnectionDetail.name,
+                                            }}
+                                        />
+                                    ) : (
+                                        <Translate
+                                            msg="connections.detail.save_connection_dialog.text_securityGroup"
+                                            placeholders={{
+                                                securityGroup: newConnectionDetail.securityGroupName,
+                                            }}
+                                        />
+                                    )
+                            }
                         </Typography>
                         <Box display="flex" alignItems="center" justifyContent="center" marginTop={2}>
                             <Box paddingRight={1}>
@@ -231,9 +255,8 @@ const ConnectionDetail = withStyles(styles)(
                                 value={autoComplete || null}
                                 getOptionLabel={(option) => option.data.type}
                                 getOptionDisabled={() =>
-                                    !checkAuthority(
+                                    !checkAuthorityGeneral(
                                         SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
-                                        newConnectionDetail.securityGroupName,
                                     )}
                                 renderInput={(params) => (
                                     <TextInput
