@@ -276,7 +276,7 @@ const ConnectionOverview = withStyles(styles)(
                     className: classes.connectionEnvironment,
                     noWrap: true,
                     fixedWidth: '5%',
-                }, 
+                },
             };
 
             const asyncConnectionsEntity = getAsyncConnectionsEntity(state);
