@@ -339,7 +339,7 @@ const ScriptsOverview = withStyles(styles)(
                                         hideAction: (item: IListItem<IColumnNames>) =>
                                             !checkAuthority(
                                                 state,
-                                                SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_WRITE,
+                                                SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_WRITE,
                                                 item.columns.securityGroupName.toString(),
                                             ),
                                     },
@@ -409,7 +409,7 @@ const ScriptsOverview = withStyles(styles)(
                                         hideAction: (item: IListItem<IColumnNames>) =>
                                             !checkAuthority(
                                                 state,
-                                                SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_READ,
+                                                SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_READ,
                                                 item.columns.securityGroupName.toString(),
                                             ),
                                     },

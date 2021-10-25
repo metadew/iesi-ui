@@ -1,17 +1,14 @@
 import React from 'react';
 import { getStore } from 'state';
-import { IState } from 'models/state.models';
-import { extractAccessLevelFromUser, getUserUuidFromToken } from 'state/auth/selectors';
 import { IObserveProps } from 'views/observe';
-import { IAccessToken, IUser } from 'models/state/auth.models';
 import { Button, Container, Typography, Box, createStyles, Theme, WithStyles, withStyles } from '@material-ui/core';
-// import { useHistory, useLocation } from 'react-router-dom';
 import TextInput from 'views/common/input/TextInput';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { Alert } from '@material-ui/lab';
+import { triggerLogon } from 'state/auth/actions';
 import { redirectToPath } from 'views/routes';
+import { logon } from '../../../api/security/security.api';
 import { ReactComponent as IesiLogo } from './logo.svg';
-import { fetchUserByUuid, logon } from '../../../api/security/security.api';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -58,11 +55,8 @@ const LoginView = withStyles(styles)(
             // use redirect to?
             const searchParams = new URLSearchParams(window.location.search);
             const redirectUri = searchParams.get('url') || '/';
-            console.log(redirectUri.split('?'));
             const pathname: string = redirectUri.split('?')[0] || '/';
             const search: string = redirectUri.split('?')[1] || '';
-            console.log(pathname);
-            console.log(search);
             this.state = {
                 hasSubmitErrors: false,
                 username: '',
@@ -140,6 +134,7 @@ const LoginView = withStyles(styles)(
 
         private handleSubmit = () => {
             const { username, password, redirectUri } = this.state;
+            const { dispatch } = getStore();
             if (username !== '' && password !== '') {
                 this.setHasSubmitErrors(false);
 
@@ -148,52 +143,8 @@ const LoginView = withStyles(styles)(
                     password,
                 })
                     .then(async (response) => {
-                        // set Access Token to AuthState
-                        // Decode JWT token
-                        // extract user uuid and fetch user roles
-                        // set auth info:
-
-                        // eslint-disable-next-line max-len
-                        // check for error response
-                        // TODO: set state
-                        if (response.accessToken) {
-                            const accessToken: IAccessToken = getUserUuidFromToken(response.accessToken);
-                            console.log(response.accessToken);
-                            getStore().setState({
-                                newState: (currentState: IState) => ({
-                                    ...currentState,
-                                    auth: {
-                                        ...currentState.auth,
-                                        accessToken: response.accessToken,
-                                        username: accessToken.sub,
-                                    },
-                                }),
-                            });
-                            sessionStorage.setItem('token', response.accessToken);
-                            fetchUserByUuid({ uuid: accessToken.uuid })
-                                .then(async (user: IUser) => {
-                                    // Decode JWT token
-                                    // extract user uuid and fetch user roles
-                                    getStore().setState({
-                                        newState: (currentState: IState) => ({
-                                            ...currentState,
-                                            auth: {
-                                                ...currentState.auth,
-                                                permissions: extractAccessLevelFromUser(user),
-                                            },
-                                        }),
-                                    });
-                                    console.log('login page state:');
-                                    console.log(getStore().getState());
-                                    // TODO: do redirectTo(...)
-                                    redirectToPath(redirectUri.pathname, redirectUri.search);
-                                    // history.replace(from.pathname + from.search);
-                                })
-                                .catch((error) => {
-                                    console.error('There was an error!', error);
-                                    this.setHasSubmitErrors(true);
-                                });
-                        }
+                        dispatch(triggerLogon(response));
+                        redirectToPath(redirectUri.pathname, redirectUri.search);
                     })
                     .catch((error) => {
                         console.error('There was an error!', error);

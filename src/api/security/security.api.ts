@@ -1,14 +1,15 @@
-import { IUser, IUserByIdPayload } from 'models/state/auth.models';
+import { IUser, IUserByIdPayload, IUserRole } from 'models/state/auth.models';
 import { get, post } from '../requestWrapper';
 import API_URLS from '../apiUrls';
 
-interface IAuthenticationRequest {
+export interface IAuthenticationRequest {
     username: string;
     password: string;
 }
-interface IAuthenticationResponse {
+export interface IAuthenticationResponse {
     accessToken: string;
     expiresIn: number;
+    roles: IUserRole[];
 }
 
 export function logon(credentials: IAuthenticationRequest) {
@@ -20,6 +21,7 @@ export function logon(credentials: IAuthenticationRequest) {
             // eslint-disable-next-line no-underscore-dangle
             accessToken: data.accessToken,
             expiresIn: data.expiresIn,
+            roles: data.roles,
         }),
         body: credentials,
     });

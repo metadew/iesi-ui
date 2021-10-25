@@ -159,7 +159,7 @@ function DetailActions({
                         <>
                             {checkAuthority(
                                 state,
-                                SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_WRITE,
+                                SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_WRITE,
                                 newScriptDetail.securityGroupName,
                             )
                                 ? (
@@ -187,7 +187,7 @@ function DetailActions({
                                 ) : null}
                             {checkAuthority(
                                 state,
-                                SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_READ,
+                                SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_READ,
                                 newScriptDetail.securityGroupName,
                             )
                                 ? (

@@ -74,14 +74,27 @@ export const extractAccessLevelFromUser = (user: IUser): IAccessLevel[] =>
                 .flat();
         }).flat();
 
+export const extractAccessLevelFromUserRoles = (userRoles: IUserRole[]): IAccessLevel[] =>
+    userRoles
+        .map((role: IUserRole) => {
+            const { securityGroups } = role.team;
+            const { privileges } = role;
+            return securityGroups.map((securityGroup: ITeamSecurityGroup) =>
+                privileges.map((privilege: IPrivilege) => (
+                    {
+                        group: securityGroup.name,
+                        privilege: SECURITY_PRIVILEGES[`S_${privilege.privilege}` as keyof typeof SECURITY_PRIVILEGES],
+                    }
+                )))
+                .flat();
+        }).flat();
+
 export function checkAuthority(state: IState, privilege: SECURITY_PRIVILEGES, securityGroupName: string) {
     if (securityGroupName == null || privilege == null) {
         return false;
     }
-    return state.auth.permissions.includes({
-        group: securityGroupName,
-        privilege,
-    });
+    return state.auth.permissions.some((permission: IAccessLevel) => permission.group === securityGroupName
+        && permission.privilege === privilege);
 }
 
 export function checkAuthorityGeneral(state: IState, privilege: SECURITY_PRIVILEGES) {
