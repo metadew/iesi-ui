@@ -11,6 +11,7 @@ export interface IColumn<ColumnNames> {
     fixedWidth?: ReactText;
     hideOnCompactView?: boolean;
     icon?: ReactElement;
+    hide?: boolean;
 }
 
 export type ListColumns<ColumnNames> = {

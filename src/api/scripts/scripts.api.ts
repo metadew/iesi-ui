@@ -3,6 +3,7 @@ import {
     IFetchScriptsOptions,
     IScriptBase,
     IScript,
+    IScriptImport,
     IScriptByNamePayload,
     IScriptByNameAndVersionPayload, IExpandScriptsResponseWith, IFetchScriptsListPayload, IScriptsEntity,
 } from 'models/state/scripts.models';
@@ -98,12 +99,20 @@ export async function fetchScriptByNameAndVersionDownload({
  * Makes a new 'script-version-combo', which can either be the first version of a totally new script,
  * OR an extra version of an existing script.
  */
-export function createScriptVersion(script: IScriptBase) {
-    return post<IScriptBase>({
+export function createScriptVersion(script: IScriptBase | IScriptImport) {
+    return post<IScriptBase | IScriptImport>({
         needsAuthentication: true,
         isIesiApi: true,
         url: API_URLS.SCRIPTS,
-        body: script,
+        body: 'value' in script ? script.value : script,
+        contentType: 'value' in script
+            && script.value instanceof FormData
+            ? 'multipart/form-data' : 'application/json',
+        headers: {
+            'Content-Type': 'value' in script
+                && script.value instanceof FormData
+                ? 'multipart/form-data' : 'application/json',
+        },
     });
 }
 

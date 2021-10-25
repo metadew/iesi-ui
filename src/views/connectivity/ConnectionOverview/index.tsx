@@ -78,6 +78,12 @@ const sortActions: SortActions<Partial<IConnectionColumnNamesBase>> = {
     },
 };
 
+const defaultSortedColumn: ISortedColumn<IConnectionColumnNamesBase> = {
+    name: 'name',
+    sortOrder: SortOrder.Descending,
+    sortType: SortType.String,
+};
+
 interface IComponentState {
     connectionIdToDelete: string;
     loadDocDialogOpen: boolean;
@@ -108,6 +114,15 @@ const ConnectionOverview = withStyles(styles)(
 
             this.onLoadDocDialogOpen = this.onLoadDocDialogOpen.bind(this);
             this.onLoadDocDialogClose = this.onLoadDocDialogClose.bind(this);
+            this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
+        }
+
+        public componentDidMount() {
+            const { dispatch } = this.props;
+            const initialFilters = this.combineFiltersFromUrlAndCurrentFilters();
+
+            this.fetchConnectionssWithFilterAndPagination({ newListFilters: initialFilters, newPage: 1 });
+            dispatch(setConnectionsListFilter({ filters: initialFilters }));
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
@@ -335,6 +350,37 @@ const ConnectionOverview = withStyles(styles)(
             dispatch(setConnectionsListFilter({ sortedColumn }));
         }
 
+        private combineFiltersFromUrlAndCurrentFilters() {
+            const { state } = this.props;
+            const filterFromState = getConnectionsListFilter(state);
+            const searchParams = new URLSearchParams(window.location.search);
+            const defaultFilters = filterFromState.filters || getIntialFiltersFromFilterConfig(filterConfig);
+            const hasValidUrlParams = Array.from(searchParams.keys()).some((r) =>
+                Object.keys(filterConfig).includes(r));
+
+            if (hasValidUrlParams) {
+                // reset filters in redux state & only set url params
+                const filtersByUrlSearchParams = getIntialFiltersFromFilterConfig(filterConfig);
+                Array.from(searchParams.keys()).forEach(
+                    (searchParamKey: string) => {
+                        if (Object.keys(filterConfig).includes(searchParamKey)) {
+                            const filterValue = searchParams.get(searchParamKey);
+                            if (
+                                !filtersByUrlSearchParams[searchParamKey as keyof IConnectionColumnNamesBase]
+                                    .values.includes(filterValue)
+                            ) {
+                                filtersByUrlSearchParams[searchParamKey as keyof IConnectionColumnNamesBase].values
+                                    .push(filterValue);
+                            }
+                        }
+                    },
+                );
+                return filtersByUrlSearchParams;
+            }
+
+            return defaultFilters;
+        }
+
         private fetchConnectionssWithFilterAndPagination({
             newPage,
             newListFilters,
@@ -351,7 +397,7 @@ const ConnectionOverview = withStyles(styles)(
 
             const filters = newListFilters || filtersFromState.filters;
             const page = newListFilters ? 1 : newPage || pageData.number;
-            const sortedColumn = newSortedColumn || filtersFromState.sortedColumn;
+            const sortedColumn = newSortedColumn || filtersFromState.sortedColumn || defaultSortedColumn;
             triggerFetchConnections({
                 pagination: { page },
                 filter: {

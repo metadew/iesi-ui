@@ -56,6 +56,9 @@ const useStyles = makeStyles(({ palette, spacing }) => ({
         paddingLeft: 0,
         paddingRight: 0,
     },
+    button: {
+        marginLeft: 400,
+    },
 }));
 
 export default function ExpandableParameter({ parameter, onChange, constantParameter, state }: IPublicProps) {

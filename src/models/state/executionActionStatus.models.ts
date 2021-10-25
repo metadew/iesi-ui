@@ -6,3 +6,8 @@ export enum ExecutionActionStatus {
     Skipped = 'SKIPPED',
     Unknown = 'UNKNOWN',
 }
+
+export const getScriptExecutionStatusForDropdown = () => {
+    const scriptExecutionStatus = Object.values(ExecutionActionStatus);
+    return scriptExecutionStatus.map((status) => status);
+};

@@ -11,7 +11,7 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
-import { WatchLater } from '@material-ui/icons';
+import { PlayArrow, WatchLater } from '@material-ui/icons';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import ReportIcon from 'views/common/icons/Report';
 import {
@@ -30,10 +30,10 @@ import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
-import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import { AsyncOperation, AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { IColumnNames, IExecutionRequest } from 'models/state/executionRequests.models';
 import { ExecutionRequestStatus } from 'models/state/executionRequestStatus.models';
-import { ExecutionActionStatus } from 'models/state/executionActionStatus.models';
+import { ExecutionActionStatus, getScriptExecutionStatusForDropdown } from 'models/state/executionActionStatus.models';
 import { Alert } from '@material-ui/lab';
 import { parseISO, format as formatDate } from 'date-fns';
 import OrderedList from 'views/common/list/OrderedList';
@@ -43,14 +43,18 @@ import {
     getAsyncExecutionRequests,
     getAsyncExecutionRequestsPageData,
 } from 'state/entities/executionRequests/selectors';
-import { triggerFetchExecutionRequests } from 'state/entities/executionRequests/triggers';
+import {
+    triggerFetchExecutionRequests,
+    triggerResetAsyncExecutionRequest,
+} from 'state/entities/executionRequests/triggers';
 import { formatSortQueryParameter } from 'utils/core/string/format';
-import { getEnvironmentsForDropdown } from 'state/entities/environments/selectors';
 import { getTranslator } from 'state/i18n/selectors';
 import { getExecutionsListFilter } from 'state/ui/selectors';
 import { setExecutionsListFilter } from 'state/ui/actions';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { checkAuthority } from 'state/auth/selectors';
+import { getEnvironmentsForDropdown } from 'state/entities/environments/selectors';
+import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -131,6 +135,15 @@ const filterConfig: FilterConfig<Partial<IColumnNames>> = {
         label: <Translate msg="script_reports.overview.list.filter.labels" />,
         filterType: FilterType.KeyValue,
     },
+    runId: {
+        label: <Translate msg="script_reports.overview.list.filter.run_id" />,
+        filterType: FilterType.Search,
+    },
+    runStatus: {
+        label: <Translate msg="script_reports.overview.list.filter.run_status" />,
+        filterType: FilterType.Dropdown,
+        getDropdownOptions: getScriptExecutionStatusForDropdown,
+    },
 };
 
 const sortActions: SortActions<Partial<IColumnNames>> = {
@@ -155,11 +168,18 @@ const defaultSortedColumn: ISortedColumn<IColumnNames> = {
 };
 
 type TProps = WithStyles<typeof styles>;
+type TState = {
+    selectedExecutionRequest: IExecutionRequest;
+};
 
 const ScriptReportsOverview = withStyles(styles)(
-    class extends React.Component<TProps & IObserveProps> {
+    class extends React.Component<TProps & IObserveProps, TState> {
         public constructor(props: TProps & IObserveProps) {
             super(props);
+
+            this.state = {
+                selectedExecutionRequest: null,
+            };
 
             this.renderPanel = this.renderPanel.bind(this);
             this.renderContent = this.renderContent.bind(this);
@@ -169,6 +189,8 @@ const ScriptReportsOverview = withStyles(styles)(
 
             // eslint-disable-next-line max-len
             this.fetchExecutionRequestsWithFilterAndPagination = this.fetchExecutionRequestsWithFilterAndPagination.bind(this);
+            this.onOpenExecuteDialog = this.onOpenExecuteDialog.bind(this);
+            this.onCloseExecuteDialog = this.onCloseExecuteDialog.bind(this);
         }
 
         public componentDidMount() {
@@ -190,7 +212,7 @@ const ScriptReportsOverview = withStyles(styles)(
 
         public render() {
             const { classes, state } = this.props;
-
+            const { selectedExecutionRequest } = this.state;
             const filterFromState = getExecutionsListFilter(state);
             const pageData = getAsyncExecutionRequestsPageData(state);
             const executions = getAsyncExecutionRequests(state);
@@ -242,6 +264,24 @@ const ScriptReportsOverview = withStyles(styles)(
                             content={this.renderContent({ listItems })}
                             initialIsOpenState={initialIsOpenStateFilterPanel}
                         />
+                        {
+                            selectedExecutionRequest && (
+                                <ExecuteScriptDialog
+                                    onClose={this.onCloseExecuteDialog}
+                                    scriptName={selectedExecutionRequest.scriptExecutionRequests[0].scriptName}
+                                    scriptVersion={selectedExecutionRequest.scriptExecutionRequests[0].scriptVersion}
+                                    initialFormValues={{
+                                        name: selectedExecutionRequest.name,
+                                        description: selectedExecutionRequest.description,
+                                        environment: selectedExecutionRequest.scriptExecutionRequests[0].environment,
+                                        parameters: selectedExecutionRequest.scriptExecutionRequests[0].parameters,
+                                        executionRequestLabels: selectedExecutionRequest.executionRequestLabels,
+
+                                    }}
+                                />
+                            )
+                        }
+
                     </Box>
                 </>
             );
@@ -364,6 +404,13 @@ const ScriptReportsOverview = withStyles(styles)(
                     hideOnCompactView: true,
                     fixedWidth: '10%',
                 },
+                runId: {
+                    label: (
+                        <Translate msg="script_reports.overview.list.labels.parameters" />
+                    ),
+                    hideOnCompactView: true,
+                    hide: true,
+                },
             };
 
             const asyncExecutionRequestsEntity = getAsyncExecutionRequestsEntity(this.props.state);
@@ -400,6 +447,17 @@ const ScriptReportsOverview = withStyles(styles)(
                                     item.columns.securityGroupName.toString(),
                                 );
                             },
+                        }, {
+                            icon: <PlayArrow />,
+                            label: translator('script_reports.overview.list.actions.rerun'),
+                            onClick: (id: number) => {
+                                this.onOpenExecuteDialog(id.toString());
+                            },
+                            hideAction: (item: IListItem<IColumnNames>) => !checkAuthority(
+                                state,
+                                SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_WRITE,
+                                item.columns.securityGroupName.toString(),
+                            ),
                         })}
                         columns={columns}
                         listItems={listItems}
@@ -462,9 +520,26 @@ const ScriptReportsOverview = withStyles(styles)(
                         && filters.environment.values[0].toString(),
                     label: filters.labels.values.length > 0
                         && filters.labels.values[0].toString(),
+                    'run-id': filters.runId.values.length > 0
+                        && filters.runId.values[0].toString(),
+                    'run-status': filters.runStatus.values.length > 0
+                        && filters.runStatus.values[0].toString(),
                 },
                 sort: formatSortQueryParameter(sortedColumn),
             });
+        }
+
+        private onOpenExecuteDialog(id: string) {
+            const { state } = this.props;
+            const executionRequests = getAsyncExecutionRequests(state);
+            const selectedExecutionRequest = executionRequests.find((item) =>
+                item.executionRequestId === id);
+            this.setState({ selectedExecutionRequest });
+        }
+
+        private onCloseExecuteDialog() {
+            triggerResetAsyncExecutionRequest({ operation: AsyncOperation.create });
+            this.setState({ selectedExecutionRequest: null });
         }
     },
 );
@@ -517,6 +592,7 @@ function mapExecutionsToListItems(
                                 </Typography>
                             ),
                         },
+                        runId: scriptExecution.runId ? scriptExecution.runId : '',
                     },
                     data: {
                         runId: scriptExecution.runId,
@@ -531,5 +607,6 @@ function mapExecutionsToListItems(
 
 export default observe<TProps>([
     StateChangeNotification.EXECUTION_REQUESTS_LIST,
+    StateChangeNotification.SCRIPT_EXECUTION_DETAIL,
     StateChangeNotification.LIST_FILTER_EXECUTIONS,
 ], ScriptReportsOverview);

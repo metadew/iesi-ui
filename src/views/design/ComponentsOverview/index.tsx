@@ -82,6 +82,12 @@ interface IComponentState {
 }
 type TProps = WithStyles<typeof styles>;
 
+const defaultSortedColumn: ISortedColumn<IComponentColumnNamesBase> = {
+    name: 'name',
+    sortOrder: SortOrder.Descending,
+    sortType: SortType.String,
+};
+
 const ComponentsOverview = withStyles(styles)(
     class extends React.Component<TProps & IObserveProps, IComponentState> {
         public constructor(props: TProps & IObserveProps) {
@@ -102,8 +108,17 @@ const ComponentsOverview = withStyles(styles)(
             this.onSort = this.onSort.bind(this);
             this.onFilter = this.onFilter.bind(this);
             this.fetchComponentsWithFilterAndPagination = this.fetchComponentsWithFilterAndPagination.bind(this);
+            this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
             this.onLoadDocDialogOpen = this.onLoadDocDialogOpen.bind(this);
             this.onLoadDocDialogClose = this.onLoadDocDialogClose.bind(this);
+        }
+
+        public componentDidMount() {
+            const { dispatch } = this.props;
+            const initialFilters = this.combineFiltersFromUrlAndCurrentFilters();
+
+            this.fetchComponentsWithFilterAndPagination({ newListFilters: initialFilters, newPage: 1 });
+            dispatch(setComponentsListFilter({ filters: initialFilters }));
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
@@ -382,6 +397,37 @@ const ComponentsOverview = withStyles(styles)(
             this.setState((state) => ({ ...state, loadDocDialogOpen: false }));
         }
 
+        private combineFiltersFromUrlAndCurrentFilters() {
+            const { state } = this.props;
+            const filterFromState = getComponentsListFilter(state);
+            const searchParams = new URLSearchParams(window.location.search);
+            const defaultFilters = filterFromState.filters || getIntialFiltersFromFilterConfig(filterConfig);
+            const hasValidUrlParams = Array.from(searchParams.keys()).some((r) =>
+                Object.keys(filterConfig).includes(r));
+
+            if (hasValidUrlParams) {
+                // reset filters in redux state & only set url params
+                const filtersByUrlSearchParams = getIntialFiltersFromFilterConfig(filterConfig);
+                Array.from(searchParams.keys()).forEach(
+                    (searchParamKey: string) => {
+                        if (Object.keys(filterConfig).includes(searchParamKey)) {
+                            const filterValue = searchParams.get(searchParamKey);
+                            if (
+                                !filtersByUrlSearchParams[searchParamKey as keyof IComponentColumnNamesBase]
+                                    .values.includes(filterValue)
+                            ) {
+                                filtersByUrlSearchParams[searchParamKey as keyof IComponentColumnNamesBase]
+                                    .values.push(filterValue);
+                            }
+                        }
+                    },
+                );
+                return filtersByUrlSearchParams;
+            }
+
+            return defaultFilters;
+        }
+
         private fetchComponentsWithFilterAndPagination({
             newPage,
             newListFilters,
@@ -399,7 +445,7 @@ const ComponentsOverview = withStyles(styles)(
 
             const filters = newListFilters || filtersFromState.filters;
             const page = newListFilters ? 1 : newPage || pageData.number;
-            const sortedColumn = newSortedColumn || filtersFromState.sortedColumn;
+            const sortedColumn = newSortedColumn || filtersFromState.sortedColumn || defaultSortedColumn;
             triggerFetchComponents({
                 pagination: { page },
                 filter: {
