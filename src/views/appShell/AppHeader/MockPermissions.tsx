@@ -1,10 +1,9 @@
 import React from 'react';
 import { FormControlLabel, Switch, withStyles } from '@material-ui/core';
 import { red, green } from '@material-ui/core/colors';
-import { observe, IObserveProps } from 'views/observe';
+import { observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { IAccessLevel } from 'models/state/auth.models';
-import { getUserPermissions } from 'state/auth/selectors';
 
 const CustomSwitch = withStyles({
     switchBase: {
@@ -23,9 +22,8 @@ const CustomSwitch = withStyles({
     track: {},
 })(Switch);
 
-function MockPermissions({ state }: IObserveProps) {
+function MockPermissions() {
     const permissions = ['execute', 'edit'];
-    const userPermissions = getUserPermissions(state);
 
     return (
         <div>
