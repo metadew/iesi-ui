@@ -10,19 +10,18 @@ import {
     InputLabel,
     FilledInput,
 } from '@material-ui/core';
+import { IObserveProps, observe } from 'views/observe';
 import { ExpandMore } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { IParameter } from 'models/state/iesiGeneric.models';
 import { IConstantParameter } from 'models/state/constants.models';
 import { checkAuthorityGeneral } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
-import { IState } from 'models/state.models';
 
 interface IPublicProps {
     onChange: (value: string) => void;
     parameter: IParameter;
     constantParameter: IConstantParameter;
-    state: IState;
 }
 
 const useStyles = makeStyles(({ palette, spacing }) => ({
@@ -61,7 +60,7 @@ const useStyles = makeStyles(({ palette, spacing }) => ({
     },
 }));
 
-export default function ExpandableParameter({ parameter, onChange, constantParameter, state }: IPublicProps) {
+function ExpandableParameter({ parameter, onChange, constantParameter, state }: IPublicProps & IObserveProps) {
     const classes = useStyles();
 
     if (!constantParameter) {
@@ -105,3 +104,5 @@ export default function ExpandableParameter({ parameter, onChange, constantParam
         </ExpansionPanel>
     );
 }
+
+export default observe<IPublicProps>([], ExpandableParameter);

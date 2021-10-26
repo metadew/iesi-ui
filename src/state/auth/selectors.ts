@@ -20,12 +20,6 @@ export const hasRequiredAccessLevels = (
 ): boolean => {
     const userPermissions = getUserPermissions(state);
     return requiredAccessLevels.every((requiredAccessLevel) => userPermissions.includes(requiredAccessLevel));
-    // const missingAccessLevels = Object.keys(requiredAccessLevels)
-    //     .filter((requiredAccessLevelKey) => {
-    //         const accessLevel = requiredAccessLevels[requiredAccessLevelKey as keyof IAccessLevel];
-    //         return !!accessLevel && !userPermissions[requiredAccessLevelKey as keyof IAccessLevel];
-    //     });
-    // return missingAccessLevels.length === 0;
 };
 
 export const hasConceptAccessLevels = (
@@ -34,12 +28,6 @@ export const hasConceptAccessLevels = (
 ): boolean => {
     const userPermissions = getUserPermissions(state);
     return requiredAccessLevels.every((requiredAccessLevel) => userPermissions.includes(requiredAccessLevel));
-    // const missingAccessLevels = Object.keys(requiredAccessLevels)
-    //     .filter((requiredAccessLevelKey) => {
-    //         const accessLevel = requiredAccessLevels[requiredAccessLevelKey as keyof IAccessLevel];
-    //         return !!accessLevel && !userPermissions[requiredAccessLevelKey as keyof IAccessLevel];
-    //     });
-    // return missingAccessLevels.length === 0;
 };
 
 export const getAllowedParentRouteKeys = (state: IState): ROUTE_KEYS[] => getParentRouteKeys()

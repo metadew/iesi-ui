@@ -353,11 +353,6 @@ function ExecutionDetail({ state }: IObserveProps) {
                 },
             ] : [],
         ];
-        console.log(scriptExecutionData && !checkAuthority(
-            state,
-            SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_WRITE,
-            scriptExecutionData.securityGroupName,
-        ));
         return (
             <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
                 <Box flex="0 1 auto" marginBottom={3}>
@@ -380,24 +375,6 @@ function ExecutionDetail({ state }: IObserveProps) {
                         >
                             <Translate msg="script_reports.detail.side.execution.rerun" />
                         </Button>
-                        {/* {(
-                            scriptExecutionData
-                                && !checkAuthority(
-                                    state,
-                                    SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_WRITE,
-                                    scriptExecutionData.securityGroupName,
-                                )
-                                && <Button
-                                    variant="contained"
-                                    color="secondary"
-                                    size="small"
-                                    endIcon={<PlayArrow />}
-                                    onClick={() => setExecuteScriptDialogOpen(true)}
-                                    className={classes.rerunButton}
-                                >
-                                    <Translate msg="script_reports.detail.side.execution.rerun" />
-                                </Button>
-                        )} */}
                     </Box>
                     <DescriptionList items={executionListItems} noLineAfterListItem />
                 </Box>

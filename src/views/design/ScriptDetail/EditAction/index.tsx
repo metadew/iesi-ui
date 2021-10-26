@@ -252,7 +252,6 @@ function EditAction({
                         return (
                             <ExpandableParameter
                                 key={constantParameter.name}
-                                state={state}
                                 onChange={(value) => {
                                     const index = parameters
                                         .findIndex((p) => p.name === constantParameter.name);
