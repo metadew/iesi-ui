@@ -27,7 +27,6 @@ import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import { triggerDeleteConnectionDetail, triggerFetchConnections } from 'state/entities/connections/triggers';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { setConnectionsListFilter } from 'state/ui/actions';
-import { checkAuthorityGeneral, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import TransformDocumentationDialog from 'views/design/common/TransformDocumentationDialog';
 import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
@@ -40,6 +39,8 @@ import GenericList from 'views/common/list/GenericList';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import { StateChangeNotification } from 'models/state.models';
 import OrderedList from 'views/common/list/OrderedList';
+import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 const styles = (({ palette, typography }: Theme) => ({
     header: {
@@ -172,7 +173,7 @@ const ConnectionOverview = withStyles(styles)(
                                     />
                                 </Box>
                                 {
-                                    checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE) && (
+                                    checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE) && (
                                         <Box display="flex" alignItems="center">
                                             <Box flex="0 0 auto" mr="8px" width="250px">
                                                 <TransformDocumentationDialog
@@ -296,7 +297,7 @@ const ConnectionOverview = withStyles(styles)(
                                                 });
                                             },
                                             hideAction: () => (
-                                                !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                                                !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                                             ),
                                         }, {
                                             icon: <Visibility />,
@@ -313,14 +314,14 @@ const ConnectionOverview = withStyles(styles)(
                                                 });
                                             },
                                             hideAction: () => (
-                                                checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                                                checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                                             ),
                                         }, {
                                             icon: <Delete />,
                                             label: translator('connections.overview.list.actions.delete'),
                                             onClick: this.setConnectionToDelete,
                                             hideAction: () => (
-                                                !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                                                !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                                             ),
                                         },
                                     )}

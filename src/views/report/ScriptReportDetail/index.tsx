@@ -24,11 +24,12 @@ import {
     triggerFetchScriptExecutionDetail,
     triggerResetScriptExecutionDetail,
 } from 'state/entities/scriptExecutions/triggers';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
+import { checkAuthority } from 'state/auth/selectors';
 import { getAsyncScriptExecutionDetail } from 'state/entities/scriptExecutions/selectors';
 import { IListItem, ISortedColumn, ListColumns, SortOrder, SortType } from 'models/list.models';
 import { THEME_COLORS } from 'config/themes/colors';
 import sortListItems from 'utils/list/sortListItems';
-import { checkAuthority, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
 import { triggerResetAsyncExecutionRequest } from 'state/entities/executionRequests/triggers';
 import ScriptExecutionDetailActions from './ScriptExecutionDetailActions';
@@ -250,6 +251,7 @@ function ExecutionDetail({ state }: IObserveProps) {
                                 },
                             })}
                             hidden={!checkAuthority(
+                                state,
                                 SECURITY_PRIVILEGES.S_SCRIPTS_READ,
                                 scriptExecutionData.securityGroupName,
                             )}
@@ -351,7 +353,6 @@ function ExecutionDetail({ state }: IObserveProps) {
                 },
             ] : [],
         ];
-
         return (
             <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
                 <Box flex="0 1 auto" marginBottom={3}>
@@ -366,7 +367,11 @@ function ExecutionDetail({ state }: IObserveProps) {
                             endIcon={<PlayArrow />}
                             onClick={() => setExecuteScriptDialogOpen(true)}
                             className={classes.rerunButton}
-
+                            hidden={scriptExecutionData && !checkAuthority(
+                                state,
+                                SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_WRITE,
+                                scriptExecutionData.securityGroupName,
+                            )}
                         >
                             <Translate msg="script_reports.detail.side.execution.rerun" />
                         </Button>

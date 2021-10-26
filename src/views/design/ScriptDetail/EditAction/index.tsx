@@ -10,6 +10,8 @@ import {
     ButtonGroup,
     Paper,
 } from '@material-ui/core';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
+import { checkAuthority } from 'state/auth/selectors';
 import { IScriptAction } from 'models/state/scripts.models';
 import { formatNumberWithTwoDigits } from 'utils/number/format';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -18,7 +20,6 @@ import { IObserveProps, observe } from 'views/observe';
 import { getAsyncActionTypes } from 'state/entities/constants/selectors';
 import { getTranslator } from 'state/i18n/selectors';
 import { StateChangeNotification } from 'models/state.models';
-import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import { IConstantParameter, IActionType } from 'models/state/constants.models';
 import { ChevronRightRounded } from '@material-ui/icons';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
@@ -201,7 +202,7 @@ function EditAction({
                             className={classes.nameTextField}
                             InputProps={{
                                 readOnly: !isCreateScriptRoute
-                                    && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
+                                    && !checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
                                 disableUnderline: true,
                             }}
                         />
@@ -221,7 +222,7 @@ function EditAction({
                             onBlur={(e) => setDescription(e.target.value)}
                             InputProps={{
                                 readOnly: !isCreateScriptRoute
-                                    && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
+                                    && !checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
                                 disableUnderline: true,
                             }}
                         />
@@ -239,7 +240,7 @@ function EditAction({
                             onBlur={(e) => setCondition(e.target.value)}
                             InputProps={{
                                 readOnly: !isCreateScriptRoute
-                                    && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
+                                    && !checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
                                 disableUnderline: true,
                             }}
                         />
@@ -288,7 +289,7 @@ function EditAction({
                                 setErrorStopChecked(!errorStopChecked);
                             }}
                             disabled={!isCreateScriptRoute
-                                && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)}
+                                && !checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)}
                         />
                     </Box>
                     <Box display="flex" alignItems="center" marginLeft={2}>
@@ -302,14 +303,14 @@ function EditAction({
                                 setErrorExpectedChecked(!errorExpectedChecked);
                             }}
                             disabled={!(isCreateScriptRoute
-                                || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName))}
+                                || checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName))}
                         />
                     </Box>
 
                     <Box marginLeft={2}>
                         <ButtonGroup size="small">
                             {isCreateScriptRoute
-                                || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)
+                                || checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)
                                 ? (
                                     <Button
                                         color="default"
@@ -328,7 +329,7 @@ function EditAction({
                                     </Button>
                                 )}
                             {isCreateScriptRoute
-                                || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)
+                                || checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)
                                 ? (
                                     <Button
                                         variant="contained"

@@ -19,8 +19,9 @@ import {
     triggerCreateComponentDetail,
     triggerDeleteComponentDetail,
 } from 'state/entities/components/triggers';
+import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { IObserveProps, observe } from 'views/observe';
-import { checkAuthorityGeneral, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel';
 import TextInput from 'views/common/input/TextInput';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
@@ -214,7 +215,7 @@ const ComponentDetail = withStyles(styles)(
                                     variant="contained"
                                     color="secondary"
                                     disabled={this.isCreateComponentRoute()
-                                        || !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
+                                        || !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
                                 >
                                     <Translate msg="components.detail.save_component_dialog.update_current_version" />
                                 </Button>
@@ -237,7 +238,7 @@ const ComponentDetail = withStyles(styles)(
                                     color="secondary"
                                     variant="outlined"
                                     disabled={newComponentDetail
-                                        && !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
+                                        && !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
                                 >
                                     <Translate msg="components.detail.save_component_dialog.save_as_new_version" />
                                 </Button>
@@ -266,8 +267,11 @@ const ComponentDetail = withStyles(styles)(
                                 options={listItems}
                                 value={autoCompleteValue || null}
                                 getOptionLabel={(option) => option.data.type}
-                                // disabled={!checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
-                                getOptionDisabled={() => !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
+                                // disabled={!checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
+                                getOptionDisabled={() => !checkAuthorityGeneral(
+                                    state,
+                                    SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
+                                )}
                                 renderInput={(params) => (
                                     <TextInput
                                         {...params}
@@ -278,7 +282,10 @@ const ComponentDetail = withStyles(styles)(
                                         helperText={requiredFieldsState.type.showError && 'Component type is a required field'}
                                         InputProps={{
                                             ...params.InputProps,
-                                            readOnly: !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
+                                            readOnly: !checkAuthorityGeneral(
+                                                state,
+                                                SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
+                                            ),
                                             disableUnderline: true,
                                         }}
                                     />
@@ -320,9 +327,9 @@ const ComponentDetail = withStyles(styles)(
                                 rows={8}
                                 InputProps={{
                                     readOnly: (!this.isCreateComponentRoute && newComponentDetail !== undefined)
-                                        || !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
+                                        || !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
                                     // readOnly: (!this.isCreateComponentRoute && newComponentDetail !== undefined)
-                                    //    || !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
+                                    //    || !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
                                     disableUnderline: true,
                                 }}
                                 value={newComponentDetail.version.description}
@@ -477,7 +484,7 @@ const ComponentDetail = withStyles(styles)(
                                     this.setState({ editParameterIndex: index });
                                 },
                                 hideAction: () => (
-                                    !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                    !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
                                 ),
                             }, {
                                 icon: <Delete />,
@@ -492,7 +499,7 @@ const ComponentDetail = withStyles(styles)(
                                     }
                                 },
                                 hideAction: (item) => (
-                                    !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                    !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
                                     || !item.canBeDeleted
                                 ),
                             }]}

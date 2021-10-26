@@ -10,8 +10,9 @@ export interface IRoutesMap<RouteKey = string> {
 export interface IRoute<RouteKey = string> extends RouteProps {
     routeKey: RouteKey;
     path: string;
+    // TODO: set to false
     allowAnonymousAccess?: boolean; // default true // TODO default false once authentication mechanism
-    requiredAccessLevels?: Partial<IAccessLevel>;
+    requiredAccessLevels?: IAccessLevel[];
     template?: React.ElementType; // only used for parent routes (takes precedence there over the component prop)
     childRoutes?: IRoute<RouteKey>[];
     executeOnRoute?: IExecuteOnRoute[];

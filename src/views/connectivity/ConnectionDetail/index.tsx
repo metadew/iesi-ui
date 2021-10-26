@@ -27,12 +27,13 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { Alert, Autocomplete } from '@material-ui/lab';
 import { IConnectionType } from 'models/state/constants.models';
 import { IListItem, ListColumns } from 'models/list.models';
-import { checkAuthorityGeneral, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import {
     triggerCreateConnectionDetail,
     triggerDeleteConnectionDetail,
     triggerUpdateConnectionDetail,
 } from 'state/entities/connections/triggers';
+import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
@@ -185,7 +186,7 @@ const ConnectionDetail = withStyles(styles)(
                                     }}
                                     variant="contained"
                                     color="secondary"
-                                    disabled={!checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)}
+                                    disabled={!checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)}
                                 >
                                     {
                                         this.isCreateConnectionRoute() ? (
@@ -224,7 +225,7 @@ const ConnectionDetail = withStyles(styles)(
                                 value={autoComplete || null}
                                 getOptionLabel={(option) => option.data.type}
                                 getOptionDisabled={() =>
-                                    !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)}
+                                    !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)}
                                 renderInput={(params) => (
                                     <TextInput
                                         {...params}
@@ -235,7 +236,10 @@ const ConnectionDetail = withStyles(styles)(
                                         helperText={requiredFieldsState.type.showError && 'Connection type is a required field'}
                                         InputProps={{
                                             ...params.InputProps,
-                                            readOnly: !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
+                                            readOnly: !checkAuthorityGeneral(
+                                                state,
+                                                SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
+                                            ),
                                             disableUnderline: true,
                                         }}
                                     />
@@ -267,7 +271,7 @@ const ConnectionDetail = withStyles(styles)(
                                 label={translator('connections.detail.side.connection_name')}
                                 InputProps={{
                                     readOnly: !this.isCreateConnectionRoute() && newConnectionDetail !== undefined,
-                                    //    && !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
+                                    //    && !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
                                     disableUnderline: true,
                                 }}
                                 value={newConnectionDetail.name}
@@ -283,7 +287,7 @@ const ConnectionDetail = withStyles(styles)(
                                 rows={8}
                                 InputProps={{
                                     readOnly: (!this.isCreateConnectionRoute && newConnectionDetail !== undefined)
-                                        || !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
+                                        || !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
                                     disableUnderline: true,
 
                                 }}
@@ -424,7 +428,7 @@ const ConnectionDetail = withStyles(styles)(
                                     this.setState({ editParameterIndex: index });
                                 },
                                 hideAction: () => (
-                                    !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                                    !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                                 ),
                             }, {
                                 icon: <Delete />,
@@ -444,7 +448,7 @@ const ConnectionDetail = withStyles(styles)(
                                     });
                                 },
                                 hideAction: (item) => (
-                                    !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                                    !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                                     || !item.canBeDeleted
                                 ),
                             }]}
