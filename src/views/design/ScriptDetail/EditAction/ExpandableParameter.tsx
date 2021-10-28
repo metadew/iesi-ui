@@ -10,18 +10,16 @@ import {
     InputLabel,
     FilledInput,
 } from '@material-ui/core';
-import { IObserveProps, observe } from 'views/observe';
 import { ExpandMore } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { IParameter } from 'models/state/iesiGeneric.models';
 import { IConstantParameter } from 'models/state/constants.models';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
-import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 interface IPublicProps {
     onChange: (value: string) => void;
     parameter: IParameter;
     constantParameter: IConstantParameter;
+    readOnly: boolean;
 }
 
 const useStyles = makeStyles(({ palette, spacing }) => ({
@@ -60,7 +58,7 @@ const useStyles = makeStyles(({ palette, spacing }) => ({
     },
 }));
 
-function ExpandableParameter({ parameter, onChange, constantParameter, state }: IPublicProps & IObserveProps) {
+function ExpandableParameter({ parameter, onChange, constantParameter, readOnly = false }: IPublicProps) {
     const classes = useStyles();
 
     if (!constantParameter) {
@@ -97,7 +95,7 @@ function ExpandableParameter({ parameter, onChange, constantParameter, state }: 
                         value={parameter ? parameter.value : ''}
                         onChange={(e) => onChange(e.target.value)}
                         multiline
-                        readOnly={!checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)}
+                        readOnly={readOnly}
                     />
                 </FormControl>
             </ExpansionPanelDetails>
@@ -105,4 +103,4 @@ function ExpandableParameter({ parameter, onChange, constantParameter, state }: 
     );
 }
 
-export default observe<IPublicProps>([], ExpandableParameter);
+export default ExpandableParameter;

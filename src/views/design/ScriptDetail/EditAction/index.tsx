@@ -11,7 +11,7 @@ import {
     Paper,
 } from '@material-ui/core';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
-import { checkAuthority } from 'state/auth/selectors';
+import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
 import { IScriptAction } from 'models/state/scripts.models';
 import { formatNumberWithTwoDigits } from 'utils/number/format';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -268,6 +268,7 @@ function EditAction({
                                 }}
                                 parameter={parameter}
                                 constantParameter={constantParameter}
+                                readOnly={!checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)}
                             />
                         );
                     })}
