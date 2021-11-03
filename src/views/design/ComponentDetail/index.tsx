@@ -19,7 +19,7 @@ import {
     triggerCreateComponentDetail,
     triggerDeleteComponentDetail,
 } from 'state/entities/components/triggers';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthorityGeneral, checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { IObserveProps, observe } from 'views/observe';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel';
@@ -97,6 +97,7 @@ const initialComponentDetail: IComponent = {
     parameters: [],
     attributes: [],
     isHandled: false,
+    securityGroupName: '',
 };
 
 const ComponentDetail = withStyles(styles)(
@@ -121,6 +122,9 @@ const ComponentDetail = withStyles(styles)(
                         showError: false,
                     },
                     name: {
+                        showError: false,
+                    },
+                    securityGroupName: {
                         showError: false,
                     },
                 },
@@ -215,7 +219,11 @@ const ComponentDetail = withStyles(styles)(
                                     variant="contained"
                                     color="secondary"
                                     disabled={this.isCreateComponentRoute()
-                                        || !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
+                                        || !checkAuthority(
+                                            state,
+                                            SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
+                                            newComponentDetail.securityGroupName,
+                                        )}
                                 >
                                     <Translate msg="components.detail.save_component_dialog.update_current_version" />
                                 </Button>
@@ -238,7 +246,11 @@ const ComponentDetail = withStyles(styles)(
                                     color="secondary"
                                     variant="outlined"
                                     disabled={newComponentDetail
-                                        && !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
+                                        && !checkAuthority(
+                                            state,
+                                            SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
+                                            newComponentDetail.securityGroupName,
+                                        )}
                                 >
                                     <Translate msg="components.detail.save_component_dialog.save_as_new_version" />
                                 </Button>
@@ -342,26 +354,45 @@ const ComponentDetail = withStyles(styles)(
                             />
                             {
                                 this.isCreateComponentRoute() ? (
-                                    <TextInput
-                                        id="component-version"
-                                        type="number"
-                                        label={translator('components.detail.side.component_version')}
-                                        value={(newComponentDetail && newComponentDetail.version.number)
-                                            ? newComponentDetail.version.number : 0}
-                                        onChange={(e) => this.updateComponent({
-                                            version: {
-                                                ...newComponentDetail.version,
-                                                number: parseInt(e.target.value, 10),
-                                            },
-                                        })}
-                                        InputProps={{
-                                            disableUnderline: true,
-                                            inputProps: {
-                                                min: 0,
-                                            },
-                                        }}
+                                    <>
+                                        <TextInput
+                                            id="component-security-group"
+                                            label={translator('components.detail.side.component_security')}
+                                            error={requiredFieldsState.securityGroupName.showError}
+                                            // eslint-disable-next-line max-len
+                                            helperText={requiredFieldsState.securityGroupName.showError && 'Security group is a required field'}
+                                            value={newComponentDetail && newComponentDetail.securityGroupName
+                                                ? newComponentDetail.securityGroupName : ''}
+                                            onChange={(e) => this.updateComponent({
+                                                securityGroupName: e.target.value,
+                                            })}
+                                            InputProps={{
+                                                disableUnderline: true,
+                                            }}
+                                            required
+                                        />
+                                        <TextInput
+                                            id="component-version"
+                                            type="number"
+                                            label={translator('components.detail.side.component_version')}
+                                            value={(newComponentDetail && newComponentDetail.version.number)
+                                                ? newComponentDetail.version.number : 0}
+                                            onChange={(e) => this.updateComponent({
+                                                version: {
+                                                    ...newComponentDetail.version,
+                                                    number: parseInt(e.target.value, 10),
+                                                },
+                                            })}
+                                            InputProps={{
+                                                disableUnderline: true,
+                                                inputProps: {
+                                                    min: 0,
+                                                },
+                                            }}
 
-                                    />
+                                        />
+                                    </>
+
                                 ) : (
                                     <DescriptionList
                                         noLineAfterListItem
@@ -369,6 +400,10 @@ const ComponentDetail = withStyles(styles)(
                                             label: translator('components.detail.side.component_version'),
                                             value: newComponentDetail && newComponentDetail.version
                                                 ? newComponentDetail.version.number : '',
+                                        }, {
+                                            label: translator('components.detail.side.security_group'),
+                                            value: newComponentDetail && newComponentDetail.securityGroupName
+                                                ? newComponentDetail.securityGroupName : '',
                                         }])}
                                     />
                                 )
@@ -393,7 +428,7 @@ const ComponentDetail = withStyles(styles)(
             const handleSaveAction = () => {
                 const { passed: passedRequired, requiredFieldsState } = requiredFieldsCheck({
                     data: newComponentDetail,
-                    requiredFields: ['type', 'name'],
+                    requiredFields: ['type', 'name', 'securityGroupName'],
                 });
                 if (passedRequired) {
                     this.setState({

@@ -24,6 +24,7 @@ export interface IComponentEntity {
 
 export interface IComponent {
     type: string;
+    securityGroupName: string;
     name: string;
     description: string;
     version: IComponentVersion;
@@ -50,6 +51,7 @@ export interface IComponentAttribute {
 
 export interface IComponentColumnNames {
     name: string;
+    securityGroupName: string;
     description: string;
     version: string;
     endpoint: string;
@@ -62,4 +64,5 @@ export interface IComponentColumnNamesBase {
     description: string;
     version: string;
     type: string;
+    securityGroupName: string;
 }

@@ -18,10 +18,10 @@ import {
     SortOrder,
     SortType,
 } from 'models/list.models';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
-import { IComponent, IComponentColumnNamesBase } from 'models/state/components.model';
+import { IComponent, IComponentColumnNames, IComponentColumnNamesBase } from 'models/state/components.model';
 import GenericList from 'views/common/list/GenericList';
 import { getTranslator } from 'state/i18n/selectors';
 import { setComponentsListFilter } from 'state/ui/actions';
@@ -59,6 +59,10 @@ const styles = ({ palette, typography }: Theme) =>
             fontWeight: typography.fontWeightBold,
         },
         componentDescription: {
+            fontWeight: typography.fontWeightBold,
+            fontSize: typography.pxToRem(12),
+        },
+        securityGroupName: {
             fontWeight: typography.fontWeightBold,
             fontSize: typography.pxToRem(12),
         },
@@ -262,8 +266,12 @@ const ComponentsOverview = withStyles(styles)(
                 description: {
                     label: <Translate msg="components.overview.list.labels.description" />,
                     className: classes.componentDescription,
-                    fixedWidth: '40%',
+                    fixedWidth: '30%',
                     noWrap: true,
+                },
+                securityGroupName: {
+                    className: classes.securityGroupName,
+                    fixedWidth: '10%',
                 },
             };
 
@@ -296,8 +304,12 @@ const ComponentsOverview = withStyles(styles)(
                                                     },
                                                 });
                                             },
-                                            hideAction: () => (
-                                                !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                            hideAction: (item: IListItem<IComponentColumnNames>) => (
+                                                !checkAuthority(
+                                                    state,
+                                                    SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
+                                                    item.columns.securityGroupName.toString(),
+                                                )
                                             ),
                                         }, {
                                             icon: <Visibility />,
@@ -314,15 +326,23 @@ const ComponentsOverview = withStyles(styles)(
                                                     },
                                                 });
                                             },
-                                            hideAction: () => (
-                                                checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                            hideAction: (item: IListItem<IComponentColumnNames>) => (
+                                                checkAuthority(
+                                                    state,
+                                                    SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
+                                                    item.columns.securityGroupName.toString(),
+                                                )
                                             ),
                                         }, {
                                             icon: <Delete />,
                                             label: translator('components.overview.list.actions.delete'),
                                             onClick: this.setComponentToDelete,
-                                            hideAction: () => (
-                                                !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                            hideAction: (item: IListItem<IComponentColumnNames>) => (
+                                                !checkAuthority(
+                                                    state,
+                                                    SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
+                                                    item.columns.securityGroupName.toString(),
+                                                )
                                             ),
                                         },
                                     )}
@@ -463,6 +483,7 @@ function mapComponentsToListItems(components: IComponent[]): IListItem<IComponen
         id: getUniqueIdFromComponent(component),
         columns: {
             name: component.name,
+            securityGroupName: component.securityGroupName,
             description: component.version.description,
             version: component.version.number,
             type: component.type,

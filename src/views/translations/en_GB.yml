@@ -345,6 +345,7 @@ components:
         type: Type
         version: Version
         description: Description
+        security_group_name: Security Group Name
       fetch_error: Something went wrong while loading the components, please try again.
       actions:
         delete: Delete
@@ -370,6 +371,7 @@ components:
       component_description: Description
       component_name: Name
       component_version: Version
+      component_security: Security Group
     main:
       no_parameters:
         title: No parameters yet
@@ -506,6 +508,7 @@ doc:
         title: Edit the component values
         name: 'Name'
         description: 'Description'
+        component_security: 'Security group'
         versionNumber: 'Version number'
         versionDescription: 'Version description'
         endpoint: 'Endpoint'
@@ -537,6 +540,7 @@ doc:
       endpoint: 'Endpoint'
       type: 'Type'
       connection: 'Connection'
+      security_group_name: 'Security group name'
     action_buttons:
       save: 'Save to database, if existing, update it'
       edit: 'Edit the table cells'
