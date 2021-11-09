@@ -206,7 +206,23 @@ const ComponentDetail = withStyles(styles)(
                         onClose={() => this.setState({ isSaveDialogOpen: false })}
                     >
                         <Typography>
-                            <Translate msg="components.detail.save_component_dialog.text" />
+                            {
+                                checkAuthority(
+                                    state,
+                                    SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
+                                    newComponentDetail.securityGroupName
+                                )
+                                    ? (
+                                        <Translate msg="components.detail.save_component_dialog.text" />
+                                    ) : (
+                                        <Translate
+                                          msg="components.detail.save_component_dialog.text_securityGroup"
+                                          placeholders={{
+                                            securityGroup: newComponentDetail.securityGroupName
+                                          }}
+                                        />
+                                    )
+                            }
                         </Typography>
                         <Box display="flex" alignItems="center" justifyContent="space-between" marginTop={2}>
                             <Box paddingRight={1}>

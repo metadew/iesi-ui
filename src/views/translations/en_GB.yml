@@ -363,6 +363,7 @@ components:
     save_component_dialog:
       title: Save component
       text: Do you want to overwrite the current version or create a new version with the current changes?
+      text_securityGroup: Sorry, you don't have the permission to create that connection because your don't belong to the group {securityGroup}
       update_current_version: Update current version
       save_as_new_version: Save as new version
     side:
