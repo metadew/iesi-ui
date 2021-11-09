@@ -14,12 +14,12 @@ import { ExpandMore } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { IParameter } from 'models/state/iesiGeneric.models';
 import { IConstantParameter } from 'models/state/constants.models';
-import { SECURITY_PRIVILEGES, checkAuthorityGeneral } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 
 interface IPublicProps {
     onChange: (value: string) => void;
     parameter: IParameter;
     constantParameter: IConstantParameter;
+    readOnly: boolean;
 }
 
 const useStyles = makeStyles(({ palette, spacing }) => ({
@@ -58,7 +58,7 @@ const useStyles = makeStyles(({ palette, spacing }) => ({
     },
 }));
 
-export default function ExpandableParameter({ parameter, onChange, constantParameter }: IPublicProps) {
+function ExpandableParameter({ parameter, onChange, constantParameter, readOnly = false }: IPublicProps) {
     const classes = useStyles();
 
     if (!constantParameter) {
@@ -95,10 +95,12 @@ export default function ExpandableParameter({ parameter, onChange, constantParam
                         value={parameter ? parameter.value : ''}
                         onChange={(e) => onChange(e.target.value)}
                         multiline
-                        readOnly={!checkAuthorityGeneral(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)}
+                        readOnly={readOnly}
                     />
                 </FormControl>
             </ExpansionPanelDetails>
         </ExpansionPanel>
     );
 }
+
+export default ExpandableParameter;

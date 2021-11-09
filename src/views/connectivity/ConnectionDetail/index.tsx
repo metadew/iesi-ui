@@ -28,15 +28,12 @@ import { Alert, Autocomplete } from '@material-ui/lab';
 import { IConnectionType } from 'models/state/constants.models';
 import { IListItem, ListColumns } from 'models/list.models';
 import {
-    checkAuthority,
-    checkAuthorityGeneral,
-    SECURITY_PRIVILEGES,
-} from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
-import {
     triggerCreateConnectionDetail,
     triggerDeleteConnectionDetail,
     triggerUpdateConnectionDetail,
 } from 'state/entities/connections/triggers';
+import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
@@ -179,6 +176,7 @@ const ConnectionDetail = withStyles(styles)(
                         <Typography>
                             {
                                 checkAuthority(
+                                    state,
                                     SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
                                     newConnectionDetail.securityGroupName,
                                 )
@@ -214,9 +212,11 @@ const ConnectionDetail = withStyles(styles)(
                                     variant="contained"
                                     color="secondary"
                                     disabled={!checkAuthority(
+                                        state,
                                         SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
                                         newConnectionDetail.securityGroupName,
                                     )}
+
                                 >
                                     {
                                         this.isCreateConnectionRoute() ? (
@@ -256,6 +256,7 @@ const ConnectionDetail = withStyles(styles)(
                                 getOptionLabel={(option) => option.data.type}
                                 getOptionDisabled={() =>
                                     !checkAuthorityGeneral(
+                                        state,
                                         SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
                                     )}
                                 renderInput={(params) => (
@@ -269,6 +270,7 @@ const ConnectionDetail = withStyles(styles)(
                                         InputProps={{
                                             ...params.InputProps,
                                             readOnly: !checkAuthority(
+                                                state,
                                                 SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
                                                 newConnectionDetail.securityGroupName,
                                             ),
@@ -303,7 +305,7 @@ const ConnectionDetail = withStyles(styles)(
                                 label={translator('connections.detail.side.connection_name')}
                                 InputProps={{
                                     readOnly: !this.isCreateConnectionRoute() && newConnectionDetail !== undefined,
-                                    //    && !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
+                                    //    && !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
                                     disableUnderline: true,
                                 }}
                                 value={newConnectionDetail.name}
@@ -320,6 +322,7 @@ const ConnectionDetail = withStyles(styles)(
                                 InputProps={{
                                     readOnly: (!this.isCreateConnectionRoute && newConnectionDetail !== undefined)
                                         || !checkAuthority(
+                                            state,
                                             SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
                                             newConnectionDetail.securityGroupName,
                                         ),
@@ -480,6 +483,7 @@ const ConnectionDetail = withStyles(styles)(
                                 },
                                 hideAction: () => (
                                     !checkAuthority(
+                                        state,
                                         SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
                                         newConnectionDetail.securityGroupName,
                                     )
@@ -503,6 +507,7 @@ const ConnectionDetail = withStyles(styles)(
                                 },
                                 hideAction: (item) => (
                                     !checkAuthority(
+                                        state,
                                         SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
                                         newConnectionDetail.securityGroupName,
                                     )

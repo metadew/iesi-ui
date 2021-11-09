@@ -51,7 +51,8 @@ import { formatSortQueryParameter } from 'utils/core/string/format';
 import { getTranslator } from 'state/i18n/selectors';
 import { getExecutionsListFilter } from 'state/ui/selectors';
 import { setExecutionsListFilter } from 'state/ui/actions';
-import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
+import { checkAuthority } from 'state/auth/selectors';
 import { getEnvironmentsForDropdown } from 'state/entities/environments/selectors';
 import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
 
@@ -441,6 +442,7 @@ const ScriptReportsOverview = withStyles(styles)(
                                 const execution = listItems.find((listItem) =>
                                     listItem.id === item.id);
                                 return execution.data.runId === null || !checkAuthority(
+                                    state,
                                     SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_READ,
                                     item.columns.securityGroupName.toString(),
                                 );
@@ -451,6 +453,11 @@ const ScriptReportsOverview = withStyles(styles)(
                             onClick: (id: number) => {
                                 this.onOpenExecuteDialog(id.toString());
                             },
+                            hideAction: (item: IListItem<IColumnNames>) => !checkAuthority(
+                                state,
+                                SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_WRITE,
+                                item.columns.securityGroupName.toString(),
+                            ),
                         })}
                         columns={columns}
                         listItems={listItems}

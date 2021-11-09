@@ -8,7 +8,7 @@ import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAllowedParentRouteKeys } from 'state/auth/selectors';
 import PrivateRoute from '../AppLogIn/components/PrivateRoute';
-import Login from '../AppLogIn/LoginPage';
+import LoginView from '../AppLogIn/LoginPage';
 
 interface IPublicProps {
     offsetTop: number;
@@ -44,7 +44,7 @@ function AppBody({ state, offsetTop }: IObserveProps & IPublicProps) {
             overflow="hidden"
         >
             <Switch>
-                <Route path="/login" component={Login} />
+                <Route path="/login" component={LoginView} />
                 ;
                 {getAllowedParentRouteKeys(state).map((routeKey) => {
                     const { path, exact, component, template } = getRoute({
@@ -59,6 +59,7 @@ function AppBody({ state, offsetTop }: IObserveProps & IPublicProps) {
                     return (
                         <PrivateRoute
                             key={routeKey}
+                            state={state}
                             path={path}
                             exact={exact}
                             component={parentComponent}

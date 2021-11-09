@@ -22,10 +22,11 @@ import Loader from 'views/common/waiting/Loader';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { StateChangeNotification } from 'models/state.models';
-import { checkAuthorityGeneral, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import OrderedList from 'views/common/list/OrderedList';
+import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 const useStyles = makeStyles(({ palette }: Theme) => ({
     textField: {
@@ -122,7 +123,7 @@ function EditEnvironmentsDialog({
                             button: true,
                             onSelect: () => onEnvironmentSelected(index),
                             onDelete: isCreateConnectionRoute
-                            || checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                            || checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                                 ? () => onDelete(index) : null,
                         }))}
                     />
@@ -131,7 +132,7 @@ function EditEnvironmentsDialog({
                         <Translate msg="connections.detail.side.environments.empty" />
                     </Typography>
                 )}
-            { checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+            { checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                 && (
                     <Button
                         variant="outlined"

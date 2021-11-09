@@ -53,11 +53,8 @@ import { getScriptsListFilter } from 'state/ui/selectors';
 import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
 import { setScriptsListFilter } from 'state/ui/actions';
 import ReportIcon from 'views/common/icons/Report';
-import {
-    SECURITY_PRIVILEGES,
-    checkAuthority,
-    checkAuthorityGeneral,
-} from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
+import { checkAuthorityGeneral, checkAuthority } from 'state/auth/selectors';
 import TransformDocumentationDialogScript from '../common/TransformDocumentationDialogScript';
 
 const styles = ({ palette, typography }: Theme) =>
@@ -219,7 +216,7 @@ const ScriptsOverview = withStyles(styles)(
                                             sortedColumn={filterFromState.sortedColumn as ISortedColumn<{}>}
                                         />
                                     </Box>
-                                    {checkAuthorityGeneral(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)
+                                    {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)
                                         ? (
                                             <Box display="flex" alignItems="center" flex="0 0 auto">
                                                 <Box flex="0 0 auto" mr="8px" width="250px">
@@ -370,7 +367,8 @@ const ScriptsOverview = withStyles(styles)(
                                         onClick: this.setExecuteScriptDialogOpen,
                                         hideAction: (item: IListItem<IColumnNames>) =>
                                             !checkAuthority(
-                                                SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_WRITE,
+                                                state,
+                                                SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_WRITE,
                                                 item.columns.securityGroupName.toString(),
                                             ),
                                     },
@@ -392,6 +390,7 @@ const ScriptsOverview = withStyles(styles)(
                                         },
                                         hideAction: (item: IListItem<IColumnNames>) =>
                                             !checkAuthority(
+                                                state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                                 item.columns.securityGroupName.toString(),
                                             ),
@@ -414,10 +413,11 @@ const ScriptsOverview = withStyles(styles)(
                                         },
                                         hideAction: (item: IListItem<IColumnNames>) =>
                                             checkAuthority(
+                                                state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                                 item.columns.securityGroupName.toString(),
                                                 // eslint-disable-next-line max-len
-                                            ) || !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, item.columns.securityGroupName.toString()),
+                                            ) || !checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_READ, item.columns.securityGroupName.toString()),
                                     },
                                     {
                                         icon: <ReportIcon />,
@@ -437,7 +437,8 @@ const ScriptsOverview = withStyles(styles)(
                                         },
                                         hideAction: (item: IListItem<IColumnNames>) =>
                                             !checkAuthority(
-                                                SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_READ,
+                                                state,
+                                                SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_READ,
                                                 item.columns.securityGroupName.toString(),
                                             ),
                                     },
@@ -447,6 +448,7 @@ const ScriptsOverview = withStyles(styles)(
                                         onClick: this.setScriptToDelete,
                                         hideAction: (item: IListItem<IColumnNames>) =>
                                             !checkAuthority(
+                                                state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                                 item.columns.securityGroupName.toString(),
                                             ),

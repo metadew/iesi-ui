@@ -4,8 +4,9 @@ import { IObserveProps, observe } from 'views/observe';
 import { Box, Button, ButtonGroup, makeStyles, Paper, Theme } from '@material-ui/core';
 import TextInput from 'views/common/input/TextInput';
 import { getTranslator } from 'state/i18n/selectors';
-import { checkAuthorityGeneral, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
+import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 interface IPublicProps {
     attribute: IComponentAttribute;
@@ -94,7 +95,7 @@ function EditAttribute({
                                 <Translate msg="components.detail.edit.footer.cancel" />
                             </Button>
                             {
-                                checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE) && (
+                                checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE) && (
                                     <Button
                                         variant="contained"
                                         color="secondary"
