@@ -304,13 +304,13 @@ const ConnectionOverview = withStyles(styles)(
                                                     },
                                                 });
                                             },
-                                            hideAction: (item: IListItem<IConnectionColumnNamesBase>) => {
-                                                return !checkAuthority(
+                                            hideAction: (item: IListItem<IConnectionColumnNamesBase>) => (
+                                                !checkAuthority(
                                                     state,
                                                     SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
                                                     item.columns.securityGroupName.toString(),
-                                                );
-                                            },
+                                                )
+                                            ),
                                         }, {
                                             icon: <Visibility />,
                                             label: translator('connections.overview.list.actions.view'),
