@@ -210,16 +210,16 @@ const ComponentDetail = withStyles(styles)(
                                 checkAuthority(
                                     state,
                                     SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
-                                    newComponentDetail.securityGroupName
+                                    newComponentDetail.securityGroupName,
                                 )
                                     ? (
                                         <Translate msg="components.detail.save_component_dialog.text" />
                                     ) : (
                                         <Translate
-                                          msg="components.detail.save_component_dialog.text_securityGroup"
-                                          placeholders={{
-                                            securityGroup: newComponentDetail.securityGroupName
-                                          }}
+                                            msg="components.detail.save_component_dialog.text_securityGroup"
+                                            placeholders={{
+                                                securityGroup: newComponentDetail.securityGroupName,
+                                            }}
                                         />
                                     )
                             }
