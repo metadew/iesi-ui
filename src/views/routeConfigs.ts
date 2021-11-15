@@ -35,6 +35,8 @@ import ConnectionTemplate from './connectivity/ConnectionTemplate';
 import ConnectionOverview from './connectivity/ConnectionOverview';
 import ConnectionDetail from './connectivity/ConnectionDetail';
 import LoginView from './appShell/AppLogIn/LoginPage';
+import DatasetsTemplate from './data/DatasetDetail/DatasetsTemplate';
+import DatasetDetail from './data/DatasetDetail';
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
@@ -252,6 +254,13 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
         // This way url query parameters can be used for the initial fetch.
         execute: triggerFetchEnvironments,
     }],
+}, {
+    routeKey: ROUTE_KEYS.R_DATASET_NEW,
+    path: '/datasets/new',
+    template: DatasetsTemplate,
+    component: DatasetDetail as React.ComponentType<unknown>,
+    childRoutes: [],
+    executeOnRoute: [],
 }, {
     routeKey: ROUTE_KEYS.R_OPENAPI,
     path: '/openapi',

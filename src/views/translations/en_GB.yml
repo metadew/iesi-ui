@@ -518,7 +518,6 @@ doc:
         footer:
           cancel: 'Discard changes'
           save: 'Update component'
-
   overview:
     openapi_title: 'Open API Title : {title}'
     openapi_version:  'Open API Version : {version}'
@@ -546,3 +545,20 @@ doc:
       save: 'Save to database, if existing, update it'
       edit: 'Edit the table cells'
       delete: 'Delete from the table'
+datasets:
+  detail:
+    side:
+      dataset_name: Name
+      security_group: Security Group
+      toggle_button: Details
+    main:
+      list:
+        labels:
+          labels: 'Labels'
+        actions:
+          edit: 'Edit'
+      no_implementations:
+        title: No implementations yet
+        button: Add implementations
+      alert:
+        save_changes: You made changes to this dataset. Don't forget to save them.
