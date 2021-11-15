@@ -419,7 +419,6 @@ function ExecuteScriptDialog({
                     scriptName,
                     scriptVersion,
                     environment: formValues.environment,
-                    exit: false,
                     impersonations: [], // TODO
                     parameters: formValues.parameters,
                 },

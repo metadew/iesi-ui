@@ -41,7 +41,6 @@ export interface ICreateExecutionRequestPayload {
 
 interface ICreateScriptExecutionRequestPayload {
     environment: string;
-    exit: boolean;
     impersonations: { name: string }[];
     parameters: IParameter[];
     scriptName: string;
@@ -52,7 +51,6 @@ interface IScriptExecutionRequest {
     scriptExecutionRequestId: string;
     executionRequestId: string;
     environment: string;
-    exit: boolean;
     impersonations: { name: string }[];
     parameters: IParameter[];
     scriptExecutionRequestStatus: ExecutionRequestStatus;
