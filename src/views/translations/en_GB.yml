@@ -435,14 +435,16 @@ connections:
       title: Delete connection
     save_connection_dialog:
       title: Save connection
-      text: Do you want to overwrite the current version or create a new version with the current changes?
-      create: Creation connection
+      text: Are you sure to create the connection {connectionName} ?
+      text_securityGroup: Sorry, you don't have the permission to read the connection because your don't belong to the group {securityGroup}
+      create: Create connection
       update: Update connection
     side:
       connection_type: Type
       connection_description: Description
       connection_name: Name
       connection_environment: Environment
+      connection_security: Security group
       toggle_button: Details
       environments:
         title: Environments
