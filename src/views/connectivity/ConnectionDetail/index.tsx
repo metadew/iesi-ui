@@ -269,7 +269,7 @@ const ConnectionDetail = withStyles(styles)(
                                         helperText={requiredFieldsState.type.showError && 'Connection type is a required field'}
                                         InputProps={{
                                             ...params.InputProps,
-                                            readOnly: !checkAuthority(
+                                            readOnly: !this.isCreateConnectionRoute() && !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
                                                 newConnectionDetail.securityGroupName,
@@ -334,55 +334,103 @@ const ConnectionDetail = withStyles(styles)(
                                     description: e.target.value,
                                 })}
                             />
-                            <TextInput
-                                id="connection-security-group"
-                                label={translator('connections.detail.side.connection_security')}
-                                error={requiredFieldsState.securityGroupName.showError}
-                                // eslint-disable-next-line max-len
-                                helperText={requiredFieldsState.securityGroupName.showError && 'Security group is a required field'}
-                                value={newConnectionDetail && newConnectionDetail.securityGroupName
-                                    ? newConnectionDetail.securityGroupName : ''}
-                                onChange={(e) => this.updateConnection({
-                                    securityGroupName: e.target.value,
-                                })}
-                                InputProps={{
-                                    disableUnderline: true,
-                                }}
-                                required
-                            />
+                            {
+                                this.isCreateConnectionRoute() ? (
+                                    <>
+                                        <TextInput
+                                            id="connection-security-group"
+                                            label={translator('connections.detail.side.connection_security')}
+                                            error={requiredFieldsState.securityGroupName.showError}
+                                            // eslint-disable-next-line max-len
+                                            helperText={requiredFieldsState.securityGroupName.showError && 'Security group is a required field'}
+                                            value={newConnectionDetail && newConnectionDetail.securityGroupName
+                                                ? newConnectionDetail.securityGroupName : ''}
+                                            onChange={(e) => this.updateConnection({
+                                                securityGroupName: e.target.value,
+                                            })}
+                                            InputProps={{
+                                                disableUnderline: true,
+                                            }}
+                                            required
+                                        />
+                                        <DescriptionList
+                                            noLineAfterListItem
+                                            items={[].concat({
+                                                label: <Translate msg="connections.detail.side.environments.title" />,
+                                                value: <EditEnvironments
+                                                    // eslint-disable-next-line max-len
+                                                    environments={newConnectionDetail && newConnectionDetail.environments}
+                                                    selectedIndex={environmentIndex}
+                                                    // eslint-disable-next-line max-len
+                                                    onEnvironmentSelected={(index) => this.setState({ environmentIndex: index })}
+                                                    onSubmit={(newEnvironment) => {
+                                                        this.updateConnection({
+                                                            environments: [...newConnectionDetail.environments, {
+                                                                ...newEnvironment,
+                                                                parameters: newConnectionDetail.type
+                                                                    ? connectionTypes
+                                                                        // eslint-disable-next-line max-len
+                                                                        .find((item) => item.type === newConnectionDetail.type)
+                                                                        .parameters?.filter((item) => item.mandatory)
+                                                                        .map((item) => ({ name: item.name, value: '' }))
+                                                                    : [],
+                                                            }],
+                                                        });
+                                                    }}
+                                                    onDelete={(index) => {
+                                                        const environments = [...newConnectionDetail.environments];
+                                                        environments.splice(index, 1);
+                                                        this.updateConnection({
+                                                            environments,
+                                                        });
+                                                    }}
+                                                    isCreateConnectionRoute={this.isCreateConnectionRoute()}
+                                                />,
+                                            })}
+                                        />
+                                    </>
+                                ) : (
+                                    <DescriptionList
+                                        noLineAfterListItem
+                                        items={[].concat({
+                                            label: translator('connections.detail.side.connection_security'),
+                                            value: newConnectionDetail && newConnectionDetail.securityGroupName
+                                                ? newConnectionDetail.securityGroupName : '',
+                                        }, {
+                                            label: <Translate msg="connections.detail.side.environments.title" />,
+                                            value: <EditEnvironments
+                                                environments={newConnectionDetail && newConnectionDetail.environments}
+                                                selectedIndex={environmentIndex}
+                                                // eslint-disable-next-line max-len
+                                                onEnvironmentSelected={(index) => this.setState({ environmentIndex: index })}
+                                                onSubmit={(newEnvironment) => {
+                                                    this.updateConnection({
+                                                        environments: [...newConnectionDetail.environments, {
+                                                            ...newEnvironment,
+                                                            parameters: newConnectionDetail.type
+                                                                ? connectionTypes
+                                                                    // eslint-disable-next-line max-len
+                                                                    .find((item) => item.type === newConnectionDetail.type)
+                                                                    .parameters?.filter((item) => item.mandatory)
+                                                                    .map((item) => ({ name: item.name, value: '' }))
+                                                                : [],
+                                                        }],
+                                                    });
+                                                }}
+                                                onDelete={(index) => {
+                                                    const environments = [...newConnectionDetail.environments];
+                                                    environments.splice(index, 1);
+                                                    this.updateConnection({
+                                                        environments,
+                                                    });
+                                                }}
+                                                isCreateConnectionRoute={this.isCreateConnectionRoute()}
+                                            />,
+                                        })}
+                                    />
+                                )
+                            }
                         </form>
-                        <DescriptionList
-                            noLineAfterListItem
-                            items={[].concat({
-                                label: <Translate msg="connections.detail.side.environments.title" />,
-                                value: <EditEnvironments
-                                    environments={newConnectionDetail && newConnectionDetail.environments}
-                                    selectedIndex={environmentIndex}
-                                    onEnvironmentSelected={(index) => this.setState({ environmentIndex: index })}
-                                    onSubmit={(newEnvironment) => {
-                                        this.updateConnection({
-                                            environments: [...newConnectionDetail.environments, {
-                                                ...newEnvironment,
-                                                parameters: newConnectionDetail.type
-                                                    ? connectionTypes
-                                                        .find((item) => item.type === newConnectionDetail.type)
-                                                        .parameters?.filter((item) => item.mandatory)
-                                                        .map((item) => ({ name: item.name, value: '' }))
-                                                    : [],
-                                            }],
-                                        });
-                                    }}
-                                    onDelete={(index) => {
-                                        const environments = [...newConnectionDetail.environments];
-                                        environments.splice(index, 1);
-                                        this.updateConnection({
-                                            environments,
-                                        });
-                                    }}
-                                    isCreateConnectionRoute={this.isCreateConnectionRoute()}
-                                />,
-                            })}
-                        />
                     </Box>
                 </Box>
             );
