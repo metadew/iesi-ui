@@ -530,7 +530,7 @@ const ConnectionDetail = withStyles(styles)(
                                     this.setState({ editParameterIndex: index });
                                 },
                                 hideAction: () => (
-                                    !checkAuthority(
+                                    !this.isCreateConnectionRoute() && !checkAuthority(
                                         state,
                                         SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
                                         newConnectionDetail.securityGroupName,
@@ -554,7 +554,7 @@ const ConnectionDetail = withStyles(styles)(
                                     });
                                 },
                                 hideAction: (item) => (
-                                    !checkAuthority(
+                                    !this.isCreateConnectionRoute() && !checkAuthority(
                                         state,
                                         SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
                                         newConnectionDetail.securityGroupName,
