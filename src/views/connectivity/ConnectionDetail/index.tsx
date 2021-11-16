@@ -554,12 +554,11 @@ const ConnectionDetail = withStyles(styles)(
                                     });
                                 },
                                 hideAction: (item) => (
-                                    !this.isCreateConnectionRoute() && !checkAuthority(
+                                   (!this.isCreateConnectionRoute() && !checkAuthority(
                                         state,
                                         SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
                                         newConnectionDetail.securityGroupName,
-                                    )
-                                    || !item.canBeDeleted
+                                    )) || !item.canBeDeleted
                                 ),
                             }]}
                         />
