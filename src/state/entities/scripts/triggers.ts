@@ -53,7 +53,7 @@ export const triggerCreateScriptDetail = (payload: IScriptBase | IScriptImport) 
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_DETAIL],
         onSuccess: ({ dispatch }) => {
             dispatch(triggerFlashMessage({
-                translationKey: 'flash_messages.script.import',
+                translationKey: 'flash_messages.script.create',
                 type: 'success',
             }));
         },
