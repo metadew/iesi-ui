@@ -356,8 +356,6 @@ const ComponentDetail = withStyles(styles)(
                                 InputProps={{
                                     readOnly: (!this.isCreateComponentRoute && newComponentDetail !== undefined)
                                         || !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
-                                    // readOnly: (!this.isCreateComponentRoute && newComponentDetail !== undefined)
-                                    //    || !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
                                     disableUnderline: true,
                                 }}
                                 value={newComponentDetail.version.description}
@@ -417,7 +415,7 @@ const ComponentDetail = withStyles(styles)(
                                             value: newComponentDetail && newComponentDetail.version
                                                 ? newComponentDetail.version.number : '',
                                         }, {
-                                            label: translator('components.detail.side.security_group'),
+                                            label: translator('components.detail.side.component_security'),
                                             value: newComponentDetail && newComponentDetail.securityGroupName
                                                 ? newComponentDetail.securityGroupName : '',
                                         }])}

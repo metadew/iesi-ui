@@ -39,7 +39,7 @@ import GenericList from 'views/common/list/GenericList';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import { StateChangeNotification } from 'models/state.models';
 import OrderedList from 'views/common/list/OrderedList';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 const styles = (({ palette, typography }: Theme) => ({
@@ -59,6 +59,10 @@ const styles = (({ palette, typography }: Theme) => ({
         fontWeight: typography.fontWeightBold,
     },
     connectionDescription: {
+        fontWeight: typography.fontWeightBold,
+        fontSize: typography.pxToRem(12),
+    },
+    connectionSecurityGroupName: {
         fontWeight: typography.fontWeightBold,
         fontSize: typography.pxToRem(12),
     },
@@ -247,24 +251,28 @@ const ConnectionOverview = withStyles(styles)(
                 name: {
                     label: <Translate msg="connections.overview.list.labels.name" />,
                     className: classes.connectionName,
-                    fixedWidth: '40%',
+                    fixedWidth: '35%',
                 },
                 type: {
                     label: <Translate msg="connections.overview.list.labels.type" />,
                     className: classes.connectionType,
-                    fixedWidth: '15%',
-                },
-                environments: {
-                    label: <Translate msg="connections.overview.list.labels.environments" />,
-                    className: classes.connectionEnvironment,
-                    noWrap: true,
-                    fixedWidth: '5%',
+                    fixedWidth: '10%',
                 },
                 description: {
                     label: <Translate msg="connections.overview.list.labels.description" />,
                     className: classes.connectionDescription,
                     fixedWidth: '40%',
                     noWrap: true,
+                },
+                securityGroupName: {
+                    className: classes.connectionSecurityGroupName,
+                    fixedWidth: '10%',
+                },
+                environments: {
+                    label: <Translate msg="connections.overview.list.labels.environments" />,
+                    className: classes.connectionEnvironment,
+                    noWrap: true,
+                    fixedWidth: '5%',
                 },
             };
 
@@ -296,8 +304,12 @@ const ConnectionOverview = withStyles(styles)(
                                                     },
                                                 });
                                             },
-                                            hideAction: () => (
-                                                !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                                            hideAction: (item: IListItem<IConnectionColumnNamesBase>) => (
+                                                !checkAuthority(
+                                                    state,
+                                                    SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
+                                                    item.columns.securityGroupName.toString(),
+                                                )
                                             ),
                                         }, {
                                             icon: <Visibility />,
@@ -313,8 +325,12 @@ const ConnectionOverview = withStyles(styles)(
                                                     },
                                                 });
                                             },
-                                            hideAction: () => (
-                                                checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                                            hideAction: (item: IListItem<IConnectionColumnNamesBase>) => (
+                                                !checkAuthority(
+                                                    state,
+                                                    SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
+                                                    item.data.securityGroupName,
+                                                )
                                             ),
                                         }, {
                                             icon: <Delete />,
@@ -460,6 +476,7 @@ function mapConnectionsToListItems(connections: IConnection[]): IListItem<IConne
         id: getUniqueIdFromConnection(connection),
         columns: {
             name: connection.name,
+            securityGroupName: connection.securityGroupName,
             description: connection.description,
             type: connection.type,
             environments: {

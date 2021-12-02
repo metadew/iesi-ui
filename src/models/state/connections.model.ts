@@ -20,6 +20,7 @@ export interface IConnectionEntity {
 
 export interface IConnection {
     name: string;
+    securityGroupName: string;
     type: string;
     description: string;
     environments: IConnectionEnvironment[];
@@ -48,6 +49,7 @@ export interface IConnectionColumnNames {
 
 export interface IConnectionColumnNamesBase {
     name: string;
+    securityGroupName: string;
     type: string;
     description: string;
     environments: number;
