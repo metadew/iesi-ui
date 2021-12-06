@@ -111,8 +111,6 @@ function ExecuteScriptDialog({
         return () => { };
     }, [environmentsAsyncInfo]);
 
-    console.log('FORM VALUES : ', formValues);
-
     return (
         <ClosableDialog
             onClose={onClose}
