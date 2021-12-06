@@ -22,6 +22,7 @@ export enum ROUTE_KEYS {
     R_REPORT_DETAIL = 'R_REPORT_DETAIL',
     R_NOT_FOUND = 'R_NOT_FOUND',
     /* Dataset */
+    R_DATASETS = 'R_DATASETS',
     R_DATASET_DETAIL = 'R_DATASET_DETAIL',
     R_DATASET_NEW = 'R_DATASET_NEW',
     /* OpenAPI */

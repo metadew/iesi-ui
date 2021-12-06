@@ -27,6 +27,7 @@ import {
     IComponentByNameAndVersionPayload,
     IFetchComponentsListPayload,
 } from 'models/state/components.model';
+import { IDatasetBase } from 'models/state/datasets.model';
 
 // eslint-disable-next-line max-len
 const entitiesConfigManager = initAsyncEntitiesConfigManager<IState, {}, ITraceableApiError, string, IExtraProcessInput>();
@@ -371,6 +372,16 @@ entitiesConfigManager.register({
         update: {
             api: api.connections.updateConnection,
             apiInputSelector: ({ extraInput }) => extraInput as IConnection,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.datasetDetail,
+    operationsConfig: {
+        create: {
+            api: api.datasets.createDataset,
+            apiInputSelector: ({ extraInput }) => extraInput as IDatasetBase,
         },
     },
 });

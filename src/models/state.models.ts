@@ -58,6 +58,7 @@ export enum StateChangeNotification {
     COMPONENT_EDIT = 'COMPONENT.EDIT',
     COMPONENT_DELETE = 'COMPONENT.DELETE',
     OPENAPI_TRANSFORM = 'OPENAPI.TRANSFORM',
+    DATA_DATASETS_DETAIL = 'DATA_DATASETS.DETAIL',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

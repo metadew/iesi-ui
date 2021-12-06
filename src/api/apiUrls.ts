@@ -33,6 +33,9 @@ const API_URLS = {
 
     OPEN_API_TRANSFORM: '/openapi/transform',
 
+    DATASETS: '/datasets',
+    DATASET_BY_NAME: '/datasets/{name}',
+
     /* eslint-enable max-len */
 };
 

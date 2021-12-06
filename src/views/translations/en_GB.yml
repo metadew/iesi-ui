@@ -547,6 +547,10 @@ doc:
       delete: 'Delete from the table'
 datasets:
   detail:
+    save_dataset_dialog:
+      title: Save dataset
+      text: The dataset will be created
+      save: Save
     side:
       dataset_name: Name
       security_group: Security Group
@@ -562,3 +566,16 @@ datasets:
         button: Add implementations
       alert:
         save_changes: You made changes to this dataset. Don't forget to save them.
+    edit:
+      implementation:
+        title_edit: Update implementation
+        title_create: Add a new implementation
+        labels: Labels
+        labels_helper: Press enter to add individual labels
+        add_key_values: Add values to the implementation
+        remove_key_values: Remove value from the implementation
+        footer:
+          save: Save
+          update: Update
+          cancel: Cancel
+          discard: Discard changes
