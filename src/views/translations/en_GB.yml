@@ -548,12 +548,29 @@ doc:
 datasets:
   detail:
     save_dataset_dialog:
-      title: Save dataset
-      text: The dataset will be created
+      title_create: Save dataset
+      title_update: Update dataset
+      text_create: The dataset will be created
+      text_update: The dataset will be updated
       save: Save
+      update: Update
+    delete_implementation_dialog:
+      text: Are you sure you want to delete this implementation?
+      title: Delete implementation
+    duplicate_implementation_dialog:
+      title: Duplicating implementation
+      confirm: Duplicate action
+      init_error:  Can't duplicate current implementation at this time. Please try again later.
+      error: Something went wrong during the duplication of your implementation.
+      success:
+        text: Implementation has been duplicated successfully.
+        close_button: Back to detail
+      form:
+        name: Name
+      text: Please specify the name for the new duplicated action.
     side:
       dataset_name: Name
-      security_group: Security Group
+      dataset_security: Security Group
       toggle_button: Details
     main:
       list:
@@ -561,6 +578,8 @@ datasets:
           labels: 'Labels'
         actions:
           edit: 'Edit'
+          delete: 'Delete'
+          duplicate: 'Duplicate'
       no_implementations:
         title: No implementations yet
         button: Add implementations
@@ -574,8 +593,14 @@ datasets:
         labels_helper: Press enter to add individual labels
         add_key_values: Add values to the implementation
         remove_key_values: Remove value from the implementation
+        empty_labels_error: Please provide one label minimum
         footer:
           save: Save
           update: Update
           cancel: Cancel
           discard: Discard changes
+    flash_messages:
+      create_success: The dataset {name} has been created successfully !
+      update_success: The dataset {name} has been updated successfully !
+      create_error: 'An error has occured when creating the dataset'
+      update_error: 'An error has occured when updating the dataset'

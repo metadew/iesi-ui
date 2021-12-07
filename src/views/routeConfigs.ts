@@ -271,6 +271,9 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
         component: DatasetDetail as React.ComponentType<unknown>,
         executeOnRoute: [{
             execute: triggerFetchDatasetDetail as () => unknown,
+            executeInputSelector: ({ routeLocation }) => ({
+                name: routeLocation.params.name,
+            }),
         }],
     }],
 }, {

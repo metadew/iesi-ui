@@ -182,7 +182,14 @@ export default function getMockState({
                     status: AsyncStatus.Initial,
                     error: null,
                 }
-            }
+            },
+            datasetImplementations: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
         },
     };
 }

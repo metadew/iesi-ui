@@ -19,7 +19,7 @@ export interface IDatasetEntity {
 export interface IDatasetImplementation {
     type: string;
     labels: IDatasetImplementationLabel[];
-    keyValues: IKeyValueBase[];
+    keyValues: IKeyValue[];
 }
 
 export interface IDatasetImplementationLabel {
@@ -40,4 +40,7 @@ export interface IKeyValue extends IKeyValueBase {
 
 export interface IDatasetByNamePayload {
     name: string;
+}
+export interface IDatasetImplementationsByUuidPayload {
+    uuid: string;
 }

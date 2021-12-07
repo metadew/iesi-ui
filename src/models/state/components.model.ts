@@ -1,3 +1,4 @@
+import { ISecuredObject } from 'models/core.models';
 import { IPageData, IPageFilter } from './iesiGeneric.models';
 
 export interface IFetchComponentsListPayload {
@@ -22,9 +23,8 @@ export interface IComponentEntity {
     page: IPageData;
 }
 
-export interface IComponent {
+export interface IComponent extends ISecuredObject {
     type: string;
-    securityGroupName: string;
     name: string;
     description: string;
     version: IComponentVersion;

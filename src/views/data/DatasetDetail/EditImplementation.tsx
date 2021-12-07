@@ -73,26 +73,36 @@ interface IPublicProps {
     isEdit?: boolean;
     onClose: () => void;
     onEdit: (implementation: IDatasetImplementation) => void;
+    implementation?: IDatasetImplementation;
 }
 
 function EditImplementation({
     state,
     onEdit,
     onClose,
+    implementation,
 }: IPublicProps & IObserveProps) {
     const classes = useStyles();
     const translator = getTranslator(state);
     const ref = useRef(null);
-    const [keyValues, setKeyValues] = useState<Array<IKeyValue>>([]);
+    const [isLabelsEmpty, setIsLabelsEmpty] = useState<boolean>(false);
+    const [keyValues, setKeyValues] = useState<Array<IKeyValue>>(
+        implementation ? implementation.keyValues : [],
+    );
 
     const add = () => {
         const outerTexts: Array<string> = ref.current.outerText.split('\n');
-        const labels: Array<string> = outerTexts.slice(1, outerTexts.length - 1);
-        onEdit({
-            type: 'in_memory',
-            labels: labels.map((label) => ({ label })),
-            keyValues,
-        });
+        const labels: Array<string> = outerTexts.slice(1, outerTexts.length - 1).filter((label) => label.length > 0);
+        if (labels.length <= 0) {
+            setIsLabelsEmpty(true);
+        } else {
+            onEdit({
+                type: 'in_memory',
+                labels: labels.map((label) => ({ label })),
+                keyValues,
+            });
+            onClose();
+        }
     };
 
     const addValue = () => {
@@ -150,6 +160,7 @@ function EditImplementation({
                             multiple
                             id="implementation-labels"
                             options={[]}
+                            defaultValue={implementation ? [...implementation.labels.map((label) => label.label)] : []}
                             freeSolo
                             renderTags={(value: string[], getTagProps) => (
                                 value.map((option: string, index: number) => (
@@ -170,9 +181,14 @@ function EditImplementation({
                                         disableUnderline: true,
                                         autoComplete: 'off',
                                     }}
-                                    helperText={translator('datasets.detail.edit.implementation.labels_helper')}
+                                    helperText={isLabelsEmpty ? (
+                                        translator('datasets.detail.edit.implementation.empty_labels_error')
+                                    ) : translator('datasets.detail.edit.implementation.labels_helper')}
+                                    error={isLabelsEmpty}
                                     className={classes.textField}
                                     fullWidth
+                                    autoFocus
+                                    required
                                 />
                             )}
                         />

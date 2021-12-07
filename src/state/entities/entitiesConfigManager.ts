@@ -27,7 +27,7 @@ import {
     IComponentByNameAndVersionPayload,
     IFetchComponentsListPayload,
 } from 'models/state/components.model';
-import { IDatasetBase } from 'models/state/datasets.model';
+import { IDataset, IDatasetBase, IDatasetImplementationsByUuidPayload } from 'models/state/datasets.model';
 
 // eslint-disable-next-line max-len
 const entitiesConfigManager = initAsyncEntitiesConfigManager<IState, {}, ITraceableApiError, string, IExtraProcessInput>();
@@ -379,9 +379,32 @@ entitiesConfigManager.register({
 entitiesConfigManager.register({
     asyncEntityKey: ASYNC_ENTITY_KEYS.datasetDetail,
     operationsConfig: {
+        fetch: {
+            api: api.datasets.fetchDataset,
+            apiInputSelector: ({ extraInput }) => extraInput as IDataset,
+        },
         create: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             api: api.datasets.createDataset,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             apiInputSelector: ({ extraInput }) => extraInput as IDatasetBase,
+        },
+        update: {
+            api: api.datasets.updateDataset,
+            apiInputSelector: ({ extraInput }) => extraInput as IDataset,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.datasetImplementations,
+    operationsConfig: {
+        fetch: {
+            api: api.datasets.fetchDatasetImplementations,
+            apiInputSelector: ({ extraInput }) => extraInput as IDatasetImplementationsByUuidPayload,
         },
     },
 });

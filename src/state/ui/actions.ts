@@ -12,6 +12,7 @@ import { getUniqueIdFromComponent } from 'utils/components/componentUtils';
 import { ReactText } from 'react';
 import { IConnection, IConnectionColumnNamesBase } from 'models/state/connections.model';
 import { IComponent, IComponentColumnNamesBase } from 'models/state/components.model';
+import { IDatasetImplementation } from 'models/state/datasets.model';
 
 export const triggerFlashMessage = (payload: ITriggerFlashMessagePayload) => createAction<ITriggerFlashMessagePayload>({
     type: 'TRIGGER_FLASH_MESSAGE',
@@ -375,6 +376,33 @@ export const editComponent = (payload: {
                     ));
             },
             notificationsToTrigger: [StateChangeNotification.COMPONENT_EDIT],
+        });
+    },
+});
+
+export const fetchImplementations = (payload: {
+    implementations: IDatasetImplementation[];
+}) => createAction<{
+    implementations: IDatasetImplementation[];
+}>({
+    type: 'DATA_DATASETS.IMPLEMENTATIONS',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                const { implementations } = payload;
+                const datasetDetail = draftState.entities.datasetDetail.data;
+                // eslint-disable-next-line no-param-reassign
+                draftState.entities.datasetDetail.data = {
+                    ...datasetDetail,
+                    implementations: implementations.map((implementation) => ({
+                        type: implementation.type,
+                        labels: implementation.labels,
+                        keyValues: implementation.keyValues,
+                    })),
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_DETAIL],
         });
     },
 });

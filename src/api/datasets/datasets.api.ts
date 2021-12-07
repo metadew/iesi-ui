@@ -1,6 +1,12 @@
 import API_URLS from 'api/apiUrls';
-import { get, post } from 'api/requestWrapper';
-import { IDataset, IDatasetBase, IDatasetByNamePayload } from 'models/state/datasets.model';
+import { get, post, put } from 'api/requestWrapper';
+import {
+    IDataset,
+    IDatasetBase,
+    IDatasetByNamePayload,
+    IDatasetImplementation,
+    IDatasetImplementationsByUuidPayload,
+} from 'models/state/datasets.model';
 import { IPageData } from 'models/state/iesiGeneric.models';
 
 interface IDatasetsResponse {
@@ -10,23 +16,56 @@ interface IDatasetsResponse {
     page: IPageData;
 }
 
+interface IDatasetResponse {
+    uuid: string;
+    name: string;
+    securityGroupName: string;
+    implementations: string[];
+}
+
 export function fetchDataset({ name }: IDatasetByNamePayload) {
-    return get<IDataset>({
+    return get<IDatasetBase>({
         isIesiApi: true,
         needsAuthentication: true,
         url: API_URLS.DATASET_BY_NAME,
         pathParams: {
             name,
         },
+        mapResponse: ({ data }) => ({ ...data, implementations: null }),
+    });
+}
+
+export function fetchDatasetImplementations({ uuid }: IDatasetImplementationsByUuidPayload) {
+    return get<IDatasetImplementation[]>({
+        isIesiApi: true,
+        needsAuthentication: true,
+        url: API_URLS.DATASET_IMPLEMENTATIONS,
+        pathParams: {
+            uuid,
+        },
         mapResponse: ({ data }) => data,
     });
 }
+
 export function createDataset(dataset: IDatasetBase) {
     return post<IDatasetBase>({
         needsAuthentication: true,
         isIesiApi: true,
         url: API_URLS.DATASETS,
         body: dataset,
+        contentType: 'application/json',
+    });
+}
+
+export function updateDataset(dataset: IDataset) {
+    return put<IDataset>({
+        needsAuthentication: true,
+        isIesiApi: true,
+        url: API_URLS.DATASET_BY_UUID,
+        body: dataset,
+        pathParams: {
+            uuid: dataset.uuid,
+        },
         contentType: 'application/json',
     });
 }
