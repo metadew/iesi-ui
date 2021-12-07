@@ -409,7 +409,7 @@ function ExecuteScriptDialog({
     function createExecutionRequest() {
         triggerCreateExecutionRequest({
             context: '', // May be ignored for now
-            description: formValues.description.trim(),
+            description: formValues.description ? formValues.description.trim() : '',
             email: null, // May be ignored for now
             executionRequestLabels: formValues.executionRequestLabels,
             name: formValues.name.trim(),
