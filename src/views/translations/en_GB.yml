@@ -6,6 +6,7 @@ app_shell:
       scripts: Scripts
       components: Components
       connections: Connections
+      datasets: Datasets
     title: iesi
 common:
   yes: Yes
@@ -546,6 +547,21 @@ doc:
       edit: 'Edit the table cells'
       delete: 'Delete from the table'
 datasets:
+  overview:
+    header:
+      amount: You have {amount} scripts
+    list:
+      sort:
+        dataset_name: Dataset name
+      filter:
+        dataset_name: Dataset name
+      labels:
+        name: Name
+        security_group: Security Group
+        implementations: Implementations
+      actions:
+        edit: Edit dataset
+        view: View
   detail:
     save_dataset_dialog:
       title_create: Save dataset

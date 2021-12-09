@@ -4,8 +4,10 @@ import {
     IDataset,
     IDatasetBase,
     IDatasetByNamePayload,
+    IDatasetEntity,
     IDatasetImplementation,
     IDatasetImplementationsByUuidPayload,
+    IFetchDatasetsListPayload,
 } from 'models/state/datasets.model';
 import { IPageData } from 'models/state/iesiGeneric.models';
 
@@ -21,6 +23,24 @@ interface IDatasetResponse {
     name: string;
     securityGroupName: string;
     implementations: string[];
+}
+
+export function fetchDatasets({ pagination, filter, sort }: IFetchDatasetsListPayload) {
+    return get<IDatasetEntity, IDatasetsResponse>({
+        isIesiApi: true,
+        needsAuthentication: true,
+        url: API_URLS.DATASETS,
+        queryParams: {
+            ...pagination,
+            ...filter,
+            sort,
+        },
+        mapResponse: ({ data }) => ({
+            // eslint-disable-next-line no-underscore-dangle
+            datasets: data._embedded.datasets,
+            page: data.page,
+        }),
+    });
 }
 
 export function fetchDataset({ name }: IDatasetByNamePayload) {

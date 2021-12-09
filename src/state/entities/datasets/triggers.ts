@@ -5,10 +5,22 @@ import {
     IDatasetByNamePayload,
     IDatasetImplementation,
     IDatasetImplementationsByUuidPayload,
+    IFetchDatasetsListPayload,
 } from 'models/state/datasets.model';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { StateChangeNotification } from 'models/state.models';
 import { fetchImplementations, triggerFlashMessage } from 'state/ui/actions';
+
+export const triggerFetchDatasets = (payload: IFetchDatasetsListPayload) =>
+    entitiesStateManager.triggerAsyncEntityFetch<{}>({
+        asyncEntityToFetch: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.datasets,
+            refreshMode: 'always',
+            resetDataOnTrigger: false,
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_LIST],
+    });
 
 export const triggerFetchDatasetDetail = (payload: IDatasetByNamePayload) =>
     entitiesStateManager.triggerAsyncEntityFetch<{}>({

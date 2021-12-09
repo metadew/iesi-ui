@@ -12,7 +12,7 @@ import { getUniqueIdFromComponent } from 'utils/components/componentUtils';
 import { ReactText } from 'react';
 import { IConnection, IConnectionColumnNamesBase } from 'models/state/connections.model';
 import { IComponent, IComponentColumnNamesBase } from 'models/state/components.model';
-import { IDatasetImplementation } from 'models/state/datasets.model';
+import { IDatasetColumnNames, IDatasetImplementation } from 'models/state/datasets.model';
 
 export const triggerFlashMessage = (payload: ITriggerFlashMessagePayload) => createAction<ITriggerFlashMessagePayload>({
     type: 'TRIGGER_FLASH_MESSAGE',
@@ -240,6 +240,34 @@ export const setConnectionsListFilter = (payload: {
                 };
             },
             notificationsToTrigger: [StateChangeNotification.LIST_FILTER_COMPONENTS],
+        });
+    },
+});
+
+export const setDatasetsListFilter = (payload: {
+    filters?: ListFilters<Partial<IDatasetColumnNames>>;
+    onlyShowLatestVersion?: boolean;
+    page?: number;
+    sortedColumn?: ISortedColumn<IDatasetColumnNames>;
+}) => createAction<{
+    filters?: ListFilters<Partial<IDatasetColumnNames>>;
+    onlyShowLatestVersion?: boolean;
+    page?: number;
+    sortedColumn?: ISortedColumn<IDatasetColumnNames>;
+}>({
+    type: 'UPDATE_DATASETS_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.datasets = {
+                    filters: payload.filters || draftState.ui.listFilters.datasets.filters,
+                    page: payload.page || draftState.ui.listFilters.datasets.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.datasets.sortedColumn,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_DATASETS],
         });
     },
 });

@@ -1,5 +1,14 @@
-import { IPageData } from "./iesiGeneric.models";
+import { IPageData, IPageFilter } from "./iesiGeneric.models";
 
+export interface IFetchDatasetsListPayload {
+    pagination?: IPageFilter;
+    filter?: IDatasetListFilter;
+    sort: string;
+}
+
+interface IDatasetListFilter {
+    name?: string;
+}
 export interface IDatasetBase {
     name: string;
     securityGroupName: string;
@@ -15,6 +24,11 @@ export interface IDatasetEntity {
     page: IPageData;
 }
 
+export interface IDatasetColumnNames {
+    name: string;
+    securityGroupName: string;
+    implementations: number;
+}
 
 export interface IDatasetImplementation {
     type: string;

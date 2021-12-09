@@ -44,6 +44,7 @@ export enum ASYNC_ENTITY_KEYS {
 
     authentication = 'authentication',
 
+    datasets = 'datasets',
     datasetDetail = 'datasetDetail',
     datasetImplementations = 'datasetImplementations',
 }

@@ -49,6 +49,11 @@ export default function getMockState({
                     page: 1,
                     sortedColumn: null,
                 },
+                datasets: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                },
             },
         },
         auth: {
