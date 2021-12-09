@@ -549,7 +549,8 @@ doc:
 datasets:
   overview:
     header:
-      amount: You have {amount} scripts
+      amount: You have {amount} datasets
+      add_button: Create new dataset
     list:
       sort:
         dataset_name: Dataset name
@@ -562,6 +563,7 @@ datasets:
       actions:
         edit: Edit dataset
         view: View
+      fetch_error: Something went wrong while loading the datasets, please try again.
   detail:
     save_dataset_dialog:
       title_create: Save dataset

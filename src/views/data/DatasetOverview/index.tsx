@@ -1,20 +1,47 @@
-import React from 'react';
+import React, { ReactText } from 'react';
 import {
+    Box,
+    Button,
     createStyles,
     Theme,
+    Typography,
     withStyles,
     WithStyles,
 } from '@material-ui/core';
 import { observe, IObserveProps } from 'views/observe';
 import { getDatasetsListFilter } from 'state/ui/selectors';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
-import { FilterConfig, FilterType, ISortedColumn, ListFilters, SortOrder, SortType } from 'models/list.models';
-import { IDatasetColumnNames } from 'models/state/datasets.model';
+import {
+    FilterConfig,
+    FilterType,
+    IListItem,
+    ISortedColumn,
+    ListColumns,
+    ListFilters,
+    SortActions,
+    SortOrder,
+    SortType,
+} from 'models/list.models';
+import { IDataset, IDatasetColumnNames } from 'models/state/datasets.model';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import { getAsyncDatasetsPageData } from 'state/entities/datasets/selectors';
+import { getAsyncDatasets, getAsyncDatasetsEntitty, getAsyncDatasetsPageData } from 'state/entities/datasets/selectors';
 import { triggerFetchDatasets } from 'state/entities/datasets/triggers';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { setDatasetsListFilter } from 'state/ui/actions';
+import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
+import GenericSort from 'views/common/list/GenericSort';
+import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
+import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
+import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
+import GenericFilter from 'views/common/list/GenericFilter';
+import { getTranslator } from 'state/i18n/selectors';
+import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import GenericList from 'views/common/list/GenericList';
+import { getUniqueIdFromDataset } from 'utils/datasets/datasetUtils';
+import { StateChangeNotification } from 'models/state.models';
+import { Alert } from '@material-ui/lab';
 
 const styles = ({ palette, typography }: Theme) => createStyles({
     header: {
@@ -48,6 +75,13 @@ const defaultSortedColumn: ISortedColumn<IDatasetColumnNames> = {
     sortType: SortType.String,
 };
 
+const sortActions: SortActions<Partial<IDatasetColumnNames>> = {
+    name: {
+        label: <Translate msg="datasets.overview.list.sort.dataset_name" />,
+        sortType: SortType.String,
+    },
+};
+
 interface IDatasetState {
     datasetIdToDelete: string;
 }
@@ -63,8 +97,14 @@ const DatasetOverview = withStyles(styles)(
                 datasetIdToDelete: null,
             };
 
+            this.renderPanel = this.renderPanel.bind(this);
+
             this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
             this.fetchDatasetsWithFilterAndPagination = this.fetchDatasetsWithFilterAndPagination.bind(this);
+            this.onSort = this.onSort.bind(this);
+            this.onFilter = this.onFilter.bind(this);
+
+            this.setDatasetToDelete = this.setDatasetToDelete.bind(this);
         }
 
         public componentDidMount() {
@@ -75,12 +115,224 @@ const DatasetOverview = withStyles(styles)(
             dispatch(setDatasetsListFilter({ filters: initialFilters }));
         }
 
+        public componentDidUpdate(prevProps: TProps & IObserveProps) {
+            const { state, dispatch } = prevProps;
+            const filterFromState = getDatasetsListFilter(state);
+
+            if (filterFromState.filters === null || filterFromState.sortedColumn === null) {
+                dispatch(setDatasetsListFilter({
+                    filters: filterFromState.filters === null && getIntialFiltersFromFilterConfig(filterConfig),
+                    sortedColumn: filterFromState.sortedColumn === null && {
+                        name: 'name',
+                        sortOrder: SortOrder.Ascending,
+                        sortType: SortType.String,
+                    },
+                }));
+            }
+        }
+
         public render() {
+            const { classes, state } = this.props;
+            const pageData = getAsyncDatasetsPageData(this.props.state);
+            const filterFromState = getDatasetsListFilter(state);
+            const datasets = getAsyncDatasets(state);
+            const listItems = mapDatasetsToListItems(datasets);
             return (
                 <>
-                    <div>Coucou</div>
+                    <Box height="100%" display="flex" flexDirection="column" flex="1 0 auto">
+                        <Box
+                            paddingTop={3}
+                            paddingBottom={3}
+                            className={classes.header}
+                        >
+                            <AppTemplateContainer>
+                                <Typography variant="h6">
+                                    <Translate
+                                        msg="datasets.overview.header.amount"
+                                        placeholders={{ amount: pageData ? pageData.totalElements : 0 }}
+                                    />
+                                </Typography>
+                                <Box display="flex" alignItems="flex-end">
+                                    <Box flex="1 0 auto">
+                                        <GenericSort
+                                            sortActions={sortActions}
+                                            onSort={this.onSort}
+                                            sortedColumn={filterFromState.sortedColumn as ISortedColumn<{}>}
+                                        />
+                                    </Box>
+                                    {
+                                        checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE) && (
+                                            <Box display="flex" alignItems="center">
+                                                <Box flex="0 0 auto">
+                                                    <Button
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        size="small"
+                                                        startIcon={<AddRounded />}
+                                                        onClick={() => {
+                                                            redirectTo({ routeKey: ROUTE_KEYS.R_DATASET_NEW });
+                                                        }}
+                                                    >
+                                                        <Translate msg="datasets.overview.header.add_button" />
+                                                    </Button>
+                                                </Box>
+                                            </Box>
+                                        )
+                                    }
+                                </Box>
+                            </AppTemplateContainer>
+                        </Box>
+                        <ContentWithSlideoutPanel
+                            toggleLabel={
+                                <Translate msg="common.list.filter.toggle" />
+                            }
+                            panel={this.renderPanel({ listItems })}
+                            content={this.renderContent({ listItems })}
+                            initialIsOpenState={
+                                (filterFromState.filters
+                                    && (filterFromState.filters.name.values.length > 0))
+                            }
+                        />
+                    </Box>
                 </>
             );
+        }
+
+        private renderPanel({ listItems }: { listItems: IListItem<IDatasetColumnNames>[] }) {
+            const { state } = this.props;
+            const filterFromState = getDatasetsListFilter(state);
+
+            return (
+                <>
+                    <GenericFilter
+                        filterConfig={filterConfig}
+                        onFilterChange={this.onFilter}
+                        listItems={listItems}
+                        initialFilters={filterFromState.filters}
+                    />
+                </>
+            );
+        }
+
+        private renderContent({ listItems }: { listItems: IListItem<IDatasetColumnNames>[] }) {
+            const { classes, state, dispatch } = this.props;
+            const translator = getTranslator(state);
+            const asyncDatasetsEntity = getAsyncDatasetsEntitty(state);
+            const datasetsFetchData = asyncDatasetsEntity.fetch;
+            const isFetching = datasetsFetchData.status === AsyncStatus.Busy;
+            const hasError = datasetsFetchData.status === AsyncStatus.Error;
+            const datasetsData = asyncDatasetsEntity.data;
+            const pageData = datasetsData ? datasetsData.page : null;
+
+            const columns: ListColumns<IDatasetColumnNames> = {
+                name: {
+                    label: <Translate msg="datasets.overview.list.labels.name" />,
+                    className: classes.datasetName,
+                    fixedWidth: '70%',
+                },
+                securityGroupName: {
+                    label: <Translate msg="datasets.overview.list.labels.security_group" />,
+                    className: classes.securityGroupName,
+                    fixedWidth: '20%',
+                },
+                implementations: {
+                    label: <Translate msg="datasets.overview.list.labels.implementations" />,
+                    className: classes.implementations,
+                    fixedWidth: '10%',
+                },
+            };
+
+            return (
+                <>
+                    <Box paddingBottom={5} marginX={2.8}>
+                        {
+                            !hasError ? (
+                                <GenericList
+                                    columns={columns}
+                                    listItems={listItems}
+                                    isLoading={isFetching}
+                                    pagination={{
+                                        pageData,
+                                        onChange: ({ page }) => {
+                                            this.fetchDatasetsWithFilterAndPagination({ newPage: page });
+                                            dispatch(setDatasetsListFilter({ page }));
+                                        },
+                                    }}
+                                    listActions={[].concat({
+                                        icon: <Edit />,
+                                        label: translator('datasets.overview.list.actions.edit'),
+                                        onClick: (id: string) => {
+                                            const datasets = getAsyncDatasets(state);
+                                            const selectedDataset = datasets.find((item) =>
+                                                getUniqueIdFromDataset(item) === id);
+                                            redirectTo({
+                                                routeKey: ROUTE_KEYS.R_DATASET_DETAIL,
+                                                params: {
+                                                    name: selectedDataset.name,
+                                                },
+                                            });
+                                        },
+                                        hideAction: (item: IListItem<IDatasetColumnNames>) => (
+                                            !checkAuthority(
+                                                state,
+                                                SECURITY_PRIVILEGES.S_DATASETS_WRITE,
+                                                item.columns.securityGroupName.toString(),
+                                            )
+                                        ),
+                                    }, {
+                                        icon: <Visibility />,
+                                        label: translator('datasets.overview.list.actions.view'),
+                                        onClick: (id: string) => {
+                                            const datasets = getAsyncDatasets(state);
+                                            const selectedDataset = datasets.find((item) =>
+                                                getUniqueIdFromDataset(item) === id);
+                                            redirectTo({
+                                                routeKey: ROUTE_KEYS.R_DATASET_DETAIL,
+                                                params: {
+                                                    name: selectedDataset.name,
+                                                },
+                                            });
+                                        },
+                                        hideAction: (item: IListItem<IDatasetColumnNames>) => (
+                                            checkAuthority(
+                                                state,
+                                                SECURITY_PRIVILEGES.S_DATASETS_WRITE,
+                                                item.columns.securityGroupName.toString(),
+                                            )
+                                        ),
+                                    }, {
+                                        icon: <Delete />,
+                                        label: translator('datasets.overview.list.actions.delete'),
+                                        onClick: this.setDatasetToDelete,
+                                        hideAction: (item: IListItem<IDatasetColumnNames>) => (
+                                            !checkAuthority(
+                                                state,
+                                                SECURITY_PRIVILEGES.S_DATASETS_WRITE,
+                                                item.columns.securityGroupName.toString(),
+                                            )),
+                                    })}
+                                />
+                            ) : (
+                                <Box padding={2}>
+                                    <Alert severity="error">
+                                        <Translate msg="datasets.overview.list.fetch_error" />
+                                    </Alert>
+                                </Box>
+                            )
+                        }
+                    </Box>
+                </>
+            );
+        }
+
+        private setDatasetToDelete(id: ReactText) {
+            this.setState({ datasetIdToDelete: id as string });
+        }
+
+        private onFilter(listFilters: ListFilters<Partial<IDatasetColumnNames>>) {
+            const { dispatch } = this.props;
+            this.fetchDatasetsWithFilterAndPagination({ newListFilters: listFilters });
+            dispatch(setDatasetsListFilter({ filters: listFilters }));
         }
 
         private combineFiltersFromUrlAndCurrentFilters() {
@@ -111,13 +363,19 @@ const DatasetOverview = withStyles(styles)(
             return defaultFilters;
         }
 
+        private onSort(sortedColumn: ISortedColumn<IDatasetColumnNames>) {
+            const { dispatch } = this.props;
+            this.fetchDatasetsWithFilterAndPagination({ newSortedColumn: sortedColumn });
+            dispatch(setDatasetsListFilter({ sortedColumn }));
+        }
+
         private fetchDatasetsWithFilterAndPagination({
             newPage,
             newListFilters,
             newSortedColumn,
         }: {
             newPage?: number;
-            newListFilters: ListFilters<Partial<IDatasetColumnNames>>;
+            newListFilters?: ListFilters<Partial<IDatasetColumnNames>>;
             newOnlyShowLatestVersion?: boolean;
             newSortedColumn?: ISortedColumn<IDatasetColumnNames>;
         }) {
@@ -131,7 +389,7 @@ const DatasetOverview = withStyles(styles)(
             const sortedColumn = newSortedColumn || filtersFromState.sortedColumn || defaultSortedColumn;
 
             triggerFetchDatasets({
-                pagination: { page },
+                pagination: { page, size: 1 },
                 filter: {
                     name: filters.name.values.length > 0
                         && filters.name.values[0].toString(),
@@ -142,4 +400,18 @@ const DatasetOverview = withStyles(styles)(
     },
 );
 
-export default observe<TProps>([], DatasetOverview);
+function mapDatasetsToListItems(datasets: IDataset[]): IListItem<IDatasetColumnNames>[] {
+    return datasets.map((dataset) => ({
+        id: getUniqueIdFromDataset(dataset),
+        columns: {
+            name: dataset.name,
+            securityGroupName: dataset.securityGroupName,
+            implementations: dataset.implementations.length,
+        },
+    }));
+}
+
+export default observe<TProps>([
+    StateChangeNotification.DATA_DATASETS_LIST,
+    StateChangeNotification.LIST_FILTER_DATASETS,
+], DatasetOverview);

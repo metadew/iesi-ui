@@ -53,7 +53,7 @@ interface IComponentState {
 
 const initialDatasetDetail: IDatasetBase = {
     name: '',
-    securityGroupName: 'PUBLIC',
+    securityGroupName: '',
     implementations: [],
 };
 
@@ -112,9 +112,6 @@ const DatasetDetail = withStyles(styles)(
             const datasetDetail = getAsyncDatasetDetail(state).data;
             const translator = getTranslator(state);
 
-            console.log('NEW DATASET DETAIL : ', newDatasetDetail);
-            console.log('INDEX : ', implementationIndexToDuplicate);
-
             return (
                 <>
                     <ContentWithSidePanel
@@ -125,6 +122,7 @@ const DatasetDetail = withStyles(styles)(
                         contentOverlay={this.renderAddOrEditImplementation()}
                         contentOverlayOpen={isAddOpen || implementationIndexToEdit !== null}
                         toggleLabel={<Translate msg="datasets.detail.side.toggle_button" />}
+                        goBackTo={ROUTE_KEYS.R_DATASETS}
                     />
                     {
                         implementationIndexToDuplicate !== null && (
@@ -202,6 +200,7 @@ const DatasetDetail = withStyles(styles)(
             const { state } = this.props;
             const { newDatasetDetail, requiredFieldsState } = this.state;
             const translator = getTranslator(state);
+            console.log('NAME :', newDatasetDetail);
             return (
                 <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
                     <Box flex="1 1 auto">
