@@ -32,6 +32,7 @@ import {
     IDatasetBase,
     IDatasetImplementationsByUuidPayload,
     IFetchDatasetsListPayload,
+    IDatasetByUuidPayload,
 } from 'models/state/datasets.model';
 
 // eslint-disable-next-line max-len
@@ -408,8 +409,18 @@ entitiesConfigManager.register({
             apiInputSelector: ({ extraInput }) => extraInput as IDatasetBase,
         },
         update: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             api: api.datasets.updateDataset,
             apiInputSelector: ({ extraInput }) => extraInput as IDataset,
+        },
+        remove: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.datasets.deleteDataset,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IDatasetByUuidPayload,
         },
     },
 });

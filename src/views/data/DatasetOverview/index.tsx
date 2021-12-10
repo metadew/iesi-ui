@@ -24,8 +24,13 @@ import {
 } from 'models/list.models';
 import { IDataset, IDatasetColumnNames } from 'models/state/datasets.model';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import { getAsyncDatasets, getAsyncDatasetsEntitty, getAsyncDatasetsPageData } from 'state/entities/datasets/selectors';
-import { triggerFetchDatasets } from 'state/entities/datasets/triggers';
+import {
+    getAsyncDatasetDetail,
+    getAsyncDatasets,
+    getAsyncDatasetsEntitty,
+    getAsyncDatasetsPageData,
+} from 'state/entities/datasets/selectors';
+import { triggerDeleteDatasetDetail, triggerFetchDatasets } from 'state/entities/datasets/triggers';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { setDatasetsListFilter } from 'state/ui/actions';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
@@ -42,6 +47,7 @@ import GenericList from 'views/common/list/GenericList';
 import { getUniqueIdFromDataset } from 'utils/datasets/datasetUtils';
 import { StateChangeNotification } from 'models/state.models';
 import { Alert } from '@material-ui/lab';
+import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 
 const styles = ({ palette, typography }: Theme) => createStyles({
     header: {
@@ -105,6 +111,9 @@ const DatasetOverview = withStyles(styles)(
             this.onFilter = this.onFilter.bind(this);
 
             this.setDatasetToDelete = this.setDatasetToDelete.bind(this);
+            this.onDeleteDataset = this.onDeleteDataset.bind(this);
+            // eslint-disable-next-line max-len
+            this.closeDeleteDeleteDialogAfterSuccessfulDelete = this.closeDeleteDeleteDialogAfterSuccessfulDelete.bind(this);
         }
 
         public componentDidMount() {
@@ -129,14 +138,18 @@ const DatasetOverview = withStyles(styles)(
                     },
                 }));
             }
+            this.closeDeleteDeleteDialogAfterSuccessfulDelete(prevProps);
         }
 
         public render() {
             const { classes, state } = this.props;
+            const { datasetIdToDelete } = this.state;
+            const translator = getTranslator(state);
             const pageData = getAsyncDatasetsPageData(this.props.state);
             const filterFromState = getDatasetsListFilter(state);
             const datasets = getAsyncDatasets(state);
             const listItems = mapDatasetsToListItems(datasets);
+            const deleteStatus = getAsyncDatasetDetail(this.props.state).remove.status;
             return (
                 <>
                     <Box height="100%" display="flex" flexDirection="column" flex="1 0 auto">
@@ -192,6 +205,14 @@ const DatasetOverview = withStyles(styles)(
                                 (filterFromState.filters
                                     && (filterFromState.filters.name.values.length > 0))
                             }
+                        />
+                        <ConfirmationDialog
+                            title={translator('datasets.overview.delete_dataset_dialog.title')}
+                            text={translator('datasets.overview.delete_dataset_dialog.text')}
+                            open={!!datasetIdToDelete}
+                            onClose={() => this.setState({ datasetIdToDelete: null })}
+                            onConfirm={this.onDeleteDataset}
+                            showLoader={deleteStatus === AsyncStatus.Busy}
                         />
                     </Box>
                 </>
@@ -325,6 +346,16 @@ const DatasetOverview = withStyles(styles)(
             );
         }
 
+        private closeDeleteDeleteDialogAfterSuccessfulDelete(prevProps: TProps & IObserveProps) {
+            const { status } = getAsyncDatasetDetail(this.props.state).remove;
+            const prevStatus = getAsyncDatasetDetail(prevProps.state).remove.status;
+
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                this.setState({ datasetIdToDelete: null });
+                this.fetchDatasetsWithFilterAndPagination({});
+            }
+        }
+
         private setDatasetToDelete(id: ReactText) {
             this.setState({ datasetIdToDelete: id as string });
         }
@@ -361,6 +392,17 @@ const DatasetOverview = withStyles(styles)(
                 return filtersByUrlSearchParams;
             }
             return defaultFilters;
+        }
+
+        private onDeleteDataset() {
+            const { state } = this.props;
+            const { datasetIdToDelete } = this.state;
+            const datasetToDelete = getAsyncDatasets(state).find((item) =>
+                getUniqueIdFromDataset(item) === datasetIdToDelete);
+
+            if (datasetToDelete) {
+                triggerDeleteDatasetDetail({ uuid: datasetToDelete.uuid });
+            }
         }
 
         private onSort(sortedColumn: ISortedColumn<IDatasetColumnNames>) {
@@ -413,5 +455,6 @@ function mapDatasetsToListItems(datasets: IDataset[]): IListItem<IDatasetColumnN
 
 export default observe<TProps>([
     StateChangeNotification.DATA_DATASETS_LIST,
+    StateChangeNotification.DATA_DATASETS_DETAIL,
     StateChangeNotification.LIST_FILTER_DATASETS,
 ], DatasetOverview);

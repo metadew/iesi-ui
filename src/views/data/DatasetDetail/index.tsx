@@ -23,6 +23,7 @@ import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/ent
 import entitiesStateManager from 'state/entities/entitiesStateManager';
 import {
     triggerCreateDatasetDetail,
+    triggerDeleteDatasetDetail,
     triggerFetchDatasetImplementations,
     triggerUpdateDatasetDetail,
 } from 'state/entities/datasets/triggers';
@@ -48,6 +49,7 @@ interface IComponentState {
     hasChangesToCheck: boolean;
     isAddOpen: boolean;
     isSaveDialogOpen: boolean;
+    isConfirmDeleteComponentOpen: boolean;
     requiredFieldsState: TRequiredFieldsState<IDatasetBase>;
 }
 
@@ -69,6 +71,7 @@ const DatasetDetail = withStyles(styles)(
                 hasChangesToCheck: false,
                 isAddOpen: false,
                 isSaveDialogOpen: false,
+                isConfirmDeleteComponentOpen: false,
                 requiredFieldsState: {
                     name: {
                         showError: false,
@@ -88,12 +91,16 @@ const DatasetDetail = withStyles(styles)(
             this.onDeleteImplementation = this.onDeleteImplementation.bind(this);
 
             this.updateDatasetInStateIfNewDatasetWasLoaded = this.updateDatasetInStateIfNewDatasetWasLoaded.bind(this);
-            this.navigateToDatasettAfterCreation = this.navigateToDatasettAfterCreation.bind(this);
+            this.navigateToDatasetAfterCreation = this.navigateToDatasetAfterCreation.bind(this);
+            this.navigateToDatasetsAfterDeletion = this.navigateToDatasetsAfterDeletion.bind(this);
+
+            this.onDeleteDataset = this.onDeleteDataset.bind(this);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
             this.updateDatasetInStateIfNewDatasetWasLoaded(prevProps);
-            this.navigateToDatasettAfterCreation(prevProps);
+            this.navigateToDatasetAfterCreation(prevProps);
+            this.navigateToDatasetsAfterDeletion(prevProps);
         }
 
         public render() {
@@ -105,12 +112,14 @@ const DatasetDetail = withStyles(styles)(
                 implementationIndexToDelete,
                 implementationIndexToDuplicate,
                 isSaveDialogOpen,
+                isConfirmDeleteComponentOpen,
             } = this.state;
             const datasetImplementationsAsyncInfo = entitiesStateManager.getAsyncEntity({
                 asyncEntityKey: ASYNC_ENTITY_KEYS.datasetImplementations,
             }).fetch;
             const datasetDetail = getAsyncDatasetDetail(state).data;
             const translator = getTranslator(state);
+            const deleteStatus = getAsyncDatasetDetail(state).remove.status;
 
             return (
                 <>
@@ -140,6 +149,14 @@ const DatasetDetail = withStyles(styles)(
                         open={implementationIndexToDelete !== null}
                         onClose={() => this.setState({ implementationIndexToDelete: null })}
                         onConfirm={this.onDeleteImplementation}
+                    />
+                    <ConfirmationDialog
+                        title={translator('datasets.detail.delete_dataset_dialog.title')}
+                        text={translator('datasets.detail.delete_dataset_dialog.text')}
+                        open={isConfirmDeleteComponentOpen}
+                        onClose={() => this.setState({ isConfirmDeleteComponentOpen: false })}
+                        onConfirm={this.onDeleteDataset}
+                        showLoader={deleteStatus === AsyncStatus.Busy}
                     />
                     <ClosableDialog
                         title={this.isCreateDatasetRoute() ? (
@@ -200,7 +217,7 @@ const DatasetDetail = withStyles(styles)(
             const { state } = this.props;
             const { newDatasetDetail, requiredFieldsState } = this.state;
             const translator = getTranslator(state);
-            console.log('NAME :', newDatasetDetail);
+
             return (
                 <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
                     <Box flex="1 1 auto">
@@ -320,7 +337,7 @@ const DatasetDetail = withStyles(styles)(
                         </Collapse>
                         <DetailActions
                             onSave={handleSaveAction}
-                            onDelete={null}
+                            onDelete={() => this.setState({ isConfirmDeleteComponentOpen: true })}
                             onAdd={() => this.setState({ isAddOpen: true })}
                             isCreateRoute={this.isCreateDatasetRoute()}
                         />
@@ -331,17 +348,17 @@ const DatasetDetail = withStyles(styles)(
                             columns={columns}
                             listActions={[{
                                 icon: <Edit />,
-                                label: translator('components.detail.main.list.actions.edit'),
+                                label: translator('datasets.detail.main.list.actions.edit'),
                                 onClick: (id, index) => this.setState({ implementationIndexToEdit: index }),
                                 hideAction: () => null,
                             }, {
                                 icon: <Delete />,
-                                label: translator('components.detail.main.list.actions.delete'),
+                                label: translator('datasets.detail.main.list.actions.delete'),
                                 onClick: (id, index) => this.setState({ implementationIndexToDelete: index }),
                                 hideAction: () => null,
                             }, {
                                 icon: <FileCopy />,
-                                label: translator('components.detail.main.list.actions.duplicate'),
+                                label: translator('datasets.detail.main.list.actions.duplicate'),
                                 onClick: (id, index) => this.setState({ implementationIndexToDuplicate: index }),
                                 hideAction: () => null,
                             }]}
@@ -380,6 +397,14 @@ const DatasetDetail = withStyles(styles)(
                 },
                 hasChangesToCheck: true,
             }));
+        }
+
+        private onDeleteDataset() {
+            const { state } = this.props;
+            const detail = getAsyncDatasetDetail(state).data;
+            if (detail) {
+                triggerDeleteDatasetDetail({ uuid: detail.uuid });
+            }
         }
 
         private onAddImplementation(implementation: IDatasetImplementation) {
@@ -431,7 +456,7 @@ const DatasetDetail = withStyles(styles)(
             }
         }
 
-        private navigateToDatasettAfterCreation(prevProps: TProps & IObserveProps) {
+        private navigateToDatasetAfterCreation(prevProps: TProps & IObserveProps) {
             const { newDatasetDetail } = this.state;
             const { status } = getAsyncDatasetDetail(this.props.state).create;
             const { status: prevStatus } = getAsyncDatasetDetail(prevProps.state).create;
@@ -442,6 +467,17 @@ const DatasetDetail = withStyles(styles)(
                     params: {
                         name: newDatasetDetail.name,
                     },
+                });
+            }
+        }
+
+        private navigateToDatasetsAfterDeletion(prevProps: TProps & IObserveProps) {
+            const { status } = getAsyncDatasetDetail(this.props.state).remove;
+            const prevStatus = getAsyncDatasetDetail(prevProps.state).remove.status;
+
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                redirectTo({
+                    routeKey: ROUTE_KEYS.R_DATASETS,
                 });
             }
         }

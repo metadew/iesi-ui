@@ -55,6 +55,10 @@ export interface IKeyValue extends IKeyValueBase {
 export interface IDatasetByNamePayload {
     name: string;
 }
+
+export interface IDatasetByUuidPayload {
+    uuid: string;
+}
 export interface IDatasetImplementationsByUuidPayload {
     uuid: string;
 }

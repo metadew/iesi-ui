@@ -1,5 +1,5 @@
 import API_URLS from 'api/apiUrls';
-import { get, post, put } from 'api/requestWrapper';
+import { get, post, put, remove } from 'api/requestWrapper';
 import {
     IDataset,
     IDatasetBase,
@@ -8,6 +8,7 @@ import {
     IDatasetImplementation,
     IDatasetImplementationsByUuidPayload,
     IFetchDatasetsListPayload,
+    IDatasetByUuidPayload,
 } from 'models/state/datasets.model';
 import { IPageData } from 'models/state/iesiGeneric.models';
 
@@ -87,5 +88,16 @@ export function updateDataset(dataset: IDataset) {
             uuid: dataset.uuid,
         },
         contentType: 'application/json',
+    });
+}
+
+export function deleteDataset({ uuid }: IDatasetByUuidPayload) {
+    return remove<{}>({
+        needsAuthentication: true,
+        isIesiApi: true,
+        url: API_URLS.DATASET_BY_UUID,
+        pathParams: {
+            uuid,
+        },
     });
 }

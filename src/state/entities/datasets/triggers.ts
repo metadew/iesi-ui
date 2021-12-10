@@ -6,6 +6,7 @@ import {
     IDatasetImplementation,
     IDatasetImplementationsByUuidPayload,
     IFetchDatasetsListPayload,
+    IDatasetByUuidPayload,
 } from 'models/state/datasets.model';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { StateChangeNotification } from 'models/state.models';
@@ -96,3 +97,13 @@ export const triggerFetchDatasetImplementations = (payload: IDatasetImplementati
         ),
         notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_IMPLEMENTATIONS],
     });
+
+export const triggerDeleteDatasetDetail = (payload: IDatasetByUuidPayload) => {
+    entitiesStateManager.triggerAsyncEntityRemove<{}>({
+        asyncEntityToRemove: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.datasetDetail,
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_DETAIL],
+    });
+};

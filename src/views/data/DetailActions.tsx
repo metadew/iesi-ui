@@ -68,12 +68,12 @@ function DetailActions({
                 {isCreateRoute || checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE)
                     ? (
                         <Tooltip
-                            title={translator('connections.detail.main.actions.add_parameter')}
+                            title={translator('datasets.detail.main.actions.add_implementation')}
                             enterDelay={1000}
                             enterNextDelay={1000}
                         >
                             <IconButton
-                                aria-label={translator('connections.detail.main.actions.add_parameter')}
+                                aria-label={translator('datasets.detail.main.actions.add_implementation')}
                                 className={classes.addButton}
                                 onClick={onAdd}
                                 color="default"
@@ -99,7 +99,7 @@ function DetailActions({
                                             startIcon={<SaveIcon />}
                                             onClick={onSave}
                                         >
-                                            <Translate msg="connections.detail.main.actions.save" />
+                                            <Translate msg="datasets.detail.main.actions.save" />
                                         </Button>
                                     )
                                     : null}
@@ -113,7 +113,7 @@ function DetailActions({
                                     {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE)
                                         ? (
                                             <Tooltip
-                                                title={translator('connections.detail.main.actions.delete')}
+                                                title={translator('datasets.detail.main.actions.delete')}
                                                 enterDelay={1000}
                                                 enterNextDelay={1000}
                                             >

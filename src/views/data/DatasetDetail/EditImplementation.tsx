@@ -255,7 +255,7 @@ function EditImplementation({
                             </Box>
                             <Box marginLeft={1}>
                                 <Tooltip
-                                    title={translator('datasets.detail.edit.implementation.add_key_values')}
+                                    title={translator('datasets.detail.edit.implementation.remove_key_values')}
                                     enterDelay={1000}
                                     enterNextDelay={1000}
                                 >
