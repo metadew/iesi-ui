@@ -12,4 +12,4 @@ export const getAsyncDatasets = (state: IState) => {
     const datasetsEntity = getAsyncDatasetsEntitty(state);
     return datasetsEntity && datasetsEntity.data && datasetsEntity.data.datasets
         ? datasetsEntity.data.datasets : [] as IDataset[];
-}
+};

@@ -1,4 +1,4 @@
-import { IPageData, IPageFilter } from "./iesiGeneric.models";
+import { IPageData, IPageFilter } from './iesiGeneric.models';
 
 export interface IFetchDatasetsListPayload {
     pagination?: IPageFilter;

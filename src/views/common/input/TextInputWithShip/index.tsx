@@ -1,6 +1,6 @@
 import React from 'react';
 import { TextField, Chip } from '@material-ui/core';
-import { Autocomplete } from "@material-ui/lab";
+import { Autocomplete } from '@material-ui/lab';
 
 function TextInputWithShip() {
     return (
@@ -10,7 +10,7 @@ function TextInputWithShip() {
                 id="tags-filled"
                 options={[]}
                 freeSolo
-                renderTags={(value: string[], getTagProps) =>
+                renderTags={(value: string[], getTagProps) => (
                     value.map((option: string, index: number) => (
                         <Chip
                             variant="outlined"
@@ -18,7 +18,7 @@ function TextInputWithShip() {
                             {...getTagProps({ index })}
                         />
                     ))
-                }
+                )}
                 renderInput={(params) => (
                     <TextField
                         {...params}
