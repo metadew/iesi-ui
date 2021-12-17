@@ -431,7 +431,7 @@ const DatasetOverview = withStyles(styles)(
             const sortedColumn = newSortedColumn || filtersFromState.sortedColumn || defaultSortedColumn;
 
             triggerFetchDatasets({
-                pagination: { page, size: 1 },
+                pagination: { page },
                 filter: {
                     name: filters.name.values.length > 0
                         && filters.name.values[0].toString(),
