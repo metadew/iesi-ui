@@ -49,6 +49,11 @@ export default function getMockState({
                     page: 1,
                     sortedColumn: null,
                 },
+                datasets: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                },
             },
         },
         auth: {
@@ -163,6 +168,27 @@ export default function getMockState({
                 },
             },
             openapi: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            datasets: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            datasetDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            datasetImplementations: {
                 data: null,
                 fetch: {
                     status: AsyncStatus.Initial,

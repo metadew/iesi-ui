@@ -24,6 +24,10 @@ export const MAIN_NAV_ITEMS: IMenuItem[] = [
         routeKey: ROUTE_KEYS.R_CONNECTIONS,
         translationKeySuffix: 'connections',
     }),
+    toMenuItem({
+        routeKey: ROUTE_KEYS.R_DATASETS,
+        translationKeySuffix: 'datasets',
+    }),
 ];
 
 function toMenuItem({

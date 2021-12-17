@@ -212,7 +212,7 @@ export default function GenericTableRow<ColumnNames>({
                 <TableCell className={classes.tableCell}>
                     {!isPlaceholder ? (
                         <Typography className={classes.index}>{formatNumberWithTwoDigits(rowIndex + 1)}</Typography>
-                    ) : renderPlaceholderCellContent()}
+                    ) : renderPlaceholderCellContent(rowIndex + 1)}
                 </TableCell>
             )}
             { isPlaceholder ? renderPlaceholderCells() : renderDataCells()}
@@ -243,7 +243,7 @@ export default function GenericTableRow<ColumnNames>({
 
                                         </div>
                                     )
-                                ) : renderPlaceholderCellContent()
+                                ) : renderPlaceholderCellContent(listActionIndex)
                             ))}
                         </div>
                     </TableCell>
@@ -261,7 +261,7 @@ export default function GenericTableRow<ColumnNames>({
                                 >
                                     <MoreVertIcon />
                                 </IconButton>
-                            ) : renderPlaceholderCellContent()}
+                            ) : renderPlaceholderCellContent(rowIndex + 1)}
                             <Menu
                                 id={`actions-menu-${rowIndex}`}
                                 anchorEl={anchorEl}
@@ -375,7 +375,7 @@ export default function GenericTableRow<ColumnNames>({
     }
 
     function renderPlaceholderCells() {
-        return Object.keys(columns).map((untypedColumnName) => {
+        return Object.keys(columns).map((untypedColumnName, index) => {
             const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
             const column = columns[columnName] as IColumn<ColumnNames>;
 
@@ -388,16 +388,17 @@ export default function GenericTableRow<ColumnNames>({
                     key={columnName as string}
                 >
                     <Box display="flex" alignItems="center">
-                        {renderPlaceholderCellContent()}
+                        {renderPlaceholderCellContent(index)}
                     </Box>
                 </TableCell>
             );
         });
     }
 
-    function renderPlaceholderCellContent() {
+    function renderPlaceholderCellContent(key: number) {
         return (
             <Box
+                key={key}
                 className={classes.placeholderContent}
                 flex="1 1 auto"
             />

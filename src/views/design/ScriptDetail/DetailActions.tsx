@@ -12,9 +12,9 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { THEME_COLORS } from 'config/themes/colors';
 import Tooltip from 'views/common/tooltips/Tooltip';
 import { observe, IObserveProps } from 'views/observe';
+import { ISecuredObject } from 'models/core.models';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
-import { IScript } from 'models/state/scripts.models';
 import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
@@ -26,7 +26,7 @@ interface IPublicProps {
     onViewReport?: () => void;
     onExport?: () => void;
     isCreateRoute?: boolean;
-    newScriptDetail?: IScript;
+    newScriptDetail?: ISecuredObject;
 }
 
 const useStyles = makeStyles(({ palette, spacing }) => ({
