@@ -25,6 +25,10 @@ export enum ROUTE_KEYS {
     R_DATASETS = 'R_DATASETS',
     R_DATASET_DETAIL = 'R_DATASET_DETAIL',
     R_DATASET_NEW = 'R_DATASET_NEW',
+    /* User */
+    R_USERS = 'R_USERS',
+    R_USER_DETAIL = 'R_USER_DETAIL',
+    R_USER_NEW = 'R_USER_NEW',
     /* OpenAPI */
     R_OPENAPI = 'R_OPENAPI'
 }

@@ -39,12 +39,14 @@ import LoginView from './appShell/AppLogIn/LoginPage';
 import DatasetsTemplate from './data/DatasetsTemplate';
 import DatasetDetail from './data/DatasetDetail';
 import DatasetOverview from './data/DatasetOverview';
+import UserTemplate from './iam/users/UserTemplate';
+import UsersOverview from './iam/users/UsersOverview';
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
     path: '/',
     exact: true,
-    component: Home,
+    component: Home as React.FunctionComponent<unknown>,
 }, {
     routeKey: ROUTE_KEYS.R_LOGIN,
     path: '/login',
@@ -276,6 +278,12 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             }),
         }],
     }],
+}, {
+    routeKey: ROUTE_KEYS.R_USERS,
+    path: '/users',
+    template: UserTemplate,
+    component: UsersOverview,
+    childRoutes: [],
 }, {
     routeKey: ROUTE_KEYS.R_OPENAPI,
     path: '/openapi',
