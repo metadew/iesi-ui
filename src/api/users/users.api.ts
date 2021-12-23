@@ -1,6 +1,6 @@
-import API_URLS from "api/apiUrls";
-import { get, post, put, remove } from "api/requestWrapper";
-import { IPageData } from "models/state/iesiGeneric.models";
+import API_URLS from 'api/apiUrls';
+import { get, post, put, remove } from 'api/requestWrapper';
+import { IPageData } from 'models/state/iesiGeneric.models';
 import {
     IFetchUsersListPayload,
     IUserEntity,
@@ -8,7 +8,8 @@ import {
     IUserBase,
     IUserByNamePayload,
     IUserByIdPayload,
-} from "models/state/user.model";
+} from 'models/state/user.model';
+import { getUsersWithDistinctTeams } from 'utils/users/userUtils';
 
 interface IUserResponse {
     _embedded: {
@@ -29,7 +30,7 @@ export function fetchUsers({ pagination, filter, sort }: IFetchUsersListPayload)
         },
         mapResponse: ({ data }) => ({
             // eslint-disable-next-line no-underscore-dangle
-            users: data._embedded.users,
+            users: getUsersWithDistinctTeams(data._embedded.users),
             page: data.page,
         }),
     });
@@ -69,7 +70,7 @@ export function updateUser(user: IUser) {
     });
 }
 
-export function deleteUser({ id }: IUserByIdPayload ) {
+export function deleteUser({ id }: IUserByIdPayload) {
     return remove<{}>({
         isIesiApi: true,
         needsAuthentication: true,

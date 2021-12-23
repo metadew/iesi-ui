@@ -7,6 +7,7 @@ app_shell:
       components: Components
       connections: Connections
       datasets: Datasets
+      users: Users
     title: iesi
 common:
   yes: Yes
@@ -631,7 +632,26 @@ datasets:
           cancel: Cancel
           discard: Discard changes
     flash_messages:
-      create_success: The dataset {name} has been created successfully !
+      create_success: The dataset {name} h as been created successfully !
       update_success: The dataset {name} has been updated successfully !
       create_error: 'An error has occured when creating the dataset'
       update_error: 'An error has occured when updating the dataset'
+users:
+  overview:
+    header:
+      add_button: Create new user
+      amount: There are {amount} users
+    list:
+      fetch_error: Something went wrong while loading the users, please try again.
+      filter:
+        username: Username
+      sort:
+        username: Username
+      labels:
+        username: Username
+        enabled: Enabled
+        expired: Expired
+        locked: Locked
+        teams: Teams
+      actions:
+        view: View

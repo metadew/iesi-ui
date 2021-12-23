@@ -34,6 +34,7 @@ import {
     IFetchDatasetsListPayload,
     IDatasetByUuidPayload,
 } from 'models/state/datasets.model';
+import { IFetchUsersListPayload } from 'models/state/user.model';
 
 // eslint-disable-next-line max-len
 const entitiesConfigManager = initAsyncEntitiesConfigManager<IState, {}, ITraceableApiError, string, IExtraProcessInput>();
@@ -431,6 +432,16 @@ entitiesConfigManager.register({
         fetch: {
             api: api.datasets.fetchDatasetImplementations,
             apiInputSelector: ({ extraInput }) => extraInput as IDatasetImplementationsByUuidPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.users,
+    operationsConfig: {
+        fetch: {
+            api: api.users.fetchUsers,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchUsersListPayload,
         },
     },
 });

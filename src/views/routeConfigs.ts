@@ -40,7 +40,7 @@ import DatasetsTemplate from './data/DatasetsTemplate';
 import DatasetDetail from './data/DatasetDetail';
 import DatasetOverview from './data/DatasetOverview';
 import UserTemplate from './iam/users/UserTemplate';
-import UsersOverview from './iam/users/UsersOverview';
+import UserOverview from './iam/users/UserOverview';
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
@@ -282,7 +282,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_USERS,
     path: '/users',
     template: UserTemplate,
-    component: UsersOverview,
+    component: UserOverview,
     childRoutes: [],
 }, {
     routeKey: ROUTE_KEYS.R_OPENAPI,

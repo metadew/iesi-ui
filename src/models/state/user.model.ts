@@ -1,4 +1,4 @@
-import { IPageFilter } from "./iesiGeneric.models";
+import { IPageData, IPageFilter } from "./iesiGeneric.models";
 
 export interface IFetchUsersListPayload {
     pagination?: IPageFilter;
@@ -7,7 +7,7 @@ export interface IFetchUsersListPayload {
 }
 
 export interface IUsersListFilter {
-    name?: string;
+    username?: string;
 }
 
 export interface IUserByNamePayload {
@@ -20,13 +20,15 @@ export interface IUserByIdPayload {
 
 export interface IUserEntity {
     users: IUser[]
+    page: IPageData;
 }
 
 export interface IUser extends IUserBase {
-    id: string;
+    teams: string[];
 }
 
 export interface IUserBase {
+    id: string;
     username: string;
     enabled: boolean;
     expired: boolean;
@@ -56,4 +58,12 @@ export interface IUserSecurityGroup {
 export interface IUserPrivilege {
     uuid: string;
     privilege: string;
+}
+
+export interface IUserColumnName {
+    username: string;
+    enabled: string;
+    expired: string;
+    locked: string;
+    teams: number;
 }
