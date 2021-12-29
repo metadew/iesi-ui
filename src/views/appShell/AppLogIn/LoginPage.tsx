@@ -1,7 +1,16 @@
 import React from 'react';
 import { getStore } from 'state';
 import { IObserveProps } from 'views/observe';
-import { Button, Container, Typography, Box, createStyles, Theme, WithStyles, withStyles } from '@material-ui/core';
+import {
+    Button,
+    Container,
+    Typography,
+    Box,
+    createStyles,
+    Theme,
+    WithStyles,
+    withStyles,
+} from '@material-ui/core';
 import TextInput from 'views/common/input/TextInput';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { Alert } from '@material-ui/lab';
@@ -98,7 +107,10 @@ const LoginView = withStyles(styles)(
                             required
                             error={hasSubmitErrors && username === ''}
                             value={username}
-                            onChange={(e) => this.setState({ username: e.target.value as string })}
+                            onChange={(e) =>
+                                this.setState({
+                                    username: e.target.value as string,
+                                })}
                         />
                         <TextInput
                             id="password"
@@ -107,19 +119,41 @@ const LoginView = withStyles(styles)(
                             required
                             error={hasSubmitErrors && password === ''}
                             value={password}
-                            onChange={(e) => this.setState({ password: e.target.value as string })}
+                            onChange={(e) =>
+                                this.setState({
+                                    password: e.target.value as string,
+                                })}
                         />
+                        <div id="newElementId" />
+                        <div id="newElementId" />
                         {this.renderAlert()}
-                        <Box textAlign="center" marginTop={5}>
+                        <Box
+                            height="100%"
+                            display="flex"
+                            flexDirection="column"
+                            flex="1 0 auto"
+                        >
                             <Button
                                 variant="contained"
                                 size="medium"
                                 color="primary"
-                                disableElevation
                                 onClick={this.handleSubmit}
+                                className="btn btn-space"
                             >
                                 <Container component="main" maxWidth="xl">
                                     <Translate msg="login" />
+                                </Container>
+                            </Button>
+                            <br />
+                            <Button
+                                variant="contained"
+                                size="medium"
+                                color="primary"
+                                className="btn btn-space"
+                                onClick={this.ldapConfiguration}
+                            >
+                                <Container component="main" maxWidth="xl">
+                                    <Translate msg="LDAP Config" />
                                 </Container>
                             </Button>
                         </Box>
@@ -131,6 +165,12 @@ const LoginView = withStyles(styles)(
         private setHasSubmitErrors(hasSubmitErrors: boolean) {
             this.setState({ hasSubmitErrors: hasSubmitErrors as boolean });
         }
+
+        private ldapConfiguration = () => {
+            const txtNewInputBox = document.createElement('div');
+            txtNewInputBox.innerHTML = "<input type='text' id='username' label='username' margin='normal' required/>";
+            document.getElementById('newElementId').appendChild(txtNewInputBox);
+        };
 
         private handleSubmit = () => {
             const { username, password, redirectUri } = this.state;
@@ -144,7 +184,10 @@ const LoginView = withStyles(styles)(
                 })
                     .then(async (response) => {
                         dispatch(triggerLogon(response));
-                        redirectToPath(redirectUri.pathname, redirectUri.search);
+                        redirectToPath(
+                            redirectUri.pathname,
+                            redirectUri.search,
+                        );
                     })
                     .catch((error) => {
                         console.error('There was an error!', error);
