@@ -113,7 +113,7 @@ const LoginView = withStyles(styles)(
                         />
                         <TextInput
                             id="domain"
-                            label="Domain"
+                            label="domain"
                             required
                             error={hasSubmitErrors && domain === ''}
                             value={domain}
