@@ -214,6 +214,20 @@ export default function getMockState({
                     error: null,
                 },
             },
+            teams: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            teamDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
         },
     };
 }

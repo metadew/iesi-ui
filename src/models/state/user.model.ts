@@ -24,17 +24,22 @@ export interface IUserEntity {
 }
 
 export interface IUser extends IUserBase {
-    teams: string[];
+    teams?: string[];
 }
 
 export interface IUserBase {
-    id: string;
+    id?: string;
     username: string;
     enabled: boolean;
     expired: boolean;
     credentialsExpired: boolean;
     locked: boolean;
     roles: IUserRole[];
+}
+
+export interface IUserPost {
+    username: string;
+    password: string;
 }
 
 export interface IUserRole {

@@ -23,11 +23,9 @@ export interface ITeamEntity {
     page: IPageData;
 }
 
-export interface ITeam extends ITeamBase {
-    id: string;
-}
-
+export interface ITeam extends ITeamBase {}
 export interface ITeamBase {
+    id?: string;
     teamName: string;
     securityGroups: ITeamSecurityGroup[];
     roles: ITeamRole[];

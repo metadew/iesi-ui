@@ -41,6 +41,9 @@ import DatasetDetail from './data/DatasetDetail';
 import DatasetOverview from './data/DatasetOverview';
 import UserTemplate from './iam/users/UserTemplate';
 import UserOverview from './iam/users/UserOverview';
+import UserDetail from './iam/users/UserDetail';
+import React from 'react';
+import { triggerFetchUserDetail } from 'state/entities/users/triggers';
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
@@ -283,7 +286,21 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     path: '/users',
     template: UserTemplate,
     component: UserOverview,
-    childRoutes: [],
+    childRoutes: [{
+        routeKey: ROUTE_KEYS.R_USER_NEW,
+        path: '/new',
+        component: UserDetail as React.ComponentType<unknown>
+    }, {
+        routeKey: ROUTE_KEYS.R_USER_DETAIL,
+        path: '/:name',
+        component: UserDetail as React.ComponentType<unknown>,
+        executeOnRoute: [{
+            execute: triggerFetchUserDetail as () => unknown,
+            executeInputSelector: ({ routeLocation }) => ({
+                name: routeLocation.params.name,
+            })
+        }]
+    }],
 }, {
     routeKey: ROUTE_KEYS.R_OPENAPI,
     path: '/openapi',

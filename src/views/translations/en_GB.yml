@@ -655,3 +655,12 @@ users:
         teams: Teams
       actions:
         view: View
+  detail:
+    side:
+      toggle_button: Details
+      user_name: Username
+      user_password: Password
+      teams:
+        title: Teams
+        add_dialog:
+          title: Add a team

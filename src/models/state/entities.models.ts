@@ -10,6 +10,7 @@ import { IComponent, IComponentEntity } from './components.model';
 import { IConnectionEntity, IConnection } from './connections.model';
 import { IDataset, IDatasetEntity, IDatasetImplementation } from './datasets.model';
 import { IUser, IUserEntity } from './user.model';
+import { ITeam, ITeamEntity } from './team.model';
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ICustomAsyncEntity<Data> extends IAsyncEntity<Data, ITraceableApiError> {}
 
@@ -74,5 +75,7 @@ export interface IEntitiesState {
     scriptExecutionDetail: ICustomAsyncEntity<IScriptExecutionDetail>;
     users: ICustomAsyncEntity<IUserEntity>;
     userDetail: ICustomAsyncEntity<IUser>;
+    teams: ICustomAsyncEntity<ITeamEntity>;
+    teamDetail: ICustomAsyncEntity<ITeam>;
     openapi: ICustomAsyncEntity<IOpenAPIEntity>;
 }
