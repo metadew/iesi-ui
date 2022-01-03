@@ -114,7 +114,6 @@ function EditImplementation({
     };
 
     const removeValue = (uuid: number) => {
-        console.log('ID : ', uuid);
         setKeyValues(keyValues.filter((keyValue) => keyValue.uuid !== uuid));
     };
 
