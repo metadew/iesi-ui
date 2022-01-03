@@ -107,20 +107,21 @@ function EditImplementation({
 
     const addValue = () => {
         setKeyValues([...keyValues, {
-            id: keyValues.length === 0 ? 1 : keyValues[keyValues.length - 1].id + 1,
+            uuid: keyValues.length === 0 ? 1 : keyValues[keyValues.length - 1].uuid + 1,
             key: '',
             value: '',
         }]);
     };
 
-    const removeValue = (id: number) => {
-        setKeyValues(keyValues.filter((keyValue) => keyValue.id !== id));
+    const removeValue = (uuid: number) => {
+        console.log('ID : ', uuid);
+        setKeyValues(keyValues.filter((keyValue) => keyValue.uuid !== uuid));
     };
 
-    const onKeyChanges = (newKey: string, id: number) => {
+    const onKeyChanges = (newKey: string, uuid: number) => {
         setKeyValues(
             keyValues.map((keyValue) => {
-                if (keyValue.id === id) {
+                if (keyValue.uuid === uuid) {
                     return { ...keyValue, key: newKey };
                 }
                 return keyValue;
@@ -128,10 +129,10 @@ function EditImplementation({
         );
     };
 
-    const onValueChanges = (newValue: string, id: number) => {
+    const onValueChanges = (newValue: string, uuid: number) => {
         setKeyValues(
             keyValues.map((keyValue) => {
-                if (keyValue.id === id) {
+                if (keyValue.uuid === uuid) {
                     return { ...keyValue, value: newValue };
                 }
                 return keyValue;
@@ -214,7 +215,7 @@ function EditImplementation({
                 {
                     keyValues.length > 0 && keyValues.map((keyValue) => (
                         <Box
-                            key={keyValue.id}
+                            key={keyValue.uuid}
                             width="100%"
                             display="flex"
                             flexDirection="row"
@@ -232,7 +233,7 @@ function EditImplementation({
                                         }}
                                         className={classes.textField}
                                         defaultValue={keyValue.key}
-                                        onChange={(e) => onKeyChanges(e.target.value, keyValue.id)}
+                                        onChange={(e) => onKeyChanges(e.target.value, keyValue.uuid)}
                                         fullWidth
                                     />
                                 </Paper>
@@ -248,7 +249,7 @@ function EditImplementation({
                                         }}
                                         className={classes.textField}
                                         defaultValue={keyValue.value}
-                                        onChange={(e) => onValueChanges(e.target.value, keyValue.id)}
+                                        onChange={(e) => onValueChanges(e.target.value, keyValue.uuid)}
                                         fullWidth
                                     />
                                 </Paper>
@@ -262,7 +263,7 @@ function EditImplementation({
                                     <IconButton
                                         aria-label={translator('datasets.detail.edit.implementation.remove_key_values')}
                                         className={classes.addButton}
-                                        onClick={() => removeValue(keyValue.id)}
+                                        onClick={() => removeValue(keyValue.uuid)}
                                         color="default"
                                     >
                                         <RemoveIcon />

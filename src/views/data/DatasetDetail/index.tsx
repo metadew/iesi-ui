@@ -374,6 +374,7 @@ const DatasetDetail = withStyles(styles)(
                 <EditImplementation
                     onClose={() => this.setState({ isAddOpen: false, implementationIndexToEdit: null })}
                     onEdit={(implementation) => {
+                        console.log("NULL ? : ", implementationIndexToEdit);
                         const implementations = implementationIndexToEdit !== null ? (
                             newDatasetDetail.implementations.map((implementationState, index) => {
                                 if (index !== implementationIndexToEdit) {
