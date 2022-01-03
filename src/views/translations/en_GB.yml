@@ -662,5 +662,6 @@ users:
       user_password: Password
       teams:
         title: Teams
+        add_button: Add team
         add_dialog:
           title: Add a team
