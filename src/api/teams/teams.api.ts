@@ -1,7 +1,15 @@
-import API_URLS from "api/apiUrls";
-import { get, post, put, remove } from "api/requestWrapper";
-import { IPageData } from "models/state/iesiGeneric.models";
-import { IFetchTeamsListPayload, ITeam, ITeamBase, ITeamByIdPayload, ITeamByNamePayload, ITeamEntity } from "models/state/team.model";
+import API_URLS from 'api/apiUrls';
+import { get, post, put, remove } from 'api/requestWrapper';
+import { IPageData } from 'models/state/iesiGeneric.models';
+import {
+    IFetchTeamsListPayload,
+    ITeam,
+    ITeamBase,
+    ITeamByIdPayload,
+    ITeamByNamePayload,
+    ITeamDeleteUserRole,
+    ITeamEntity,
+} from 'models/state/team.model';
 
 interface ITeamsResponse {
     _embedded: {
@@ -27,7 +35,6 @@ export function fetchTeams({ pagination, filter, sort }: IFetchTeamsListPayload)
         }),
     });
 }
-
 
 export function fetchTeam({ name }: ITeamByNamePayload) {
     return get<ITeamBase>({
@@ -64,13 +71,26 @@ export function updateTeam(team: ITeam) {
     });
 }
 
-export function deleteDataset({ id }: ITeamByIdPayload) {
+export function deleteTeam({ id }: ITeamByIdPayload) {
     return remove<{}>({
         needsAuthentication: true,
         isIesiApi: true,
         url: API_URLS.TEAM_BY_ID,
         pathParams: {
             id,
+        },
+    });
+}
+
+export function deleteRoleFromUser({ id, roleId, userId }: ITeamDeleteUserRole) {
+    return remove<{}>({
+        needsAuthentication: true,
+        isIesiApi: true,
+        url: API_URLS.TEAM_BY_ID_AND_ROLE_ID_AND_USER_ID,
+        pathParams: {
+            id,
+            roleId,
+            userId,
         },
     });
 }

@@ -362,7 +362,7 @@ const UsersOverview = withStyles(styles)(
             const filters = newListFilters || filtersFromState.filters;
             const page = newListFilters ? 1 : newPage || pageData.number;
             const sortedColumn = newSortedColumn || filtersFromState.sortedColumn || defaultSortedColumn;
-            console.log('SORTED COLUMN : ', sortedColumn);
+
             triggerFetchUsers({
                 pagination: { page },
                 filter: {
@@ -389,7 +389,7 @@ function mapUsersToListItems(users: IUser[]): IListItem<IUserColumnName>[] {
                     <Typography variant="body2" component="div">
                         <OrderedList
                             items={user.teams.map((team) => ({
-                                content: team,
+                                content: team.name,
                             }))}
                         />
                     </Typography>

@@ -18,6 +18,12 @@ export interface ITeamByIdPayload {
     id: string;
 }
 
+export interface ITeamDeleteUserRole {
+    id: string;
+    roleId: string;
+    userId: string;
+}
+
 export interface ITeamEntity {
     teams: ITeam[];
     page: IPageData;

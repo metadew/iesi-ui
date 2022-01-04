@@ -1,10 +1,17 @@
 import React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { IObserveProps, observe } from 'views/observe';
-import { Box, createStyles, WithStyles, withStyles } from '@material-ui/core';
-import { IUser, IUserBase, IUserPost } from 'models/state/user.model';
-import { getAsyncUserDetail } from 'state/entities/users/selectors';
+import { Box, Button, Collapse, createStyles, Typography, WithStyles, withStyles } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
+import { Delete } from '@material-ui/icons';
+import { IUser, IUserBase, IUserPost, IUserTeam, IUserRole } from 'models/state/user.model';
+import { getAsyncUserDetail, getAsyncUserDetailRole } from 'state/entities/users/selectors';
 import { getUniqueIdFromUser } from 'utils/users/userUtils';
+import Loader from 'views/common/waiting/Loader';
+import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
+import ClosableDialog from 'views/common/layout/ClosableDialog';
+import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
+import { triggerCreateUserDetail, triggerDeleteUserRole } from 'state/entities/users/triggers';
 import { clone } from 'ramda';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { getRouteKeyByPath, redirectTo, ROUTE_KEYS } from 'views/routes';
@@ -15,6 +22,9 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getTranslator } from 'state/i18n/selectors';
 import TextInput from 'views/common/input/TextInput';
 import DescriptionList from 'views/common/list/DescriptionList';
+import GenericList from 'views/common/list/GenericList';
+import { IListItem, ListColumns } from 'models/list.models';
+import DetailActions from '../DetailActions';
 import EditTeams from './EditTeams';
 
 const styles = () => createStyles({});
@@ -23,6 +33,7 @@ type TProps = WithStyles<typeof styles>;
 
 interface IComponentState {
     newUserDetail: IUserBase | IUserPost;
+    teams: IUserTeam[];
     selectedTeamIndex: number;
     roleIndexToEdit: number;
     roleIndexToDelete: number;
@@ -30,6 +41,7 @@ interface IComponentState {
     isAddOpen: boolean;
     isSaveDialogOpen: boolean;
     isConfirmDeleteUserOpen: boolean;
+    isSaveTeamDialogOpen: boolean;
     requiredFieldsState: TRequiredFieldsState<IUserPost>;
 }
 
@@ -54,6 +66,7 @@ const UserDetail = withStyles(styles)(
 
             this.state = {
                 newUserDetail: this.isCreateUserRoute() ? initialUserPostDetail : initialUserDetail,
+                teams: [],
                 selectedTeamIndex: -1,
                 roleIndexToEdit: null,
                 roleIndexToDelete: null,
@@ -61,6 +74,7 @@ const UserDetail = withStyles(styles)(
                 isAddOpen: false,
                 isSaveDialogOpen: false,
                 isConfirmDeleteUserOpen: false,
+                isSaveTeamDialogOpen: false,
                 requiredFieldsState: {
                     username: {
                         showError: false,
@@ -72,36 +86,99 @@ const UserDetail = withStyles(styles)(
             };
 
             this.renderUserDetailPanel = this.renderUserDetailPanel.bind(this);
+            this.renderUserDetailContent = this.renderUserDetailContent.bind(this);
 
             this.updateUserInStateIfNewUserWasLoaded = this.updateUserInStateIfNewUserWasLoaded.bind(this);
             this.navigateToUserAfterCreation = this.navigateToUserAfterCreation.bind(this);
             this.navigateToUsersAfterDeletion = this.navigateToUsersAfterDeletion.bind(this);
+            this.reloadPageAfterRoleDeletion = this.reloadPageAfterRoleDeletion.bind(this);
+
+            this.onDeleteRole = this.onDeleteRole.bind(this);
         }
 
-        public componentDidUpdate() {
-            // this.updateUserInStateIfNewUserWasLoaded(prevProps);
-            // this.navigateToUserAfterCreation(prevProps);
-            // this.navigateToUsersAfterDeletion(prevProps);
+        public componentDidUpdate(prevProps: TProps & IObserveProps) {
+            this.updateUserInStateIfNewUserWasLoaded(prevProps);
+            this.navigateToUserAfterCreation(prevProps);
+            this.reloadPageAfterRoleDeletion(prevProps);
         }
 
         public render() {
+            const { state } = this.props;
+            const {
+                newUserDetail,
+                isSaveDialogOpen,
+                roleIndexToDelete,
+                teams,
+                selectedTeamIndex,
+            } = this.state;
+            const translator = getTranslator(state);
+            const roleItems = mapRoleToListItems(teams[selectedTeamIndex], (newUserDetail as IUser).roles);
+            const userDetailAsyncStatus = getAsyncUserDetail(state).fetch.status;
+            const userDetailRoleStatus = getAsyncUserDetailRole(state).remove.status;
+
             return (
                 <>
+                    <Loader
+                        show={
+                            userDetailAsyncStatus === AsyncStatus.Busy
+                            || userDetailRoleStatus === AsyncStatus.Busy
+                        }
+                    />
                     <ContentWithSidePanel
                         panel={this.renderUserDetailPanel()}
-                        content={null}
+                        content={this.renderUserDetailContent()}
                         contentOverlay={null}
                         contentOverlayOpen={false}
                         toggleLabel={<Translate msg="users.detail.side.toggle_button" />}
                         goBackTo={ROUTE_KEYS.R_USERS}
                     />
+                    <ConfirmationDialog
+                        title={translator('users.detail.delete_role_dialog.title')}
+                        text={translator('users.detail.delete_role.text')}
+                        open={roleIndexToDelete !== null}
+                        onClose={() => this.setState({ roleIndexToDelete: null })}
+                        onConfirm={() => triggerDeleteUserRole({
+                            id: teams[selectedTeamIndex].id,
+                            roleId: roleItems[roleIndexToDelete].id.toString(),
+                            userId: (newUserDetail as IUser).id,
+                        })}
+                    />
+                    <ClosableDialog
+                        title={translator('users.detail.save_user_dialog.title')}
+                        open={isSaveDialogOpen}
+                        onClose={() => this.setState({ isSaveDialogOpen: false })}
+                    >
+                        <Typography>
+                            <Translate
+                                msg="users.detail.save_user_dialog.text"
+                                placeholders={{
+                                    username: newUserDetail.username,
+                                }}
+                            />
+                        </Typography>
+                        <Box display="flex" alignItems="center" justifyContent="center" marginTop={2}>
+                            <Box paddingRight={1}>
+                                <Button
+                                    id="save-user"
+                                    variant="contained"
+                                    color="secondary"
+                                    onClick={() => {
+                                        triggerCreateUserDetail(newUserDetail as IUserPost);
+                                        this.setState({ isSaveDialogOpen: false });
+                                    }}
+                                >
+                                    <Translate msg="users.detail.save_user_dialog.create" />
+                                </Button>
+                            </Box>
+                        </Box>
+                    </ClosableDialog>
                 </>
             );
         }
 
         private renderUserDetailPanel() {
             const { state } = this.props;
-            const { newUserDetail, requiredFieldsState, selectedTeamIndex } = this.state;
+            const { newUserDetail, teams, requiredFieldsState, selectedTeamIndex } = this.state;
             const translator = getTranslator(state);
 
             return (
@@ -122,7 +199,7 @@ const UserDetail = withStyles(styles)(
                                 helperText={requiredFieldsState.username.showError && 'Username is a required field'}
                             />
                             {
-                                this.isCreateUserRoute() && (
+                                this.isCreateUserRoute() ? (
                                     <>
                                         <TextInput
                                             id="user-password"
@@ -133,21 +210,33 @@ const UserDetail = withStyles(styles)(
                                             // eslint-disable-next-line max-len
                                             helperText={requiredFieldsState.password.showError && 'User password is a required field'}
                                         />
-                                        <DescriptionList
-                                            noLineAfterListItem
-                                            items={[].concat({
-                                                label: <Translate msg="users.detail.side.teams.title" />,
-                                                value: <EditTeams
-                                                    teams={newUserDetail && (newUserDetail as IUser).teams}
-                                                    selectedIndex={selectedTeamIndex}
-                                                    onTeamSelected={() => { }}
-                                                    onSubmit={() => { }}
-                                                    onDelete={() => { }}
-                                                    isCreateUserRoute={this.isCreateUserRoute()}
-                                                />,
-                                            })}
-                                        />
                                     </>
+                                ) : (
+                                    <DescriptionList
+                                        noLineAfterListItem
+                                        items={[].concat({
+                                            label: <Translate msg="users.detail.side.teams.title" />,
+                                            value: <EditTeams
+                                                userTeams={newUserDetail && teams}
+                                                selectedIndex={selectedTeamIndex}
+                                                // eslint-disable-next-line max-len
+                                                onTeamSelected={(index) => this.setState({ selectedTeamIndex: index })}
+                                                onSubmit={(newTeam) => {
+                                                    this.setState({
+                                                        teams: [
+                                                            ...teams, {
+                                                                id: newTeam.id,
+                                                                name: newTeam.teamName,
+                                                                securityGroups: newTeam.securityGroups,
+                                                            },
+                                                        ],
+                                                    });
+                                                }}
+                                                onDelete={() => { }}
+                                                isCreateUserRoute={this.isCreateUserRoute()}
+                                            />,
+                                        })}
+                                    />
                                 )
                             }
                         </form>
@@ -156,17 +245,124 @@ const UserDetail = withStyles(styles)(
             );
         }
 
-        public componentDidUpate(prevProps: TProps & IObserveProps) {
-            this.updateUserInStateIfNewUserWasLoaded(prevProps);
+        private renderUserDetailContent() {
+            const { state } = this.props;
+            const {
+                newUserDetail,
+                teams,
+                selectedTeamIndex,
+                hasChangeToCheck,
+            } = this.state;
+            const translator = getTranslator(state);
+            const roleItems = mapRoleToListItems(teams[selectedTeamIndex], (newUserDetail as IUser).roles);
+            const hasRoles = roleItems.length > 0;
+
+            const handleSaveAction = () => {
+                if (this.isCreateUserRoute) {
+                    const { passed: passedRequired, requiredFieldsState } = requiredFieldsCheck<IUserPost>({
+                        data: (newUserDetail as IUserPost),
+                        requiredFields: ['username', 'password'],
+                    });
+
+                    if (passedRequired) {
+                        this.setState({
+                            isSaveDialogOpen: true,
+                            requiredFieldsState,
+                            hasChangeToCheck: false,
+                        });
+                    } else {
+                        this.setState({
+                            requiredFieldsState,
+                        });
+                    }
+                }
+            };
+
+            const roleColumns: ListColumns<Partial<IUserRole>> = {
+                name: {
+                    label: <Translate msg="users.detail.main.list.item.labels.name" />,
+                    fixedWidth: '20%',
+                },
+                privileges: {
+                    label: <Translate msg="users.detail.main.list.item.labels.privileges" />,
+                    fixedWidth: '80%',
+                },
+            };
+
+            if (!hasRoles) {
+                return (
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        flex="1 1 auto"
+                        justifyContent="center"
+                        paddingBottom={5}
+                    >
+                        <Box textAlign="center">
+                            <Typography variant="h2" paragraph>
+                                <Translate msg="users.detail.main.no_roles.title" />
+                            </Typography>
+                        </Box>
+                    </Box>
+                );
+            }
+
+            return (
+                <>
+                    <Box>
+                        <Collapse in={hasChangeToCheck}>
+                            <Box marginX={2} marginBottom={2}>
+                                <Alert severity="warning">
+                                    <Translate msg="users.detail.main.alert.save_changes" />
+                                </Alert>
+                            </Box>
+                        </Collapse>
+                        <DetailActions
+                            onSave={handleSaveAction}
+                            onDelete={() => { }}
+                            onAdd={() => { }}
+                            isCreateRoute={this.isCreateUserRoute()}
+                        />
+                    </Box>
+                    <Box marginY={1}>
+                        <GenericList
+                            listItems={roleItems}
+                            columns={roleColumns}
+                            listActions={[{
+                                icon: <Delete />,
+                                label: translator('user.detail.main.list.item.actions.delete'),
+                                onClick: (id, index) => this.setState({ roleIndexToDelete: index }),
+                            }]}
+                        />
+                    </Box>
+                </>
+            );
         }
 
-        private updateUserInStateIfNewUserWasLoaded(prevProps: TProps & IObserveProps) {
-            const userDetail = getAsyncUserDetail(this.props.state).data;
-            const prevUserDetail = getAsyncUserDetail(prevProps.state).data;
+        private onDeleteRole() {
+            const {
+                newUserDetail,
+                teams,
+                selectedTeamIndex,
+                roleIndexToDelete,
+            } = this.state;
+            const currentTeam = teams[selectedTeamIndex];
+            const newRoles = [...getRolesFromTeam(currentTeam, (newUserDetail as IUser).roles)];
 
-            if (getUniqueIdFromUser(userDetail) !== getUniqueIdFromUser(prevUserDetail)) {
-                const userDetailDeepClone = clone(userDetail);
-                this.setState({ newUserDetail: userDetailDeepClone });
+            if (roleIndexToDelete !== null) {
+                newRoles.splice(roleIndexToDelete, 1);
+                this.updateUser({
+                    roles: (newUserDetail as IUser).roles.flatMap((role) => {
+                        if (role.team.name === currentTeam.name) {
+                            if (newRoles.find((newRole) => newRole.name === role.name)) {
+                                return [role];
+                            }
+                            return [];
+                        }
+                        return [role];
+                    }),
+                });
+                this.setState({ roleIndexToDelete: null });
             }
         }
 
@@ -178,6 +374,16 @@ const UserDetail = withStyles(styles)(
                 },
                 hasChangeToCheck: true,
             }));
+        }
+
+        private updateUserInStateIfNewUserWasLoaded(prevProps: TProps & IObserveProps) {
+            const userDetail = getAsyncUserDetail(this.props.state).data;
+            const prevUserDetail = getAsyncUserDetail(prevProps.state).data;
+
+            if (getUniqueIdFromUser(userDetail) !== getUniqueIdFromUser(prevUserDetail) && userDetail) {
+                const userDetailDeepClone = clone(userDetail);
+                this.setState({ newUserDetail: userDetailDeepClone, teams: userDetailDeepClone.teams });
+            }
         }
 
         private navigateToUserAfterCreation(prevProps: TProps & IObserveProps) {
@@ -192,6 +398,15 @@ const UserDetail = withStyles(styles)(
                         name: newUserDetail.username,
                     },
                 });
+            }
+        }
+
+        private reloadPageAfterRoleDeletion(prevProps: TProps & IObserveProps) {
+            const { status } = getAsyncUserDetailRole(this.props.state).remove;
+            const { status: prevStatus } = getAsyncUserDetailRole(prevProps.state).remove;
+
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                this.onDeleteRole();
             }
         }
 
@@ -213,7 +428,39 @@ const UserDetail = withStyles(styles)(
     },
 );
 
+function getRolesFromTeam(team: IUserTeam, userRoles: IUserRole[]) {
+    const roles = team && userRoles.length
+        ? userRoles.flatMap((role) => {
+            if (role.team.name === team.name) {
+                return [role];
+            }
+            return [];
+        })
+        : [];
+    return roles;
+}
+
+function mapRoleToListItems(team: IUserTeam, userRoles: IUserRole[]) {
+    const roles = getRolesFromTeam(team, userRoles);
+
+    const newListItems: IListItem<Partial<IUserRole>>[] = roles.map((role) => ({
+        id: role.id,
+        columns: {
+            name: role.name,
+            privileges: role.privileges.map((privilege) => privilege.privilege).join(','),
+        },
+        data: {
+            name: role.name,
+            privileges: role.privileges.map((privilege) => privilege.privilege).join(','),
+        },
+        canBeDeleted: true,
+    }));
+
+    return newListItems;
+}
+
 export default observe([
     StateChangeNotification.I18N_TRANSLATIONS,
     StateChangeNotification.IAM_USERS_DETAIL,
+    StateChangeNotification.IAM_USER_DETAIL_ROLE,
 ], withRouter(UserDetail));

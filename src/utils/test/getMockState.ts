@@ -214,6 +214,13 @@ export default function getMockState({
                     error: null,
                 },
             },
+            userDetailRole: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                }
+            },
             teams: {
                 data: null,
                 fetch: {

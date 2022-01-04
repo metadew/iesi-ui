@@ -52,6 +52,10 @@ export enum ASYNC_ENTITY_KEYS {
 
     users = 'users',
     userDetail = 'userDetail',
+    userDetailRole = 'userDetailRole',
+
+    teams = 'teams',
+    teamDetail = 'teamDetail',
 }
 
 /* Keep the keys in sync with ASYNC_ENTITY_KEYS !! */
@@ -75,6 +79,7 @@ export interface IEntitiesState {
     scriptExecutionDetail: ICustomAsyncEntity<IScriptExecutionDetail>;
     users: ICustomAsyncEntity<IUserEntity>;
     userDetail: ICustomAsyncEntity<IUser>;
+    userDetailRole: ICustomAsyncEntity<IUser>;
     teams: ICustomAsyncEntity<ITeamEntity>;
     teamDetail: ICustomAsyncEntity<ITeam>;
     openapi: ICustomAsyncEntity<IOpenAPIEntity>;

@@ -74,6 +74,10 @@ flash_messages:
     edit: 'The script has been updated'
     error: 'Incorrect representation of the script'
     import: 'The script has been successfully imported !'
+  user:
+    create: The user has been created successfully !
+    delete_role: The role has been deleted from the user
+    error: 'An error has occured : {error} '
   error: 'An error has occured'
 scripts:
   overview:
@@ -664,4 +668,37 @@ users:
         title: Teams
         add_button: Add team
         add_dialog:
-          title: Add a team
+          select_title: Add a team
+          cancel: Cancel
+          add: Add
+    main:
+      actions:
+        add_roles: Add roles
+        delete: Delete user
+        save: Save
+        view: View
+      alert:
+        save_changes: You made changes to this user. Don't forget to save them.
+      add_roles:
+        header: Choose the role you like to add
+        select_role: Select a role
+      list:
+        item:
+          labels:
+            name: Name
+            privileges: Value
+          actions:
+            delete: Delete
+      no_actions:
+        title: No roles yet
+        button: Add roles
+    save_user_dialog:
+      title: Save user
+      text: Are you sure to create the user {username} ?
+      text_securityGroup: Sorry, you don't have the permission to read the user because your don't belong to the group {securityGroup}
+      create: Create user
+      update: Update user
+    delete_user_dialog:
+      text: Are you sure you want to delete this user?
+      title: Delete user
+

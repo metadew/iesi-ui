@@ -8,8 +8,9 @@ import {
     IUserBase,
     IUserByNamePayload,
     IUserByIdPayload,
+    IUserPost,
 } from 'models/state/user.model';
-import { getUsersWithDistinctTeams } from 'utils/users/userUtils';
+import { getUsersWithDistinctTeams, getUserWithDistinctTeams } from 'utils/users/userUtils';
 
 interface IUserResponse {
     _embedded: {
@@ -44,15 +45,15 @@ export function fetchUser({ name }: IUserByNamePayload) {
         pathParams: {
             name,
         },
-        mapResponse: ({ data }) => data,
+        mapResponse: ({ data }) => getUserWithDistinctTeams(data),
     });
 }
 
-export function createUser(user: IUserBase) {
-    return post<IUserBase>({
+export function createUser(user: IUserPost) {
+    return post<IUserPost>({
         isIesiApi: true,
         needsAuthentication: true,
-        url: API_URLS.USERS,
+        url: API_URLS.USER_CREATE,
         body: user,
         contentType: 'application/json',
     });

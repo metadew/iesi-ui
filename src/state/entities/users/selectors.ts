@@ -15,3 +15,5 @@ export const getAsyncUsersPageData = (state: IState) => {
 };
 
 export const getAsyncUserDetail = (state: IState) => state.entities.userDetail;
+
+export const getAsyncUserDetailRole = (state: IState) => state.entities.userDetailRole;

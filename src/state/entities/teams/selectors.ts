@@ -1,5 +1,5 @@
-import { IState } from "models/state.models";
-import { ITeam } from "models/state/team.model";
+import { IState } from 'models/state.models';
+import { ITeam } from 'models/state/team.model';
 
 export const getAsyncTeamsEntity = (state: IState) => state.entities.teams;
 
@@ -12,6 +12,6 @@ export const getAsyncTeams = (state: IState) => {
 export const getAsyncTeamsPageData = (state: IState) => {
     const teamsEntity = getAsyncTeamsEntity(state);
     return teamsEntity && teamsEntity.data ? teamsEntity.data.page : null;
-}
+};
 
 export const getAsyncTeamDetail = (state: IState) => state.entities.teamDetail;

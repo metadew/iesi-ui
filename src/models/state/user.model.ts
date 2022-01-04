@@ -24,7 +24,7 @@ export interface IUserEntity {
 }
 
 export interface IUser extends IUserBase {
-    teams?: string[];
+    teams?: IUserTeam[];
 }
 
 export interface IUserBase {

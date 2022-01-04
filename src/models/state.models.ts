@@ -65,6 +65,9 @@ export enum StateChangeNotification {
     DATA_DATASETS_IMPLEMENTATIONS = 'DATA_DATASETS.IMPLEMENTATIONS',
     IAM_USERS_LIST = 'IAM_USERS.LIST',
     IAM_USERS_DETAIL = 'IAM_USERS.DETAIL',
+    IAM_USER_DETAIL_ROLE = 'IAM_USERS.DETAIL_ROLE',
+    IAM_TEAMS_LIST = 'IAM_TEAMS.LIST',
+    IAM_TEAMS_DETAIL = 'IAM_TEAMS.DETAIL',
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
