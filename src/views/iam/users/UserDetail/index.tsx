@@ -3,7 +3,7 @@ import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { IObserveProps, observe } from 'views/observe';
 import { Box, Button, Collapse, createStyles, Typography, WithStyles, withStyles } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { Delete } from '@material-ui/icons';
+import { Delete, Add } from '@material-ui/icons';
 import { IUser, IUserBase, IUserPost, IUserTeam, IUserRole } from 'models/state/user.model';
 import { getAsyncUserDetail, getAsyncUserDetailRole } from 'state/entities/users/selectors';
 import { getUniqueIdFromUser } from 'utils/users/userUtils';
@@ -26,6 +26,7 @@ import GenericList from 'views/common/list/GenericList';
 import { IListItem, ListColumns } from 'models/list.models';
 import DetailActions from '../DetailActions';
 import EditTeams from './EditTeams';
+import AddRole from './AddRole';
 
 const styles = () => createStyles({});
 
@@ -87,6 +88,7 @@ const UserDetail = withStyles(styles)(
 
             this.renderUserDetailPanel = this.renderUserDetailPanel.bind(this);
             this.renderUserDetailContent = this.renderUserDetailContent.bind(this);
+            this.renderAddRole = this.renderAddRole.bind(this);
 
             this.updateUserInStateIfNewUserWasLoaded = this.updateUserInStateIfNewUserWasLoaded.bind(this);
             this.navigateToUserAfterCreation = this.navigateToUserAfterCreation.bind(this);
@@ -110,6 +112,7 @@ const UserDetail = withStyles(styles)(
                 roleIndexToDelete,
                 teams,
                 selectedTeamIndex,
+                isAddOpen,
             } = this.state;
             const translator = getTranslator(state);
             const roleItems = mapRoleToListItems(teams[selectedTeamIndex], (newUserDetail as IUser).roles);
@@ -127,8 +130,8 @@ const UserDetail = withStyles(styles)(
                     <ContentWithSidePanel
                         panel={this.renderUserDetailPanel()}
                         content={this.renderUserDetailContent()}
-                        contentOverlay={null}
-                        contentOverlayOpen={false}
+                        contentOverlay={this.renderAddRole()}
+                        contentOverlayOpen={isAddOpen}
                         toggleLabel={<Translate msg="users.detail.side.toggle_button" />}
                         goBackTo={ROUTE_KEYS.R_USERS}
                     />
@@ -289,7 +292,43 @@ const UserDetail = withStyles(styles)(
                 },
             };
 
-            if (!hasRoles) {
+            if (!teams.length && !this.isCreateUserRoute()) {
+                return (
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        flex="1 1 auto"
+                        justifyContent="center"
+                        paddingBottom={5}
+                    >
+                        <Box textAlign="center">
+                            <Typography variant="h2" paragraph>
+                                <Translate msg="users.detail.main.no_teams.title" />
+                            </Typography>
+                        </Box>
+                    </Box>
+                );
+            }
+
+            if (selectedTeamIndex === -1 && !this.isCreateUserRoute()) {
+                return (
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        flex="1 1 auto"
+                        justifyContent="center"
+                        paddingBottom={5}
+                    >
+                        <Box textAlign="center">
+                            <Typography variant="h2" paragraph>
+                                <Translate msg="users.detail.main.no_chosen_team.title" />
+                            </Typography>
+                        </Box>
+                    </Box>
+                );
+            }
+
+            if (!hasRoles && !this.isCreateUserRoute()) {
                 return (
                     <Box
                         display="flex"
@@ -302,6 +341,14 @@ const UserDetail = withStyles(styles)(
                             <Typography variant="h2" paragraph>
                                 <Translate msg="users.detail.main.no_roles.title" />
                             </Typography>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                startIcon={<Add />}
+                                onClick={() => this.setState({ isAddOpen: true })}
+                            >
+                                <Translate msg="users.detail.main.no_roles.button" />
+                            </Button>
                         </Box>
                     </Box>
                 );
@@ -336,6 +383,18 @@ const UserDetail = withStyles(styles)(
                         />
                     </Box>
                 </>
+            );
+        }
+
+        private renderAddRole() {
+            const { newUserDetail } = this.state;
+            console.log(newUserDetail);
+
+            return (
+                <AddRole
+                    onClose={() => {}}
+                    onAdd={() => {}}
+                />
             );
         }
 

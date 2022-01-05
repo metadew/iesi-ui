@@ -689,7 +689,11 @@ users:
             privileges: Value
           actions:
             delete: Delete
-      no_actions:
+      no_teams:
+        title: Please add a team
+      no_chosen_team:
+        title: Please choose a team
+      no_roles:
         title: No roles yet
         button: Add roles
     save_user_dialog:
