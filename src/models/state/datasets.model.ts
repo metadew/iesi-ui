@@ -49,7 +49,7 @@ export interface IKeyValueBase {
 }
 
 export interface IKeyValue extends IKeyValueBase {
-    id: number;
+    uuid: number;
 }
 
 export interface IDatasetByNamePayload {
