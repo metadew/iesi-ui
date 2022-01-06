@@ -35,7 +35,7 @@ import {
     IDatasetByUuidPayload,
 } from 'models/state/datasets.model';
 import { IFetchUsersListPayload, IUserByNamePayload } from 'models/state/user.model';
-import { IFetchTeamsListPayload, ITeamDeleteUserRole } from 'models/state/team.model';
+import { IFetchTeamsListPayload, ITeamByNamePayload, ITeamDeleteUserRole } from 'models/state/team.model';
 import { IUserPost } from 'models/state/user.model';
 
 // eslint-disable-next-line max-len
@@ -482,6 +482,16 @@ entitiesConfigManager.register({
         fetch: {
             api: api.teams.fetchTeams,
             apiInputSelector: ({ extraInput }) => extraInput as IFetchTeamsListPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.teamDetail,
+    operationsConfig: {
+        fetch: {
+            api: api.teams.fetchTeam,
+            apiInputSelector: ({ extraInput }) => extraInput as ITeamByNamePayload,
         },
     },
 });

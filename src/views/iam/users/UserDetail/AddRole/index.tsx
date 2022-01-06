@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles, Typography, Box, Paper, ButtonGroup, Button, darken } from '@material-ui/core';
 import { IUserRole } from 'models/state/auth.models';
 import { getTranslator } from 'state/i18n/selectors';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { THEME_COLORS } from 'config/themes/colors';
 import { IObserveProps, observe } from 'views/observe';
+import { StateChangeNotification } from 'models/state.models';
+import { triggerFetchTeam } from 'state/entities/teams/triggers';
+import { getAsyncTeamDetail } from 'state/entities/teams/selectors';
 
 const useStyles = makeStyles(({ palette, typography }) => ({
     dialog: {
@@ -54,12 +57,21 @@ const useStyles = makeStyles(({ palette, typography }) => ({
 interface IPublicProps {
     onClose: () => void;
     onAdd: (role: IUserRole) => void;
+    teamName: string;
 }
 
-function AddRole({ state }: IPublicProps & IObserveProps) {
+function AddRole({ teamName, state }: IPublicProps & IObserveProps) {
     const classes = useStyles();
     const translator = getTranslator(state);
+    const team = getAsyncTeamDetail(state).data;
     console.log(translator);
+    console.log('TEAM : ', team);
+
+    useEffect(() => {
+        triggerFetchTeam({
+            name: teamName,
+        });
+    }, [teamName]);
 
     return (
         <Box className={classes.dialog}>
@@ -105,4 +117,6 @@ function AddRole({ state }: IPublicProps & IObserveProps) {
     );
 }
 
-export default observe<IPublicProps>([], AddRole);
+export default observe<IPublicProps>([
+    StateChangeNotification.IAM_TEAMS_DETAIL,
+], AddRole);

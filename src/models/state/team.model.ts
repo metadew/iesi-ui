@@ -29,6 +29,8 @@ export interface ITeamEntity {
     page: IPageData;
 }
 
+export type ITeamNames = Array<string>;
+
 export interface ITeam extends ITeamBase {}
 export interface ITeamBase {
     id?: string;

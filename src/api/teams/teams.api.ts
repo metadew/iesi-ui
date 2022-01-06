@@ -36,6 +36,7 @@ export function fetchTeams({ pagination, filter, sort }: IFetchTeamsListPayload)
     });
 }
 
+
 export function fetchTeam({ name }: ITeamByNamePayload) {
     return get<ITeamBase>({
         isIesiApi: true,

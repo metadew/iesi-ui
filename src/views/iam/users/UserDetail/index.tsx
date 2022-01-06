@@ -7,6 +7,7 @@ import { Delete, Add } from '@material-ui/icons';
 import { IUser, IUserBase, IUserPost, IUserTeam, IUserRole } from 'models/state/user.model';
 import { getAsyncUserDetail, getAsyncUserDetailRole } from 'state/entities/users/selectors';
 import { getUniqueIdFromUser } from 'utils/users/userUtils';
+import { getAsyncTeams } from 'state/entities/teams/selectors';
 import Loader from 'views/common/waiting/Loader';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
@@ -130,7 +131,7 @@ const UserDetail = withStyles(styles)(
                     <ContentWithSidePanel
                         panel={this.renderUserDetailPanel()}
                         content={this.renderUserDetailContent()}
-                        contentOverlay={this.renderAddRole()}
+                        contentOverlay={selectedTeamIndex > -1 && this.renderAddRole()}
                         contentOverlayOpen={isAddOpen}
                         toggleLabel={<Translate msg="users.detail.side.toggle_button" />}
                         goBackTo={ROUTE_KEYS.R_USERS}
@@ -367,7 +368,7 @@ const UserDetail = withStyles(styles)(
                         <DetailActions
                             onSave={handleSaveAction}
                             onDelete={() => { }}
-                            onAdd={() => { }}
+                            onAdd={() => this.setState({ isAddOpen: true })}
                             isCreateRoute={this.isCreateUserRoute()}
                         />
                     </Box>
@@ -387,13 +388,13 @@ const UserDetail = withStyles(styles)(
         }
 
         private renderAddRole() {
-            const { newUserDetail } = this.state;
-            console.log(newUserDetail);
+            const { teams, selectedTeamIndex } = this.state;
 
             return (
                 <AddRole
                     onClose={() => {}}
                     onAdd={() => {}}
+                    teamName={teams[selectedTeamIndex].name}
                 />
             );
         }
