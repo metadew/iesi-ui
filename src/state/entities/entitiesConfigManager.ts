@@ -35,7 +35,12 @@ import {
     IDatasetByUuidPayload,
 } from 'models/state/datasets.model';
 import { IFetchUsersListPayload, IUserByNamePayload } from 'models/state/user.model';
-import { IFetchTeamsListPayload, ITeamByNamePayload, ITeamDeleteUserRole } from 'models/state/team.model';
+import {
+    IFetchTeamsListPayload,
+    ITeamAssignUserRolePayload,
+    ITeamByNamePayload,
+    ITeamDeleteUserRole,
+} from 'models/state/team.model';
 import { IUserPost } from 'models/state/user.model';
 
 // eslint-disable-next-line max-len
@@ -469,8 +474,16 @@ entitiesConfigManager.register({
 entitiesConfigManager.register({
     asyncEntityKey: ASYNC_ENTITY_KEYS.userDetailRole,
     operationsConfig: {
+        create: {
+            api: api.teams.assignRoleToUser,
+            apiInputSelector: ({ extraInput }) => extraInput as ITeamAssignUserRolePayload,
+        },
         remove: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             api: api.teams.deleteRoleFromUser,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
             apiInputSelector: ({ extraInput }) => extraInput as ITeamDeleteUserRole,
         },
     },

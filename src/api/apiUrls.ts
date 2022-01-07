@@ -38,6 +38,7 @@ const API_URLS = {
     TEAMS_NAMES: '/teams/names',
     TEAM_BY_NAME: '/teams/{name}',
     TEAM_BY_ID: '/teams/{id}',
+    TEAM_BU_ID_AND_ROLE_ID: '/teams/{id}/roles/{roleId}/users',
     TEAM_BY_ID_AND_ROLE_ID_AND_USER_ID: '/teams/{id}/roles/{roleId}/users/{userId}',
 
     SECURITY_GROUPS: '/security-groups',

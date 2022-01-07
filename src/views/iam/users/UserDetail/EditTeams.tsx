@@ -128,7 +128,7 @@ function EditTeamsDialog({
                     </Button>
                 )}
             <ClosableDialog
-                onClose={() => setOpen(true)}
+                onClose={() => setOpen(false)}
                 open={open}
                 title={translator('users.detail.side.teams.add_dialog.select_title')}
                 maxWidth="lg"
@@ -149,7 +149,7 @@ function EditTeamsDialog({
                                     getOptionLabel={(option: ITeam) => option.teamName}
                                     onInputChange={(_, newValue) => setInput(newValue)}
                                     onChange={handleChange}
-                                    options={teams}
+                                    options={filterExistingTeams(teams, userTeams)}
                                     loading={loading}
                                     renderInput={(params) => (
                                         <TextField
@@ -191,6 +191,10 @@ function EditTeamsDialog({
             </ClosableDialog>
         </>
     );
+}
+
+function filterExistingTeams(teams: ITeam[], userTeams: IUserTeam[]) {
+    return teams.filter((team) => !userTeams.find((userTeam) => team.id === userTeam.id));
 }
 
 export default observe<IPublicProps>([

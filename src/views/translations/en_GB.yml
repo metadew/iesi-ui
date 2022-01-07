@@ -76,6 +76,7 @@ flash_messages:
     import: 'The script has been successfully imported !'
   user:
     create: The user has been created successfully !
+    add_role: The role has been assigned to the user
     delete_role: The role has been deleted from the user
     error: 'An error has occured : {error} '
   error: 'An error has occured'
@@ -682,11 +683,14 @@ users:
       add_roles:
         header: Choose the role you like to add
         select_role: Select a role
+        footer:
+          cancel: Cancel
+          save: Save
       list:
         item:
           labels:
             name: Name
-            privileges: Value
+            privileges: Privileges
           actions:
             delete: Delete
       no_teams:

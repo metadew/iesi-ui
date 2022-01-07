@@ -6,8 +6,8 @@ import { Alert } from '@material-ui/lab';
 import { Delete, Add } from '@material-ui/icons';
 import { IUser, IUserBase, IUserPost, IUserTeam, IUserRole } from 'models/state/user.model';
 import { getAsyncUserDetail, getAsyncUserDetailRole } from 'state/entities/users/selectors';
+import { ITeamRole } from 'models/state/team.model';
 import { getUniqueIdFromUser } from 'utils/users/userUtils';
-import { getAsyncTeams } from 'state/entities/teams/selectors';
 import Loader from 'views/common/waiting/Loader';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
@@ -39,6 +39,7 @@ interface IComponentState {
     selectedTeamIndex: number;
     roleIndexToEdit: number;
     roleIndexToDelete: number;
+    roleToAdd: ITeamRole;
     hasChangeToCheck: boolean;
     isAddOpen: boolean;
     isSaveDialogOpen: boolean;
@@ -72,6 +73,7 @@ const UserDetail = withStyles(styles)(
                 selectedTeamIndex: -1,
                 roleIndexToEdit: null,
                 roleIndexToDelete: null,
+                roleToAdd: null,
                 hasChangeToCheck: false,
                 isAddOpen: false,
                 isSaveDialogOpen: false,
@@ -94,14 +96,17 @@ const UserDetail = withStyles(styles)(
             this.updateUserInStateIfNewUserWasLoaded = this.updateUserInStateIfNewUserWasLoaded.bind(this);
             this.navigateToUserAfterCreation = this.navigateToUserAfterCreation.bind(this);
             this.navigateToUsersAfterDeletion = this.navigateToUsersAfterDeletion.bind(this);
+            this.reloadPageAfterRoleAssignment = this.reloadPageAfterRoleAssignment.bind(this);
             this.reloadPageAfterRoleDeletion = this.reloadPageAfterRoleDeletion.bind(this);
 
+            this.onAddRole = this.onAddRole.bind(this);
             this.onDeleteRole = this.onDeleteRole.bind(this);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
             this.updateUserInStateIfNewUserWasLoaded(prevProps);
             this.navigateToUserAfterCreation(prevProps);
+            this.reloadPageAfterRoleAssignment(prevProps);
             this.reloadPageAfterRoleDeletion(prevProps);
         }
 
@@ -118,14 +123,16 @@ const UserDetail = withStyles(styles)(
             const translator = getTranslator(state);
             const roleItems = mapRoleToListItems(teams[selectedTeamIndex], (newUserDetail as IUser).roles);
             const userDetailAsyncStatus = getAsyncUserDetail(state).fetch.status;
-            const userDetailRoleStatus = getAsyncUserDetailRole(state).remove.status;
+            const userDetailRoleDeleteStatus = getAsyncUserDetailRole(state).remove.status;
+            const userDetailRoleAssignStatus = getAsyncUserDetailRole(state).create.status;
 
             return (
                 <>
                     <Loader
                         show={
                             userDetailAsyncStatus === AsyncStatus.Busy
-                            || userDetailRoleStatus === AsyncStatus.Busy
+                            || userDetailRoleDeleteStatus === AsyncStatus.Busy
+                            || userDetailRoleAssignStatus === AsyncStatus.Busy
                         }
                     />
                     <ContentWithSidePanel
@@ -201,6 +208,7 @@ const UserDetail = withStyles(styles)(
                                 required={this.isCreateUserRoute()}
                                 error={requiredFieldsState.username.showError}
                                 helperText={requiredFieldsState.username.showError && 'Username is a required field'}
+                                autoComplete="off"
                             />
                             {
                                 this.isCreateUserRoute() ? (
@@ -208,11 +216,13 @@ const UserDetail = withStyles(styles)(
                                         <TextInput
                                             id="user-password"
                                             label={translator('users.detail.side.user_password')}
+                                            type="password"
                                             value={newUserDetail && (newUserDetail as IUserPost).password}
                                             onChange={(e) => this.updateUser({ password: e.target.value })}
                                             error={requiredFieldsState.password.showError}
                                             // eslint-disable-next-line max-len
                                             helperText={requiredFieldsState.password.showError && 'User password is a required field'}
+                                            autoComplete="off"
                                         />
                                     </>
                                 ) : (
@@ -372,31 +382,58 @@ const UserDetail = withStyles(styles)(
                             isCreateRoute={this.isCreateUserRoute()}
                         />
                     </Box>
-                    <Box marginY={1}>
-                        <GenericList
-                            listItems={roleItems}
-                            columns={roleColumns}
-                            listActions={[{
-                                icon: <Delete />,
-                                label: translator('user.detail.main.list.item.actions.delete'),
-                                onClick: (id, index) => this.setState({ roleIndexToDelete: index }),
-                            }]}
-                        />
-                    </Box>
+                    {
+                        !this.isCreateUserRoute() && (
+                            <Box marginY={1}>
+                                <GenericList
+                                    listItems={roleItems}
+                                    columns={roleColumns}
+                                    listActions={[{
+                                        icon: <Delete />,
+                                        label: translator('user.detail.main.list.item.actions.delete'),
+                                        onClick: (id, index) => this.setState({ roleIndexToDelete: index }),
+                                    }]}
+                                />
+                            </Box>
+                        )
+                    }
+
                 </>
             );
         }
 
         private renderAddRole() {
-            const { teams, selectedTeamIndex } = this.state;
+            const { teams, selectedTeamIndex, newUserDetail } = this.state;
 
             return (
                 <AddRole
-                    onClose={() => {}}
-                    onAdd={() => {}}
+                    onClose={() => this.setState({ isAddOpen: false })}
+                    onAdd={(role: ITeamRole) => this.setState({ roleToAdd: role })}
                     teamName={teams[selectedTeamIndex].name}
+                    userRoles={(newUserDetail as IUser).roles}
+                    userId={(newUserDetail as IUser).id}
                 />
             );
+        }
+
+        private onAddRole() {
+            const { roleToAdd, newUserDetail, teams, selectedTeamIndex } = this.state;
+
+            if (roleToAdd) {
+                this.updateUser({
+                    roles: [...(newUserDetail as IUser).roles, {
+                        id: roleToAdd.id,
+                        name: roleToAdd.name,
+                        team: teams[selectedTeamIndex],
+                        privileges: roleToAdd.privileges.map((privilege) => ({
+                            uuid: privilege.uuid,
+                            privilege: privilege.privilege,
+                        })),
+                    }],
+                });
+            }
+
+            this.setState({ isAddOpen: false });
         }
 
         private onDeleteRole() {
@@ -432,7 +469,7 @@ const UserDetail = withStyles(styles)(
                     ...prevState.newUserDetail,
                     ...fieldsToUpdate,
                 },
-                hasChangeToCheck: true,
+                hasChangeToCheck: this.isCreateUserRoute(),
             }));
         }
 
@@ -458,6 +495,15 @@ const UserDetail = withStyles(styles)(
                         name: newUserDetail.username,
                     },
                 });
+            }
+        }
+
+        private reloadPageAfterRoleAssignment(prevProps: TProps & IObserveProps) {
+            const { status } = getAsyncUserDetailRole(this.props.state).create;
+            const { status: prevStatus } = getAsyncUserDetailRole(prevProps.state).create;
+
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                this.onAddRole();
             }
         }
 

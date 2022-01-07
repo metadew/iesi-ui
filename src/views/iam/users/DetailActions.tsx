@@ -56,7 +56,7 @@ function DetailActions({
 
     const DeleteButton = (
         <IconButton
-            disabled={isCreateRoute}
+            disabled
             aria-label={translator('users.details.main.actions.delete')}
             onClick={onDelete}
         >
@@ -68,7 +68,7 @@ function DetailActions({
 
         <Box display="flex" alignItems="center" justifyContent="space-between" width="100%" paddingX={2.2}>
             <Box flex="0 0 auto">
-                {isCreateRoute || checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
+                {!isCreateRoute && checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
                     ? (
                         <Tooltip
                             title={translator('users.detail.main.actions.add_roles')}
@@ -101,6 +101,7 @@ function DetailActions({
                                             size="small"
                                             startIcon={<SaveIcon />}
                                             onClick={onSave}
+                                            disabled={!isCreateRoute}
                                         >
                                             <Translate msg="users.detail.main.actions.save" />
                                         </Button>

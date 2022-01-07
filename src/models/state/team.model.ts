@@ -24,6 +24,12 @@ export interface ITeamDeleteUserRole {
     userId: string;
 }
 
+export interface ITeamAssignUserRolePayload {
+    id: string;
+    roleId: string;
+    userId: string;
+}
+
 export interface ITeamEntity {
     teams: ITeam[];
     page: IPageData;

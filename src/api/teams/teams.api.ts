@@ -4,6 +4,7 @@ import { IPageData } from 'models/state/iesiGeneric.models';
 import {
     IFetchTeamsListPayload,
     ITeam,
+    ITeamAssignUserRolePayload,
     ITeamBase,
     ITeamByIdPayload,
     ITeamByNamePayload,
@@ -35,7 +36,6 @@ export function fetchTeams({ pagination, filter, sort }: IFetchTeamsListPayload)
         }),
     });
 }
-
 
 export function fetchTeam({ name }: ITeamByNamePayload) {
     return get<ITeamBase>({
@@ -79,6 +79,21 @@ export function deleteTeam({ id }: ITeamByIdPayload) {
         url: API_URLS.TEAM_BY_ID,
         pathParams: {
             id,
+        },
+    });
+}
+
+export function assignRoleToUser({ id, roleId, userId }: ITeamAssignUserRolePayload) {
+    return post<{}>({
+        needsAuthentication: true,
+        isIesiApi: true,
+        url: API_URLS.TEAM_BU_ID_AND_ROLE_ID,
+        body: {
+            id: userId,
+        },
+        pathParams: {
+            id,
+            roleId,
         },
     });
 }
