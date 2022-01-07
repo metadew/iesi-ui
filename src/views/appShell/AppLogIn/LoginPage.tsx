@@ -44,7 +44,6 @@ interface ILoginState {
     hasSubmitErrors: boolean;
     username: string;
     password: string;
-    domain: string;
     redirectUri: IRedirectUri;
 }
 
@@ -62,7 +61,6 @@ const LoginView = withStyles(styles)(
                 hasSubmitErrors: false,
                 username: '',
                 password: '',
-                domain: '',
                 redirectUri: {
                     pathname,
                     search,
@@ -76,7 +74,7 @@ const LoginView = withStyles(styles)(
         }
 
         public render() {
-            const { hasSubmitErrors, username, password, domain } = this.state;
+            const { hasSubmitErrors, username, password } = this.state;
 
             return (
                 <>
@@ -111,16 +109,8 @@ const LoginView = withStyles(styles)(
                             value={password}
                             onChange={(e) => this.setState({ password: e.target.value as string })}
                         />
-                        <TextInput
-                            id="domain"
-                            label="domain"
-                            required
-                            error={hasSubmitErrors && domain === ''}
-                            value={domain}
-                            onChange={(e) => this.setState({ domain: e.target.value as string })}
-                        />
                         {this.renderAlert()}
-                        <Box textAlign="center" marginTop={5}>
+                        <Box textAlign="left" marginTop={2}>
                             <Button
                                 variant="contained"
                                 size="medium"
@@ -130,6 +120,18 @@ const LoginView = withStyles(styles)(
                             >
                                 <Container component="main" maxWidth="xl">
                                     <Translate msg="login" />
+                                </Container>
+                            </Button>
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <Button
+                                variant="contained"
+                                size="medium"
+                                color="primary"
+                                disableElevation
+                                onClick={this.handleSubmit}
+                            >
+                                <Container component="main" maxWidth="xl">
+                                    <Translate msg="LDAP Config" />
                                 </Container>
                             </Button>
                         </Box>
@@ -143,9 +145,9 @@ const LoginView = withStyles(styles)(
         }
 
         private handleSubmit = () => {
-            const { username, password, domain, redirectUri } = this.state;
+            const { username, password, redirectUri } = this.state;
             const { dispatch } = getStore();
-            if (username !== '' && password !== '' && domain !== '') {
+            if (username !== '' && password !== '') {
                 this.setHasSubmitErrors(false);
 
                 logon({

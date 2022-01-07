@@ -266,6 +266,9 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_NOT_FOUND,
     path: '/not-found',
     component: NotFound,
+}, {
+    routeKey: ROUTE_KEYS.R_LDAP,
+    path: '/ldap',
 },
 ];
 
