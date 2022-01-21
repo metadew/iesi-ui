@@ -33,7 +33,7 @@ import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericSort from 'views/common/list/GenericSort';
 import { checkAuthorityGeneral } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
-import { AddRounded, Visibility } from '@material-ui/icons';
+import { AddRounded, Edit, Visibility } from '@material-ui/icons';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
@@ -274,6 +274,22 @@ const UsersOverview = withStyles(styles)(
                                         },
                                     }}
                                     listActions={[].concat({
+                                        icon: <Edit />,
+                                        label: translator('users.overview.list.actions.edit'),
+                                        onClick: (id: string) => {
+                                            const users = getAsyncUsers(state);
+                                            const selectedUser = users.find((item) =>
+                                                getUniqueIdFromUser(item) === id);
+                                            redirectTo({
+                                                routeKey: ROUTE_KEYS.R_USER_DETAIL,
+                                                params: {
+                                                    name: selectedUser.username,
+                                                },
+                                            });
+                                        },
+                                        hideAction: () =>
+                                            !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE),
+                                    }, {
                                         icon: <Visibility />,
                                         label: translator('users.overview.list.actions.view'),
                                         onClick: (id: string) => {
@@ -287,7 +303,9 @@ const UsersOverview = withStyles(styles)(
                                                 },
                                             });
                                         },
-
+                                        hideAction: () =>
+                                            checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
+                                            || !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_READ),
                                     })}
                                 />
                             ) : (

@@ -659,6 +659,7 @@ users:
         locked: Locked
         teams: Teams
       actions:
+        edit: Edit
         view: View
   detail:
     side:
