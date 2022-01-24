@@ -40,6 +40,7 @@ export interface IUserBase {
 export interface IUserPost {
     username: string;
     password: string;
+    repeatedPassword: string;
 }
 
 export interface IUserRole {

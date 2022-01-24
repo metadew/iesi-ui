@@ -666,7 +666,9 @@ users:
       toggle_button: Details
       user_name: Username
       user_password: Password
+      user_repeated_password: Confirm the password
       teams:
+        empty: No Teams
         title: Teams
         add_button: Add team
         add_dialog:

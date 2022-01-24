@@ -1,9 +1,19 @@
 import React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { IObserveProps, observe } from 'views/observe';
-import { Box, Button, Collapse, createStyles, Typography, WithStyles, withStyles } from '@material-ui/core';
+import {
+    Box,
+    Button,
+    Collapse,
+    createStyles,
+    IconButton,
+    InputAdornment,
+    Typography,
+    WithStyles,
+    withStyles,
+} from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { Delete, Add } from '@material-ui/icons';
+import { Delete, Add, Visibility, VisibilityOff } from '@material-ui/icons';
 import { IUser, IUserBase, IUserPost, IUserTeam, IUserRole } from 'models/state/user.model';
 import { getAsyncUserDetail, getAsyncUserDetailRole } from 'state/entities/users/selectors';
 import { ITeamRole } from 'models/state/team.model';
@@ -13,6 +23,8 @@ import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import { triggerCreateUserDetail, triggerDeleteUserRole } from 'state/entities/users/triggers';
+import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { clone } from 'ramda';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { getRouteKeyByPath, redirectTo, ROUTE_KEYS } from 'views/routes';
@@ -45,6 +57,7 @@ interface IComponentState {
     isSaveDialogOpen: boolean;
     isConfirmDeleteUserOpen: boolean;
     isSaveTeamDialogOpen: boolean;
+    isShowPassword: boolean;
     requiredFieldsState: TRequiredFieldsState<IUserPost>;
 }
 
@@ -60,6 +73,7 @@ const initialUserDetail: IUser = {
 const initialUserPostDetail: IUserPost = {
     username: '',
     password: '',
+    repeatedPassword: '',
 };
 
 const UserDetail = withStyles(styles)(
@@ -79,11 +93,15 @@ const UserDetail = withStyles(styles)(
                 isSaveDialogOpen: false,
                 isConfirmDeleteUserOpen: false,
                 isSaveTeamDialogOpen: false,
+                isShowPassword: false,
                 requiredFieldsState: {
                     username: {
                         showError: false,
                     },
                     password: {
+                        showError: false,
+                    },
+                    repeatedPassword: {
                         showError: false,
                     },
                 },
@@ -189,7 +207,7 @@ const UserDetail = withStyles(styles)(
 
         private renderUserDetailPanel() {
             const { state } = this.props;
-            const { newUserDetail, teams, requiredFieldsState, selectedTeamIndex } = this.state;
+            const { newUserDetail, teams, requiredFieldsState, selectedTeamIndex, isShowPassword } = this.state;
             const translator = getTranslator(state);
 
             return (
@@ -208,7 +226,7 @@ const UserDetail = withStyles(styles)(
                                 required={this.isCreateUserRoute()}
                                 error={requiredFieldsState.username.showError}
                                 helperText={requiredFieldsState.username.showError && 'Username is a required field'}
-                                autoComplete="off"
+                                autoComplete="username"
                             />
                             {
                                 this.isCreateUserRoute() ? (
@@ -216,13 +234,66 @@ const UserDetail = withStyles(styles)(
                                         <TextInput
                                             id="user-password"
                                             label={translator('users.detail.side.user_password')}
-                                            type="password"
+                                            type={isShowPassword ? 'text' : 'password'}
                                             value={newUserDetail && (newUserDetail as IUserPost).password}
                                             onChange={(e) => this.updateUser({ password: e.target.value })}
                                             error={requiredFieldsState.password.showError}
                                             // eslint-disable-next-line max-len
                                             helperText={requiredFieldsState.password.showError && 'User password is a required field'}
-                                            autoComplete="off"
+                                            autoComplete="new-password"
+                                            InputProps={{
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            aria-label="toggle password visibility"
+                                                            onClick={() => {
+                                                                this.setState({ isShowPassword: !isShowPassword });
+                                                            }}
+                                                            onMouseDown={(e) => e.preventDefault}
+                                                        >
+                                                            {
+                                                                isShowPassword ? (
+                                                                    <Visibility />
+                                                                ) : (
+                                                                    <VisibilityOff />
+                                                                )
+                                                            }
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                        <TextInput
+                                            id="user-repeat-password"
+                                            label={translator('users.detail.side.user_repeated_password')}
+                                            type={isShowPassword ? 'text' : 'password'}
+                                            value={newUserDetail && (newUserDetail as IUserPost).repeatedPassword}
+                                            onChange={(e) => this.updateUser({ repeatedPassword: e.target.value })}
+                                            error={requiredFieldsState.repeatedPassword.showError}
+                                            // eslint-disable-next-line max-len
+                                            helperText={requiredFieldsState.repeatedPassword.showError && 'User password is a required field'}
+                                            autoComplete="new-password"
+                                            InputProps={{
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            aria-label="toggle repeated password visibility"
+                                                            onClick={() => {
+                                                                this.setState({ isShowPassword: !isShowPassword });
+                                                            }}
+                                                            onMouseDown={(e) => e.preventDefault}
+                                                        >
+                                                            {
+                                                                isShowPassword ? (
+                                                                    <Visibility />
+                                                                ) : (
+                                                                    <VisibilityOff />
+                                                                )
+                                                            }
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                ),
+                                            }}
                                         />
                                     </>
                                 ) : (
@@ -275,7 +346,7 @@ const UserDetail = withStyles(styles)(
                 if (this.isCreateUserRoute) {
                     const { passed: passedRequired, requiredFieldsState } = requiredFieldsCheck<IUserPost>({
                         data: (newUserDetail as IUserPost),
-                        requiredFields: ['username', 'password'],
+                        requiredFields: ['username', 'password', 'repeatedPassword'],
                     });
 
                     if (passedRequired) {
@@ -392,6 +463,10 @@ const UserDetail = withStyles(styles)(
                                         icon: <Delete />,
                                         label: translator('user.detail.main.list.item.actions.delete'),
                                         onClick: (id, index) => this.setState({ roleIndexToDelete: index }),
+                                        hideAction: () => (
+                                            !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_ROLES_WRITE)
+                                            || !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
+                                        ),
                                     }]}
                                 />
                             </Box>

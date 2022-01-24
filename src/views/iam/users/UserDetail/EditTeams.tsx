@@ -111,7 +111,7 @@ function EditTeamsDialog({
                         />
                     ) : (
                         <Typography variant="body2">
-                            <Translate msg="connections.detail.side.environments.empty" />
+                            <Translate msg="users.detail.side.teams.empty" />
                         </Typography>
                     )
             }
