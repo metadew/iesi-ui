@@ -97,6 +97,9 @@ const useStyles = makeStyles(({ typography, palette, shape, spacing }: Theme) =>
         wordBreak: 'normal',
         verticalAlign: 'top',
     },
+    valueCell: {
+        whiteSpace: 'pre-wrap',
+    },
 }));
 
 function ScriptExecutionDetailActions<ColumnNames>({
@@ -391,7 +394,9 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                             <TableCell component="th" scope="row" className={classes.thCell}>
                                                 {output.name}
                                             </TableCell>
-                                            <TableCell>{output.value}</TableCell>
+                                            <TableCell className={classes.valueCell}>
+                                                {output.value}
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
