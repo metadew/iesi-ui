@@ -1,3 +1,4 @@
+import React from 'react';
 import { IRoute } from 'models/router.models';
 import { triggerFetchScripts, triggerFetchScriptDetail } from 'state/entities/scripts/triggers';
 import {
@@ -18,6 +19,7 @@ import { getStore } from 'state';
 import { getComponentsListFilter, getConnectionsListFilter, getScriptsListFilter } from 'state/ui/selectors';
 import { IFetchScriptsListPayload } from 'models/state/scripts.models';
 import { IFetchComponentsListPayload } from 'models/state/components.model';
+import { triggerFetchUserDetail } from 'state/entities/users/triggers';
 import { ROUTE_KEYS, registerRoutes } from './routes';
 import NotFound from './appShell/NotFound';
 import Home from './Home';
@@ -39,12 +41,15 @@ import LoginView from './appShell/AppLogIn/LoginPage';
 import DatasetsTemplate from './data/DatasetsTemplate';
 import DatasetDetail from './data/DatasetDetail';
 import DatasetOverview from './data/DatasetOverview';
+import UserTemplate from './iam/users/UserTemplate';
+import UserOverview from './iam/users/UserOverview';
+import UserDetail from './iam/users/UserDetail';
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
     path: '/',
     exact: true,
-    component: Home,
+    component: Home as React.FunctionComponent<unknown>,
 }, {
     routeKey: ROUTE_KEYS.R_LOGIN,
     path: '/login',
@@ -271,6 +276,26 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
         component: DatasetDetail as React.ComponentType<unknown>,
         executeOnRoute: [{
             execute: triggerFetchDatasetDetail as () => unknown,
+            executeInputSelector: ({ routeLocation }) => ({
+                name: routeLocation.params.name,
+            }),
+        }],
+    }],
+}, {
+    routeKey: ROUTE_KEYS.R_USERS,
+    path: '/users',
+    template: UserTemplate,
+    component: UserOverview,
+    childRoutes: [{
+        routeKey: ROUTE_KEYS.R_USER_NEW,
+        path: '/new',
+        component: UserDetail as React.ComponentType<unknown>,
+    }, {
+        routeKey: ROUTE_KEYS.R_USER_DETAIL,
+        path: '/:name',
+        component: UserDetail as React.ComponentType<unknown>,
+        executeOnRoute: [{
+            execute: triggerFetchUserDetail as () => unknown,
             executeInputSelector: ({ routeLocation }) => ({
                 name: routeLocation.params.name,
             }),

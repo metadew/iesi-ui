@@ -28,8 +28,22 @@ const API_URLS = {
     COMPONENT_BY_NAME: '/components/{name}',
     COMPONENT_BY_NAME_VERSION: '/components/{name}/{version}',
 
+    USERS: '/users',
+    USER_BY_NAME: '/users/{name}',
+    USER_BY_ID: '/users/{id}',
     USER_LOGON: '/users/login',
-    USER_BY_UUID: '/users/{uuid}',
+    USER_CREATE: '/users/create',
+
+    TEAMS: '/teams',
+    TEAMS_NAMES: '/teams/names',
+    TEAM_BY_NAME: '/teams/{name}',
+    TEAM_BY_ID: '/teams/{id}',
+    TEAM_BU_ID_AND_ROLE_ID: '/teams/{id}/roles/{roleId}/users',
+    TEAM_BY_ID_AND_ROLE_ID_AND_USER_ID: '/teams/{id}/roles/{roleId}/users/{userId}',
+
+    SECURITY_GROUPS: '/security-groups',
+    SECURITY_GROUPS_BY_NAME: '/security-groups/{name}',
+    SECURITY_GROUPS_BY_ID: '/security-groups/{id}',
 
     OPEN_API_TRANSFORM: '/openapi/transform',
 

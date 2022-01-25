@@ -13,6 +13,7 @@ import { ReactText } from 'react';
 import { IConnection, IConnectionColumnNamesBase } from 'models/state/connections.model';
 import { IComponent, IComponentColumnNamesBase } from 'models/state/components.model';
 import { IDatasetColumnNames, IDatasetImplementation } from 'models/state/datasets.model';
+import { IUserColumnName } from 'models/state/user.model';
 
 export const triggerFlashMessage = (payload: ITriggerFlashMessagePayload) => createAction<ITriggerFlashMessagePayload>({
     type: 'TRIGGER_FLASH_MESSAGE',
@@ -268,6 +269,32 @@ export const setDatasetsListFilter = (payload: {
                 };
             },
             notificationsToTrigger: [StateChangeNotification.LIST_FILTER_DATASETS],
+        });
+    },
+});
+
+export const setUsersListFilter = (payload: {
+    filters?: ListFilters<Partial<IUserColumnName>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<IUserColumnName>;
+}) => createAction<{
+    filters?: ListFilters<Partial<IUserColumnName>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<IUserColumnName>;
+}>({
+    type: 'UPDATE_USERS_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.users = {
+                    filters: payload.filters || draftState.ui.listFilters.users.filters,
+                    page: payload.page || draftState.ui.listFilters.users.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.users.sortedColumn,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_USERS],
         });
     },
 });

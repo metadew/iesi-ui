@@ -34,6 +34,14 @@ import {
     IFetchDatasetsListPayload,
     IDatasetByUuidPayload,
 } from 'models/state/datasets.model';
+import { IFetchUsersListPayload, IUserByNamePayload } from 'models/state/user.model';
+import {
+    IFetchTeamsListPayload,
+    ITeamAssignUserRolePayload,
+    ITeamByNamePayload,
+    ITeamDeleteUserRole,
+} from 'models/state/team.model';
+import { IUserPost } from 'models/state/user.model';
 
 // eslint-disable-next-line max-len
 const entitiesConfigManager = initAsyncEntitiesConfigManager<IState, {}, ITraceableApiError, string, IExtraProcessInput>();
@@ -431,6 +439,72 @@ entitiesConfigManager.register({
         fetch: {
             api: api.datasets.fetchDatasetImplementations,
             apiInputSelector: ({ extraInput }) => extraInput as IDatasetImplementationsByUuidPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.users,
+    operationsConfig: {
+        fetch: {
+            api: api.users.fetchUsers,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchUsersListPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.userDetail,
+    operationsConfig: {
+        fetch: {
+            api: api.users.fetchUser,
+            apiInputSelector: ({ extraInput }) => extraInput as IUserByNamePayload,
+        },
+        create: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.users.createUser,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IUserPost,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.userDetailRole,
+    operationsConfig: {
+        create: {
+            api: api.teams.assignRoleToUser,
+            apiInputSelector: ({ extraInput }) => extraInput as ITeamAssignUserRolePayload,
+        },
+        remove: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.teams.deleteRoleFromUser,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ITeamDeleteUserRole,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.teams,
+    operationsConfig: {
+        fetch: {
+            api: api.teams.fetchTeams,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchTeamsListPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.teamDetail,
+    operationsConfig: {
+        fetch: {
+            api: api.teams.fetchTeam,
+            apiInputSelector: ({ extraInput }) => extraInput as ITeamByNamePayload,
         },
     },
 });
