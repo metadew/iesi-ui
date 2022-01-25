@@ -1,11 +1,18 @@
-import API_URLS from "api/apiUrls";
-import { get, post, put, remove } from "api/requestWrapper";
-import { IPageData } from "models/state/iesiGeneric.models";
-import { IFetchSecurityGroupsPayload, ISecurityGroup, ISecurityGroupBase, ISecurityGroupByIdPayload, ISecurityGroupByNamePayload, ISecurityGroupEntity } from "models/state/securityGroups.model";
+import API_URLS from 'api/apiUrls';
+import { get, post, put, remove } from 'api/requestWrapper';
+import { IPageData } from 'models/state/iesiGeneric.models';
+import {
+    IFetchSecurityGroupsPayload,
+    ISecurityGroup,
+    ISecurityGroupBase,
+    ISecurityGroupByIdPayload,
+    ISecurityGroupByNamePayload,
+    ISecurityGroupEntity,
+} from 'models/state/securityGroups.model';
 
 interface ISecurityGroupsResponse {
     _embedded: {
-        securityGroups: ISecurityGroup[]
+        securityGroups: ISecurityGroup[];
     };
     page: IPageData;
 }

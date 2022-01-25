@@ -39,7 +39,7 @@ export const MAIN_NAV_ITEMS: IMenuItem[] = [
         routeKey: ROUTE_KEYS.R_USERS,
         translationKeySuffix: 'users',
         securityPrivilege: SECURITY_PRIVILEGES.S_USERS_READ,
-    })
+    }),
 ];
 
 function toMenuItem({

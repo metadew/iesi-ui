@@ -1,4 +1,4 @@
-import { IPageFilter } from "./iesiGeneric.models";
+import { IPageFilter } from './iesiGeneric.models';
 
 export interface IFetchSecurityGroupsPayload {
     pagination?: IPageFilter;
@@ -19,10 +19,10 @@ export interface ISecurityGroupByIdPayload {
 }
 
 export interface ISecurityGroupEntity {
-    securityGroups: ISecurityGroup[]
+    securityGroups: ISecurityGroup[];
 }
 
-export interface ISecurityGroup extends ISecurityGroupBase  {
+export interface ISecurityGroup extends ISecurityGroupBase {
     id: string;
 }
 
@@ -35,4 +35,4 @@ export interface ISecurityGroupBase {
 export interface ISecurityGroupTeam {
     id: string;
     name: string;
-} 
+}

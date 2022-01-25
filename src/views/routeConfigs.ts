@@ -1,3 +1,4 @@
+import React from 'react';
 import { IRoute } from 'models/router.models';
 import { triggerFetchScripts, triggerFetchScriptDetail } from 'state/entities/scripts/triggers';
 import {
@@ -18,6 +19,7 @@ import { getStore } from 'state';
 import { getComponentsListFilter, getConnectionsListFilter, getScriptsListFilter } from 'state/ui/selectors';
 import { IFetchScriptsListPayload } from 'models/state/scripts.models';
 import { IFetchComponentsListPayload } from 'models/state/components.model';
+import { triggerFetchUserDetail } from 'state/entities/users/triggers';
 import { ROUTE_KEYS, registerRoutes } from './routes';
 import NotFound from './appShell/NotFound';
 import Home from './Home';
@@ -42,8 +44,6 @@ import DatasetOverview from './data/DatasetOverview';
 import UserTemplate from './iam/users/UserTemplate';
 import UserOverview from './iam/users/UserOverview';
 import UserDetail from './iam/users/UserDetail';
-import React from 'react';
-import { triggerFetchUserDetail } from 'state/entities/users/triggers';
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
@@ -289,7 +289,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     childRoutes: [{
         routeKey: ROUTE_KEYS.R_USER_NEW,
         path: '/new',
-        component: UserDetail as React.ComponentType<unknown>
+        component: UserDetail as React.ComponentType<unknown>,
     }, {
         routeKey: ROUTE_KEYS.R_USER_DETAIL,
         path: '/:name',
@@ -298,8 +298,8 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             execute: triggerFetchUserDetail as () => unknown,
             executeInputSelector: ({ routeLocation }) => ({
                 name: routeLocation.params.name,
-            })
-        }]
+            }),
+        }],
     }],
 }, {
     routeKey: ROUTE_KEYS.R_OPENAPI,

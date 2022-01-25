@@ -1,4 +1,4 @@
-import { IPageData, IPageFilter } from "./iesiGeneric.models";
+import { IPageData, IPageFilter } from './iesiGeneric.models';
 
 export interface IFetchTeamsListPayload {
     pagination?: IPageFilter;
@@ -37,7 +37,7 @@ export interface ITeamEntity {
 
 export type ITeamNames = Array<string>;
 
-export interface ITeam extends ITeamBase {}
+export type ITeam = ITeamBase;
 export interface ITeamBase {
     id?: string;
     teamName: string;
@@ -53,7 +53,7 @@ export interface ITeamSecurityGroup {
 export interface ITeamRole {
     id: string;
     name: string;
-    privileges: ITeamPrivilege[]
+    privileges: ITeamPrivilege[];
 }
 
 export interface ITeamPrivilege {

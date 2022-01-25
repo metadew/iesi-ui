@@ -219,7 +219,7 @@ export default function getMockState({
                 fetch: {
                     status: AsyncStatus.Initial,
                     error: null,
-                }
+                },
             },
             teams: {
                 data: null,
