@@ -59,6 +59,11 @@ export default function getMockState({
                     page: 1,
                     sortedColumn: null,
                 },
+                teams: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                },
             },
         },
         auth: {

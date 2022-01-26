@@ -1,48 +1,40 @@
 import React from 'react';
 import { IObserveProps, observe } from 'views/observe';
-import {
-    createStyles,
-    withStyles,
-    WithStyles,
-    Theme,
-    Box,
-    Typography,
-    Button,
-} from '@material-ui/core';
+import { createStyles, withStyles, WithStyles, Theme, Typography, Box, Button } from '@material-ui/core';
+import { ITeam, ITeamColumnNames } from 'models/state/team.model';
 import {
     FilterConfig,
     FilterType,
+    IListItem,
     ISortedColumn,
+    ListColumns,
     ListFilters,
+    SortActions,
     SortOrder,
     SortType,
-    SortActions,
-    IListItem,
-    ListColumns,
 } from 'models/list.models';
-import { IUser, IUserColumnName } from 'models/state/user.model';
-import { getAsyncUsers, getAsyncUsersEntity, getAsyncUsersPageData } from 'state/entities/users/selectors';
-import { getUsersListFilter } from 'state/ui/selectors';
-import { triggerFetchUsers } from 'state/entities/users/triggers';
-import { formatSortQueryParameter } from 'utils/core/string/format';
-import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import { setUsersListFilter } from 'state/ui/actions';
+import { getTeamsListFilter } from 'state/ui/selectors';
+import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
+import { getAsyncTeams, getAsyncTeamsEntity, getAsyncTeamsPageData } from 'state/entities/teams/selectors';
+import { triggerFetchTeams } from 'state/entities/teams/triggers';
+import { formatSortQueryParameter } from 'utils/core/string/format';
+import { setTeamsListFilter } from 'state/ui/actions';
+import { getUniqueIdFromTeam } from 'utils/teams/teamUtils';
+import OrderedList from 'views/common/list/OrderedList';
 import { StateChangeNotification } from 'models/state.models';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericSort from 'views/common/list/GenericSort';
+import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
 import { checkAuthorityGeneral } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
-import { AddRounded, Edit, Visibility } from '@material-ui/icons';
-import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
-import { getUniqueIdFromUser } from 'utils/users/userUtils';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
-import GenericList from 'views/common/list/GenericList';
 import { getTranslator } from 'state/i18n/selectors';
+import GenericList from 'views/common/list/GenericList';
 import { Alert } from '@material-ui/lab';
-import OrderedList from 'views/common/list/OrderedList';
+import { redirectTo, ROUTE_KEYS } from 'views/routes';
 
 const styles = ({ palette, typography }: Theme) => createStyles({
     header: {
@@ -50,20 +42,14 @@ const styles = ({ palette, typography }: Theme) => createStyles({
         borderBottom: '1px solid',
         borderBottomColor: palette.grey[200],
     },
-    username: {
+    teamName: {
         fontWeight: typography.fontWeightBold,
         color: palette.primary.main,
     },
-    enabled: {
+    securityGroups: {
         fontWeight: typography.fontWeightBold,
     },
-    expired: {
-        fontWeight: typography.fontWeightBold,
-    },
-    locked: {
-        fontWeight: typography.fontWeightBold,
-    },
-    teams: {
+    users: {
         fontWeight: typography.fontWeightBold,
     },
 });
@@ -71,63 +57,64 @@ const styles = ({ palette, typography }: Theme) => createStyles({
 type TProps = WithStyles<typeof styles>;
 
 interface IComponentState {
-    userIdToDelete: string;
+    teamIdToDelete: string;
 }
 
-const defaultSortedColumn: ISortedColumn<IUserColumnName> = {
-    name: 'username',
+const defaultSortedColumn: ISortedColumn<ITeamColumnNames> = {
+    name: 'name',
     sortOrder: SortOrder.Descending,
     sortType: SortType.String,
 };
 
-const filterConfig: FilterConfig<Partial<IUserColumnName>> = {
-    username: {
-        label: <Translate msg="users.overview.list.filter.username" />,
+const filterConfig: FilterConfig<Partial<ITeamColumnNames>> = {
+    name: {
+        label: <Translate msg="teams.overview.list.filter.team_name" />,
         filterType: FilterType.Search,
     },
 };
 
-const sortActions: SortActions<Partial<IUserColumnName>> = {
-    username: {
-        label: <Translate msg="users.overview.list.sort.username" />,
+const sortActions: SortActions<Partial<ITeamColumnNames>> = {
+    name: {
+        label: <Translate msg="teams.overview.list.sort.team_name" />,
         sortType: SortType.String,
     },
 };
 
-const UsersOverview = withStyles(styles)(
+const TeamsOverview = withStyles(styles)(
     class extends React.Component<TProps & IObserveProps, IComponentState> {
         public constructor(props: TProps & IObserveProps) {
             super(props);
 
             this.state = {
-                userIdToDelete: null,
+                teamIdToDelete: null,
             };
+
+            this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
+            this.fetchTeamsWithFilterAndPagination = this.fetchTeamsWithFilterAndPagination.bind(this);
+            this.onFilter = this.onFilter.bind(this);
+            this.onSort = this.onSort.bind(this);
 
             this.renderPanel = this.renderPanel.bind(this);
             this.renderContent = this.renderContent.bind(this);
-
-            this.fetchUsersWithFilterAndPagination = this.fetchUsersWithFilterAndPagination.bind(this);
-            this.onFilter = this.onFilter.bind(this);
-            this.onSort = this.onSort.bind(this);
         }
 
         public componentDidMount() {
             const { dispatch } = this.props;
             const initialFilters = this.combineFiltersFromUrlAndCurrentFilters();
 
-            this.fetchUsersWithFilterAndPagination({ newListFilters: initialFilters, newPage: 1 });
-            dispatch(setUsersListFilter({ filters: initialFilters }));
+            this.fetchTeamsWithFilterAndPagination({ newListFilters: initialFilters, newPage: 1 });
+            dispatch(setTeamsListFilter({ filters: initialFilters }));
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
             const { state, dispatch } = prevProps;
-            const filterFromState = getUsersListFilter(state);
+            const filterFromState = getTeamsListFilter(state);
 
             if (filterFromState.filters === null || filterFromState.sortedColumn === null) {
-                dispatch(setUsersListFilter({
+                dispatch(setTeamsListFilter({
                     filters: filterFromState.filters === null && getIntialFiltersFromFilterConfig(filterConfig),
                     sortedColumn: filterFromState.sortedColumn === null && {
-                        name: 'username',
+                        name: 'name',
                         sortOrder: SortOrder.Descending,
                         sortType: SortType.String,
                     },
@@ -137,10 +124,11 @@ const UsersOverview = withStyles(styles)(
 
         public render() {
             const { classes, state } = this.props;
-            const pageData = getAsyncUsersPageData(state);
-            const filterFromState = getUsersListFilter(state);
-            const users = getAsyncUsers(state);
-            const listItems = mapUsersToListItems(users);
+            const pageData = getAsyncTeamsPageData(state);
+            const filterFromState = getTeamsListFilter(state);
+            const teams = getAsyncTeams(state);
+            const listItems = mapTeamsToListItems(teams);
+
             return (
                 <>
                     <Box height="100%" display="flex" flexDirection="column" flex="1 0 auto">
@@ -152,7 +140,7 @@ const UsersOverview = withStyles(styles)(
                             <AppTemplateContainer>
                                 <Typography variant="h6">
                                     <Translate
-                                        msg="users.overview.header.amount"
+                                        msg="teams.overview.header.amount"
                                         placeholders={{ amount: pageData ? pageData.totalElements : 0 }}
                                     />
                                 </Typography>
@@ -165,7 +153,7 @@ const UsersOverview = withStyles(styles)(
                                         />
                                     </Box>
                                     {
-                                        checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE) && (
+                                        checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE) && (
                                             <Box display="flex" alignItems="center">
                                                 <Box flex="0 0 auto">
                                                     <Button
@@ -174,10 +162,12 @@ const UsersOverview = withStyles(styles)(
                                                         size="small"
                                                         startIcon={<AddRounded />}
                                                         onClick={() => {
-                                                            redirectTo({ routeKey: ROUTE_KEYS.R_USER_NEW });
+                                                            redirectTo({
+                                                                routeKey: ROUTE_KEYS.R_TEAM_NEW,
+                                                            });
                                                         }}
                                                     >
-                                                        <Translate msg="users.overview.header.add_button" />
+                                                        <Translate msg="teams.overview.header.add_button" />
                                                     </Button>
                                                 </Box>
                                             </Box>
@@ -193,9 +183,8 @@ const UsersOverview = withStyles(styles)(
                                 content={this.renderContent({ listItems })}
                                 initialIsOpenState={
                                     (filterFromState.filters
-                                        && (filterFromState.filters.username.values.length > 0))
+                                        && (filterFromState.filters.name.values.length > 0))
                                 }
-
                             />
                         </Box>
                     </Box>
@@ -203,9 +192,9 @@ const UsersOverview = withStyles(styles)(
             );
         }
 
-        private renderPanel({ listItems }: { listItems: IListItem<IUserColumnName>[] }) {
+        private renderPanel({ listItems }: { listItems: IListItem<ITeamColumnNames>[] }) {
             const { state } = this.props;
-            const filterFromState = getUsersListFilter(state);
+            const filterFromState = getTeamsListFilter(state);
 
             return (
                 <>
@@ -216,43 +205,34 @@ const UsersOverview = withStyles(styles)(
                         initialFilters={filterFromState.filters}
                     />
                 </>
+
             );
         }
 
-        private renderContent({ listItems }: { listItems: IListItem<IUserColumnName>[] }) {
+        private renderContent({ listItems }: { listItems: IListItem<ITeamColumnNames>[] }) {
             const { state, classes, dispatch } = this.props;
-            const asyncUsersEntity = getAsyncUsersEntity(state);
-            const usersFetchData = asyncUsersEntity.fetch;
-            const isFetching = usersFetchData.status === AsyncStatus.Busy;
-            const hasError = usersFetchData.status === AsyncStatus.Error;
-            const usersData = asyncUsersEntity.data;
-            const pageData = usersData ? usersData.page : null;
+            const asyncTeamsEntity = getAsyncTeamsEntity(state);
+            const teamsFetchData = asyncTeamsEntity.fetch;
+            const isFetching = teamsFetchData.status === AsyncStatus.Busy;
+            const hasError = teamsFetchData.status === AsyncStatus.Error;
+            const teamsData = asyncTeamsEntity.data;
+            const pageData = teamsData ? teamsData.page : null;
             const translator = getTranslator(state);
 
-            const columns: ListColumns<IUserColumnName> = {
-                username: {
-                    label: <Translate msg="users.overview.list.labels.username" />,
-                    className: classes.username,
+            const columns: ListColumns<ITeamColumnNames> = {
+                name: {
+                    label: <Translate msg="teams.overview.list.labels.team_name" />,
+                    className: classes.teamName,
                     fixedWidth: '80%',
                 },
-                enabled: {
-                    label: <Translate msg="users.overview.list.labels.enabled" />,
-                    className: classes.enabled,
+                securityGroups: {
+                    label: <Translate msg="teams.overview.list.labels.securityGroups" />,
+                    className: classes.securityGroups,
                     fixedWidth: '5%',
                 },
-                expired: {
-                    label: <Translate msg="users.overview.list.labels.expired" />,
-                    className: classes.expired,
-                    fixedWidth: '5%',
-                },
-                locked: {
-                    label: <Translate msg="users.overview.list.labels.locked" />,
-                    className: classes.locked,
-                    fixedWidth: '5%',
-                },
-                teams: {
-                    label: <Translate msg="users.overview.list.labels.teams" />,
-                    className: classes.teams,
+                users: {
+                    label: <Translate msg="teams.overview.list.labels.users" />,
+                    className: classes.users,
                     fixedWidth: '5%',
                 },
             };
@@ -269,49 +249,57 @@ const UsersOverview = withStyles(styles)(
                                     pagination={{
                                         pageData,
                                         onChange: ({ page }) => {
-                                            this.fetchUsersWithFilterAndPagination({ newPage: page });
-                                            dispatch(setUsersListFilter({ page }));
+                                            this.fetchTeamsWithFilterAndPagination({ newPage: page });
+                                            dispatch(setTeamsListFilter({ page }));
                                         },
                                     }}
                                     listActions={[].concat({
                                         icon: <Edit />,
-                                        label: translator('users.overview.list.actions.edit'),
+                                        label: translator('teams.overview.list.actions.edit'),
                                         onClick: (id: string) => {
-                                            const users = getAsyncUsers(state);
-                                            const selectedUser = users.find((user: IUser) =>
-                                                getUniqueIdFromUser(user) === id);
+                                            const teams = getAsyncTeams(state);
+                                            const selectedTeam = teams.find((team: ITeam) =>
+                                                getUniqueIdFromTeam(team) === id);
                                             redirectTo({
-                                                routeKey: ROUTE_KEYS.R_USER_DETAIL,
+                                                routeKey: ROUTE_KEYS.R_TEAM_DETAIL,
                                                 params: {
-                                                    name: selectedUser.username,
+                                                    name: selectedTeam.teamName,
                                                 },
                                             });
                                         },
                                         hideAction: () =>
-                                            !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE),
+                                            !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE),
                                     }, {
                                         icon: <Visibility />,
-                                        label: translator('users.overview.list.actions.view'),
+                                        label: translator('teams.overview.list.action.view'),
                                         onClick: (id: string) => {
-                                            const users = getAsyncUsers(state);
-                                            const selectedUser = users.find((user: IUser) =>
-                                                getUniqueIdFromUser(user) === id);
+                                            const teams = getAsyncTeams(state);
+                                            const selectedTeam = teams.find((team: ITeam) =>
+                                                getUniqueIdFromTeam(team) === id);
                                             redirectTo({
-                                                routeKey: ROUTE_KEYS.R_USER_DETAIL,
+                                                routeKey: ROUTE_KEYS.R_TEAM_DETAIL,
                                                 params: {
-                                                    name: selectedUser.username,
+                                                    name: selectedTeam.teamName,
                                                 },
                                             });
                                         },
                                         hideAction: () =>
-                                            checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
-                                            || !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_READ),
+                                            checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE),
+                                    }, {
+                                        icon: <Delete />,
+                                        label: translator('teams.overview.list.action.delete'),
+                                        onClick: (id: string) => {
+                                            const teams = getAsyncTeams(state);
+                                            const selectedTeam = teams.find((team: ITeam) =>
+                                                getUniqueIdFromTeam(team) === id);
+                                            console.log(selectedTeam);
+                                        },
                                     })}
                                 />
                             ) : (
                                 <Box padding={2}>
                                     <Alert severity="error">
-                                        <Translate msg="users.overview.list.fetch_error" />
+                                        <Translate msg="teams.overview.list.fetch_error" />
                                     </Alert>
                                 </Box>
                             )
@@ -321,21 +309,9 @@ const UsersOverview = withStyles(styles)(
             );
         }
 
-        private onFilter(listFilters: ListFilters<Partial<IUserColumnName>>) {
-            const { dispatch } = this.props;
-            this.fetchUsersWithFilterAndPagination({ newListFilters: listFilters });
-            dispatch(setUsersListFilter({ filters: listFilters }));
-        }
-
-        private onSort(sortedColumn: ISortedColumn<IUserColumnName>) {
-            const { dispatch } = this.props;
-            this.fetchUsersWithFilterAndPagination({ newSortedColumn: sortedColumn });
-            dispatch(setUsersListFilter({ sortedColumn }));
-        }
-
         private combineFiltersFromUrlAndCurrentFilters() {
             const { state } = this.props;
-            const filterFromState = getUsersListFilter(state);
+            const filterFromState = getTeamsListFilter(state);
             const searchParams = new URLSearchParams(window.location.search);
             const defaultFilters = filterFromState.filters || getIntialFiltersFromFilterConfig(filterConfig);
             const hasValidUrlParams = Array.from(searchParams.keys()).some((r) =>
@@ -348,11 +324,9 @@ const UsersOverview = withStyles(styles)(
                     (searchParamKey: string) => {
                         if (Object.keys(filterConfig).includes(searchParamKey)) {
                             const filterValue = searchParams.get(searchParamKey);
-                            if (
-                                !filtersByUrlSearchParams[searchParamKey as keyof IUserColumnName]
-                                    .values.includes(filterValue)
-                            ) {
-                                filtersByUrlSearchParams[searchParamKey as keyof IUserColumnName]
+                            if (!filtersByUrlSearchParams[searchParamKey as keyof ITeamColumnNames]
+                                .values.includes(filterValue)) {
+                                filtersByUrlSearchParams[searchParamKey as keyof ITeamColumnNames]
                                     .values.push(filterValue);
                             }
                         }
@@ -360,32 +334,43 @@ const UsersOverview = withStyles(styles)(
                 );
                 return filtersByUrlSearchParams;
             }
-
             return defaultFilters;
         }
 
-        private fetchUsersWithFilterAndPagination({
+        private onFilter(listFilters: ListFilters<Partial<ITeamColumnNames>>) {
+            const { dispatch } = this.props;
+            this.fetchTeamsWithFilterAndPagination({ newListFilters: listFilters });
+            dispatch(setTeamsListFilter({ filters: listFilters }));
+        }
+
+        private onSort(sortedColumn: ISortedColumn<ITeamColumnNames>) {
+            const { dispatch } = this.props;
+            this.fetchTeamsWithFilterAndPagination({ newSortedColumn: sortedColumn });
+            dispatch(setTeamsListFilter({ sortedColumn }));
+        }
+
+        private fetchTeamsWithFilterAndPagination({
             newPage,
             newListFilters,
             newSortedColumn,
         }: {
             newPage?: number;
-            newListFilters?: ListFilters<Partial<IUserColumnName>>;
-            newSortedColumn?: ISortedColumn<IUserColumnName>;
+            newListFilters?: ListFilters<Partial<ITeamColumnNames>>;
+            newSortedColumn?: ISortedColumn<ITeamColumnNames>;
         }) {
             const { state } = this.props;
-            const pageData = getAsyncUsersPageData(state);
-            const filtersFromState = getUsersListFilter(state);
+            const pageData = getAsyncTeamsPageData(state);
+            const filtersFromState = getTeamsListFilter(state);
 
             const filters = newListFilters || filtersFromState.filters;
             const page = newListFilters ? 1 : newPage || pageData.number;
             const sortedColumn = newSortedColumn || filtersFromState.sortedColumn || defaultSortedColumn;
 
-            triggerFetchUsers({
+            triggerFetchTeams({
                 pagination: { page },
                 filter: {
-                    username: filters.username.values.length > 0
-                        && filters.username.values[0].toString(),
+                    name: filters.name.values.length > 0
+                        && filters.name.values[0].toString(),
                 },
                 sort: formatSortQueryParameter(sortedColumn),
             });
@@ -393,31 +378,26 @@ const UsersOverview = withStyles(styles)(
     },
 );
 
-function mapUsersToListItems(users: IUser[]): IListItem<IUserColumnName>[] {
-    return users.map((user) => ({
-        id: getUniqueIdFromUser(user),
+function mapTeamsToListItems(teams: ITeam[]): IListItem<ITeamColumnNames>[] {
+    return teams.map((team) => ({
+        id: getUniqueIdFromTeam(team),
         columns: {
-            username: user.username,
-            enabled: user.enabled ? 'Yes' : 'No',
-            expired: user.expired ? 'Yes' : 'No',
-            locked: user.locked ? 'Yes' : 'No',
-            teams: {
-                value: user.teams.length,
-                tooltip: user.teams.length > 0 && (
+            name: team.teamName,
+            securityGroups: {
+                value: team.securityGroups.length,
+                tooltip: team.securityGroups.length > 0 && (
                     <Typography variant="body2" component="div">
                         <OrderedList
-                            items={user.teams.map((team) => ({
-                                content: team.name,
+                            items={team.securityGroups.map((securityGroup) => ({
+                                content: securityGroup.name,
                             }))}
                         />
                     </Typography>
                 ),
             },
+            users: team.users.length,
         },
     }));
 }
 
-export default observe<TProps>([
-    StateChangeNotification.IAM_USERS_LIST,
-    StateChangeNotification.LIST_FILTER_USERS,
-], UsersOverview);
+export default observe<TProps>([StateChangeNotification.IAM_TEAMS_LIST], TeamsOverview);

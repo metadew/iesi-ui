@@ -14,7 +14,7 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { THEME_COLORS } from 'config/themes/colors';
 import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
-import { triggerFetchTeam } from 'state/entities/teams/triggers';
+import { triggerFetchTeamDetail } from 'state/entities/teams/triggers';
 import { getAsyncTeamDetail } from 'state/entities/teams/selectors';
 import { Autocomplete } from '@material-ui/lab';
 import { ITeam, ITeamRole } from 'models/state/team.model';
@@ -95,7 +95,7 @@ function AddRole({ onClose, onAdd, teamName, userRoles, userId, state }: IPublic
     const [role, setRole] = useState<ITeamRole>(null);
 
     useEffect(() => {
-        triggerFetchTeam({
+        triggerFetchTeamDetail({
             name: teamName,
         });
     }, [teamName]);

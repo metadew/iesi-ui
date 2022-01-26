@@ -40,6 +40,11 @@ export const MAIN_NAV_ITEMS: IMenuItem[] = [
         translationKeySuffix: 'users',
         securityPrivilege: SECURITY_PRIVILEGES.S_USERS_READ,
     }),
+    toMenuItem({
+        routeKey: ROUTE_KEYS.R_TEAMS,
+        translationKeySuffix: 'teams',
+        securityPrivilege: SECURITY_PRIVILEGES.S_TEAMS_READ,
+    }),
 ];
 
 function toMenuItem({

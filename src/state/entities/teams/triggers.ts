@@ -13,7 +13,7 @@ export const triggerFetchTeams = (filter: IFetchTeamsListPayload) => entitiesSta
     notificationsToTrigger: [StateChangeNotification.IAM_TEAMS_LIST],
 });
 
-export const triggerFetchTeam = (payload: ITeamByNamePayload) => entitiesStateManager.triggerAsyncEntityFetch<{}>({
+export const triggerFetchTeamDetail = (payload: ITeamByNamePayload) => entitiesStateManager.triggerAsyncEntityFetch<{}>({
     asyncEntityToFetch: {
         asyncEntityKey: ASYNC_ENTITY_KEYS.teamDetail,
         refreshMode: 'always',

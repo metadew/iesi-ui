@@ -8,6 +8,7 @@ app_shell:
       connections: Connections
       datasets: Datasets
       users: Users
+      teams: Teams
     title: iesi
 common:
   yes: Yes
@@ -712,4 +713,23 @@ users:
     delete_user_dialog:
       text: Are you sure you want to delete this user?
       title: Delete user
+teams:
+  overview:
+    header:
+      amount: You have {amount} teams
+      add_button:  Create new team
+    list:
+      fetch_error: Something went wrong while loading the teams, please try again.
+      filter:
+        team_name: Team name
+      sort:
+        team_name: Team name
+      labels:
+        team_name: Team name
+        securityGroups: Security groups
+        users: Users
+      actions:
+        edit: Edit
+        view: View
+        delete: Delete
 

@@ -37,7 +37,9 @@ export interface ITeamEntity {
 
 export type ITeamNames = Array<string>;
 
-export type ITeam = ITeamBase;
+export interface ITeam extends ITeamBase {
+    users?: ITeamRoleUser[]
+}
 export interface ITeamBase {
     id?: string;
     teamName: string;
@@ -54,9 +56,29 @@ export interface ITeamRole {
     id: string;
     name: string;
     privileges: ITeamPrivilege[];
+    users: ITeamRoleUser[];
 }
 
 export interface ITeamPrivilege {
     uuid: string;
     privilege: string;
+}
+
+export interface ITeamRoleUser {
+    id: string;
+    username: string;
+    enabled: boolean;
+    credentialsExpired: boolean;
+    expired: boolean;
+    locked: boolean;
+}
+
+export interface ITeamPost {
+    teamName: string;
+}
+
+export interface ITeamColumnNames {
+    name: string;
+    securityGroups: number;
+    users: number;
 }

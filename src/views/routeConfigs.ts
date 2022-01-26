@@ -20,6 +20,7 @@ import { getComponentsListFilter, getConnectionsListFilter, getScriptsListFilter
 import { IFetchScriptsListPayload } from 'models/state/scripts.models';
 import { IFetchComponentsListPayload } from 'models/state/components.model';
 import { triggerFetchUserDetail } from 'state/entities/users/triggers';
+import { triggerFetchTeamDetail } from 'state/entities/teams/triggers';
 import { ROUTE_KEYS, registerRoutes } from './routes';
 import NotFound from './appShell/NotFound';
 import Home from './Home';
@@ -44,6 +45,9 @@ import DatasetOverview from './data/DatasetOverview';
 import UserTemplate from './iam/users/UserTemplate';
 import UserOverview from './iam/users/UserOverview';
 import UserDetail from './iam/users/UserDetail';
+import TeamTemplate from './iam/teams/TeamTemplate';
+import TeamsOverview from './iam/teams/TeamsOverview';
+import TeamDetail from './iam/teams/TeamDetail';
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
@@ -296,6 +300,26 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
         component: UserDetail as React.ComponentType<unknown>,
         executeOnRoute: [{
             execute: triggerFetchUserDetail as () => unknown,
+            executeInputSelector: ({ routeLocation }) => ({
+                name: routeLocation.params.name,
+            }),
+        }],
+    }],
+}, {
+    routeKey: ROUTE_KEYS.R_TEAMS,
+    path: '/teams',
+    template: TeamTemplate,
+    component: TeamsOverview,
+    childRoutes: [{
+        routeKey: ROUTE_KEYS.R_TEAM_NEW,
+        path: '/new',
+        component: TeamDetail as React.ComponentType<unknown>,
+    }, {
+        routeKey: ROUTE_KEYS.R_TEAM_DETAIL,
+        path: '/:name',
+        component: TeamDetail as React.ComponentType<unknown>,
+        executeOnRoute: [{
+            execute: triggerFetchTeamDetail as () => unknown,
             executeInputSelector: ({ routeLocation }) => ({
                 name: routeLocation.params.name,
             }),

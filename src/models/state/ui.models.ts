@@ -8,6 +8,7 @@ import { IComponentColumnNames } from './components.model';
 import { IConnectionColumnNamesBase } from './connections.model';
 import { IDatasetColumnNames } from './datasets.model';
 import { IUserColumnName } from './user.model';
+import { ITeamColumnNames } from './team.model';
 
 export interface IUiState {
     flashMessages: IFlashMessage[];
@@ -19,6 +20,7 @@ export interface IUiState {
         executions: IListFilters<IExecutionsColumnNames>;
         datasets: IListFilters<IDatasetColumnNames>;
         users: IListFilters<IUserColumnName>;
+        teams: IListFilters<ITeamColumnNames>;
     };
 }
 

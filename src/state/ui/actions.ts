@@ -14,6 +14,7 @@ import { IConnection, IConnectionColumnNamesBase } from 'models/state/connection
 import { IComponent, IComponentColumnNamesBase } from 'models/state/components.model';
 import { IDatasetColumnNames, IDatasetImplementation } from 'models/state/datasets.model';
 import { IUserColumnName } from 'models/state/user.model';
+import { ITeamColumnNames } from 'models/state/team.model';
 
 export const triggerFlashMessage = (payload: ITriggerFlashMessagePayload) => createAction<ITriggerFlashMessagePayload>({
     type: 'TRIGGER_FLASH_MESSAGE',
@@ -295,6 +296,32 @@ export const setUsersListFilter = (payload: {
                 };
             },
             notificationsToTrigger: [StateChangeNotification.LIST_FILTER_USERS],
+        });
+    },
+});
+
+export const setTeamsListFilter = (payload: {
+    filters?: ListFilters<Partial<ITeamColumnNames>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<ITeamColumnNames>;
+}) => createAction<{
+    filters?: ListFilters<Partial<ITeamColumnNames>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<ITeamColumnNames>;
+}>({
+    type: 'UPDATE_TEAMS_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.teams = {
+                    filters: payload.filters || draftState.ui.listFilters.teams.filters,
+                    page: payload.page || draftState.ui.listFilters.teams.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.teams.sortedColumn,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_TEAMS],
         });
     },
 });
