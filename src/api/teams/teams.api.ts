@@ -11,7 +11,7 @@ import {
     ITeamDeleteUserRole,
     ITeamEntity,
 } from 'models/state/team.model';
-import { getTeamsWithDistinctUsers } from 'utils/teams/teamUtils';
+import { getTeamsWithDistinctUsers, getTeamWithDistinctUsers } from 'utils/teams/teamUtils';
 
 interface ITeamsResponse {
     _embedded: {
@@ -46,12 +46,7 @@ export function fetchTeam({ name }: ITeamByNamePayload) {
         pathParams: {
             name,
         },
-        mapResponse: ({ data }) => {
-            const team: ITeam = data;
-            const users = team.roles.map((role) => [...role.users]).flat();
-            console.log('USERS : ', users);
-            return data;
-        },
+        mapResponse: ({ data }) => getTeamWithDistinctUsers(data),
     });
 }
 

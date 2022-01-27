@@ -732,4 +732,8 @@ teams:
         edit: Edit
         view: View
         delete: Delete
+  detail:
+    side:
+      toggle_button: Details
+      team_name: Team name
 

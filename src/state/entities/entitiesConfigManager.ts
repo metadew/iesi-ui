@@ -38,6 +38,7 @@ import { IFetchUsersListPayload, IUserByNamePayload } from 'models/state/user.mo
 import {
     IFetchTeamsListPayload,
     ITeamAssignUserRolePayload,
+    ITeamBase,
     ITeamByNamePayload,
     ITeamDeleteUserRole,
 } from 'models/state/team.model';
@@ -505,6 +506,14 @@ entitiesConfigManager.register({
         fetch: {
             api: api.teams.fetchTeam,
             apiInputSelector: ({ extraInput }) => extraInput as ITeamByNamePayload,
+        },
+        create: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.teams.createTeam,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ITeamBase,
         },
     },
 });
