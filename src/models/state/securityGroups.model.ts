@@ -1,6 +1,6 @@
 import { IPageFilter } from './iesiGeneric.models';
 
-export interface IFetchSecurityGroupsPayload {
+export interface IFetchSecurityGroupListPayload {
     pagination?: IPageFilter;
     filter?: ISecurityGroupsListFilter;
     sort: string;
