@@ -82,3 +82,13 @@ export interface ITeamColumnNames {
     securityGroups: number;
     users: number;
 }
+
+export interface ITeamUserColumnNames {
+    username: string;
+    enabled: string;
+    privileges: string;
+    credentialsExpired: string;
+    expired: string;
+    locked: string;
+    role: number;
+}

@@ -88,7 +88,7 @@ export function assignRoleToUser({ id, roleId, userId }: ITeamAssignUserRolePayl
     return post<{}>({
         needsAuthentication: true,
         isIesiApi: true,
-        url: API_URLS.TEAM_BU_ID_AND_ROLE_ID,
+        url: API_URLS.TEAM_BY_ID_AND_ROLE_ID,
         body: {
             id: userId,
         },

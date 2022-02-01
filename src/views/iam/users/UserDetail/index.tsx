@@ -343,7 +343,7 @@ const UserDetail = withStyles(styles)(
             const hasRoles = roleItems.length > 0;
 
             const handleSaveAction = () => {
-                if (this.isCreateUserRoute) {
+                if (this.isCreateUserRoute()) {
                     const { passed: passedRequired, requiredFieldsState } = requiredFieldsCheck<IUserPost>({
                         data: (newUserDetail as IUserPost),
                         requiredFields: ['username', 'password', 'repeatedPassword'],
@@ -484,9 +484,8 @@ const UserDetail = withStyles(styles)(
                 <AddRole
                     onClose={() => this.setState({ isAddOpen: false })}
                     onAdd={(role: ITeamRole) => this.setState({ roleToAdd: role })}
-                    teamName={teams[selectedTeamIndex].name}
-                    userRoles={(newUserDetail as IUser).roles}
-                    userId={(newUserDetail as IUser).id}
+                    team={teams[selectedTeamIndex]}
+                    user={(newUserDetail as IUser)}
                 />
             );
         }
@@ -551,10 +550,17 @@ const UserDetail = withStyles(styles)(
         private updateUserInStateIfNewUserWasLoaded(prevProps: TProps & IObserveProps) {
             const userDetail = getAsyncUserDetail(this.props.state).data;
             const prevUserDetail = getAsyncUserDetail(prevProps.state).data;
+            const teamName = new URLSearchParams(window.location.search).get('teamName');
 
             if (getUniqueIdFromUser(userDetail) !== getUniqueIdFromUser(prevUserDetail) && userDetail) {
                 const userDetailDeepClone = clone(userDetail);
-                this.setState({ newUserDetail: userDetailDeepClone, teams: userDetailDeepClone.teams });
+                this.setState({
+                    newUserDetail: userDetailDeepClone,
+                    teams: userDetailDeepClone.teams,
+                    selectedTeamIndex: userDetailDeepClone.teams
+                        .indexOf(userDetailDeepClone.teams
+                            .find((team) => team.name === teamName)),
+                });
             }
         }
 

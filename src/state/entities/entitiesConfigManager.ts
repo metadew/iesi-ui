@@ -43,6 +43,7 @@ import {
     ITeamDeleteUserRole,
 } from 'models/state/team.model';
 import { IUserPost } from 'models/state/user.model';
+import { IFetchSecurityGroupListPayload, ISecurityGroupAssignTeamPayload } from 'models/state/securityGroups.model';
 
 // eslint-disable-next-line max-len
 const entitiesConfigManager = initAsyncEntitiesConfigManager<IState, {}, ITraceableApiError, string, IExtraProcessInput>();
@@ -514,6 +515,31 @@ entitiesConfigManager.register({
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
             apiInputSelector: ({ extraInput }) => extraInput as ITeamBase,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.teamDetailSecurityGroup,
+    operationsConfig: {
+        create: {
+            api: api.securityGroups.assignTeam,
+            apiInputSelector: ({ extraInput }) => extraInput as ISecurityGroupAssignTeamPayload,
+            mapApiResponse: ({ response }) => response,
+        },
+        remove: {
+            api: api.securityGroups.unassignTeam,
+            apiInputSelector: ({ extraInput }) => extraInput as ISecurityGroupAssignTeamPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.securityGroups,
+    operationsConfig: {
+        fetch: {
+            api: api.securityGroups.fetchSecurityGroups,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchSecurityGroupListPayload,
         },
     },
 });

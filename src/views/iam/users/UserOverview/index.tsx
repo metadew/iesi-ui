@@ -340,7 +340,6 @@ const UsersOverview = withStyles(styles)(
             const defaultFilters = filterFromState.filters || getIntialFiltersFromFilterConfig(filterConfig);
             const hasValidUrlParams = Array.from(searchParams.keys()).some((r) =>
                 Object.keys(filterConfig).includes(r));
-
             if (hasValidUrlParams) {
                 // reset filters in redux state & only set url params
                 const filtersByUrlSearchParams = getIntialFiltersFromFilterConfig(filterConfig);

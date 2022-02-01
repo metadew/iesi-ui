@@ -38,12 +38,13 @@ const API_URLS = {
     TEAMS_NAMES: '/teams/names',
     TEAM_BY_NAME: '/teams/{name}',
     TEAM_BY_ID: '/teams/{id}',
-    TEAM_BU_ID_AND_ROLE_ID: '/teams/{id}/roles/{roleId}/users',
+    TEAM_BY_ID_AND_ROLE_ID: '/teams/{id}/roles/{roleId}/users',
     TEAM_BY_ID_AND_ROLE_ID_AND_USER_ID: '/teams/{id}/roles/{roleId}/users/{userId}',
 
     SECURITY_GROUPS: '/security-groups',
     SECURITY_GROUPS_BY_NAME: '/security-groups/{name}',
     SECURITY_GROUPS_BY_ID: '/security-groups/{id}',
+    SECURITY_GROUPS_BY_ID_AND_TEAM_ID: '/security-groups/{id}/teams/{team-uuid}',
 
     OPEN_API_TRANSFORM: '/openapi/transform',
 

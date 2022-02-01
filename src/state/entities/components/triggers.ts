@@ -25,6 +25,15 @@ export const triggerFetchComponentDetail = (payload: IComponentByNameAndVersionP
             refreshMode: 'always',
             resetDataOnTrigger: true,
         },
+        onFail: ({ dispatch, error }) => {
+            dispatch(triggerFlashMessage({
+                translationKey: 'flash_messages.common.error',
+                translationPlaceholders: {
+                    error: error?.messsage,
+                },
+                type: 'error'
+            }))
+        },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENT_DETAIL],
     });

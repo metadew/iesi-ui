@@ -15,3 +15,5 @@ export const getAsyncTeamsPageData = (state: IState) => {
 };
 
 export const getAsyncTeamDetail = (state: IState) => state.entities.teamDetail;
+
+export const getAsyncTeamDetailSecurityGroup = (state: IState) => state.entities.teamDetailSecurityGroup;

@@ -240,6 +240,27 @@ export default function getMockState({
                     error: null,
                 },
             },
+            teamDetailSecurityGroup: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            securityGroups: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            securityGroupDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
         },
     };
 }

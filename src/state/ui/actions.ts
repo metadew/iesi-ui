@@ -106,7 +106,6 @@ export const checkPollingExecutionRequests = () => createAction<{}>({
     payload: {},
     async process({ getState, api }) {
         const { dispatch } = getStore();
-
         try {
             const state = getState();
             await state.ui.pollingExecutionRequestIds.forEach(async (id) => {

@@ -79,7 +79,11 @@ flash_messages:
     create: The user has been created successfully !
     add_role: The role has been assigned to the user
     delete_role: The role has been deleted from the user
-    error: 'An error has occured : {error} '
+    error: 'An error has occured'
+  team:
+    add_security_group: The team has been assigned to the security group !
+    remove_security_group: The team has been un-assigned to the security group.
+    error: 'An error has occured'
   error: 'An error has occured'
 scripts:
   overview:
@@ -683,7 +687,7 @@ users:
         save: Save
         view: View
       alert:
-        save_changes: You made changes to this user. Don't forget to save them.
+        save_changes: You made changes to this user. Don't forget to save it.
       add_roles:
         header: Choose the role you like to add
         select_role: Select a role
@@ -733,7 +737,42 @@ teams:
         view: View
         delete: Delete
   detail:
+    actions:
+      add_users: Add users
+      delete: Delete team
+      save: Save
+      view: View
     side:
       toggle_button: Details
       team_name: Team name
+      security_groups:
+        empty: No security groups
+        title: Security groups
+        add_button: Add security group
+        add_dialog:
+          select_title: Add a security group
+          cancel: Cancel
+          add: Add
+    main:
+      actions:
+        save: Save
+        delete: Delete team
+      list:
+        item:
+          labels:
+            username: Username
+            enabled: Enabled
+            credentialsExpired: Credentials expired
+            expired: Expired
+            locked: Locked
+            roles: Roles
+          actions:
+            edit: Edit
+            delete: Delete
+            view: View
+      no_users:
+        title: Please add users
+      alert:
+        save_changes: You made changes to this team. Don't forget to save it.
+
 

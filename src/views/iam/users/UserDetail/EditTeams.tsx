@@ -14,6 +14,7 @@ import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/ent
 import { Autocomplete } from '@material-ui/lab';
 import OrderedList from 'views/common/list/OrderedList';
 import { IUserTeam } from 'models/state/user.model';
+import { redirectTo, ROUTE_KEYS } from 'views/routes';
 
 const useStyles = makeStyles(({ palette }: Theme) => ({
     textField: {
@@ -107,6 +108,14 @@ function EditTeamsDialog({
                                 selected: selectedIndex === index,
                                 button: true,
                                 onSelect: () => onTeamSelected(index),
+                                onView: () => {
+                                    redirectTo({
+                                        routeKey: ROUTE_KEYS.R_TEAM_DETAIL,
+                                        params: {
+                                            name: teamItem.name,
+                                        },
+                                    });
+                                },
                             }))}
                         />
                     ) : (

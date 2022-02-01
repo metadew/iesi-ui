@@ -57,6 +57,7 @@ export enum ASYNC_ENTITY_KEYS {
 
     teams = 'teams',
     teamDetail = 'teamDetail',
+    teamDetailSecurityGroup = 'teamDetailSecurityGroup',
 
     securityGroups = 'securityGroups',
     securityGroupDetail = 'securityGroupDetail'
@@ -86,7 +87,8 @@ export interface IEntitiesState {
     userDetailRole: ICustomAsyncEntity<IUser>;
     teams: ICustomAsyncEntity<ITeamEntity>;
     teamDetail: ICustomAsyncEntity<ITeam>;
-    securityGroups: ICustomAsyncEntity<ISecurityGroupEntity>
-    securityGroupDetail: ICustomAsyncEntity<ISecurityGroup>
+    teamDetailSecurityGroup: ICustomAsyncEntity<ISecurityGroup>;
+    securityGroups: ICustomAsyncEntity<ISecurityGroupEntity>;
+    securityGroupDetail: ICustomAsyncEntity<ISecurityGroup>;
     openapi: ICustomAsyncEntity<IOpenAPIEntity>;
 }

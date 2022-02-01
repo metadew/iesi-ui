@@ -9,7 +9,7 @@ import {
     makeStyles,
     Typography,
 } from '@material-ui/core';
-import { Delete as DeleteIcon } from '@material-ui/icons';
+import { Delete as DeleteIcon, Visibility } from '@material-ui/icons';
 import { THEME_COLORS } from 'config/themes/colors';
 
 interface IPublicProps {
@@ -23,6 +23,7 @@ interface IOrderedListItem {
     button?: boolean;
     onSelect?: () => void;
     onDelete?: () => void;
+    onView?: () => void;
 }
 
 const useStyles = makeStyles(({ palette, spacing, shape, transitions, typography }) => ({
@@ -92,6 +93,20 @@ const OrderedList = ({ items }: IPublicProps) => {
                                     disableRipple
                                 >
                                     <DeleteIcon />
+                                </IconButton>
+                            </ListItemSecondaryAction>
+                        )
+                    }
+                    {
+                        typeof item.onView === 'function' && (
+                            <ListItemSecondaryAction>
+                                <IconButton
+                                    aria-label="view item"
+                                    onClick={item.onView}
+                                    className={classes.itemActionButton}
+                                    disableRipple
+                                >
+                                    <Visibility />
                                 </IconButton>
                             </ListItemSecondaryAction>
                         )

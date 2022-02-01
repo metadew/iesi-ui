@@ -11,6 +11,7 @@ import * as openapi from './openapi/openapi.api';
 import * as datasets from './datasets/datasets.api';
 import * as users from './users/users.api';
 import * as teams from './teams/teams.api';
+import * as securityGroups from './securityGroups/securityGroups.api';
 
 export const api = {
     auth,
@@ -26,4 +27,5 @@ export const api = {
     datasets,
     users,
     teams,
+    securityGroups,
 };

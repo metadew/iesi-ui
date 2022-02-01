@@ -15,12 +15,9 @@ import { checkAuthorityGeneral } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 interface IPublicProps {
-    onPlay?: () => void;
     onDelete?: () => void;
     onAdd?: () => void;
     onSave?: () => void;
-    onViewReport?: () => void;
-    onExport?: () => void;
     isCreateRoute?: boolean;
 }
 
@@ -55,7 +52,7 @@ function DetailActions({
     const DeleteButton = (
         <IconButton
             disabled
-            aria-label={translator('users.details.main.actions.delete')}
+            aria-label={translator('teams.details.main.actions.delete')}
             onClick={onDelete}
         >
             <DeleteIcon />
@@ -66,15 +63,15 @@ function DetailActions({
 
         <Box display="flex" alignItems="center" justifyContent="space-between" width="100%" paddingX={2.2}>
             <Box flex="0 0 auto">
-                {!isCreateRoute && checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
+                {!isCreateRoute && checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE)
                     ? (
                         <Tooltip
-                            title={translator('users.detail.main.actions.add_roles')}
+                            title={translator('teams.detail.main.actions.add_users')}
                             enterDelay={1000}
                             enterNextDelay={1000}
                         >
                             <IconButton
-                                aria-label={translator('users.detail.main.actions.add_roles')}
+                                aria-label={translator('teams.detail.main.actions.add_roles')}
                                 className={classes.addButton}
                                 onClick={onAdd}
                                 color="default"
@@ -87,11 +84,11 @@ function DetailActions({
             </Box>
             <Box flex="0 0 auto">
                 {
-                    checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE) && (
+                    checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE) && (
                         <Paper elevation={0} className={classes.actions}>
                             <Box display="inline" marginRight={1}>
                                 {isCreateRoute
-                                    || checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
+                                    || checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE)
                                     ? (
                                         <Button
                                             variant="contained"
@@ -101,7 +98,7 @@ function DetailActions({
                                             onClick={onSave}
                                             disabled={!isCreateRoute}
                                         >
-                                            <Translate msg="users.detail.main.actions.save" />
+                                            <Translate msg="teams.detail.main.actions.save" />
                                         </Button>
                                     )
                                     : null}
@@ -115,7 +112,7 @@ function DetailActions({
                                     {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
                                         ? (
                                             <Tooltip
-                                                title={translator('users.detail.main.actions.delete')}
+                                                title={translator('teams.detail.main.actions.delete')}
                                                 enterDelay={1000}
                                                 enterNextDelay={1000}
                                             >

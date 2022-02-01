@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import classnames from 'classnames';
 import { THEME_COLORS } from 'config/themes/colors';
 import {
@@ -15,6 +15,9 @@ import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
 import { IScriptAction } from 'models/state/scripts.models';
 import { formatNumberWithTwoDigits } from 'utils/number/format';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
+import { getAsyncComponentDetail } from 'state/entities/components/selectors';
+import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import { triggerFetchComponentDetail } from 'state/entities/components/triggers';
 import TextInput from 'views/common/input/TextInput';
 import { IObserveProps, observe } from 'views/observe';
 import { getAsyncActionTypes } from 'state/entities/constants/selectors';
@@ -24,6 +27,7 @@ import { IConstantParameter, IActionType } from 'models/state/constants.models';
 import { ChevronRightRounded } from '@material-ui/icons';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import { IParameter } from 'models/state/iesiGeneric.models';
+import Loader from 'views/common/waiting/Loader';
 import ExpandableParameter from './ExpandableParameter';
 
 interface IPublicProps {
@@ -124,8 +128,41 @@ function EditAction({
     const orderedActionTypeParameters = orderActionTypeParameters(matchingActionType.parameters, matchingActionType);
     const parameterScript = getParameterDetail(parameters, 'script');
     const parameterVersion = getParameterDetail(parameters, 'version');
+    const componentDetailStatus = getAsyncComponentDetail(state).fetch.status;
+    const prevComponentDetailStatus = usePrevious(componentDetailStatus);
+
+    console.log(componentDetailStatus);
+
+    useEffect(() => {
+        if (action.type === 'http.executeRequest'
+            && componentDetailStatus === AsyncStatus.Success
+            && prevComponentDetailStatus === AsyncStatus.Busy) {
+            ouoh();
+        }
+    }, [action, componentDetailStatus, prevComponentDetailStatus]);
+
+    const edit = () => {
+        onEdit({
+            ...action,
+            name,
+            parameters,
+            description,
+            condition,
+            errorStop: errorStopChecked,
+            errorExpected: errorExpectedChecked,
+        });
+        onClose();
+    };
+
+    const ouoh = useCallback(() => {
+        edit();
+    }, [])
+
     return (
         <Box className={classes.dialog}>
+            <Loader
+                show={componentDetailStatus === AsyncStatus.Busy}
+            />
             <Box
                 className={classes.header}
                 display="flex"
@@ -181,7 +218,7 @@ function EditAction({
                                 </Button>
                                 {
                                     !(parameterScript.value.length
-                                    && parameterVersion.value.length)
+                                        && parameterVersion.value.length)
                                     && (
                                         <Translate msg="Script name and version are required to see the script" />
                                     )
@@ -350,16 +387,23 @@ function EditAction({
     );
 
     function updateAction() {
-        onEdit({
-            ...action,
-            name,
-            parameters,
-            description,
-            condition,
-            errorStop: errorStopChecked,
-            errorExpected: errorExpectedChecked,
-        });
-        onClose();
+        if (action.type === 'http.executeRequest') {
+            triggerFetchComponentDetail({
+                name: parameters.find((parameter) => parameter.name === 'request').value,
+                version: parseInt(parameters.find((parameter) => parameter.name === 'requestVersion').value, 10),
+            });
+        } else {
+            onEdit({
+                ...action,
+                name,
+                parameters,
+                description,
+                condition,
+                errorStop: errorStopChecked,
+                errorExpected: errorExpectedChecked,
+            });
+            onClose();
+        }
     }
 
     function orderActionTypeParameters(items: IConstantParameter[], actionType: IActionType) {
@@ -400,4 +444,15 @@ function EditAction({
     }
 }
 
-export default observe<IPublicProps>([StateChangeNotification.I18N_TRANSLATIONS], EditAction);
+function usePrevious(value: any) {
+    const ref = useRef();
+    useEffect(() => {
+        ref.current = value;
+    }, [value]);
+    return ref.current;
+}
+
+export default observe<IPublicProps>([
+    StateChangeNotification.I18N_TRANSLATIONS,
+    StateChangeNotification.DESIGN_COMPONENT_DETAIL,
+], EditAction);
