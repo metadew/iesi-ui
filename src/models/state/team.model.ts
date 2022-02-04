@@ -38,7 +38,7 @@ export interface ITeamEntity {
 export type ITeamNames = Array<string>;
 
 export interface ITeam extends ITeamBase {
-    users?: ITeamRoleUser[]
+    users?: ITeamRoleUser[];
 }
 export interface ITeamBase {
     id?: string;

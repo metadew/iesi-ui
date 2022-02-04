@@ -31,8 +31,8 @@ export const triggerFetchComponentDetail = (payload: IComponentByNameAndVersionP
                 translationPlaceholders: {
                     error: error?.messsage,
                 },
-                type: 'error'
-            }))
+                type: 'error',
+            }));
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENT_DETAIL],
