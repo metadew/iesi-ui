@@ -47,6 +47,16 @@ export const initialState: IState = {
                 page: 1,
                 sortedColumn: null,
             },
+            users: {
+                filters: null,
+                page: 1,
+                sortedColumn: null,
+            },
+            teams: {
+                filters: null,
+                page: 1,
+                sortedColumn: null,
+            },
         },
     },
     auth: {
