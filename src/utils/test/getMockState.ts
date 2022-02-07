@@ -64,6 +64,11 @@ export default function getMockState({
                     page: 1,
                     sortedColumn: null,
                 },
+                securityGroups: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                },
             },
         },
         auth: {

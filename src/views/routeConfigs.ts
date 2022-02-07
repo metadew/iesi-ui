@@ -48,6 +48,8 @@ import UserDetail from './iam/users/UserDetail';
 import TeamTemplate from './iam/teams/TeamTemplate';
 import TeamsOverview from './iam/teams/TeamsOverview';
 import TeamDetail from './iam/teams/TeamDetail';
+import SecurityGroupTemplate from './iam/securityGroups/SecurityGroupTemplate';
+import SecurityGroupOverview from './iam/securityGroups/SecurityGroupOverview';
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
@@ -325,6 +327,11 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             }),
         }],
     }],
+}, {
+    routeKey: ROUTE_KEYS.R_SECURITY_GROUPS,
+    path: '/security-groups',
+    template: SecurityGroupTemplate,
+    component: SecurityGroupOverview,
 }, {
     routeKey: ROUTE_KEYS.R_OPENAPI,
     path: '/openapi',

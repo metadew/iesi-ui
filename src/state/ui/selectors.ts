@@ -10,3 +10,4 @@ export const getConnectionsListFilter = (state: IState) => state.ui.listFilters.
 export const getDatasetsListFilter = (state: IState) => state.ui.listFilters.datasets;
 export const getUsersListFilter = (state: IState) => state.ui.listFilters.users;
 export const getTeamsListFilter = (state: IState) => state.ui.listFilters.teams;
+export const getSecurityGroupsListFilter = (state: IState) => state.ui.listFilters.securityGroups;

@@ -57,6 +57,11 @@ export const initialState: IState = {
                 page: 1,
                 sortedColumn: null,
             },
+            securityGroups: {
+                filters: null,
+                page: 1,
+                sortedColumn: null,
+            },
         },
     },
     auth: {

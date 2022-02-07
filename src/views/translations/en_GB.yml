@@ -650,7 +650,7 @@ users:
   overview:
     header:
       add_button: Create new user
-      amount: There are {amount} users
+      amount: There are {amount} users registered
     list:
       fetch_error: Something went wrong while loading the users, please try again.
       filter:
@@ -720,7 +720,7 @@ users:
 teams:
   overview:
     header:
-      amount: You have {amount} teams
+      amount: There are {amount} teams
       add_button:  Create new team
     list:
       fetch_error: Something went wrong while loading the teams, please try again.
@@ -774,5 +774,49 @@ teams:
         title: Please add users
       alert:
         save_changes: You made changes to this team. Don't forget to save it.
+security_groups:
+  overview:
+    header:
+      amount: There are {amount} security groups
+      add_button:  Create new security group
+    list:
+      fetch_error: Something went wrong while loading the security groups, please try again.
+      filter:
+        name: Security group name
+      sort:
+        name: Security group name
+      labels:
+        name: Security group name
+        teams: Teams
+      actions:
+        edit: Edit
+        view: View
+        delete: Delete
+  detail:
+    actions:
+      add_team: Add teams
+      delete: Delete security group
+      save: Save
+      view: View
+    side:
+      toggle_button: Details
+      security_group_name: Security group name
+    main:
+      actions:
+        save: Save
+        delete: Delete team
+      list:
+        item:
+          labels:
+            team_name: Team name
+            users: Users
+          actions:
+            edit: Edit
+            delete: Delete
+            view: View
+      no_teams:
+        title: Please add teams
+      alert:
+        save_changes: You made changes to this security group. Don't forget to save it.
 
 

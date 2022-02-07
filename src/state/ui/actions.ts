@@ -15,6 +15,7 @@ import { IComponent, IComponentColumnNamesBase } from 'models/state/components.m
 import { IDatasetColumnNames, IDatasetImplementation } from 'models/state/datasets.model';
 import { IUserColumnName } from 'models/state/user.model';
 import { ITeamColumnNames } from 'models/state/team.model';
+import { ISecurityGroupColumnNames } from 'models/state/securityGroups.model';
 
 export const triggerFlashMessage = (payload: ITriggerFlashMessagePayload) => createAction<ITriggerFlashMessagePayload>({
     type: 'TRIGGER_FLASH_MESSAGE',
@@ -321,6 +322,32 @@ export const setTeamsListFilter = (payload: {
                 };
             },
             notificationsToTrigger: [StateChangeNotification.LIST_FILTER_TEAMS],
+        });
+    },
+});
+
+export const setSecurityGroupsListFilter = (payload: {
+    filters?: ListFilters<Partial<ISecurityGroupColumnNames>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<ISecurityGroupColumnNames>;
+}) => createAction<{
+    filters?: ListFilters<Partial<ISecurityGroupColumnNames>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<ISecurityGroupColumnNames>;
+}>({
+    type: 'UPDATE_SECURITY_GROUPS_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.securityGroups = {
+                    filters: payload.filters || draftState.ui.listFilters.securityGroups.filters,
+                    page: payload.page || draftState.ui.listFilters.securityGroups.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.securityGroups.sortedColumn,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_SECURITY_GROUPS],
         });
     },
 });

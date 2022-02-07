@@ -42,3 +42,8 @@ export interface ISecurityGroupTeam {
     id: string;
     name: string;
 }
+
+export interface ISecurityGroupColumnNames {
+    name: string;
+    teams: number;
+}

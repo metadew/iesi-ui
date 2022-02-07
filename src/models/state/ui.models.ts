@@ -9,6 +9,7 @@ import { IConnectionColumnNamesBase } from './connections.model';
 import { IDatasetColumnNames } from './datasets.model';
 import { IUserColumnName } from './user.model';
 import { ITeamColumnNames } from './team.model';
+import { ISecurityGroupColumnNames } from './securityGroups.model';
 
 export interface IUiState {
     flashMessages: IFlashMessage[];
@@ -21,6 +22,7 @@ export interface IUiState {
         datasets: IListFilters<IDatasetColumnNames>;
         users: IListFilters<IUserColumnName>;
         teams: IListFilters<ITeamColumnNames>;
+        securityGroups: IListFilters<ISecurityGroupColumnNames>;
     };
 }
 
