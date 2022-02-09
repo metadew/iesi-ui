@@ -45,6 +45,11 @@ export const MAIN_NAV_ITEMS: IMenuItem[] = [
         translationKeySuffix: 'teams',
         securityPrivilege: SECURITY_PRIVILEGES.S_TEAMS_READ,
     }),
+    toMenuItem({
+        routeKey: ROUTE_KEYS.R_SECURITY_GROUPS,
+        translationKeySuffix: 'securityGroups',
+        securityPrivilege: SECURITY_PRIVILEGES.S_GROUPS_READ,
+    }),
 ];
 
 function toMenuItem({

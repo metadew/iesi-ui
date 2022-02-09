@@ -51,8 +51,8 @@ function DetailActions({
 
     const DeleteButton = (
         <IconButton
-            disabled
-            aria-label={translator('teams.details.main.actions.delete')}
+            disabled={!isCreateRoute}
+            aria-label={translator('security_groups.details.main.actions.delete')}
             onClick={onDelete}
         >
             <DeleteIcon />
@@ -63,15 +63,15 @@ function DetailActions({
 
         <Box display="flex" alignItems="center" justifyContent="space-between" width="100%" paddingX={2.2}>
             <Box flex="0 0 auto">
-                {!isCreateRoute && checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE)
+                {!isCreateRoute && checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE)
                     ? (
                         <Tooltip
-                            title={translator('teams.detail.main.actions.add_users')}
+                            title={translator('security_groups.detail.main.actions.add_teams')}
                             enterDelay={1000}
                             enterNextDelay={1000}
                         >
                             <IconButton
-                                aria-label={translator('teams.detail.main.actions.add_users')}
+                                aria-label={translator('security_groups.detail.main.actions.add_teams')}
                                 className={classes.addButton}
                                 onClick={onAdd}
                                 color="default"
@@ -84,11 +84,11 @@ function DetailActions({
             </Box>
             <Box flex="0 0 auto">
                 {
-                    checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE) && (
+                    checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE) && (
                         <Paper elevation={0} className={classes.actions}>
                             <Box display="inline" marginRight={1}>
                                 {isCreateRoute
-                                    || checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE)
+                                    || checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE)
                                     ? (
                                         <Button
                                             variant="contained"
@@ -98,7 +98,7 @@ function DetailActions({
                                             onClick={onSave}
                                             disabled={!isCreateRoute}
                                         >
-                                            <Translate msg="teams.detail.main.actions.save" />
+                                            <Translate msg="security_groups.detail.main.actions.save" />
                                         </Button>
                                     )
                                     : null}
@@ -109,10 +109,10 @@ function DetailActions({
                                 </>
                             ) : (
                                 <>
-                                    {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
+                                    {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE)
                                         ? (
                                             <Tooltip
-                                                title={translator('teams.detail.main.actions.delete')}
+                                                title={translator('security_groups.detail.main.actions.delete')}
                                                 enterDelay={1000}
                                                 enterNextDelay={1000}
                                             >

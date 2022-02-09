@@ -23,6 +23,7 @@ import { Autocomplete } from '@material-ui/lab';
 import OrderedList from 'views/common/list/OrderedList';
 import { ITeamSecurityGroup } from 'models/state/team.model';
 import { ISecurityGroup } from 'models/state/securityGroups.model';
+import { redirectTo, ROUTE_KEYS } from 'views/routes';
 
 const useStyles = makeStyles(({ palette }: Theme) => ({
     textField: {
@@ -117,6 +118,14 @@ function EditSecurityGroupDialog({
                                 selected: selectedIndex === index,
                                 button: false,
                                 onDelete: () => onDelete(securityGroupItem.id),
+                                onView: () => {
+                                    redirectTo({
+                                        routeKey: ROUTE_KEYS.R_SECURITY_GROUP_DETAIL,
+                                        params: {
+                                            name: securityGroupItem.name,
+                                        },
+                                    });
+                                },
                             }))}
                         />
                     ) : (

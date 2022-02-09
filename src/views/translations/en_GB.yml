@@ -9,6 +9,7 @@ app_shell:
       datasets: Datasets
       users: Users
       teams: Teams
+      securityGroups: SecurityGroups
     title: iesi
 common:
   yes: Yes
@@ -81,8 +82,12 @@ flash_messages:
     delete_role: The role has been deleted from the user
     error: 'An error has occured'
   team:
+    create: The team has been created successfully !
     add_security_group: The team has been assigned to the security group !
     remove_security_group: The team has been un-assigned to the security group.
+    error: 'An error has occured'
+  securityGroup:
+    create: The security group has been created successfully !
     error: 'An error has occured'
   error: 'An error has occured'
 scripts:
@@ -711,7 +716,7 @@ users:
     save_user_dialog:
       title: Save user
       text: Are you sure to create the user {username} ?
-      text_securityGroup: Sorry, you don't have the permission to read the user because your don't belong to the group {securityGroup}
+      text_securityGroup: Sorry, you don't have the permission to create the user because your don't belong to the group {securityGroup}
       create: Create user
       update: Update user
     delete_user_dialog:
@@ -742,6 +747,11 @@ teams:
       delete: Delete team
       save: Save
       view: View
+    save_team_dialog:
+      title: Save team
+      text: Are you sure to create the team {name} ?
+      text_securityGroup: Sorry, you don't have the permission to create the user because your don't belong to the group {securityGroup}
+      create: Create team
     side:
       toggle_button: Details
       team_name: Team name
@@ -757,6 +767,7 @@ teams:
       actions:
         save: Save
         delete: Delete team
+        add_users: Add users
       list:
         item:
           labels:
@@ -800,22 +811,32 @@ security_groups:
       view: View
     side:
       toggle_button: Details
-      security_group_name: Security group name
+      name: Security group name
+    save_security_group_dialog:
+      title: Save security group
+      text: Are you sure to create the securityGroup {name} ?
+      create: Create securityGroup
     main:
       actions:
         save: Save
-        delete: Delete team
+        delete: Delete security group
+        add_teams: Add Teams
+      add_teams:
+        header: Choose a team
+        footer:
+          cancel: Cancel
+          save: Save
       list:
         item:
           labels:
             team_name: Team name
-            users: Users
           actions:
             edit: Edit
             delete: Delete
             view: View
       no_teams:
         title: Please add teams
+        button: Add teams
       alert:
         save_changes: You made changes to this security group. Don't forget to save it.
 

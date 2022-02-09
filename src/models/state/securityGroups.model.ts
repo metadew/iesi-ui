@@ -28,11 +28,10 @@ export interface ISecurityGroupEntity {
     page: IPageData;
 }
 
-export interface ISecurityGroup extends ISecurityGroupBase {
-    id: string;
-}
+export interface ISecurityGroup extends ISecurityGroupBase { }
 
 export interface ISecurityGroupBase {
+    id?: string;
     name: string;
     teams: ISecurityGroupTeam[];
     securedObjects: [];
@@ -40,10 +39,18 @@ export interface ISecurityGroupBase {
 
 export interface ISecurityGroupTeam {
     id: string;
+    teamName: string;
+}
+
+export interface ISecurityGroupPost {
     name: string;
 }
 
 export interface ISecurityGroupColumnNames {
     name: string;
     teams: number;
+}
+
+export interface ISecurityGroupTeamColumnNames {
+    teamName: string;
 }

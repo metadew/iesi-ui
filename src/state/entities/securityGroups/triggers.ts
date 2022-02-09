@@ -4,11 +4,11 @@ import { StateChangeNotification } from 'models/state.models';
 import {
     IFetchSecurityGroupListPayload,
     ISecurityGroupByNamePayload,
+    ISecurityGroupPost,
 } from 'models/state/securityGroups.model';
+import { triggerFlashMessage } from 'state/ui/actions';
 
-export const triggerFetchSecurityGroups = (
-    filter: IFetchSecurityGroupListPayload,
-) =>
+export const triggerFetchSecurityGroups = (filter: IFetchSecurityGroupListPayload) =>
     entitiesStateManager.triggerAsyncEntityFetch<{}>({
         asyncEntityToFetch: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.securityGroups,
@@ -21,9 +21,7 @@ export const triggerFetchSecurityGroups = (
         ],
     });
 
-export const triggerFetchSecurityGroupDetail = (
-    payload: ISecurityGroupByNamePayload,
-) =>
+export const triggerFetchSecurityGroupDetail = (payload: ISecurityGroupByNamePayload) =>
     entitiesStateManager.triggerAsyncEntityFetch<{}>({
         asyncEntityToFetch: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.securityGroupDetail,
@@ -34,4 +32,35 @@ export const triggerFetchSecurityGroupDetail = (
         notificationsToTrigger: [
             StateChangeNotification.IAM_SECURITY_GROUPS_DETAIL,
         ],
+    });
+
+export const triggerCreateSecurityGroupDetail = (payload: ISecurityGroupPost) =>
+    entitiesStateManager.triggerAsyncEntityCreate<{}>({
+        asyncEntityToCreate: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.securityGroupDetail,
+        },
+        extraInputSelector: () => payload,
+        onSuccess: ({ dispatch }) => {
+            dispatch(triggerFlashMessage({
+                translationKey: 'flash_messages.security_group.create',
+                type: 'success',
+            }));
+        },
+        onFail: ({ dispatch, error }) => {
+            if (error.status) {
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.common.responseError',
+                    translationPlaceholders: {
+                        message: error.response?.message,
+                    },
+                    type: 'error',
+                }));
+            } else {
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.security_group.error',
+                    type: 'error',
+                }));
+            }
+        },
+        notificationsToTrigger: [StateChangeNotification.IAM_SECURITY_GROUPS_DETAIL],
     });

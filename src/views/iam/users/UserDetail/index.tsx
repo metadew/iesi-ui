@@ -484,8 +484,9 @@ const UserDetail = withStyles(styles)(
                 <AddRole
                     onClose={() => this.setState({ isAddOpen: false })}
                     onAdd={(role: ITeamRole) => this.setState({ roleToAdd: role })}
-                    team={teams[selectedTeamIndex]}
-                    user={(newUserDetail as IUser)}
+                    teamName={teams[selectedTeamIndex].name}
+                    userRoles={(newUserDetail as IUser).roles}
+                    userId={(newUserDetail as IUser).id}
                 />
             );
         }

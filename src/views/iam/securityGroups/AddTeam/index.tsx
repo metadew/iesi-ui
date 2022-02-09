@@ -14,15 +14,12 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { THEME_COLORS } from 'config/themes/colors';
 import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
-import { triggerFetchTeamDetail } from 'state/entities/teams/triggers';
-import { getAsyncTeamDetail } from 'state/entities/teams/selectors';
-import { Autocomplete } from '@material-ui/lab';
-import { ITeam, ITeamRole } from 'models/state/team.model';
-import DescriptionList, { IDescriptionListItem } from 'views/common/list/DescriptionList';
-import { IUserPrivilege, IUserRole } from 'models/state/user.model';
+import { ITeam, ITeamBase, ITeamEntity } from 'models/state/team.model';
+import { ISecurityGroupBase, ISecurityGroupTeam } from 'models/state/securityGroups.model';
+import { getAsyncTeamsEntity } from 'state/entities/teams/selectors';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
-import Loader from 'views/common/waiting/Loader';
-import { triggerAssignUserRole } from 'state/entities/users/triggers';
+import { triggerAssignTeamToSecurityGroup, triggerFetchTeams } from 'state/entities/teams/triggers';
+import { Autocomplete } from '@material-ui/lab';
 
 const useStyles = makeStyles(({ palette, typography }) => ({
     dialog: {
@@ -82,37 +79,42 @@ const useStyles = makeStyles(({ palette, typography }) => ({
 
 interface IPublicProps {
     onClose: () => void;
-    onAdd: (role: ITeamRole) => void;
-    teamName: string;
-    userRoles: IUserRole[];
-    userId: string;
+    onAdd: (team: ITeam) => void;
+    securityGroup: ISecurityGroupBase;
 }
 
-function AddRole({ onClose, onAdd, teamName, userRoles, userId, state }: IPublicProps & IObserveProps) {
+function AddTeam({ onClose, onAdd, securityGroup, state }: IPublicProps & IObserveProps) {
     const classes = useStyles();
-    const teamStatus = getAsyncTeamDetail(state).fetch.status;
-    const team = getAsyncTeamDetail(state).data;
-    const [role, setRole] = useState<ITeamRole>(null);
+    const [teamSearchInput, setTeamSearchInput] = useState<string>('');
+    const [team, setTeam] = useState<ITeamBase>(undefined);
+    const teamsEntity = getAsyncTeamsEntity(state).data;
+    const teamsLoading = getAsyncTeamsEntity(state).fetch.status === AsyncStatus.Busy;
 
     useEffect(() => {
-        triggerFetchTeamDetail({
-            name: teamName,
+        triggerFetchTeams({
+            pagination: {
+                page: 1,
+                size: 10,
+            },
+            filter: {
+                name: teamSearchInput.length > 0 && teamSearchInput,
+            },
+            sort: 'name,asc',
         });
-    }, [teamName]);
+    }, [securityGroup, teamSearchInput]);
 
-    const handleChange = (_: React.ChangeEvent<{}>, value: ITeamRole) => {
-        setRole(value);
+    const handleChange = (_: React.ChangeEvent<{}>, value: ITeamBase) => {
+        setTeam(value);
     };
 
     const handleSubmit = () => {
-        if (role) {
-            triggerAssignUserRole({
-                id: team.id,
-                roleId: role.id,
-                userId,
+        if (team) {
+            triggerAssignTeamToSecurityGroup({
+                id: securityGroup.id,
+                teamId: team.id,
             });
-            onAdd(role);
-            setRole(null);
+            onAdd(team);
+            setTeam(null);
         }
     };
 
@@ -120,7 +122,6 @@ function AddRole({ onClose, onAdd, teamName, userRoles, userId, state }: IPublic
 
     return (
         <Box className={classes.dialog}>
-            <Loader show={teamStatus === AsyncStatus.Busy} />
             <Box
                 className={classes.header}
                 display="flex"
@@ -129,7 +130,7 @@ function AddRole({ onClose, onAdd, teamName, userRoles, userId, state }: IPublic
                 padding={2}
             >
                 <Typography variant="h2">
-                    <Translate msg="users.detail.main.add_roles.header" />
+                    <Translate msg="security_groups.detail.main.add_teams.header" />
                 </Typography>
             </Box>
             <Box padding={2}>
@@ -137,39 +138,23 @@ function AddRole({ onClose, onAdd, teamName, userRoles, userId, state }: IPublic
                     <Box marginBottom={2} width="100%">
                         <FormControl className={classes.select}>
                             <Autocomplete
-                                id="user-roles"
-                                options={team && filterExistingRoles(team, userRoles)}
-                                getOptionLabel={(option: ITeamRole) => option.name}
+                                options={teamsEntity && filterExistingTeams(teamsEntity, securityGroup.teams)}
+                                getOptionLabel={(option: ITeam) => option.teamName}
+                                loading={teamsLoading}
+                                onInputChange={(_, newValue) => setTeamSearchInput(newValue)}
                                 onChange={handleChange}
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
-                                        label="Roles"
+                                        label="team-name"
                                         variant="outlined"
                                     />
                                 )}
-
+                                freeSolo
                             />
                         </FormControl>
                     </Box>
-                    <Box
-                        display="flex"
-                        flexDirection="column"
-                        alignItems="center"
-                        marginBottom={2}
-                        width="100%"
-                    >
-                        {
-                            role && (
-                                <DescriptionList
-                                    items={mapPrivilegeToListItems(role.privileges)}
-                                    noLineAfterListItem
-                                />
-                            )
-                        }
-                    </Box>
                 </Paper>
-
                 <Box marginTop={3} textAlign="right">
                     <ButtonGroup size="small">
                         <Button
@@ -178,7 +163,7 @@ function AddRole({ onClose, onAdd, teamName, userRoles, userId, state }: IPublic
                             onClick={handleClose}
                             disableElevation
                         >
-                            <Translate msg="users.detail.main.add_roles.footer.cancel" />
+                            <Translate msg="security_groups.detail.main.add_teams.footer.cancel" />
                         </Button>
                         <Button
                             variant="contained"
@@ -186,7 +171,7 @@ function AddRole({ onClose, onAdd, teamName, userRoles, userId, state }: IPublic
                             onClick={handleSubmit}
                             disableElevation
                         >
-                            <Translate msg="users.detail.main.add_roles.footer.save" />
+                            <Translate msg="security_groups.detail.main.add_teams.footer.save" />
                         </Button>
                     </ButtonGroup>
                 </Box>
@@ -195,19 +180,12 @@ function AddRole({ onClose, onAdd, teamName, userRoles, userId, state }: IPublic
     );
 }
 
-function filterExistingRoles(team: ITeam, roles: IUserRole[]) {
-    return team.roles.filter((teamRole) => !roles.find((role) => role.id === teamRole.id));
-}
-
-function mapPrivilegeToListItems(privileges: IUserPrivilege[]) {
-    const listItems: IDescriptionListItem[] = privileges.map((privilege) => ({
-        label: privilege.privilege,
-        value: '',
-    }));
-
-    return listItems;
+function filterExistingTeams(teamEntity: ITeamEntity, securityGroupTeams: ISecurityGroupTeam[]) {
+    return teamEntity.teams.filter((team) => team.id !== securityGroupTeams
+        .find((securityGroupTeam) => securityGroupTeam.id === team.id)?.id);
 }
 
 export default observe<IPublicProps>([
-    StateChangeNotification.IAM_TEAMS_DETAIL,
-], AddRole);
+    StateChangeNotification.IAM_SECURITY_GROUPS_DETAIL,
+    StateChangeNotification.IAM_TEAMS_LIST,
+], AddTeam);

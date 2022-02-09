@@ -14,15 +14,12 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { THEME_COLORS } from 'config/themes/colors';
 import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
-import { triggerFetchTeamDetail } from 'state/entities/teams/triggers';
-import { getAsyncTeamDetail } from 'state/entities/teams/selectors';
-import { Autocomplete } from '@material-ui/lab';
-import { ITeam, ITeamRole } from 'models/state/team.model';
-import DescriptionList, { IDescriptionListItem } from 'views/common/list/DescriptionList';
-import { IUserPrivilege, IUserRole } from 'models/state/user.model';
+import { ITeamBase, ITeamRole } from 'models/state/team.model';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
-import Loader from 'views/common/waiting/Loader';
-import { triggerAssignUserRole } from 'state/entities/users/triggers';
+import { Autocomplete } from '@material-ui/lab';
+import { IUser, IUserBase } from 'models/state/user.model';
+import { getAsyncUsersEntity } from 'state/entities/users/selectors';
+import { triggerAssignUserRole, triggerFetchUsers } from 'state/entities/users/triggers';
 
 const useStyles = makeStyles(({ palette, typography }) => ({
     dialog: {
@@ -82,37 +79,48 @@ const useStyles = makeStyles(({ palette, typography }) => ({
 
 interface IPublicProps {
     onClose: () => void;
-    onAdd: (role: ITeamRole) => void;
-    teamName: string;
-    userRoles: IUserRole[];
-    userId: string;
+    onAdd: (user: IUser, role: ITeamRole) => void;
+    team: ITeamBase;
 }
 
-function AddRole({ onClose, onAdd, teamName, userRoles, userId, state }: IPublicProps & IObserveProps) {
+function AddUser({ onClose, onAdd, team, state }: IPublicProps & IObserveProps) {
     const classes = useStyles();
-    const teamStatus = getAsyncTeamDetail(state).fetch.status;
-    const team = getAsyncTeamDetail(state).data;
-    const [role, setRole] = useState<ITeamRole>(null);
+    const [userSearchInput, setUserSearchInput] = useState<string>('');
+    const [user, setUser] = useState<IUserBase>(undefined);
+    const [role, setRole] = useState<ITeamRole>(undefined);
+    const usersEntity = getAsyncUsersEntity(state).data;
+    const usersLoading = getAsyncUsersEntity(state).fetch.status === AsyncStatus.Busy;
 
     useEffect(() => {
-        triggerFetchTeamDetail({
-            name: teamName,
+        triggerFetchUsers({
+            pagination: {
+                page: 1,
+                size: 10,
+            },
+            filter: {
+                username: userSearchInput.length > 0 && userSearchInput,
+            },
+            sort: 'username,asc',
         });
-    }, [teamName]);
+    }, [userSearchInput]);
 
-    const handleChange = (_: React.ChangeEvent<{}>, value: ITeamRole) => {
+    const handleChangeUser = (_: React.ChangeEvent<{}>, value: IUserBase) => {
+        setUser(value);
+    };
+
+    const handleChangeRole = (_: React.ChangeEvent<{}>, value: ITeamRole) => {
         setRole(value);
     };
 
     const handleSubmit = () => {
-        if (role) {
+        if (user && role) {
             triggerAssignUserRole({
                 id: team.id,
                 roleId: role.id,
-                userId,
+                userId: user.id,
             });
-            onAdd(role);
-            setRole(null);
+            onAdd(user, role);
+            setUser(null);
         }
     };
 
@@ -120,7 +128,6 @@ function AddRole({ onClose, onAdd, teamName, userRoles, userId, state }: IPublic
 
     return (
         <Box className={classes.dialog}>
-            <Loader show={teamStatus === AsyncStatus.Busy} />
             <Box
                 className={classes.header}
                 display="flex"
@@ -129,7 +136,7 @@ function AddRole({ onClose, onAdd, teamName, userRoles, userId, state }: IPublic
                 padding={2}
             >
                 <Typography variant="h2">
-                    <Translate msg="users.detail.main.add_roles.header" />
+                    <Translate msg="teams.detail.main.add_users.header" />
                 </Typography>
             </Box>
             <Box padding={2}>
@@ -137,39 +144,40 @@ function AddRole({ onClose, onAdd, teamName, userRoles, userId, state }: IPublic
                     <Box marginBottom={2} width="100%">
                         <FormControl className={classes.select}>
                             <Autocomplete
-                                id="user-roles"
-                                options={team && filterExistingRoles(team, userRoles)}
-                                getOptionLabel={(option: ITeamRole) => option.name}
-                                onChange={handleChange}
+                                options={usersEntity && usersEntity.users}
+                                getOptionLabel={(option: IUser) => option.username}
+                                loading={usersLoading}
+                                onInputChange={(_, newValue) => setUserSearchInput(newValue)}
+                                onChange={handleChangeUser}
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
-                                        label="Roles"
+                                        label="user-name"
                                         variant="outlined"
                                     />
                                 )}
-
+                                freeSolo
                             />
                         </FormControl>
                     </Box>
-                    <Box
-                        display="flex"
-                        flexDirection="column"
-                        alignItems="center"
-                        marginBottom={2}
-                        width="100%"
-                    >
-                        {
-                            role && (
-                                <DescriptionList
-                                    items={mapPrivilegeToListItems(role.privileges)}
-                                    noLineAfterListItem
-                                />
-                            )
-                        }
+                    <Box marginBottom={2} width="100%">
+                        <FormControl className={classes.select}>
+                            <Autocomplete
+                                options={user && filterExistingRoles(user, team.roles)}
+                                getOptionLabel={(option: ITeamRole) => option.name}
+                                onChange={handleChangeRole}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        label="role-name"
+                                        variant="outlined"
+                                    />
+                                )}
+                                disabled={!user}
+                            />
+                        </FormControl>
                     </Box>
                 </Paper>
-
                 <Box marginTop={3} textAlign="right">
                     <ButtonGroup size="small">
                         <Button
@@ -178,7 +186,7 @@ function AddRole({ onClose, onAdd, teamName, userRoles, userId, state }: IPublic
                             onClick={handleClose}
                             disableElevation
                         >
-                            <Translate msg="users.detail.main.add_roles.footer.cancel" />
+                            <Translate msg="teams.detail.main.add_roles.footer.cancel" />
                         </Button>
                         <Button
                             variant="contained"
@@ -186,7 +194,7 @@ function AddRole({ onClose, onAdd, teamName, userRoles, userId, state }: IPublic
                             onClick={handleSubmit}
                             disableElevation
                         >
-                            <Translate msg="users.detail.main.add_roles.footer.save" />
+                            <Translate msg="teams.detail.main.add_roles.footer.save" />
                         </Button>
                     </ButtonGroup>
                 </Box>
@@ -195,19 +203,11 @@ function AddRole({ onClose, onAdd, teamName, userRoles, userId, state }: IPublic
     );
 }
 
-function filterExistingRoles(team: ITeam, roles: IUserRole[]) {
-    return team.roles.filter((teamRole) => !roles.find((role) => role.id === teamRole.id));
-}
-
-function mapPrivilegeToListItems(privileges: IUserPrivilege[]) {
-    const listItems: IDescriptionListItem[] = privileges.map((privilege) => ({
-        label: privilege.privilege,
-        value: '',
-    }));
-
-    return listItems;
+function filterExistingRoles(user: IUser, roles: ITeamRole[]) {
+    return roles.filter((role) => role.id !== user.roles
+        .find((userRole) => userRole.id === role.id)?.id);
 }
 
 export default observe<IPublicProps>([
-    StateChangeNotification.IAM_TEAMS_DETAIL,
-], AddRole);
+    StateChangeNotification.IAM_USERS_LIST,
+], AddUser);

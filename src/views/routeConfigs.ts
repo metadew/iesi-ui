@@ -50,6 +50,8 @@ import TeamsOverview from './iam/teams/TeamsOverview';
 import TeamDetail from './iam/teams/TeamDetail';
 import SecurityGroupTemplate from './iam/securityGroups/SecurityGroupTemplate';
 import SecurityGroupOverview from './iam/securityGroups/SecurityGroupOverview';
+import SecurityGroupDetail from './iam/securityGroups/SecurityGroupDetail';
+import { triggerFetchSecurityGroupDetail } from 'state/entities/securityGroups/triggers';
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
@@ -332,6 +334,21 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     path: '/security-groups',
     template: SecurityGroupTemplate,
     component: SecurityGroupOverview,
+    childRoutes: [{
+        routeKey: ROUTE_KEYS.R_SECURITY_GROUP_NEW,
+        path: '/new',
+        component: SecurityGroupDetail as React.ComponentType<unknown>,
+    }, {
+        routeKey: ROUTE_KEYS.R_SECURITY_GROUP_DETAIL,
+        path: '/:name',
+        component: SecurityGroupDetail as React.ComponentType<unknown>,
+        executeOnRoute: [{
+            execute: triggerFetchSecurityGroupDetail as () => unknown,
+            executeInputSelector: ({ routeLocation }) => ({
+                name: routeLocation.params.name,
+            }),
+        }],
+    }],
 }, {
     routeKey: ROUTE_KEYS.R_OPENAPI,
     path: '/openapi',

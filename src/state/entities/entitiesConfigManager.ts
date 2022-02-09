@@ -43,7 +43,12 @@ import {
     ITeamDeleteUserRole,
 } from 'models/state/team.model';
 import { IUserPost } from 'models/state/user.model';
-import { IFetchSecurityGroupListPayload, ISecurityGroupAssignTeamPayload } from 'models/state/securityGroups.model';
+import {
+    IFetchSecurityGroupListPayload,
+    ISecurityGroupAssignTeamPayload,
+    ISecurityGroupBase,
+    ISecurityGroupByNamePayload,
+} from 'models/state/securityGroups.model';
 
 // eslint-disable-next-line max-len
 const entitiesConfigManager = initAsyncEntitiesConfigManager<IState, {}, ITraceableApiError, string, IExtraProcessInput>();
@@ -540,6 +545,26 @@ entitiesConfigManager.register({
         fetch: {
             api: api.securityGroups.fetchSecurityGroups,
             apiInputSelector: ({ extraInput }) => extraInput as IFetchSecurityGroupListPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.securityGroupDetail,
+    operationsConfig: {
+        fetch: {
+            api: api.securityGroups.fetchSecurityGroup,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ISecurityGroupByNamePayload,
+        },
+        create: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.securityGroups.createSecurityGroup,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ISecurityGroupBase,
         },
     },
 });

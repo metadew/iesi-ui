@@ -69,14 +69,14 @@ const defaultSortedColumn: ISortedColumn<ISecurityGroupColumnNames> = {
 
 const filterConfig: FilterConfig<Partial<ISecurityGroupColumnNames>> = {
     name: {
-        label: <Translate msg="security_groups.overview.list.filter.security_group_name" />,
+        label: <Translate msg="security_groups.overview.list.filter.name" />,
         filterType: FilterType.Search,
     },
 };
 
 const sortActions: SortActions<Partial<ISecurityGroupColumnNames>> = {
     name: {
-        label: <Translate msg="security_groups.overview.list.sort.security_group_name" />,
+        label: <Translate msg="security_groups.overview.list.sort.name" />,
         sortType: SortType.String,
     },
 };
@@ -377,6 +377,7 @@ const SecurityGroupsOverview = withStyles(styles)(
 );
 
 function mapSecurityGroupsToListItems(securityGroups: ISecurityGroup[]): IListItem<ISecurityGroupColumnNames>[] {
+    console.log(securityGroups[0]);
     return securityGroups.map((securityGroup) => ({
         id: getUniqueIdFromSecurityGroup(securityGroup),
         columns: {
@@ -387,7 +388,7 @@ function mapSecurityGroupsToListItems(securityGroups: ISecurityGroup[]): IListIt
                     <Typography variant="body2" component="div">
                         <OrderedList
                             items={securityGroup.teams.map((team) => ({
-                                content: team.name,
+                                content: team.teamName,
                             }))}
                         />
                     </Typography>

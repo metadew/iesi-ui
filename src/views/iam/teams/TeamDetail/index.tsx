@@ -26,6 +26,7 @@ import { getAsyncTeamDetail, getAsyncTeamDetailSecurityGroup } from 'state/entit
 import { getAsyncUserDetailRole } from 'state/entities/users/selectors';
 import {
     triggerAssignTeamToSecurityGroup,
+    triggerCreateTeamDetail,
     triggerUnassignTeamToSecurityGroup,
 } from 'state/entities/teams/triggers';
 import { getUniqueIdFromTeam } from 'utils/teams/teamUtils';
@@ -42,9 +43,11 @@ import { getTranslator } from 'state/i18n/selectors';
 import TextInput from 'views/common/input/TextInput';
 import DescriptionList from 'views/common/list/DescriptionList';
 import GenericList from 'views/common/list/GenericList';
-import AddRole from 'views/iam/users/UserDetail/AddRole';
 import { IListItem, ListColumns } from 'models/list.models';
 import OrderedList from 'views/common/list/OrderedList';
+import { IUser } from 'models/state/user.model';
+import ClosableDialog from 'views/common/layout/ClosableDialog';
+import AddUser from '../AddUser';
 import EditSecurityGroups from './EditSecurityGroups';
 import DetailActions from './DetailActions';
 
@@ -123,11 +126,14 @@ const TeamDetail = withStyles(styles)(
             const { state } = this.props;
             const {
                 isAddOpen,
+                isSaveDialogOpen,
+                newTeamDetail,
             } = this.state;
             const teamDetailAsyncStatus = getAsyncTeamDetail(state).fetch.status;
             const teamSecurityGroupCreateStatus = getAsyncTeamDetailSecurityGroup(state).create.status;
             const teamSecurityGroupRemoveStatus = getAsyncTeamDetailSecurityGroup(state).remove.status;
             const teamAssignUserRoleCreateStatus = getAsyncUserDetailRole(state).create.status;
+            const translator = getTranslator(state);
 
             return (
                 <>
@@ -150,15 +156,43 @@ const TeamDetail = withStyles(styles)(
                         }
                         goBackTo={ROUTE_KEYS.R_TEAMS}
                     />
+                    <ClosableDialog
+                        title={translator('teams.detail.save_team_dialog.title')}
+                        open={isSaveDialogOpen}
+                        onClose={() => this.setState({ isSaveDialogOpen: false })}
+                    >
+                        <Typography>
+                            <Translate
+                                msg="teams.detail.save_team_dialog.text"
+                                placeholders={{
+                                    name: newTeamDetail.teamName,
+                                }}
+                            />
+                        </Typography>
+                        <Box display="flex" alignItems="center" justifyContent="center" marginTop={2}>
+                            <Box paddingRight={1}>
+                                <Button
+                                    id="save-team"
+                                    variant="contained"
+                                    color="secondary"
+                                    onClick={() =>
+                                        triggerCreateTeamDetail(newTeamDetail as ITeamPost)}
+                                >
+                                    <Translate msg="teams.detail.save_team_dialog.create" />
+                                </Button>
+                            </Box>
+                        </Box>
+                    </ClosableDialog>
                 </>
             );
         }
 
         private renderTeamDetailPanel() {
             const { state } = this.props;
-            const { newTeamDetail, selectedSecurityGroupIndex } = this.state;
+            const { newTeamDetail, selectedSecurityGroupIndex, users } = this.state;
             const translator = getTranslator(state);
 
+            console.log('USERS : ', users);
             return (
                 <Box
                     mt={1}
@@ -394,10 +428,35 @@ const TeamDetail = withStyles(styles)(
                 newTeamDetail,
             } = this.state;
             return (
-                <AddRole
+                <AddUser
                     onClose={() => this.setState({ isAddOpen: false })}
-                    onAdd={(role: ITeamRole) => console.log('ROLE : ', role)}
-                    team={newTeamDetail as ITeamBase}
+                    onAdd={(chosenUser: IUser, roleChosen: ITeamRole) => {
+                        const userTeamRole: ITeamRoleUser = {
+                            id: chosenUser.id,
+                            username: chosenUser.username,
+                            enabled: chosenUser.enabled,
+                            credentialsExpired: chosenUser.credentialsExpired,
+                            expired: chosenUser.expired,
+                            locked: chosenUser.locked,
+                        };
+                        this.updateTeam({
+                            roles: (newTeamDetail as ITeamBase).roles.map((teamRole) => {
+                                if (teamRole.id === roleChosen.id) {
+                                    return {
+                                        ...teamRole,
+                                        users: [...teamRole.users, userTeamRole],
+                                    };
+                                }
+                                return teamRole;
+                            }),
+                        });
+                        if (!this.state.users.find((user) => user.id === chosenUser.id)) {
+                            this.setState((prevState) => ({
+                                users: [...prevState.users, userTeamRole],
+                            }));
+                        }
+                    }}
+                    team={(newTeamDetail as ITeamBase)}
                 />
             );
         }
@@ -539,12 +598,9 @@ function mapUserToListItems(users: ITeamRoleUser[], team: ITeamBase) {
     return newListItems;
 }
 
-export default observe(
-    [
-        StateChangeNotification.I18N_TRANSLATIONS,
-        StateChangeNotification.IAM_TEAMS_DETAIL,
-        StateChangeNotification.IAM_TEAM_DETAIL_SECURITY_GROUP,
-        StateChangeNotification.IAM_USER_DETAIL_ROLE,
-    ],
-    withRouter(TeamDetail),
-);
+export default observe([
+    StateChangeNotification.I18N_TRANSLATIONS,
+    StateChangeNotification.IAM_TEAMS_DETAIL,
+    StateChangeNotification.IAM_TEAM_DETAIL_SECURITY_GROUP,
+    StateChangeNotification.IAM_USER_DETAIL_ROLE,
+], withRouter(TeamDetail));

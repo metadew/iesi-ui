@@ -50,7 +50,10 @@ const useStyles = makeStyles(({ palette, spacing, shape, transitions, typography
         flex: '1 1 auto',
     },
     itemActions: {
+        width: 64,
+        display: 'flex',
         flex: '0 1 auto',
+        justifyContent: 'space-between',
     },
     itemActionButton: {
         padding: 0,
@@ -83,9 +86,9 @@ const OrderedList = ({ items }: IPublicProps) => {
                         <Typography className={classes.counter}>{index}</Typography>
                     </ListItemIcon>
                     <ListItemText primary={item.content} />
-                    {
-                        typeof item.onDelete === 'function' && (
-                            <ListItemSecondaryAction>
+                    <ListItemSecondaryAction className={classes.itemActions}>
+                        {
+                            typeof item.onDelete === 'function' && (
                                 <IconButton
                                     aria-label="delete item"
                                     onClick={item.onDelete}
@@ -94,12 +97,10 @@ const OrderedList = ({ items }: IPublicProps) => {
                                 >
                                     <DeleteIcon />
                                 </IconButton>
-                            </ListItemSecondaryAction>
-                        )
-                    }
-                    {
-                        typeof item.onView === 'function' && (
-                            <ListItemSecondaryAction>
+                            )
+                        }
+                        {
+                            typeof item.onView === 'function' && (
                                 <IconButton
                                     aria-label="view item"
                                     onClick={item.onView}
@@ -108,9 +109,10 @@ const OrderedList = ({ items }: IPublicProps) => {
                                 >
                                     <Visibility />
                                 </IconButton>
-                            </ListItemSecondaryAction>
-                        )
-                    }
+                            )
+                        }
+                    </ListItemSecondaryAction>
+
                 </ListItemOverride>
             ))}
         </List>
