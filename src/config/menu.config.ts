@@ -47,7 +47,7 @@ export const MAIN_NAV_ITEMS: IMenuItem[] = [
     }),
     toMenuItem({
         routeKey: ROUTE_KEYS.R_SECURITY_GROUPS,
-        translationKeySuffix: 'securityGroups',
+        translationKeySuffix: 'security_groups',
         securityPrivilege: SECURITY_PRIVILEGES.S_GROUPS_READ,
     }),
 ];

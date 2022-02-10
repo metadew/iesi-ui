@@ -3,6 +3,7 @@ import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { StateChangeNotification } from 'models/state.models';
 import {
     IFetchSecurityGroupListPayload,
+    ISecurityGroupByIdPayload,
     ISecurityGroupByNamePayload,
     ISecurityGroupPost,
 } from 'models/state/securityGroups.model';
@@ -43,6 +44,37 @@ export const triggerCreateSecurityGroupDetail = (payload: ISecurityGroupPost) =>
         onSuccess: ({ dispatch }) => {
             dispatch(triggerFlashMessage({
                 translationKey: 'flash_messages.security_group.create',
+                type: 'success',
+            }));
+        },
+        onFail: ({ dispatch, error }) => {
+            if (error.status) {
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.common.responseError',
+                    translationPlaceholders: {
+                        message: error.response?.message,
+                    },
+                    type: 'error',
+                }));
+            } else {
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.security_group.error',
+                    type: 'error',
+                }));
+            }
+        },
+        notificationsToTrigger: [StateChangeNotification.IAM_SECURITY_GROUPS_DETAIL],
+    });
+
+export const triggerDeleteSecurityGroupDetail = (payload: ISecurityGroupByIdPayload) =>
+    entitiesStateManager.triggerAsyncEntityRemove<{}>({
+        asyncEntityToRemove: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.securityGroupDetail,
+        },
+        extraInputSelector: () => payload,
+        onSuccess: ({ dispatch }) => {
+            dispatch(triggerFlashMessage({
+                translationKey: 'flash_messages.security_group.delete',
                 type: 'success',
             }));
         },

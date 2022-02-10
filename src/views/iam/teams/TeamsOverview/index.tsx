@@ -16,8 +16,13 @@ import {
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getTeamsListFilter } from 'state/ui/selectors';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
-import { getAsyncTeams, getAsyncTeamsEntity, getAsyncTeamsPageData } from 'state/entities/teams/selectors';
-import { triggerFetchTeams } from 'state/entities/teams/triggers';
+import {
+    getAsyncTeamDetail,
+    getAsyncTeams,
+    getAsyncTeamsEntity,
+    getAsyncTeamsPageData,
+} from 'state/entities/teams/selectors';
+import { triggerDeleteTeamDetail, triggerFetchTeams } from 'state/entities/teams/triggers';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { setTeamsListFilter } from 'state/ui/actions';
 import { getUniqueIdFromTeam } from 'utils/teams/teamUtils';
@@ -30,6 +35,7 @@ import { checkAuthorityGeneral } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
+import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { getTranslator } from 'state/i18n/selectors';
 import GenericList from 'views/common/list/GenericList';
@@ -91,8 +97,12 @@ const TeamsOverview = withStyles(styles)(
 
             this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
             this.fetchTeamsWithFilterAndPagination = this.fetchTeamsWithFilterAndPagination.bind(this);
+            // eslint-disable-next-line max-len
+            this.closeDeleteTeamDialogAfterSuccessfulDelete = this.closeDeleteTeamDialogAfterSuccessfulDelete.bind(this);
+
             this.onFilter = this.onFilter.bind(this);
             this.onSort = this.onSort.bind(this);
+            this.onDeleteTeam = this.onDeleteTeam.bind(this);
 
             this.renderPanel = this.renderPanel.bind(this);
             this.renderContent = this.renderContent.bind(this);
@@ -120,14 +130,19 @@ const TeamsOverview = withStyles(styles)(
                     },
                 }));
             }
+
+            this.closeDeleteTeamDialogAfterSuccessfulDelete(prevProps);
         }
 
         public render() {
             const { classes, state } = this.props;
+            const { teamIdToDelete } = this.state;
             const pageData = getAsyncTeamsPageData(state);
             const filterFromState = getTeamsListFilter(state);
             const teams = getAsyncTeams(state);
             const listItems = mapTeamsToListItems(teams);
+            const translator = getTranslator(state);
+            const deleteStatus = getAsyncTeamDetail(state).remove.status;
 
             return (
                 <>
@@ -185,6 +200,14 @@ const TeamsOverview = withStyles(styles)(
                                     (filterFromState.filters
                                         && (filterFromState.filters.name.values.length > 0))
                                 }
+                            />
+                            <ConfirmationDialog
+                                title={translator('teams.overview.delete_team_dialog.title')}
+                                text={translator('teams.overview.delete_Team_dialog.text')}
+                                open={!!teamIdToDelete}
+                                onClose={() => this.setState({ teamIdToDelete: null })}
+                                onConfirm={this.onDeleteTeam}
+                                showLoader={deleteStatus === AsyncStatus.Busy}
                             />
                         </Box>
                     </Box>
@@ -271,7 +294,7 @@ const TeamsOverview = withStyles(styles)(
                                             !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE),
                                     }, {
                                         icon: <Visibility />,
-                                        label: translator('teams.overview.list.action.view'),
+                                        label: translator('teams.overview.list.actions.view'),
                                         onClick: (id: string) => {
                                             const teams = getAsyncTeams(state);
                                             const selectedTeam = teams.find((team: ITeam) =>
@@ -287,12 +310,12 @@ const TeamsOverview = withStyles(styles)(
                                             checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE),
                                     }, {
                                         icon: <Delete />,
-                                        label: translator('teams.overview.list.action.delete'),
+                                        label: translator('teams.overview.list.actions.delete'),
                                         onClick: (id: string) => {
                                             const teams = getAsyncTeams(state);
                                             const selectedTeam = teams.find((team: ITeam) =>
                                                 getUniqueIdFromTeam(team) === id);
-                                            console.log(selectedTeam);
+                                            this.setState({ teamIdToDelete: selectedTeam.id });
                                         },
                                     })}
                                 />
@@ -337,6 +360,14 @@ const TeamsOverview = withStyles(styles)(
             return defaultFilters;
         }
 
+        private onDeleteTeam() {
+            const { teamIdToDelete } = this.state;
+
+            if (teamIdToDelete) {
+                triggerDeleteTeamDetail({ id: teamIdToDelete });
+            }
+        }
+
         private onFilter(listFilters: ListFilters<Partial<ITeamColumnNames>>) {
             const { dispatch } = this.props;
             this.fetchTeamsWithFilterAndPagination({ newListFilters: listFilters });
@@ -347,6 +378,16 @@ const TeamsOverview = withStyles(styles)(
             const { dispatch } = this.props;
             this.fetchTeamsWithFilterAndPagination({ newSortedColumn: sortedColumn });
             dispatch(setTeamsListFilter({ sortedColumn }));
+        }
+
+        private closeDeleteTeamDialogAfterSuccessfulDelete(prevProps: TProps & IObserveProps) {
+            const { status } = getAsyncTeamDetail(this.props.state).remove;
+            const prevStatus = getAsyncTeamDetail(prevProps.state).remove.status;
+
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                this.setState({ teamIdToDelete: null });
+                this.fetchTeamsWithFilterAndPagination({});
+            }
         }
 
         private fetchTeamsWithFilterAndPagination({
@@ -400,4 +441,7 @@ function mapTeamsToListItems(teams: ITeam[]): IListItem<ITeamColumnNames>[] {
     }));
 }
 
-export default observe<TProps>([StateChangeNotification.IAM_TEAMS_LIST], TeamsOverview);
+export default observe<TProps>([
+    StateChangeNotification.IAM_TEAMS_LIST,
+    StateChangeNotification.IAM_TEAMS_DETAIL,
+], TeamsOverview);

@@ -51,7 +51,6 @@ function DetailActions({
 
     const DeleteButton = (
         <IconButton
-            disabled
             aria-label={translator('teams.details.main.actions.delete')}
             onClick={onDelete}
         >
@@ -103,24 +102,17 @@ function DetailActions({
                                     )
                                     : null}
                             </Box>
-                            {isCreateRoute ? (
-                                <>
-                                    {DeleteButton}
-                                </>
-                            ) : (
-                                <>
-                                    {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
-                                        ? (
-                                            <Tooltip
-                                                title={translator('teams.detail.main.actions.delete')}
-                                                enterDelay={1000}
-                                                enterNextDelay={1000}
-                                            >
-                                                {DeleteButton}
-                                            </Tooltip>
-                                        ) : null}
-                                </>
-                            )}
+                            {!isCreateRoute
+                                && checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE)
+                                    && (
+                                        <Tooltip
+                                            title={translator('teams.detail.main.actions.delete')}
+                                            enterDelay={1000}
+                                            enterNextDelay={1000}
+                                        >
+                                            {DeleteButton}
+                                        </Tooltip>
+                                    )}
                         </Paper>
                     )
                 }

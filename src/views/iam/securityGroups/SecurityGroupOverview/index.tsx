@@ -17,11 +17,12 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getSecurityGroupsListFilter } from 'state/ui/selectors';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import {
+    getAsyncSecurityGroupDetail,
     getAsyncSecurityGroups,
     getAsyncSecurityGroupsEntity,
     getAsyncSecurityGroupsPageData,
 } from 'state/entities/securityGroups/selectors';
-import { triggerFetchSecurityGroups } from 'state/entities/securityGroups/triggers';
+import { triggerDeleteSecurityGroupDetail, triggerFetchSecurityGroups } from 'state/entities/securityGroups/triggers';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { setSecurityGroupsListFilter } from 'state/ui/actions';
 import { getUniqueIdFromSecurityGroup } from 'utils/securityGroups/securityGroupUtils';
@@ -39,6 +40,7 @@ import GenericList from 'views/common/list/GenericList';
 import { Alert } from '@material-ui/lab';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import { StateChangeNotification } from 'models/state.models';
+import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 
 const styles = ({ palette, typography }: Theme) => createStyles({
     header: {
@@ -93,9 +95,12 @@ const SecurityGroupsOverview = withStyles(styles)(
             this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
             // eslint-disable-next-line max-len
             this.fetchSecurityGroupsWithFilterAndPagination = this.fetchSecurityGroupsWithFilterAndPagination.bind(this);
+            // eslint-disable-next-line max-len
+            this.closeDeleteSecurityGroupDialogAfterSuccessfulDelete = this.closeDeleteSecurityGroupDialogAfterSuccessfulDelete.bind(this);
 
             this.onSort = this.onSort.bind(this);
             this.onFilter = this.onFilter.bind(this);
+            this.onDeleteSecurityGroup = this.onDeleteSecurityGroup.bind(this);
 
             this.renderPanel = this.renderPanel.bind(this);
             this.renderContent = this.renderContent.bind(this);
@@ -123,14 +128,18 @@ const SecurityGroupsOverview = withStyles(styles)(
                     },
                 }));
             }
+            this.closeDeleteSecurityGroupDialogAfterSuccessfulDelete(prevProps);
         }
 
         public render() {
             const { classes, state } = this.props;
+            const { securityGroupIdToDelete } = this.state;
             const pageData = getAsyncSecurityGroupsPageData(state);
             const filterFromState = getSecurityGroupsListFilter(state);
             const securityGroups = getAsyncSecurityGroups(state);
             const listItems = mapSecurityGroupsToListItems(securityGroups);
+            const deleteStatus = getAsyncSecurityGroupDetail(state).remove.status;
+            const translator = getTranslator(state);
 
             return (
                 <>
@@ -186,6 +195,14 @@ const SecurityGroupsOverview = withStyles(styles)(
                                     (filterFromState.filters
                                         && (filterFromState.filters.name.values.length > 0))
                                 }
+                            />
+                            <ConfirmationDialog
+                                title={translator('security_groups.overview.delete_security_group_dialog.title')}
+                                text={translator('security_groups.overview.delete_security_group_dialog.text')}
+                                open={!!securityGroupIdToDelete}
+                                onClose={() => this.setState({ securityGroupIdToDelete: null })}
+                                onConfirm={this.onDeleteSecurityGroup}
+                                showLoader={deleteStatus === AsyncStatus.Busy}
                             />
                         </Box>
                     </Box>
@@ -251,12 +268,13 @@ const SecurityGroupsOverview = withStyles(styles)(
                                     listActions={[].concat({
                                         icon: <Edit />,
                                         label: translator('security_groups.overview.list.actions.edit'),
-                                        onClick: () => {
+                                        onClick: (id: string) => {
                                             const securityGroups = getAsyncSecurityGroups(state);
                                             const selectedSecurityGroup = securityGroups
                                                 .find((securityGroup: ISecurityGroup) => (
-                                                    getUniqueIdFromSecurityGroup(securityGroup)
+                                                    getUniqueIdFromSecurityGroup(securityGroup) === id
                                                 ));
+
                                             redirectTo({
                                                 routeKey: ROUTE_KEYS.R_SECURITY_GROUP_DETAIL,
                                                 params: {
@@ -268,12 +286,12 @@ const SecurityGroupsOverview = withStyles(styles)(
                                             !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE),
                                     }, {
                                         icon: <Visibility />,
-                                        label: translator('security_groups.overview.list.action.view'),
-                                        onClick: () => {
+                                        label: translator('security_groups.overview.list.actions.view'),
+                                        onClick: (id: string) => {
                                             const securityGroups = getAsyncSecurityGroups(state);
                                             const selectedSecurityGroup = securityGroups
                                                 .find((securityGroup: ISecurityGroup) => (
-                                                    getUniqueIdFromSecurityGroup(securityGroup)
+                                                    getUniqueIdFromSecurityGroup(securityGroup) === id
                                                 ));
                                             redirectTo({
                                                 routeKey: ROUTE_KEYS.R_SECURITY_GROUP_DETAIL,
@@ -286,14 +304,14 @@ const SecurityGroupsOverview = withStyles(styles)(
                                             checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE),
                                     }, {
                                         icon: <Delete />,
-                                        label: translator('security_groups.overview.list.action.delete'),
-                                        onClick: () => {
+                                        label: translator('security_groups.overview.list.actions.delete'),
+                                        onClick: (id: string) => {
                                             const securityGroups = getAsyncSecurityGroups(state);
                                             const selectedSecurityGroup = securityGroups
                                                 .find((securityGroup: ISecurityGroup) => (
-                                                    getUniqueIdFromSecurityGroup(securityGroup)
+                                                    getUniqueIdFromSecurityGroup(securityGroup) === id
                                                 ));
-                                            console.log(selectedSecurityGroup);
+                                            this.setState({ securityGroupIdToDelete: selectedSecurityGroup.id });
                                         },
                                     })}
                                 />
@@ -310,6 +328,14 @@ const SecurityGroupsOverview = withStyles(styles)(
             );
         }
 
+        private onDeleteSecurityGroup() {
+            const { securityGroupIdToDelete } = this.state;
+
+            if (securityGroupIdToDelete) {
+                triggerDeleteSecurityGroupDetail({ id: securityGroupIdToDelete });
+            }
+        }
+
         private onFilter(listFilters: ListFilters<Partial<ISecurityGroupColumnNames>>) {
             const { dispatch } = this.props;
             this.fetchSecurityGroupsWithFilterAndPagination({ newListFilters: listFilters });
@@ -320,6 +346,16 @@ const SecurityGroupsOverview = withStyles(styles)(
             const { dispatch } = this.props;
             this.fetchSecurityGroupsWithFilterAndPagination({ newSortedColumn: sortedColumn });
             dispatch(setSecurityGroupsListFilter({ sortedColumn }));
+        }
+
+        private closeDeleteSecurityGroupDialogAfterSuccessfulDelete(prevProps: TProps & IObserveProps) {
+            const { status } = getAsyncSecurityGroupDetail(this.props.state).remove;
+            const prevStatus = getAsyncSecurityGroupDetail(prevProps.state).remove.status;
+
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                this.setState({ securityGroupIdToDelete: null });
+                this.fetchSecurityGroupsWithFilterAndPagination({});
+            }
         }
 
         private fetchSecurityGroupsWithFilterAndPagination({
@@ -400,4 +436,5 @@ function mapSecurityGroupsToListItems(securityGroups: ISecurityGroup[]): IListIt
 
 export default observe<TProps>([
     StateChangeNotification.IAM_SECURITY_GROUPS_LIST,
+    StateChangeNotification.IAM_SECURITY_GROUPS_DETAIL,
 ], SecurityGroupsOverview);

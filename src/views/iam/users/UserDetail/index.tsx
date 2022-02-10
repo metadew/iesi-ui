@@ -242,6 +242,7 @@ const UserDetail = withStyles(styles)(
                                             helperText={requiredFieldsState.password.showError && 'User password is a required field'}
                                             autoComplete="new-password"
                                             InputProps={{
+                                                disableUnderline: true,
                                                 endAdornment: (
                                                     <InputAdornment position="end">
                                                         <IconButton
@@ -262,6 +263,7 @@ const UserDetail = withStyles(styles)(
                                                     </InputAdornment>
                                                 ),
                                             }}
+                                            required
                                         />
                                         <TextInput
                                             id="user-repeat-password"
@@ -274,6 +276,7 @@ const UserDetail = withStyles(styles)(
                                             helperText={requiredFieldsState.repeatedPassword.showError && 'User password is a required field'}
                                             autoComplete="new-password"
                                             InputProps={{
+                                                disableUnderline: true,
                                                 endAdornment: (
                                                     <InputAdornment position="end">
                                                         <IconButton
@@ -294,6 +297,7 @@ const UserDetail = withStyles(styles)(
                                                     </InputAdornment>
                                                 ),
                                             }}
+                                            required
                                         />
                                     </>
                                 ) : (
@@ -376,63 +380,90 @@ const UserDetail = withStyles(styles)(
 
             if (!teams.length && !this.isCreateUserRoute()) {
                 return (
-                    <Box
-                        display="flex"
-                        flexDirection="column"
-                        flex="1 1 auto"
-                        justifyContent="center"
-                        paddingBottom={5}
-                    >
-                        <Box textAlign="center">
-                            <Typography variant="h2" paragraph>
-                                <Translate msg="users.detail.main.no_teams.title" />
-                            </Typography>
+                    <>
+                        <DetailActions
+                            onSave={handleSaveAction}
+                            onDelete={() => { }}
+                            onAdd={null}
+                            isCreateRoute={this.isCreateUserRoute()}
+                        />
+                        <Box
+                            display="flex"
+                            flexDirection="column"
+                            flex="1 1 auto"
+                            justifyContent="center"
+                            paddingBottom={5}
+                        >
+                            <Box textAlign="center">
+                                <Typography variant="h2" paragraph>
+                                    <Translate msg="users.detail.main.no_teams.title" />
+                                </Typography>
+                            </Box>
                         </Box>
-                    </Box>
+                    </>
+
                 );
             }
 
             if (selectedTeamIndex === -1 && !this.isCreateUserRoute()) {
                 return (
-                    <Box
-                        display="flex"
-                        flexDirection="column"
-                        flex="1 1 auto"
-                        justifyContent="center"
-                        paddingBottom={5}
-                    >
-                        <Box textAlign="center">
-                            <Typography variant="h2" paragraph>
-                                <Translate msg="users.detail.main.no_chosen_team.title" />
-                            </Typography>
+                    <>
+                        <DetailActions
+                            onSave={handleSaveAction}
+                            onDelete={() => { }}
+                            onAdd={null}
+                            isCreateRoute={this.isCreateUserRoute()}
+                        />
+                        <Box
+                            display="flex"
+                            flexDirection="column"
+                            flex="1 1 auto"
+                            justifyContent="center"
+                            paddingBottom={5}
+                        >
+                            <Box textAlign="center">
+                                <Typography variant="h2" paragraph>
+                                    <Translate msg="users.detail.main.no_chosen_team.title" />
+                                </Typography>
+                            </Box>
                         </Box>
-                    </Box>
+
+                    </>
+
                 );
             }
 
             if (!hasRoles && !this.isCreateUserRoute()) {
                 return (
-                    <Box
-                        display="flex"
-                        flexDirection="column"
-                        flex="1 1 auto"
-                        justifyContent="center"
-                        paddingBottom={5}
-                    >
-                        <Box textAlign="center">
-                            <Typography variant="h2" paragraph>
-                                <Translate msg="users.detail.main.no_roles.title" />
-                            </Typography>
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                startIcon={<Add />}
-                                onClick={() => this.setState({ isAddOpen: true })}
-                            >
-                                <Translate msg="users.detail.main.no_roles.button" />
-                            </Button>
+                    <>
+                        <DetailActions
+                            onSave={handleSaveAction}
+                            onDelete={() => { }}
+                            onAdd={() => this.setState({ isAddOpen: true })}
+                            isCreateRoute={this.isCreateUserRoute()}
+                        />
+                        <Box
+                            display="flex"
+                            flexDirection="column"
+                            flex="1 1 auto"
+                            justifyContent="center"
+                            paddingBottom={5}
+                        >
+                            <Box textAlign="center">
+                                <Typography variant="h2" paragraph>
+                                    <Translate msg="users.detail.main.no_roles.title" />
+                                </Typography>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    startIcon={<Add />}
+                                    onClick={() => this.setState({ isAddOpen: true })}
+                                >
+                                    <Translate msg="users.detail.main.no_roles.button" />
+                                </Button>
+                            </Box>
                         </Box>
-                    </Box>
+                    </>
                 );
             }
 

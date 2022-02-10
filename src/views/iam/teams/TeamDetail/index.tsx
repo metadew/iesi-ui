@@ -27,6 +27,7 @@ import { getAsyncUserDetailRole } from 'state/entities/users/selectors';
 import {
     triggerAssignTeamToSecurityGroup,
     triggerCreateTeamDetail,
+    triggerDeleteTeamDetail,
     triggerUnassignTeamToSecurityGroup,
 } from 'state/entities/teams/triggers';
 import { getUniqueIdFromTeam } from 'utils/teams/teamUtils';
@@ -47,6 +48,7 @@ import { IListItem, ListColumns } from 'models/list.models';
 import OrderedList from 'views/common/list/OrderedList';
 import { IUser } from 'models/state/user.model';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
+import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import AddUser from '../AddUser';
 import EditSecurityGroups from './EditSecurityGroups';
 import DetailActions from './DetailActions';
@@ -63,6 +65,7 @@ interface IComponentState {
     hasChangeToCheck: boolean;
     isSaveDialogOpen: boolean;
     isAddOpen: boolean;
+    isConfirmDeleteTeamOpen: boolean;
     requiredFieldsState: TRequiredFieldsState<ITeamPost>;
 }
 
@@ -93,6 +96,7 @@ const TeamDetail = withStyles(styles)(
                 hasChangeToCheck: false,
                 isAddOpen: false,
                 isSaveDialogOpen: false,
+                isConfirmDeleteTeamOpen: false,
                 requiredFieldsState: {
                     teamName: {
                         showError: false,
@@ -106,12 +110,15 @@ const TeamDetail = withStyles(styles)(
             // eslint-disable-next-line max-len
             this.updateTeamSecurityGroupIfNewSecurityGroupIsRemoved = this.updateTeamSecurityGroupIfNewSecurityGroupIsRemoved.bind(this);
             this.navigateToTeamAfterCreation = this.navigateToTeamAfterCreation.bind(this);
+            this.navigateToTeamsAfterDeletation = this.navigateToTeamsAfterDeletation.bind(this);
             this.closeAddRoleDialogAFterAddingUser = this.closeAddRoleDialogAFterAddingUser.bind(this);
 
             this.renderTeamDetailPanel = this.renderTeamDetailPanel.bind(this);
             this.renderTeamDetailContent = this.renderTeamDetailContent.bind(this);
 
             this.renderAddUser = this.renderAddUser.bind(this);
+
+            this.onDeleteTeam = this.onDeleteTeam.bind(this);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
@@ -120,6 +127,7 @@ const TeamDetail = withStyles(styles)(
             this.updateTeamSecurityGroupIfNewSecurityGroupIsRemoved(prevProps);
             this.closeAddRoleDialogAFterAddingUser(prevProps);
             this.navigateToTeamAfterCreation(prevProps);
+            this.navigateToTeamsAfterDeletation(prevProps);
         }
 
         public render() {
@@ -128,8 +136,10 @@ const TeamDetail = withStyles(styles)(
                 isAddOpen,
                 isSaveDialogOpen,
                 newTeamDetail,
+                isConfirmDeleteTeamOpen,
             } = this.state;
             const teamDetailAsyncStatus = getAsyncTeamDetail(state).fetch.status;
+            const teamDetailAsyncDeleteStatus = getAsyncTeamDetail(state).remove.status;
             const teamSecurityGroupCreateStatus = getAsyncTeamDetailSecurityGroup(state).create.status;
             const teamSecurityGroupRemoveStatus = getAsyncTeamDetailSecurityGroup(state).remove.status;
             const teamAssignUserRoleCreateStatus = getAsyncUserDetailRole(state).create.status;
@@ -155,6 +165,14 @@ const TeamDetail = withStyles(styles)(
                             <Translate msg="teams.detail.side.toggle_button" />
                         }
                         goBackTo={ROUTE_KEYS.R_TEAMS}
+                    />
+                    <ConfirmationDialog
+                        title={translator('teams.detail.delete_team_dialog.title')}
+                        text={translator('teams.detail.delete_team_dialog.text')}
+                        open={isConfirmDeleteTeamOpen}
+                        onClose={() => this.setState({ isConfirmDeleteTeamOpen: false })}
+                        onConfirm={this.onDeleteTeam}
+                        showLoader={teamDetailAsyncDeleteStatus === AsyncStatus.Busy}
                     />
                     <ClosableDialog
                         title={translator('teams.detail.save_team_dialog.title')}
@@ -189,10 +207,13 @@ const TeamDetail = withStyles(styles)(
 
         private renderTeamDetailPanel() {
             const { state } = this.props;
-            const { newTeamDetail, selectedSecurityGroupIndex, users } = this.state;
+            const {
+                newTeamDetail,
+                selectedSecurityGroupIndex,
+                requiredFieldsState,
+            } = this.state;
             const translator = getTranslator(state);
 
-            console.log('USERS : ', users);
             return (
                 <Box
                     mt={1}
@@ -215,6 +236,9 @@ const TeamDetail = withStyles(styles)(
                                 onChange={(e) => this.updateTeam({
                                     teamName: e.target.value,
                                 })}
+                                error={requiredFieldsState.teamName.showError}
+                                helperText={requiredFieldsState.teamName.showError
+                                    && 'The team name is a required field'}
                             />
                             {
                                 !this.isCreateRoute() && (
@@ -346,7 +370,9 @@ const TeamDetail = withStyles(styles)(
                                 color="secondary"
                                 startIcon={<Add />}
                                 onClick={() => this.setState({ isAddOpen: true })}
-                            />
+                            >
+                                <Translate msg="teams.detail.main.no_users.button" />
+                            </Button>
                         </Box>
                     </Box>
                 );
@@ -365,7 +391,7 @@ const TeamDetail = withStyles(styles)(
                         <DetailActions
                             onSave={handleSaveAction}
                             onAdd={() => this.setState({ isAddOpen: true })}
-                            onDelete={() => { }}
+                            onDelete={() => this.setState({ isConfirmDeleteTeamOpen: true })}
                             isCreateRoute={this.isCreateRoute()}
                         />
                     </Box>
@@ -461,6 +487,14 @@ const TeamDetail = withStyles(styles)(
             );
         }
 
+        private onDeleteTeam() {
+            const { state } = this.props;
+            const detail = getAsyncTeamDetail(state).data;
+            if (detail) {
+                triggerDeleteTeamDetail({ id: detail.id });
+            }
+        }
+
         private updateTeam(fieldsToUpdate: Partial<ITeamPost | ITeam>) {
             this.setState((prevState) => ({
                 newTeamDetail: {
@@ -468,6 +502,17 @@ const TeamDetail = withStyles(styles)(
                     ...fieldsToUpdate,
                 },
             }));
+        }
+
+        private navigateToTeamsAfterDeletation(prevProps: TProps & IObserveProps) {
+            const { status } = getAsyncTeamDetail(this.props.state).remove;
+            const { status: prevStatus } = getAsyncTeamDetail(prevProps.state).remove;
+
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                redirectTo({
+                    routeKey: ROUTE_KEYS.R_TEAMS,
+                });
+            }
         }
 
         private navigateToTeamAfterCreation(prevProps: TProps & IObserveProps) {

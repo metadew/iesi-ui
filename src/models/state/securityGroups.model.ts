@@ -28,7 +28,7 @@ export interface ISecurityGroupEntity {
     page: IPageData;
 }
 
-export interface ISecurityGroup extends ISecurityGroupBase { }
+export type ISecurityGroup = ISecurityGroupBase;
 
 export interface ISecurityGroupBase {
     id?: string;

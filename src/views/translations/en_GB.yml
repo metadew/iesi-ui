@@ -9,7 +9,7 @@ app_shell:
       datasets: Datasets
       users: Users
       teams: Teams
-      securityGroups: SecurityGroups
+      security_groups: Security groups
     title: iesi
 common:
   yes: Yes
@@ -83,11 +83,13 @@ flash_messages:
     error: 'An error has occured'
   team:
     create: The team has been created successfully !
+    delete: The team has been deleted.
     add_security_group: The team has been assigned to the security group !
     remove_security_group: The team has been un-assigned to the security group.
     error: 'An error has occured'
-  securityGroup:
+  security_group:
     create: The security group has been created successfully !
+    delete: The security group has been deleted.
     error: 'An error has occured'
   error: 'An error has occured'
 scripts:
@@ -741,6 +743,9 @@ teams:
         edit: Edit
         view: View
         delete: Delete
+    delete_team_dialog:
+      title: Delete team
+      text: Are you sure you want to delete this team ?
   detail:
     actions:
       add_users: Add users
@@ -752,6 +757,9 @@ teams:
       text: Are you sure to create the team {name} ?
       text_securityGroup: Sorry, you don't have the permission to create the user because your don't belong to the group {securityGroup}
       create: Create team
+    delete_team_dialog:
+      title: Delete team
+      text: Are you sure you want to delete this taem ?
     side:
       toggle_button: Details
       team_name: Team name
@@ -783,6 +791,12 @@ teams:
             view: View
       no_users:
         title: Please add users
+        button: Add users
+      add_users:
+        header: Choose a user
+        footer:
+          cancel: Cancel
+          save: Save
       alert:
         save_changes: You made changes to this team. Don't forget to save it.
 security_groups:
@@ -803,7 +817,13 @@ security_groups:
         edit: Edit
         view: View
         delete: Delete
+    delete_security_group_dialog:
+      title: Delete security group
+      text: Are you sure you want to delete this security group ?
   detail:
+    delete_security_group_dialog:
+      title: Delete security group
+      text: Are you sure you want to delete this security group ?
     actions:
       add_team: Add teams
       delete: Delete security group

@@ -66,7 +66,9 @@ function DetailActions({
 
         <Box display="flex" alignItems="center" justifyContent="space-between" width="100%" paddingX={2.2}>
             <Box flex="0 0 auto">
-                {!isCreateRoute && checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
+                {!isCreateRoute
+                    && typeof onAdd === 'function'
+                    && checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
                     ? (
                         <Tooltip
                             title={translator('users.detail.main.actions.add_roles')}
@@ -106,11 +108,7 @@ function DetailActions({
                                     )
                                     : null}
                             </Box>
-                            {isCreateRoute ? (
-                                <>
-                                    {DeleteButton}
-                                </>
-                            ) : (
+                            {isCreateRoute ? DeleteButton : (
                                 <>
                                     {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
                                         ? (

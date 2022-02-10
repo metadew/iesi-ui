@@ -39,6 +39,7 @@ import {
     IFetchTeamsListPayload,
     ITeamAssignUserRolePayload,
     ITeamBase,
+    ITeamByIdPayload,
     ITeamByNamePayload,
     ITeamDeleteUserRole,
 } from 'models/state/team.model';
@@ -521,6 +522,14 @@ entitiesConfigManager.register({
             // @ts-ignore
             apiInputSelector: ({ extraInput }) => extraInput as ITeamBase,
         },
+        remove: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.teams.deleteTeam,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ITeamByIdPayload,
+        },
     },
 });
 
@@ -565,6 +574,14 @@ entitiesConfigManager.register({
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
             apiInputSelector: ({ extraInput }) => extraInput as ISecurityGroupBase,
+        },
+        remove: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.securityGroups.deleteSecurityGroup,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ISecurityGroupByIdPayload,
         },
     },
 });

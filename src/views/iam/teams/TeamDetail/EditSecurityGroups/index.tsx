@@ -117,7 +117,8 @@ function EditSecurityGroupDialog({
                                 content: securityGroupItem.name,
                                 selected: selectedIndex === index,
                                 button: false,
-                                onDelete: () => onDelete(securityGroupItem.id),
+                                onDelete: checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE)
+                                    ? () => onDelete(securityGroupItem.id) : null,
                                 onView: () => {
                                     redirectTo({
                                         routeKey: ROUTE_KEYS.R_SECURITY_GROUP_DETAIL,
@@ -135,17 +136,17 @@ function EditSecurityGroupDialog({
                     )
             }
             {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE)
-                    && (
-                        <Button
-                            variant="outlined"
-                            color="default"
-                            size="small"
-                            disableElevation
-                            onClick={() => setOpen(true)}
-                        >
-                            <Translate msg="teams.detail.side.security_groups.add_button" />
-                        </Button>
-                    )}
+                && (
+                    <Button
+                        variant="outlined"
+                        color="default"
+                        size="small"
+                        disableElevation
+                        onClick={() => setOpen(true)}
+                    >
+                        <Translate msg="teams.detail.side.security_groups.add_button" />
+                    </Button>
+                )}
             <ClosableDialog
                 onClose={() => setOpen(false)}
                 open={open}

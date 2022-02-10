@@ -33,13 +33,17 @@ import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import { TRequiredFieldsState } from 'models/form.models';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
-import { triggerCreateSecurityGroupDetail } from 'state/entities/securityGroups/triggers';
+import {
+    triggerCreateSecurityGroupDetail,
+    triggerDeleteSecurityGroupDetail,
+} from 'state/entities/securityGroups/triggers';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getTranslator } from 'state/i18n/selectors';
 import TextInput from 'views/common/input/TextInput';
 import GenericList from 'views/common/list/GenericList';
 import { IListItem, ListColumns } from 'models/list.models';
 import { getUniqueIdFromSecurityGroup } from 'utils/securityGroups/securityGroupUtils';
+import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import DetailActions from '../DetailActions';
 import AddTeam from '../AddTeam';
 
@@ -53,6 +57,7 @@ interface IComponentState {
     hasChangeToCheck: boolean;
     isSaveDialogOpen: boolean;
     isAddOpen: boolean;
+    isConfirmDeleteSecurityGroupOpen: boolean;
     requiredFieldsState: TRequiredFieldsState<ISecurityGroupPost>;
 }
 
@@ -79,6 +84,7 @@ const SecurityGroupDetail = withStyles(styles)(
                 hasChangeToCheck: false,
                 isSaveDialogOpen: false,
                 isAddOpen: false,
+                isConfirmDeleteSecurityGroupOpen: false,
                 requiredFieldsState: {
                     name: {
                         showError: false,
@@ -89,17 +95,21 @@ const SecurityGroupDetail = withStyles(styles)(
             // eslint-disable-next-line max-len
             this.updateSecurityGroupIsNewSecurityGroupWasLoaded = this.updateSecurityGroupIsNewSecurityGroupWasLoaded.bind(this);
             this.navigateToSecurityGroupAfterCreation = this.navigateToSecurityGroupAfterCreation.bind(this);
+            this.navigateToSecurityGroupsAfterDeletion = this.navigateToSecurityGroupsAfterDeletion.bind(this);
             this.reloadPageAfterTeamAssignment = this.reloadPageAfterTeamAssignment.bind(this);
 
             this.renderSecurityGroupDetailPanel = this.renderSecurityGroupDetailPanel.bind(this);
             this.renderSecurityGroupDetailContent = this.renderSecurityGroupDetailContent.bind(this);
 
             this.renderAddTeam = this.renderAddTeam.bind(this);
+
+            this.onDeleteSecurityGroup = this.onDeleteSecurityGroup.bind(this);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
             this.updateSecurityGroupIsNewSecurityGroupWasLoaded(prevProps);
             this.navigateToSecurityGroupAfterCreation(prevProps);
+            this.navigateToSecurityGroupsAfterDeletion(prevProps);
             this.reloadPageAfterTeamAssignment(prevProps);
         }
 
@@ -109,8 +119,10 @@ const SecurityGroupDetail = withStyles(styles)(
                 newSecurityGroupDetail,
                 isAddOpen,
                 isSaveDialogOpen,
+                isConfirmDeleteSecurityGroupOpen,
             } = this.state;
             const securityGroupDetailAsyncStatus = getAsyncSecurityGroupDetail(state).fetch.status;
+            const securityGroupDetailAsyncDeleteStatus = getAsyncSecurityGroupDetail(state).remove.status;
             const teamAssigningAsyncStatus = getAsyncTeamDetailSecurityGroup(state).create.status;
             const translator = getTranslator(state);
 
@@ -131,6 +143,14 @@ const SecurityGroupDetail = withStyles(styles)(
                             <Translate msg="security_groups.detail.side.toggle_button" />
                         }
                         goBackTo={ROUTE_KEYS.R_SECURITY_GROUPS}
+                    />
+                    <ConfirmationDialog
+                        title={translator('security_groups.detail.delete_security_group_dialog.title')}
+                        text={translator('security_groups.detail.delete_security_group_dialog.text')}
+                        open={isConfirmDeleteSecurityGroupOpen}
+                        onClose={() => this.setState({ isConfirmDeleteSecurityGroupOpen: false })}
+                        onConfirm={this.onDeleteSecurityGroup}
+                        showLoader={securityGroupDetailAsyncDeleteStatus === AsyncStatus.Busy}
                     />
                     <ClosableDialog
                         title={translator('security_groups.detail.save_security_group_dialog.title')}
@@ -165,7 +185,10 @@ const SecurityGroupDetail = withStyles(styles)(
 
         private renderSecurityGroupDetailPanel() {
             const { state } = this.props;
-            const { newSecurityGroupDetail } = this.state;
+            const {
+                newSecurityGroupDetail,
+                requiredFieldsState,
+            } = this.state;
             const translator = getTranslator(state);
 
             return (
@@ -188,6 +211,9 @@ const SecurityGroupDetail = withStyles(styles)(
                                 onChange={(e) => this.updateSecurityGroup({
                                     name: e.target.value,
                                 })}
+                                error={requiredFieldsState.name.showError}
+                                helperText={requiredFieldsState.name.showError
+                                    && 'The security group name is a required field'}
                             />
                         </form>
                     </Box>
@@ -234,28 +260,37 @@ const SecurityGroupDetail = withStyles(styles)(
 
             if (!hasTeams && !this.isCreateRoute()) {
                 return (
-                    <Box
-                        display="flex"
-                        flexDirection="column"
-                        flex="1 1 auto"
-                        justifyContent="center"
-                        paddingBottom={5}
-                    >
-                        <Box textAlign="center">
-                            <Typography variant="h2" paragraph>
-                                <Translate msg="security_groups.main.no_teams.title" />
-                            </Typography>
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                startIcon={<Add />}
-                                onClick={() => this.setState({ isAddOpen: true })}
-                            >
-                                <Translate msg="security_groups.detail.main.no_teams.button" />
-                            </Button>
+                    <>
+                        <DetailActions
+                            onSave={handleSaveAction}
+                            onDelete={() => this.setState({ isConfirmDeleteSecurityGroupOpen: true })}
+                            onAdd={null}
+                            isCreateRoute={this.isCreateRoute()}
+                        />
+                        <Box
+                            display="flex"
+                            flexDirection="column"
+                            flex="1 1 auto"
+                            justifyContent="center"
+                            paddingBottom={5}
+                        >
+                            <Box textAlign="center">
+                                <Typography variant="h2" paragraph>
+                                    <Translate msg="security_groups.detail.main.no_teams.title" />
+                                </Typography>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    startIcon={<Add />}
+                                    onClick={() => this.setState({ isAddOpen: true })}
+                                >
+                                    <Translate msg="security_groups.detail.main.no_teams.button" />
+                                </Button>
 
+                            </Box>
                         </Box>
-                    </Box>
+                    </>
+
                 );
             }
 
@@ -271,7 +306,7 @@ const SecurityGroupDetail = withStyles(styles)(
                         </Collapse>
                         <DetailActions
                             onSave={handleSaveAction}
-                            onDelete={() => { }}
+                            onDelete={() => this.setState({ isConfirmDeleteSecurityGroupOpen: true })}
                             onAdd={() => this.setState({ isAddOpen: true })}
                             isCreateRoute={this.isCreateRoute()}
                         />
@@ -353,6 +388,14 @@ const SecurityGroupDetail = withStyles(styles)(
             }
         }
 
+        private onDeleteSecurityGroup() {
+            const { state } = this.props;
+            const detail = getAsyncSecurityGroupDetail(state).data;
+            if (detail) {
+                triggerDeleteSecurityGroupDetail({ id: detail.id });
+            }
+        }
+
         private updateSecurityGroup(fieldsToUpdate: Partial<ISecurityGroupPost | ISecurityGroup>) {
             this.setState((prevState) => ({
                 newSecurityGroupDetail: {
@@ -368,6 +411,17 @@ const SecurityGroupDetail = withStyles(styles)(
 
             if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
                 this.onAddTeam();
+            }
+        }
+
+        private navigateToSecurityGroupsAfterDeletion(prevProps: TProps & IObserveProps) {
+            const { status } = getAsyncSecurityGroupDetail(this.props.state).remove;
+            const { status: prevStatus } = getAsyncSecurityGroupDetail(prevProps.state).remove;
+
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                redirectTo({
+                    routeKey: ROUTE_KEYS.R_SECURITY_GROUPS,
+                });
             }
         }
 

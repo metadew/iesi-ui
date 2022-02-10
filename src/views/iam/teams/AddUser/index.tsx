@@ -186,7 +186,7 @@ function AddUser({ onClose, onAdd, team, state }: IPublicProps & IObserveProps) 
                             onClick={handleClose}
                             disableElevation
                         >
-                            <Translate msg="teams.detail.main.add_roles.footer.cancel" />
+                            <Translate msg="teams.detail.main.add_users.footer.cancel" />
                         </Button>
                         <Button
                             variant="contained"
@@ -194,7 +194,7 @@ function AddUser({ onClose, onAdd, team, state }: IPublicProps & IObserveProps) 
                             onClick={handleSubmit}
                             disableElevation
                         >
-                            <Translate msg="teams.detail.main.add_roles.footer.save" />
+                            <Translate msg="teams.detail.main.add_users.footer.save" />
                         </Button>
                     </ButtonGroup>
                 </Box>

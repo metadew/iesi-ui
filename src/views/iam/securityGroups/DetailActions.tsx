@@ -51,7 +51,6 @@ function DetailActions({
 
     const DeleteButton = (
         <IconButton
-            disabled={!isCreateRoute}
             aria-label={translator('security_groups.details.main.actions.delete')}
             onClick={onDelete}
         >
@@ -63,7 +62,8 @@ function DetailActions({
 
         <Box display="flex" alignItems="center" justifyContent="space-between" width="100%" paddingX={2.2}>
             <Box flex="0 0 auto">
-                {!isCreateRoute && checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE)
+                {typeof onAdd === 'function'
+                    && checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE)
                     ? (
                         <Tooltip
                             title={translator('security_groups.detail.main.actions.add_teams')}
@@ -75,6 +75,7 @@ function DetailActions({
                                 className={classes.addButton}
                                 onClick={onAdd}
                                 color="default"
+                                disabled={isCreateRoute}
                             >
                                 <AddIcon />
                             </IconButton>
@@ -87,8 +88,7 @@ function DetailActions({
                     checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE) && (
                         <Paper elevation={0} className={classes.actions}>
                             <Box display="inline" marginRight={1}>
-                                {isCreateRoute
-                                    || checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE)
+                                {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE)
                                     ? (
                                         <Button
                                             variant="contained"
@@ -103,24 +103,16 @@ function DetailActions({
                                     )
                                     : null}
                             </Box>
-                            {isCreateRoute ? (
-                                <>
-                                    {DeleteButton}
-                                </>
-                            ) : (
-                                <>
-                                    {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE)
-                                        ? (
-                                            <Tooltip
-                                                title={translator('security_groups.detail.main.actions.delete')}
-                                                enterDelay={1000}
-                                                enterNextDelay={1000}
-                                            >
-                                                {DeleteButton}
-                                            </Tooltip>
-                                        ) : null}
-                                </>
-                            )}
+                            {!isCreateRoute && checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE)
+                                ? (
+                                    <Tooltip
+                                        title={translator('security_groups.detail.main.actions.delete')}
+                                        enterDelay={1000}
+                                        enterNextDelay={1000}
+                                    >
+                                        {DeleteButton}
+                                    </Tooltip>
+                                ) : null}
                         </Paper>
                     )
                 }
