@@ -97,7 +97,7 @@ function EditImplementation({
             setIsLabelsEmpty(true);
         } else {
             onEdit({
-                type: 'database',
+                type: 'in_memory',
                 labels: labels.map((label) => ({ label })),
                 keyValues,
             });
