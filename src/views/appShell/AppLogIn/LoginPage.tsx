@@ -44,6 +44,7 @@ interface ILoginState {
     hasSubmitErrors: boolean;
     username: string;
     password: string;
+    showPassword: boolean;
     redirectUri: IRedirectUri;
 }
 
@@ -61,6 +62,7 @@ const LoginView = withStyles(styles)(
                 hasSubmitErrors: false,
                 username: '',
                 password: '',
+                showPassword: false,
                 redirectUri: {
                     pathname,
                     search,
@@ -74,8 +76,7 @@ const LoginView = withStyles(styles)(
         }
 
         public render() {
-            const { hasSubmitErrors, username, password } = this.state;
-
+            const { hasSubmitErrors, username, password, showPassword } = this.state;
             return (
                 <>
                     <Container component="main" maxWidth="xs">
@@ -103,10 +104,10 @@ const LoginView = withStyles(styles)(
                         <TextInput
                             id="password"
                             label="password"
-                            type="password"
                             required
                             error={hasSubmitErrors && password === ''}
                             value={password}
+                            type={showPassword ? 'text' : 'password'}
                             onChange={(e) => this.setState({ password: e.target.value as string })}
                         />
                         {this.renderAlert()}
