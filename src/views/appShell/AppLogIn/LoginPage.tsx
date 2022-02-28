@@ -3,6 +3,10 @@ import { getStore } from 'state';
 import { IObserveProps } from 'views/observe';
 import { Button, Container, Typography, Box, createStyles, Theme, WithStyles, withStyles } from '@material-ui/core';
 import TextInput from 'views/common/input/TextInput';
+import IconButton from '@material-ui/core/IconButton';
+import Visibility from '@material-ui/icons/Visibility';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { Alert } from '@material-ui/lab';
 import { triggerLogon } from 'state/auth/actions';
@@ -73,6 +77,7 @@ const LoginView = withStyles(styles)(
             this.setHasSubmitErrors = this.setHasSubmitErrors.bind(this);
             this.handleSubmit = this.handleSubmit.bind(this);
             this.renderAlert = this.renderAlert.bind(this);
+            this.handleClickShowPassword = this.handleClickShowPassword.bind(this);
         }
 
         public render() {
@@ -103,12 +108,22 @@ const LoginView = withStyles(styles)(
                         />
                         <TextInput
                             id="password"
-                            label="password"
                             required
                             error={hasSubmitErrors && password === ''}
                             value={password}
                             type={showPassword ? 'text' : 'password'}
                             onChange={(e) => this.setState({ password: e.target.value as string })}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            onClick={this.handleClickShowPassword}
+                                        >
+                                            {showPassword ? <Visibility /> : <VisibilityOff />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
                         {this.renderAlert()}
                         <Box textAlign="center" marginTop={5}>
@@ -127,6 +142,11 @@ const LoginView = withStyles(styles)(
                     </Container>
                 </>
             );
+        }
+
+        handleClickShowPassword() {
+            const { showPassword } = this.state;
+            this.setState({ showPassword: !showPassword });
         }
 
         private setHasSubmitErrors(hasSubmitErrors: boolean) {
