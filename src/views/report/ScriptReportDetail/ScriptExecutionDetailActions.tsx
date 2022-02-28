@@ -284,8 +284,8 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                             <TableCell component="th" scope="row" className={classes.thCell}>
                                                 {parameter.name}
                                             </TableCell>
-                                            <TableCell>{parameter.rawValue}</TableCell>
-                                            <TableCell>{parameter.resolvedValue}</TableCell>
+                                            <TableCell className={classes.valueCell}>{parameter.rawValue}</TableCell>
+                                            <TableCell className={classes.valueCell}>{parameter.resolvedValue}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
