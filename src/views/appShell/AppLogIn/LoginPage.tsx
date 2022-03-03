@@ -108,6 +108,7 @@ const LoginView = withStyles(styles)(
                         />
                         <TextInput
                             id="password"
+                            label="password"
                             required
                             error={hasSubmitErrors && password === ''}
                             value={password}
