@@ -100,6 +100,9 @@ const useStyles = makeStyles(({ typography, palette, shape, spacing }: Theme) =>
     valueCell: {
         whiteSpace: 'pre-wrap',
     },
+    btnRequest: {
+        marginLeft: 0,
+    },
 }));
 
 function ScriptExecutionDetailActions<ColumnNames>({
@@ -284,7 +287,28 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                             <TableCell component="th" scope="row" className={classes.thCell}>
                                                 {parameter.name}
                                             </TableCell>
-                                            <TableCell>{parameter.rawValue}</TableCell>
+                                            <TableCell>
+                                                {parameter.rawValue}
+                                                {
+                                                    (parameter.name === 'request') ? (
+                                                        <Box marginLeft={20} marginTop={-2} marginBottom={1}>
+                                                            <Button
+                                                                variant="contained"
+                                                                color="secondary"
+                                                                size="small"
+                                                                onClick={() => {
+                                                                    redirectTo({
+                                                                        routeKey: ROUTE_KEYS.R_COMPONENT_NEW });
+                                                                }}
+                                                            >
+                                                                <ChevronRightRounded />
+                                                            </Button>
+                                                        </Box>
+                                                    ) : (
+                                                        <p> </p>
+                                                    )
+                                                }
+                                            </TableCell>
                                             <TableCell>{parameter.resolvedValue}</TableCell>
                                         </TableRow>
                                     ))}
@@ -294,7 +318,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                     </TableContainer>
                 </Box>
 
-                <Box marginBottom={2}>
+                <Box marginBottom={45}>
                     <Paper elevation={0}>
                         <Box padding={1.6}>
                             <Typography variant="subtitle2">
