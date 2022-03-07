@@ -296,10 +296,9 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                                                 variant="contained"
                                                                 color="secondary"
                                                                 size="small"
-                                                                onClick={() => {
-                                                                    redirectTo({
-                                                                        routeKey: ROUTE_KEYS.R_COMPONENT_NEW });
-                                                                }}
+                                                                onClick={() => redirectTo({
+                                                                    routeKey: ROUTE_KEYS.R_COMPONENTS,
+                                                                })}
                                                             >
                                                                 <ChevronRightRounded />
                                                             </Button>
