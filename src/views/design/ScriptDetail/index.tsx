@@ -1,4 +1,4 @@
-import React, { ReactText } from 'react';
+import React from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { clone } from 'ramda';
 import { getTranslator } from 'state/i18n/selectors';
@@ -10,6 +10,8 @@ import {
     Visibility,
     FileCopy,
 } from '@material-ui/icons';
+import { checkAuthority } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { Alert } from '@material-ui/lab';
 import { IScript, IScriptAction } from 'models/state/scripts.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -40,7 +42,6 @@ import {
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 // eslint-disable-next-line max-len
-import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import ExecuteScriptDialog from '../common/ExecuteScriptDialog';
 
 import DetailActions from './DetailActions';
@@ -86,12 +87,12 @@ interface IComponentState {
     isAddOpen: boolean;
     isConfirmDeleteScriptOpen: boolean;
     isSaveDialogOpen: boolean;
+    isExecuteDialogOpen: boolean;
     editActionIndex: number;
     newScriptDetail: IScript;
     hasChangesToCheck: boolean;
     hasActionsWithDuplicateNames: boolean;
     requiredFieldsState: TRequiredFieldsState<IScript>;
-    scriptIdToExecute: string;
     actionIndexToDelete: number;
     actionIndexToDuplicate: number;
 }
@@ -107,6 +108,7 @@ const ScriptDetail = withStyles(styles)(
                 actionIndexToDelete: null,
                 actionIndexToDuplicate: null,
                 isSaveDialogOpen: false,
+                isExecuteDialogOpen: false,
                 editActionIndex: -1,
                 newScriptDetail: {
                     actions: [],
@@ -135,7 +137,6 @@ const ScriptDetail = withStyles(styles)(
                         showError: false,
                     },
                 },
-                scriptIdToExecute: null,
             };
 
             this.renderAddScriptContent = this.renderAddScriptContent.bind(this);
@@ -173,9 +174,9 @@ const ScriptDetail = withStyles(styles)(
             const {
                 isAddOpen,
                 isConfirmDeleteScriptOpen,
+                isExecuteDialogOpen,
                 isSaveDialogOpen,
                 newScriptDetail,
-                scriptIdToExecute,
                 actionIndexToDelete,
                 actionIndexToDuplicate,
             } = this.state;
@@ -223,12 +224,16 @@ const ScriptDetail = withStyles(styles)(
                         onClose={() => this.setState({ actionIndexToDuplicate: null })}
                         onDuplicate={(action) => this.onAddActions([action])}
                     />
+                    {
+                        isExecuteDialogOpen && (
+                            <ExecuteScriptDialog
+                                onClose={this.onCloseExecuteDialog}
+                                scriptName={newScriptDetail.name}
+                                scriptVersion={newScriptDetail.version.number}
+                            />
+                        )
+                    }
 
-                    <ExecuteScriptDialog
-                        scriptUniqueId={getUniqueIdFromScript(newScriptDetail)}
-                        open={!!scriptIdToExecute}
-                        onClose={this.onCloseExecuteDialog}
-                    />
                     <ClosableDialog
                         title={translator('scripts.detail.save_script_dialog.title')}
                         open={isSaveDialogOpen}
@@ -250,6 +255,7 @@ const ScriptDetail = withStyles(styles)(
                                     color="secondary"
                                     disabled={this.isCreateScriptRoute()
                                         || (newScriptDetail && !checkAuthority(
+                                            state,
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                             newScriptDetail.securityGroupName,
                                         ))}
@@ -275,6 +281,7 @@ const ScriptDetail = withStyles(styles)(
                                     color="secondary"
                                     variant="outlined"
                                     disabled={newScriptDetail && !checkAuthority(
+                                        state,
                                         SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                         newScriptDetail.securityGroupName,
                                     )}
@@ -332,11 +339,17 @@ const ScriptDetail = withStyles(styles)(
                                 label={translator('scripts.detail.side.script_description')}
                                 multiline
                                 rows={8}
-                                value={newScriptDetail && newScriptDetail.description
-                                    ? newScriptDetail.description : ''}
-                                onChange={(e) => this.updateScript({ description: e.target.value })}
+                                value={newScriptDetail && newScriptDetail.version.description
+                                    ? newScriptDetail.version.description : ''}
+                                onChange={(e) => this.updateScript({
+                                    version: {
+                                        ...newScriptDetail.version,
+                                        description: e.target.value,
+                                    },
+                                })}
                                 InputProps={{
                                     readOnly: !this.isCreateScriptRoute() && newScriptDetail && !checkAuthority(
+                                        state,
                                         SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                         newScriptDetail.securityGroupName,
                                     ),
@@ -512,7 +525,7 @@ const ScriptDetail = withStyles(styles)(
                             onSave={handleSaveAction}
                             onDelete={() => this.setState({ isConfirmDeleteScriptOpen: true })}
                             onAdd={() => this.setState({ isAddOpen: true })}
-                            onPlay={() => this.setScriptToExecute(getUniqueIdFromScript(newScriptDetail))}
+                            onPlay={() => this.setState({ isExecuteDialogOpen: true })}
                             onExport={() => this.onExportScript()}
                             onViewReport={() => {
                                 redirectTo({
@@ -530,6 +543,7 @@ const ScriptDetail = withStyles(styles)(
                     </Box>
                     <Box marginY={1}>
                         <GenericDraggableList
+                            state={state}
                             listItems={listItems}
                             columns={columns}
                             listActions={[].concat(
@@ -541,6 +555,7 @@ const ScriptDetail = withStyles(styles)(
                                     },
                                     hideAction: () =>
                                         !this.isCreateScriptRoute() && !(newScriptDetail && checkAuthority(
+                                            state,
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                             newScriptDetail.securityGroupName,
                                         )),
@@ -554,10 +569,12 @@ const ScriptDetail = withStyles(styles)(
                                     hideAction: () =>
                                         this.isCreateScriptRoute() || !(newScriptDetail
                                             && !checkAuthority(
+                                                state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                                 newScriptDetail.securityGroupName,
                                             )
                                             && checkAuthority(
+                                                state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_READ,
                                                 newScriptDetail.securityGroupName,
                                             )),
@@ -570,6 +587,7 @@ const ScriptDetail = withStyles(styles)(
                                     },
                                     hideAction: () => !this.isCreateScriptRoute()
                                         && !(newScriptDetail && checkAuthority(
+                                            state,
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                             newScriptDetail.securityGroupName,
                                         )),
@@ -582,6 +600,7 @@ const ScriptDetail = withStyles(styles)(
                                     },
                                     hideAction: () => !this.isCreateScriptRoute()
                                         && !(newScriptDetail && checkAuthority(
+                                            state,
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                             newScriptDetail.securityGroupName,
                                         )),
@@ -693,13 +712,9 @@ const ScriptDetail = withStyles(styles)(
                 && clone(newScriptDetail.actions[editActionIndex]);
         }
 
-        private setScriptToExecute(id: ReactText) {
-            this.setState({ scriptIdToExecute: id as string });
-        }
-
         private onCloseExecuteDialog() {
             triggerResetAsyncExecutionRequest({ operation: AsyncOperation.create });
-            this.setState({ scriptIdToExecute: null });
+            this.setState({ isExecuteDialogOpen: false });
         }
 
         private updateScriptInStateIfNewScriptWasLoaded(prevProps: TProps & IObserveProps) {

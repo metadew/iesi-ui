@@ -97,6 +97,9 @@ const useStyles = makeStyles(({ typography, palette, shape, spacing }: Theme) =>
         wordBreak: 'normal',
         verticalAlign: 'top',
     },
+    valueCell: {
+        whiteSpace: 'pre-wrap',
+    },
 }));
 
 function ScriptExecutionDetailActions<ColumnNames>({
@@ -110,7 +113,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
 
     return (
         <>
-            { listItems.map((item: IListItem<ColumnNames>) => (
+            {listItems.map((item: IListItem<ColumnNames>) => (
                 <ExpansionPanel key={item.id as string} className={classes.expandableItem}>
                     <ExpansionPanelSummary
                         className={classes.summary}
@@ -281,8 +284,12 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                             <TableCell component="th" scope="row" className={classes.thCell}>
                                                 {parameter.name}
                                             </TableCell>
-                                            <TableCell>{parameter.rawValue}</TableCell>
-                                            <TableCell>{parameter.resolvedValue}</TableCell>
+                                            <TableCell className={classes.valueCell}>
+                                                {parameter.rawValue}
+                                            </TableCell>
+                                            <TableCell className={classes.valueCell}>
+                                                {parameter.resolvedValue}
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -391,7 +398,9 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                             <TableCell component="th" scope="row" className={classes.thCell}>
                                                 {output.name}
                                             </TableCell>
-                                            <TableCell>{output.value}</TableCell>
+                                            <TableCell className={classes.valueCell}>
+                                                {output.value}
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>

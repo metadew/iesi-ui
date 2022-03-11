@@ -27,7 +27,6 @@ import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import { triggerDeleteConnectionDetail, triggerFetchConnections } from 'state/entities/connections/triggers';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { setConnectionsListFilter } from 'state/ui/actions';
-import { checkAuthorityGeneral, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import TransformDocumentationDialog from 'views/design/common/TransformDocumentationDialog';
 import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
@@ -40,6 +39,8 @@ import GenericList from 'views/common/list/GenericList';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import { StateChangeNotification } from 'models/state.models';
 import OrderedList from 'views/common/list/OrderedList';
+import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 const styles = (({ palette, typography }: Theme) => ({
     header: {
@@ -61,6 +62,10 @@ const styles = (({ palette, typography }: Theme) => ({
         fontWeight: typography.fontWeightBold,
         fontSize: typography.pxToRem(12),
     },
+    connectionSecurityGroupName: {
+        fontWeight: typography.fontWeightBold,
+        fontSize: typography.pxToRem(12),
+    },
 }));
 
 const filterConfig: FilterConfig<Partial<IConnectionColumnNamesBase>> = {
@@ -75,6 +80,12 @@ const sortActions: SortActions<Partial<IConnectionColumnNamesBase>> = {
         label: <Translate msg="connections.overview.list.sort.connection_name" />,
         sortType: SortType.String,
     },
+};
+
+const defaultSortedColumn: ISortedColumn<IConnectionColumnNamesBase> = {
+    name: 'name',
+    sortOrder: SortOrder.Descending,
+    sortType: SortType.String,
 };
 
 interface IComponentState {
@@ -107,6 +118,15 @@ const ConnectionOverview = withStyles(styles)(
 
             this.onLoadDocDialogOpen = this.onLoadDocDialogOpen.bind(this);
             this.onLoadDocDialogClose = this.onLoadDocDialogClose.bind(this);
+            this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
+        }
+
+        public componentDidMount() {
+            const { dispatch } = this.props;
+            const initialFilters = this.combineFiltersFromUrlAndCurrentFilters();
+
+            this.fetchConnectionssWithFilterAndPagination({ newListFilters: initialFilters, newPage: 1 });
+            dispatch(setConnectionsListFilter({ filters: initialFilters }));
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
@@ -157,7 +177,7 @@ const ConnectionOverview = withStyles(styles)(
                                     />
                                 </Box>
                                 {
-                                    checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE) && (
+                                    checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE) && (
                                         <Box display="flex" alignItems="center">
                                             <Box flex="0 0 auto" mr="8px" width="250px">
                                                 <TransformDocumentationDialog
@@ -231,24 +251,28 @@ const ConnectionOverview = withStyles(styles)(
                 name: {
                     label: <Translate msg="connections.overview.list.labels.name" />,
                     className: classes.connectionName,
-                    fixedWidth: '40%',
+                    fixedWidth: '35%',
                 },
                 type: {
                     label: <Translate msg="connections.overview.list.labels.type" />,
                     className: classes.connectionType,
-                    fixedWidth: '15%',
-                },
-                environments: {
-                    label: <Translate msg="connections.overview.list.labels.environments" />,
-                    className: classes.connectionEnvironment,
-                    noWrap: true,
-                    fixedWidth: '5%',
+                    fixedWidth: '10%',
                 },
                 description: {
                     label: <Translate msg="connections.overview.list.labels.description" />,
                     className: classes.connectionDescription,
                     fixedWidth: '40%',
                     noWrap: true,
+                },
+                securityGroupName: {
+                    className: classes.connectionSecurityGroupName,
+                    fixedWidth: '10%',
+                },
+                environments: {
+                    label: <Translate msg="connections.overview.list.labels.environments" />,
+                    className: classes.connectionEnvironment,
+                    noWrap: true,
+                    fixedWidth: '5%',
                 },
             };
 
@@ -280,8 +304,12 @@ const ConnectionOverview = withStyles(styles)(
                                                     },
                                                 });
                                             },
-                                            hideAction: () => (
-                                                !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                                            hideAction: (item: IListItem<IConnectionColumnNamesBase>) => (
+                                                !checkAuthority(
+                                                    state,
+                                                    SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
+                                                    item.columns.securityGroupName.toString(),
+                                                )
                                             ),
                                         }, {
                                             icon: <Visibility />,
@@ -297,15 +325,19 @@ const ConnectionOverview = withStyles(styles)(
                                                     },
                                                 });
                                             },
-                                            hideAction: () => (
-                                                checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                                            hideAction: (item: IListItem<IConnectionColumnNamesBase>) => (
+                                                !checkAuthority(
+                                                    state,
+                                                    SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
+                                                    item.data.securityGroupName,
+                                                )
                                             ),
                                         }, {
                                             icon: <Delete />,
                                             label: translator('connections.overview.list.actions.delete'),
                                             onClick: this.setConnectionToDelete,
                                             hideAction: () => (
-                                                !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                                                !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                                             ),
                                         },
                                     )}
@@ -334,6 +366,37 @@ const ConnectionOverview = withStyles(styles)(
             dispatch(setConnectionsListFilter({ sortedColumn }));
         }
 
+        private combineFiltersFromUrlAndCurrentFilters() {
+            const { state } = this.props;
+            const filterFromState = getConnectionsListFilter(state);
+            const searchParams = new URLSearchParams(window.location.search);
+            const defaultFilters = filterFromState.filters || getIntialFiltersFromFilterConfig(filterConfig);
+            const hasValidUrlParams = Array.from(searchParams.keys()).some((r) =>
+                Object.keys(filterConfig).includes(r));
+
+            if (hasValidUrlParams) {
+                // reset filters in redux state & only set url params
+                const filtersByUrlSearchParams = getIntialFiltersFromFilterConfig(filterConfig);
+                Array.from(searchParams.keys()).forEach(
+                    (searchParamKey: string) => {
+                        if (Object.keys(filterConfig).includes(searchParamKey)) {
+                            const filterValue = searchParams.get(searchParamKey);
+                            if (
+                                !filtersByUrlSearchParams[searchParamKey as keyof IConnectionColumnNamesBase]
+                                    .values.includes(filterValue)
+                            ) {
+                                filtersByUrlSearchParams[searchParamKey as keyof IConnectionColumnNamesBase].values
+                                    .push(filterValue);
+                            }
+                        }
+                    },
+                );
+                return filtersByUrlSearchParams;
+            }
+
+            return defaultFilters;
+        }
+
         private fetchConnectionssWithFilterAndPagination({
             newPage,
             newListFilters,
@@ -350,7 +413,7 @@ const ConnectionOverview = withStyles(styles)(
 
             const filters = newListFilters || filtersFromState.filters;
             const page = newListFilters ? 1 : newPage || pageData.number;
-            const sortedColumn = newSortedColumn || filtersFromState.sortedColumn;
+            const sortedColumn = newSortedColumn || filtersFromState.sortedColumn || defaultSortedColumn;
             triggerFetchConnections({
                 pagination: { page },
                 filter: {
@@ -413,6 +476,7 @@ function mapConnectionsToListItems(connections: IConnection[]): IListItem<IConne
         id: getUniqueIdFromConnection(connection),
         columns: {
             name: connection.name,
+            securityGroupName: connection.securityGroupName,
             description: connection.description,
             type: connection.type,
             environments: {

@@ -3,6 +3,7 @@ import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import {
     IScriptByNameAndVersionPayload,
     IScriptBase,
+    IScriptImport,
     IFetchScriptsListPayload,
 } from 'models/state/scripts.models';
 import { StateChangeNotification } from 'models/state.models';
@@ -43,13 +44,42 @@ export const triggerUpdateScriptDetail = (payload: IScriptBase) =>
         })),
     });
 
-export const triggerCreateScriptDetail = (payload: IScriptBase) =>
+export const triggerCreateScriptDetail = (payload: IScriptBase | IScriptImport) =>
     entitiesStateManager.triggerAsyncEntityCreate<{}>({
         asyncEntityToCreate: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetail,
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_DETAIL],
+        onSuccess: ({ dispatch }) => {
+            dispatch(triggerFlashMessage({
+                translationKey: 'flash_messages.script.create',
+                type: 'success',
+            }));
+        },
+        onFail: ({ dispatch, error }) => {
+            let message = 'Unknown error';
+            if (error.status) {
+                switch (error.status) {
+                    case 404:
+                        triggerUpdateScriptDetail(payload as IScriptBase);
+                        return;
+                    case -1:
+                        message = 'Cannot connect to the server';
+                        break;
+                    default:
+                        message = error.response?.message;
+                        break;
+                }
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.script.error',
+                    translationPlaceholders: {
+                        message,
+                    },
+                    type: 'error',
+                }));
+            }
+        },
     });
 
 export const triggerDeleteScriptDetail = (payload: IScriptByNameAndVersionPayload) =>

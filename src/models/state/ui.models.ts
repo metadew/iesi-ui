@@ -6,6 +6,7 @@ import { IColumnNames as IScriptsColumnNames } from 'models/state/scripts.models
 import { IColumnNames as IExecutionsColumnNames } from 'models/state/executionRequests.models';
 import { IComponentColumnNames } from './components.model';
 import { IConnectionColumnNamesBase } from './connections.model';
+import { IDatasetColumnNames } from './datasets.model';
 
 export interface IUiState {
     flashMessages: IFlashMessage[];
@@ -15,6 +16,7 @@ export interface IUiState {
         components: IComponentsListFilters;
         connections: IListFilters<IConnectionColumnNamesBase>;
         executions: IListFilters<IExecutionsColumnNames>;
+        datasets: IListFilters<IDatasetColumnNames>;
     };
 }
 

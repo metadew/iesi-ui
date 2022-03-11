@@ -324,6 +324,10 @@ const OpenAPIOverview = withStyles(styles)(
                     fixedWidth: '50%',
                     label: <Translate msg="doc.overview.component_columns.connection" />,
                 },
+                securityGroupName: {
+                    fixedWidth: '50%',
+                    label: <Translate msg="doc.overview.component_columns.security_group_name" />,
+                },
             };
 
             return (
@@ -399,6 +403,7 @@ function mapComponentsToListItems(components: IComponent[]): IListItem<IComponen
             endpoint: component.parameters.find((p) => p.name === 'endpoint'),
             type: component.parameters.find((p) => p.name === 'type'),
             connection: component.parameters.find((p) => p.name === 'connection'),
+            securityGroupName: component.securityGroupName,
         },
         isHandled: component.isHandled,
     }));

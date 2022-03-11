@@ -37,7 +37,7 @@ export function setIesiApiTimeoutInSeconds(timeoutInSeconds: number) {
 /**
  * As the first calls (getting the env-config.json file) are definitely to the same host as the front-end,
  * there is no base url.
- * For the calls that need it afterwards (~ IEAI api calls) the baseUrl (that is retrieved from env-config.json)
+ * For the calls that need it afterwards (~ IESI api calls) the baseUrl (that is retrieved from env-config.json)
  * will be added via the requestCustomTransformer.
  */
 export const requestWrapper = getRequestWrapper<ICustomApiConfig, ITraceableApiError>({
@@ -73,6 +73,7 @@ export const requestWrapper = getRequestWrapper<ICustomApiConfig, ITraceableApiE
 export function get<Result, ResponseData = Result>(
     config: IGetRequestConfig<Result, ResponseData> & ICustomApiConfig,
 ): Promise<Result> {
+    // TODO: if needsAuthentication get IAUTHSTATE and include accessToken
     if (config.isIesiApi && config.needsAuthentication) {
         return requestWrapper.get({ ...config,
             headers: {
@@ -103,7 +104,7 @@ export function put<Result, ResponseData = Result>(
         return requestWrapper.put({ ...config,
             headers: {
                 ...config.headers,
-                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                Authorization: `Bearer ${sessionStorage.getItem('token')}}`,
             } });
     }
     return requestWrapper.put(config);

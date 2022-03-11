@@ -8,6 +8,7 @@ const API_URLS = {
     COMPONENT_TYPES: '/component-types',
 
     ENVIRONMENTS: '/environments',
+    ENVIRONMENTS_LIST: '/environments/list',
     ENVIRONMENT_BY_NAME: '/environments/{name}',
 
     EXECUTION_REQUESTS: '/execution-requests',
@@ -27,9 +28,15 @@ const API_URLS = {
     COMPONENT_BY_NAME: '/components/{name}',
     COMPONENT_BY_NAME_VERSION: '/components/{name}/{version}',
 
-    SECURITY_LOGON: '/users/login',
+    USER_LOGON: '/users/login',
+    USER_BY_UUID: '/users/{uuid}',
 
     OPEN_API_TRANSFORM: '/openapi/transform',
+
+    DATASETS: '/datasets',
+    DATASET_BY_NAME: '/datasets/{name}',
+    DATASET_BY_UUID: '/datasets/{uuid}',
+    DATASET_IMPLEMENTATIONS: '/datasets/{uuid}/implementations',
 
     /* eslint-enable max-len */
 };

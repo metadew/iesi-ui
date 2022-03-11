@@ -17,6 +17,10 @@ import { IComponent } from 'models/state/components.model';
 import { getAsyncComponentTypes } from 'state/entities/constants/selectors';
 import ExpandableParameter from 'views/design/ScriptDetail/EditAction/ExpandableParameter';
 import TextInput from 'views/common/input/TextInput';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
+import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { TRequiredFieldsState } from 'models/form.models';
+import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 
 const useStyles = makeStyles(({ palette }: Theme) => ({
     content: {
@@ -52,31 +56,51 @@ function EditComponentDialog({ onClose, open, state, dispatch, component }: IPub
     const translator = getTranslator(state);
     const [parameters, setParameters] = useState(component.parameters);
     const [name, setName] = useState(component.name);
+    const [securityGroupName, setSecurityGroupName] = useState(component.securityGroupName);
     const [description, setDescription] = useState(component.description);
     const [version, setVersion] = useState(component.version.number);
     const [versionDescription, setVersionDescription] = useState(component.version.description);
+    const [requiredFieldsState, setRequiredFieldsState] = useState<TRequiredFieldsState<IComponent>>({
+        securityGroupName: {
+            showError: false,
+        },
+        name: {
+            showError: false,
+        },
+    });
     const componentTypes = getAsyncComponentTypes(state).data || [];
     const matchingComponentTypes = componentTypes.find((item) => item.type === 'http.request');
 
     if (!component) return <></>;
 
     const onValidateClick = () => {
-        dispatch(editComponent({
-            currentComponent: component,
-            newComponent: {
-                name,
-                type: component.type,
-                description,
-                version: {
-                    number: version,
-                    description: versionDescription,
-                },
-                parameters,
-                attributes: [],
-                isHandled: component.isHandled,
+        const newComponent: IComponent = {
+            name,
+            securityGroupName,
+            type: component.type,
+            description,
+            version: {
+                number: version,
+                description: versionDescription,
             },
-        }));
-        onClose();
+            parameters,
+            attributes: [],
+            isHandled: component.isHandled,
+        };
+        const { passed: passedRequired, requiredFieldsState: newRequiredFieldsState } = requiredFieldsCheck({
+            data: newComponent,
+            requiredFields: ['name', 'securityGroupName'],
+        });
+
+        if (passedRequired) {
+            dispatch(editComponent({
+                currentComponent: component,
+                newComponent,
+            }));
+            onClose();
+        } else {
+            setRequiredFieldsState(newRequiredFieldsState);
+        }
     };
 
     return (
@@ -101,9 +125,13 @@ function EditComponentDialog({ onClose, open, state, dispatch, component }: IPub
                                 variant="filled"
                                 defaultValue={name}
                                 label={translator('doc.dialog.edit.component.name')}
+                                error={requiredFieldsState.name.showError}
+                                // eslint-disable-next-line max-len
+                                helperText={requiredFieldsState.name.showError && 'Name is a required field'}
                                 fullWidth
                                 onBlur={(e) => setName(e.target.value)}
                                 className={classes.textField}
+                                required
                             />
                         </Paper>
                         <Paper className={classes.paperInput}>
@@ -126,6 +154,7 @@ function EditComponentDialog({ onClose, open, state, dispatch, component }: IPub
                                 fullWidth
                                 onBlur={(e) => setVersion(parseFloat(e.target.value))}
                                 className={classes.textField}
+                                required
                             />
                         </Paper>
                         <Paper className={classes.paperInput}>
@@ -136,6 +165,22 @@ function EditComponentDialog({ onClose, open, state, dispatch, component }: IPub
                                 fullWidth
                                 onBlur={(e) => setVersionDescription(e.target.value)}
                                 className={classes.textField}
+                            />
+                        </Paper>
+                    </Box>
+                    <Box marginBottom={2} width="100%">
+                        <Paper className={classes.paperInput}>
+                            <TextInput
+                                id="component-security-group"
+                                defaultValue={securityGroupName}
+                                variant="filled"
+                                label={translator('doc.dialog.edit.component.component_security')}
+                                error={requiredFieldsState.securityGroupName.showError}
+                                onBlur={(e) => setSecurityGroupName(e.target.value)}
+                                // eslint-disable-next-line max-len
+                                helperText={requiredFieldsState.securityGroupName.showError && 'Security group is a required field'}
+                                required
+                                fullWidth
                             />
                         </Paper>
                     </Box>
@@ -160,6 +205,7 @@ function EditComponentDialog({ onClose, open, state, dispatch, component }: IPub
                                     }}
                                     parameter={parameter}
                                     constantParameter={constantParameter}
+                                    readOnly={!checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
                                 />
                             );
                         })

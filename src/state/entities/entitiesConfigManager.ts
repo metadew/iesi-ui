@@ -14,6 +14,7 @@ import {
     IScriptByNameAndVersionPayload,
     IScriptBase,
     IFetchScriptsListPayload,
+    IScriptImport,
 } from 'models/state/scripts.models';
 import { IOpenAPI } from 'models/state/openapi.model';
 import {
@@ -26,6 +27,13 @@ import {
     IComponentByNameAndVersionPayload,
     IFetchComponentsListPayload,
 } from 'models/state/components.model';
+import {
+    IDataset,
+    IDatasetBase,
+    IDatasetImplementationsByUuidPayload,
+    IFetchDatasetsListPayload,
+    IDatasetByUuidPayload,
+} from 'models/state/datasets.model';
 
 // eslint-disable-next-line max-len
 const entitiesConfigManager = initAsyncEntitiesConfigManager<IState, {}, ITraceableApiError, string, IExtraProcessInput>();
@@ -54,7 +62,7 @@ entitiesConfigManager.register({
             api: api.scripts.createScriptVersion,
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
-            apiInputSelector: ({ extraInput }) => extraInput as IScriptBase,
+            apiInputSelector: ({ extraInput }) => extraInput as IScriptBase | IScriptImport,
         },
         update: {
             // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
@@ -370,6 +378,59 @@ entitiesConfigManager.register({
         update: {
             api: api.connections.updateConnection,
             apiInputSelector: ({ extraInput }) => extraInput as IConnection,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.datasets,
+    operationsConfig: {
+        fetch: {
+            api: api.datasets.fetchDatasets,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchDatasetsListPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.datasetDetail,
+    operationsConfig: {
+        fetch: {
+            api: api.datasets.fetchDataset,
+            apiInputSelector: ({ extraInput }) => extraInput as IDataset,
+        },
+        create: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.datasets.createDataset,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IDatasetBase,
+        },
+        update: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.datasets.updateDataset,
+            apiInputSelector: ({ extraInput }) => extraInput as IDataset,
+        },
+        remove: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.datasets.deleteDataset,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IDatasetByUuidPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.datasetImplementations,
+    operationsConfig: {
+        fetch: {
+            api: api.datasets.fetchDatasetImplementations,
+            apiInputSelector: ({ extraInput }) => extraInput as IDatasetImplementationsByUuidPayload,
         },
     },
 });

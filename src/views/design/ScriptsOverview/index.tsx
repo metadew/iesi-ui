@@ -27,7 +27,7 @@ import {
     IListItem,
     SortOrder,
 } from 'models/list.models';
-import { IScript, IExpandScriptsResponseWith, IColumnNames } from 'models/state/scripts.models';
+import { IScript, IExpandScriptsResponseWith, IColumnNames, IScriptBase } from 'models/state/scripts.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
@@ -53,11 +53,9 @@ import { getScriptsListFilter } from 'state/ui/selectors';
 import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
 import { setScriptsListFilter } from 'state/ui/actions';
 import ReportIcon from 'views/common/icons/Report';
-import {
-    SECURITY_PRIVILEGES,
-    checkAuthority,
-    checkAuthorityGeneral,
-} from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
+import { checkAuthorityGeneral, checkAuthority } from 'state/auth/selectors';
+import TransformDocumentationDialogScript from '../common/TransformDocumentationDialogScript';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -114,9 +112,15 @@ const sortActions: SortActions<Partial<IColumnNames>> = {
 
 interface IScriptState {
     scriptIdToDelete: string;
-    scriptIdToExecute: string;
-    loadDocDialogOpen: boolean;
+    selectedScript: IScriptBase;
+    importScriptDialogOpen: boolean;
 }
+
+const defaultSortedColumn: ISortedColumn<IColumnNames> = {
+    name: 'name',
+    sortOrder: SortOrder.Descending,
+    sortType: SortType.String,
+};
 
 type TProps = WithStyles<typeof styles>;
 
@@ -127,8 +131,8 @@ const ScriptsOverview = withStyles(styles)(
 
             this.state = {
                 scriptIdToDelete: null,
-                scriptIdToExecute: null,
-                loadDocDialogOpen: false,
+                selectedScript: null,
+                importScriptDialogOpen: false,
             };
 
             this.renderPanel = this.renderPanel.bind(this);
@@ -139,16 +143,24 @@ const ScriptsOverview = withStyles(styles)(
             this.clearScriptToDelete = this.clearScriptToDelete.bind(this);
             this.setScriptToDelete = this.setScriptToDelete.bind(this);
             this.onCloseExecuteDialog = this.onCloseExecuteDialog.bind(this);
-            this.setScriptToExecute = this.setScriptToExecute.bind(this);
+            this.setExecuteScriptDialogOpen = this.setExecuteScriptDialogOpen.bind(this);
+            this.onImportScriptDialogOpen = this.onImportScriptDialogOpen.bind(this);
+            this.onImportScriptDialogClose = this.onImportScriptDialogClose.bind(this);
 
             this.onDeleteScript = this.onDeleteScript.bind(this);
             // eslint-disable-next-line max-len
             this.closeDeleteScriptDialogAfterSuccessfulDelete = this.closeDeleteScriptDialogAfterSuccessfulDelete.bind(this);
 
             this.fetchScriptsWithFilterAndPagination = this.fetchScriptsWithFilterAndPagination.bind(this);
+            this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
+        }
 
-            this.onLoadDocDialogOpen = this.onLoadDocDialogOpen.bind(this);
-            this.onLoadDocDialogClose = this.onLoadDocDialogClose.bind(this);
+        public componentDidMount() {
+            const { dispatch } = this.props;
+            const initialFilters = this.combineFiltersFromUrlAndCurrentFilters();
+
+            this.fetchScriptsWithFilterAndPagination({ newListFilters: initialFilters, newPage: 1 });
+            dispatch(setScriptsListFilter({ filters: initialFilters }));
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
@@ -170,7 +182,7 @@ const ScriptsOverview = withStyles(styles)(
 
         public render() {
             const { classes, state } = this.props;
-            const { scriptIdToDelete, scriptIdToExecute } = this.state;
+            const { scriptIdToDelete, selectedScript } = this.state;
             const filterFromState = getScriptsListFilter(state);
 
             const scripts = getAsyncScripts(this.props.state);
@@ -204,20 +216,29 @@ const ScriptsOverview = withStyles(styles)(
                                             sortedColumn={filterFromState.sortedColumn as ISortedColumn<{}>}
                                         />
                                     </Box>
-                                    {checkAuthorityGeneral(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)
+                                    {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)
                                         ? (
                                             <Box display="flex" alignItems="center" flex="0 0 auto">
-                                                <Button
-                                                    variant="contained"
-                                                    color="secondary"
-                                                    size="small"
-                                                    startIcon={<AddRounded />}
-                                                    onClick={() => {
-                                                        redirectTo({ routeKey: ROUTE_KEYS.R_SCRIPT_NEW });
-                                                    }}
-                                                >
-                                                    <Translate msg="scripts.overview.header.add_button" />
-                                                </Button>
+                                                <Box flex="0 0 auto" mr="8px" width="250px">
+                                                    <TransformDocumentationDialogScript
+                                                        open={this.state.importScriptDialogOpen}
+                                                        onOpen={this.onImportScriptDialogOpen}
+                                                        onClose={this.onImportScriptDialogClose}
+                                                    />
+                                                </Box>
+                                                <Box flex="0 0 auto">
+                                                    <Button
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        size="small"
+                                                        startIcon={<AddRounded />}
+                                                        onClick={() => {
+                                                            redirectTo({ routeKey: ROUTE_KEYS.R_SCRIPT_NEW });
+                                                        }}
+                                                    >
+                                                        <Translate msg="scripts.overview.header.add_button" />
+                                                    </Button>
+                                                </Box>
                                             </Box>
                                         ) : null}
 
@@ -246,11 +267,16 @@ const ScriptsOverview = withStyles(styles)(
                         onConfirm={this.onDeleteScript}
                         showLoader={deleteStatus === AsyncStatus.Busy}
                     />
-                    <ExecuteScriptDialog
-                        scriptUniqueId={scriptIdToExecute}
-                        open={!!scriptIdToExecute}
-                        onClose={this.onCloseExecuteDialog}
-                    />
+                    {
+                        selectedScript && (
+                            <ExecuteScriptDialog
+                                onClose={this.onCloseExecuteDialog}
+                                scriptName={selectedScript.name}
+                                scriptVersion={selectedScript.version.number}
+                            />
+                        )
+                    }
+
                 </>
             );
         }
@@ -338,10 +364,11 @@ const ScriptsOverview = withStyles(styles)(
                                     {
                                         icon: <PlayArrowRounded />,
                                         label: translator('scripts.overview.list.actions.execute'),
-                                        onClick: this.setScriptToExecute,
+                                        onClick: this.setExecuteScriptDialogOpen,
                                         hideAction: (item: IListItem<IColumnNames>) =>
                                             !checkAuthority(
-                                                SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_WRITE,
+                                                state,
+                                                SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_WRITE,
                                                 item.columns.securityGroupName.toString(),
                                             ),
                                     },
@@ -363,6 +390,7 @@ const ScriptsOverview = withStyles(styles)(
                                         },
                                         hideAction: (item: IListItem<IColumnNames>) =>
                                             !checkAuthority(
+                                                state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                                 item.columns.securityGroupName.toString(),
                                             ),
@@ -385,10 +413,11 @@ const ScriptsOverview = withStyles(styles)(
                                         },
                                         hideAction: (item: IListItem<IColumnNames>) =>
                                             checkAuthority(
+                                                state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                                 item.columns.securityGroupName.toString(),
                                                 // eslint-disable-next-line max-len
-                                            ) || !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_READ, item.columns.securityGroupName.toString()),
+                                            ) || !checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_READ, item.columns.securityGroupName.toString()),
                                     },
                                     {
                                         icon: <ReportIcon />,
@@ -408,7 +437,8 @@ const ScriptsOverview = withStyles(styles)(
                                         },
                                         hideAction: (item: IListItem<IColumnNames>) =>
                                             !checkAuthority(
-                                                SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_READ,
+                                                state,
+                                                SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_READ,
                                                 item.columns.securityGroupName.toString(),
                                             ),
                                     },
@@ -418,6 +448,7 @@ const ScriptsOverview = withStyles(styles)(
                                         onClick: this.setScriptToDelete,
                                         hideAction: (item: IListItem<IColumnNames>) =>
                                             !checkAuthority(
+                                                state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                                 item.columns.securityGroupName.toString(),
                                             ),
@@ -482,6 +513,36 @@ const ScriptsOverview = withStyles(styles)(
             dispatch(setScriptsListFilter({ filters: listFilters }));
         }
 
+        private combineFiltersFromUrlAndCurrentFilters() {
+            const { state } = this.props;
+            const filterFromState = getScriptsListFilter(state);
+            const searchParams = new URLSearchParams(window.location.search);
+            const defaultFilters = filterFromState.filters || getIntialFiltersFromFilterConfig(filterConfig);
+            const hasValidUrlParams = Array.from(searchParams.keys()).some((r) =>
+                Object.keys(filterConfig).includes(r));
+
+            if (hasValidUrlParams) {
+                // reset filters in redux state & only set url params
+                const filtersByUrlSearchParams = getIntialFiltersFromFilterConfig(filterConfig);
+                Array.from(searchParams.keys()).forEach(
+                    (searchParamKey: string) => {
+                        if (Object.keys(filterConfig).includes(searchParamKey)) {
+                            const filterValue = searchParams.get(searchParamKey);
+                            if (
+                                !filtersByUrlSearchParams[searchParamKey as keyof IColumnNames]
+                                    .values.includes(filterValue)
+                            ) {
+                                filtersByUrlSearchParams[searchParamKey as keyof IColumnNames].values.push(filterValue);
+                            }
+                        }
+                    },
+                );
+                return filtersByUrlSearchParams;
+            }
+
+            return defaultFilters;
+        }
+
         private fetchScriptsWithFilterAndPagination({
             newPage,
             newListFilters,
@@ -504,7 +565,7 @@ const ScriptsOverview = withStyles(styles)(
             const page = newListFilters ? 1 : newPage || pageData.number;
             const onlyShowLatestVersion = isSet(newOnlyShowLatestVersion)
                 ? newOnlyShowLatestVersion : filtersFromState.onlyShowLatestVersion;
-            const sortedColumn = newSortedColumn || filtersFromState.sortedColumn;
+            const sortedColumn = newSortedColumn || filtersFromState.sortedColumn || defaultSortedColumn;
 
             triggerFetchScripts({
                 pagination: { page },
@@ -528,21 +589,24 @@ const ScriptsOverview = withStyles(styles)(
             this.setState({ scriptIdToDelete: id as string });
         }
 
+        private setExecuteScriptDialogOpen(id: ReactText) {
+            const scripts = getAsyncScripts(this.props.state);
+            const selectedScript = scripts.find((item) =>
+                getUniqueIdFromScript(item) === id);
+            this.setState({ selectedScript });
+        }
+
         private onCloseExecuteDialog() {
             triggerResetAsyncExecutionRequest({ operation: AsyncOperation.create });
-            this.setState({ scriptIdToExecute: null });
+            this.setState({ selectedScript: null });
         }
 
-        private setScriptToExecute(id: ReactText) {
-            this.setState({ scriptIdToExecute: id as string });
+        private onImportScriptDialogOpen() {
+            this.setState((state) => ({ ...state, importScriptDialogOpen: true }));
         }
 
-        private onLoadDocDialogOpen() {
-            this.setState((state) => ({ ...state, loadDocDialogOpen: true }));
-        }
-
-        private onLoadDocDialogClose() {
-            this.setState((state) => ({ ...state, loadDocDialogOpen: false }));
+        private onImportScriptDialogClose() {
+            this.setState((state) => ({ ...state, importScriptDialogOpen: false }));
         }
     },
 );
@@ -553,7 +617,7 @@ function mapScriptsToListItems(scripts: IScript[]): IListItem<IColumnNames>[] {
         columns: {
             name: script.name,
             securityGroupName: script.securityGroupName,
-            description: script.description,
+            description: script.version.description,
             version: (script.version.number).toString(),
             labels: {
                 value: script.labels.length,

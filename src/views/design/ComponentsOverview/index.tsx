@@ -4,7 +4,6 @@ import GenericFilter from 'views/common/list/GenericFilter';
 import { Box, Button, Theme, Typography, WithStyles, withStyles, createStyles } from '@material-ui/core';
 import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import { checkAuthorityGeneral, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import { getComponentsListFilter } from 'state/ui/selectors';
 import GenericSort from 'views/common/list/GenericSort';
@@ -19,8 +18,10 @@ import {
     SortOrder,
     SortType,
 } from 'models/list.models';
+import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
-import { IComponent, IComponentColumnNamesBase } from 'models/state/components.model';
+import { IComponent, IComponentColumnNames, IComponentColumnNamesBase } from 'models/state/components.model';
 import GenericList from 'views/common/list/GenericList';
 import { getTranslator } from 'state/i18n/selectors';
 import { setComponentsListFilter } from 'state/ui/actions';
@@ -61,6 +62,10 @@ const styles = ({ palette, typography }: Theme) =>
             fontWeight: typography.fontWeightBold,
             fontSize: typography.pxToRem(12),
         },
+        securityGroupName: {
+            fontWeight: typography.fontWeightBold,
+            fontSize: typography.pxToRem(12),
+        },
     });
 
 const filterConfig: FilterConfig<Partial<IComponentColumnNamesBase>> = {
@@ -80,6 +85,12 @@ interface IComponentState {
     loadDocDialogOpen: boolean;
 }
 type TProps = WithStyles<typeof styles>;
+
+const defaultSortedColumn: ISortedColumn<IComponentColumnNamesBase> = {
+    name: 'name',
+    sortOrder: SortOrder.Descending,
+    sortType: SortType.String,
+};
 
 const ComponentsOverview = withStyles(styles)(
     class extends React.Component<TProps & IObserveProps, IComponentState> {
@@ -101,8 +112,17 @@ const ComponentsOverview = withStyles(styles)(
             this.onSort = this.onSort.bind(this);
             this.onFilter = this.onFilter.bind(this);
             this.fetchComponentsWithFilterAndPagination = this.fetchComponentsWithFilterAndPagination.bind(this);
+            this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
             this.onLoadDocDialogOpen = this.onLoadDocDialogOpen.bind(this);
             this.onLoadDocDialogClose = this.onLoadDocDialogClose.bind(this);
+        }
+
+        public componentDidMount() {
+            const { dispatch } = this.props;
+            const initialFilters = this.combineFiltersFromUrlAndCurrentFilters();
+
+            this.fetchComponentsWithFilterAndPagination({ newListFilters: initialFilters, newPage: 1 });
+            dispatch(setComponentsListFilter({ filters: initialFilters }));
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
@@ -154,7 +174,7 @@ const ComponentsOverview = withStyles(styles)(
                                         />
                                     </Box>
                                     {
-                                        checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                        checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
                                         && (
                                             <Box display="flex" alignItems="center">
                                                 <Box flex="0 0 auto" mr="8px" width="250px">
@@ -246,8 +266,12 @@ const ComponentsOverview = withStyles(styles)(
                 description: {
                     label: <Translate msg="components.overview.list.labels.description" />,
                     className: classes.componentDescription,
-                    fixedWidth: '40%',
+                    fixedWidth: '30%',
                     noWrap: true,
+                },
+                securityGroupName: {
+                    className: classes.securityGroupName,
+                    fixedWidth: '10%',
                 },
             };
 
@@ -280,8 +304,12 @@ const ComponentsOverview = withStyles(styles)(
                                                     },
                                                 });
                                             },
-                                            hideAction: () => (
-                                                !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                            hideAction: (item: IListItem<IComponentColumnNames>) => (
+                                                !checkAuthority(
+                                                    state,
+                                                    SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
+                                                    item.columns.securityGroupName.toString(),
+                                                )
                                             ),
                                         }, {
                                             icon: <Visibility />,
@@ -298,15 +326,23 @@ const ComponentsOverview = withStyles(styles)(
                                                     },
                                                 });
                                             },
-                                            hideAction: () => (
-                                                checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                            hideAction: (item: IListItem<IComponentColumnNames>) => (
+                                                checkAuthority(
+                                                    state,
+                                                    SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
+                                                    item.columns.securityGroupName.toString(),
+                                                )
                                             ),
                                         }, {
                                             icon: <Delete />,
                                             label: translator('components.overview.list.actions.delete'),
                                             onClick: this.setComponentToDelete,
-                                            hideAction: () => (
-                                                !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                            hideAction: (item: IListItem<IComponentColumnNames>) => (
+                                                !checkAuthority(
+                                                    state,
+                                                    SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
+                                                    item.columns.securityGroupName.toString(),
+                                                )
                                             ),
                                         },
                                     )}
@@ -381,6 +417,37 @@ const ComponentsOverview = withStyles(styles)(
             this.setState((state) => ({ ...state, loadDocDialogOpen: false }));
         }
 
+        private combineFiltersFromUrlAndCurrentFilters() {
+            const { state } = this.props;
+            const filterFromState = getComponentsListFilter(state);
+            const searchParams = new URLSearchParams(window.location.search);
+            const defaultFilters = filterFromState.filters || getIntialFiltersFromFilterConfig(filterConfig);
+            const hasValidUrlParams = Array.from(searchParams.keys()).some((r) =>
+                Object.keys(filterConfig).includes(r));
+
+            if (hasValidUrlParams) {
+                // reset filters in redux state & only set url params
+                const filtersByUrlSearchParams = getIntialFiltersFromFilterConfig(filterConfig);
+                Array.from(searchParams.keys()).forEach(
+                    (searchParamKey: string) => {
+                        if (Object.keys(filterConfig).includes(searchParamKey)) {
+                            const filterValue = searchParams.get(searchParamKey);
+                            if (
+                                !filtersByUrlSearchParams[searchParamKey as keyof IComponentColumnNamesBase]
+                                    .values.includes(filterValue)
+                            ) {
+                                filtersByUrlSearchParams[searchParamKey as keyof IComponentColumnNamesBase]
+                                    .values.push(filterValue);
+                            }
+                        }
+                    },
+                );
+                return filtersByUrlSearchParams;
+            }
+
+            return defaultFilters;
+        }
+
         private fetchComponentsWithFilterAndPagination({
             newPage,
             newListFilters,
@@ -398,7 +465,7 @@ const ComponentsOverview = withStyles(styles)(
 
             const filters = newListFilters || filtersFromState.filters;
             const page = newListFilters ? 1 : newPage || pageData.number;
-            const sortedColumn = newSortedColumn || filtersFromState.sortedColumn;
+            const sortedColumn = newSortedColumn || filtersFromState.sortedColumn || defaultSortedColumn;
             triggerFetchComponents({
                 pagination: { page },
                 filter: {
@@ -416,6 +483,7 @@ function mapComponentsToListItems(components: IComponent[]): IListItem<IComponen
         id: getUniqueIdFromComponent(component),
         columns: {
             name: component.name,
+            securityGroupName: component.securityGroupName,
             description: component.version.description,
             version: component.version.number,
             type: component.type,

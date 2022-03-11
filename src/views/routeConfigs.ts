@@ -10,6 +10,7 @@ import {
 } from 'state/entities/constants/triggers';
 import { triggerFetchComponentDetail, triggerFetchComponents } from 'state/entities/components/triggers';
 import { triggerFetchConnectionDetail, triggerFetchConnections } from 'state/entities/connections/triggers';
+import { triggerFetchDatasetDetail } from 'state/entities/datasets/triggers';
 import { SortType, SortOrder } from 'models/list.models';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
@@ -26,7 +27,6 @@ import ScriptDetail from './design/ScriptDetail';
 import ScriptReportsTemplate from './report/ScriptReportsTemplate';
 import ScriptReportsOverview from './report/ScriptReportsOverview';
 import ScriptReportDetail from './report/ScriptReportDetail';
-import Login from './appShell/AppLogIn/LoginPage';
 import OpenAPI from './doc/OpenAPIOverview';
 import OpenAPITemplate from './doc/OpenAPITemplate';
 import ComponentsTemplate from './design/ComponentsTemplate';
@@ -35,6 +35,10 @@ import ComponentDetail from './design/ComponentDetail';
 import ConnectionTemplate from './connectivity/ConnectionTemplate';
 import ConnectionOverview from './connectivity/ConnectionOverview';
 import ConnectionDetail from './connectivity/ConnectionDetail';
+import LoginView from './appShell/AppLogIn/LoginPage';
+import DatasetsTemplate from './data/DatasetsTemplate';
+import DatasetDetail from './data/DatasetDetail';
+import DatasetOverview from './data/DatasetOverview';
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
@@ -45,7 +49,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_LOGIN,
     path: '/login',
     exact: true,
-    component: Login,
+    component: LoginView,
 }, {
     routeKey: ROUTE_KEYS.R_SCRIPTS,
     path: '/scripts',
@@ -253,6 +257,26 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
         execute: triggerFetchEnvironments,
     }],
 }, {
+    routeKey: ROUTE_KEYS.R_DATASETS,
+    path: '/datasets',
+    template: DatasetsTemplate,
+    component: DatasetOverview,
+    childRoutes: [{
+        routeKey: ROUTE_KEYS.R_DATASET_NEW,
+        path: '/new',
+        component: DatasetDetail as React.ComponentType<unknown>,
+    }, {
+        routeKey: ROUTE_KEYS.R_DATASET_DETAIL,
+        path: '/:name',
+        component: DatasetDetail as React.ComponentType<unknown>,
+        executeOnRoute: [{
+            execute: triggerFetchDatasetDetail as () => unknown,
+            executeInputSelector: ({ routeLocation }) => ({
+                name: routeLocation.params.name,
+            }),
+        }],
+    }],
+}, {
     routeKey: ROUTE_KEYS.R_OPENAPI,
     path: '/openapi',
     template: OpenAPITemplate,
@@ -264,7 +288,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     }],
 }, {
     routeKey: ROUTE_KEYS.R_NOT_FOUND,
-    path: '*',
+    path: '/not-found',
     component: NotFound,
 },
 ];

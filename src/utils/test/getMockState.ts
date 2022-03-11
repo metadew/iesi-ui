@@ -3,6 +3,7 @@ import { ICustomAsyncEntity, IState } from 'models/state.models';
 import { IEnvConfig } from 'models/state/envConfig.models';
 import { II18nState } from 'models/state/i18n.models';
 import { DEFAULT_LOCALE } from 'config/i18n.config';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 export default function getMockState({
     envConfig = getDefaultEnvConfig(),
@@ -48,14 +49,20 @@ export default function getMockState({
                     page: 1,
                     sortedColumn: null,
                 },
+                datasets: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                },
             },
         },
         auth: {
             username: 'mocked-test-user',
-            permissions: {
-                edit: true,
-                execute: true,
-            },
+            permissions: [{
+                group: 'PUBLIC',
+                privilege: SECURITY_PRIVILEGES.S_CONNECTIONS_READ,
+            }],
+            accessToken: '',
         },
         entities: {
             actionTypes: {
@@ -161,6 +168,27 @@ export default function getMockState({
                 },
             },
             openapi: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            datasets: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            datasetDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            datasetImplementations: {
                 data: null,
                 fetch: {
                     status: AsyncStatus.Initial,

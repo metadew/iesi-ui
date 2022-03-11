@@ -12,6 +12,7 @@ export interface IColumnNames {
     runStatus: string;
     labels: number;
     parameters: number;
+    runId: string;
 }
 
 export interface IExecutionRequest {
@@ -40,7 +41,6 @@ export interface ICreateExecutionRequestPayload {
 
 interface ICreateScriptExecutionRequestPayload {
     environment: string;
-    exit: boolean;
     impersonations: { name: string }[];
     parameters: IParameter[];
     scriptName: string;
@@ -51,7 +51,6 @@ interface IScriptExecutionRequest {
     scriptExecutionRequestId: string;
     executionRequestId: string;
     environment: string;
-    exit: boolean;
     impersonations: { name: string }[];
     parameters: IParameter[];
     scriptExecutionRequestStatus: ExecutionRequestStatus;
@@ -77,6 +76,8 @@ interface IFetchExecutionRequestListFilter {
     version?: string;
     label?: string;
     environment?: string;
+    'run-id'?: string;
+    'run-status'?: string;
 }
 
 export interface IExecutionRequestsEntity {
