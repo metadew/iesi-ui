@@ -1,5 +1,6 @@
 import API_URLS from 'api/apiUrls';
 import { get, post, put, remove } from 'api/requestWrapper';
+import FileSaver from 'file-saver';
 import {
     IDataset,
     IDatasetBase,
@@ -53,6 +54,22 @@ export function fetchDataset({ name }: IDatasetByNamePayload) {
             name,
         },
         mapResponse: ({ data }) => ({ ...data, implementations: null }),
+    });
+}
+
+export async function fetchDatasetDownload({ name }: IDatasetByNamePayload) {
+    return get<any>({
+        needsAuthentication: true,
+        isIesiApi: true,
+        url: API_URLS.DATASET_BY_NAME_DOWNLOAD,
+        responseType: 'blob',
+        pathParams: {
+            name,
+        },
+    }).then((response) => {
+        const blob = new Blob([response]);
+        // eslint-disable-next-line
+        FileSaver.saveAs(blob, 'dataset_' + name + '.json');
     });
 }
 

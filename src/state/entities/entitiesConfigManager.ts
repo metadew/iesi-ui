@@ -33,6 +33,7 @@ import {
     IDatasetImplementationsByUuidPayload,
     IFetchDatasetsListPayload,
     IDatasetByUuidPayload,
+    IDatasetByNamePayload,
 } from 'models/state/datasets.model';
 
 // eslint-disable-next-line max-len
@@ -421,6 +422,16 @@ entitiesConfigManager.register({
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
             apiInputSelector: ({ extraInput }) => extraInput as IDatasetByUuidPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.datasetDetailExport,
+    operationsConfig: {
+        fetch: {
+            api: api.datasets.fetchDatasetDownload,
+            apiInputSelector: ({ extraInput }) => extraInput as IDatasetByNamePayload,
         },
     },
 });

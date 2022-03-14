@@ -35,6 +35,7 @@ const API_URLS = {
 
     DATASETS: '/datasets',
     DATASET_BY_NAME: '/datasets/{name}',
+    DATASET_BY_NAME_DOWNLOAD: '/datasets/{name}/download',
     DATASET_BY_UUID: '/datasets/{uuid}',
     DATASET_IMPLEMENTATIONS: '/datasets/{uuid}/implementations',
 

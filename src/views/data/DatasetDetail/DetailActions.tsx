@@ -4,6 +4,7 @@ import {
     AddRounded as AddIcon,
     Save as SaveIcon,
     Delete as DeleteIcon,
+    GetApp as ExportIcon,
 } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { THEME_COLORS } from 'config/themes/colors';
@@ -19,6 +20,7 @@ interface IPublicProps {
     onDelete?: () => void;
     onAdd?: () => void;
     onSave?: () => void;
+    onExport?: () => void;
     isCreateRoute?: boolean;
     newDatasetDetail?: IDatasetBase;
 }
@@ -45,6 +47,7 @@ function DetailActions({
     onDelete,
     onAdd,
     onSave,
+    onExport,
     isCreateRoute,
     state,
 }: IPublicProps & IObserveProps) {
@@ -58,6 +61,16 @@ function DetailActions({
             onClick={onDelete}
         >
             <DeleteIcon />
+        </IconButton>
+    );
+
+    const ExportButton = (
+        <IconButton
+            disabled={isCreateRoute}
+            aria-label={translator('datasets.detail.main.actions.export')}
+            onClick={onExport}
+        >
+            <ExportIcon />
         </IconButton>
     );
 
@@ -107,19 +120,30 @@ function DetailActions({
                             {isCreateRoute ? (
                                 <>
                                     {DeleteButton}
+                                    {ExportButton}
                                 </>
                             ) : (
                                 <>
                                     {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE)
-                                        ? (
-                                            <Tooltip
-                                                title={translator('datasets.detail.main.actions.delete')}
-                                                enterDelay={1000}
-                                                enterNextDelay={1000}
-                                            >
-                                                {DeleteButton}
-                                            </Tooltip>
-                                        ) : null}
+                                        && (
+                                            <>
+                                                <Tooltip
+                                                    title={translator('datasets.detail.main.actions.delete')}
+                                                    enterDelay={1000}
+                                                    enterNextDelay={1000}
+                                                >
+                                                    {DeleteButton}
+                                                </Tooltip>
+                                                <Tooltip
+                                                    title={translator('datasets.detail.main.actions.export')}
+                                                    enterDelay={1000}
+                                                    enterNextDelay={1000}
+                                                >
+                                                    {ExportButton}
+                                                </Tooltip>
+                                            </>
+
+                                        )}
                                 </>
                             )}
                         </Paper>

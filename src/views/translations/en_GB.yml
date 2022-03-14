@@ -604,6 +604,7 @@ datasets:
         add_implementation: Add implementation
         save: Save
         delete: Delete
+        export: Export
       list:
         labels:
           labels: 'Labels'

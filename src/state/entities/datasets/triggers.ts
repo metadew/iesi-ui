@@ -34,6 +34,15 @@ export const triggerFetchDatasetDetail = (payload: IDatasetByNamePayload) =>
         notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_DETAIL],
     });
 
+export const triggerExportDatasetDetail = (payload: IDatasetByNamePayload) =>
+    entitiesStateManager.triggerAsyncEntityFetch<{}>({
+        asyncEntityToFetch: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.datasetDetailExport,
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_DETAIL],
+    });
+
 export const triggerCreateDatasetDetail = (payload: IDatasetBase) =>
     entitiesStateManager.triggerAsyncEntityCreate<{}>({
         asyncEntityToCreate: {
