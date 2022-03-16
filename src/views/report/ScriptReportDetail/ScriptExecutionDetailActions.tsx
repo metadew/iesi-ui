@@ -113,13 +113,12 @@ function ScriptExecutionDetailActions<ColumnNames>({
     const classes = useStyles();
     const translator = getTranslator(state);
     const { executionRequestId } = useParams<IExecutionDetailPathParams>();
-    console.log(listItems);
 
     return (
 
         <>
 
-            { listItems.map((item: IListItem<ColumnNames>) => (
+            {listItems.map((item: IListItem<ColumnNames>) => (
                 <ExpansionPanel key={item.id as string} className={classes.expandableItem}>
                     <ExpansionPanelSummary
                         className={classes.summary}

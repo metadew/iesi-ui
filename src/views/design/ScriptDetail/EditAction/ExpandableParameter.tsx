@@ -56,6 +56,9 @@ const useStyles = makeStyles(({ palette, spacing }) => ({
     button: {
         marginLeft: 400,
     },
+    paramValue: {
+        whiteSpace: 'pre-wrap',
+    },
 }));
 
 function ExpandableParameter({ parameter, onChange, constantParameter, readOnly = false }: IPublicProps) {
@@ -91,11 +94,12 @@ function ExpandableParameter({ parameter, onChange, constantParameter, readOnly 
                     </InputLabel>
                     <FilledInput
                         id={`${constantParameter.name}-input`}
-                        type="text"
+                        type="area"
                         value={parameter ? parameter.value : ''}
                         onChange={(e) => onChange(e.target.value)}
                         multiline
                         readOnly={readOnly}
+                        className={classes.paramValue}
                     />
                 </FormControl>
             </ExpansionPanelDetails>
