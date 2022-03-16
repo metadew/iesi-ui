@@ -113,7 +113,6 @@ function ScriptExecutionDetailActions<ColumnNames>({
     const classes = useStyles();
     const translator = getTranslator(state);
     const { executionRequestId } = useParams<IExecutionDetailPathParams>();
-    console.log(listItems);
 
     return (
 
