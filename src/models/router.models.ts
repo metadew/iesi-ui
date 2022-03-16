@@ -29,6 +29,7 @@ export interface INavigateToRoute {
     routeKey: ROUTE_KEYS;
     params?: IPathParams;
     queryParams?: IPathParams;
+    newTab?: boolean;
 }
 
 export interface IPathParams {

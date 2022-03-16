@@ -100,6 +100,9 @@ const useStyles = makeStyles(({ typography, palette, shape, spacing }: Theme) =>
     valueCell: {
         whiteSpace: 'pre-wrap',
     },
+    btnRequest: {
+        marginLeft: 0,
+    },
 }));
 
 function ScriptExecutionDetailActions<ColumnNames>({
@@ -110,10 +113,13 @@ function ScriptExecutionDetailActions<ColumnNames>({
     const classes = useStyles();
     const translator = getTranslator(state);
     const { executionRequestId } = useParams<IExecutionDetailPathParams>();
+    console.log(listItems);
 
     return (
+
         <>
-            {listItems.map((item: IListItem<ColumnNames>) => (
+
+            { listItems.map((item: IListItem<ColumnNames>) => (
                 <ExpansionPanel key={item.id as string} className={classes.expandableItem}>
                     <ExpansionPanelSummary
                         className={classes.summary}
@@ -284,11 +290,40 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                             <TableCell component="th" scope="row" className={classes.thCell}>
                                                 {parameter.name}
                                             </TableCell>
-                                            <TableCell className={classes.valueCell}>
+                                            <TableCell>
                                                 {parameter.rawValue}
                                                 {
+                                                    (parameter.name === 'request') ? (
+                                                        <Box marginLeft={15} marginTop={-2} marginBottom={1}>
+                                                            <Button
+                                                                variant="contained"
+                                                                color="secondary"
+                                                                size="small"
+                                                                onClick={() =>
+                                                                    redirectTo({
+                                                                        routeKey: ROUTE_KEYS.R_COMPONENT_DETAIL,
+                                                                        params: {
+                                                                            name: parameter.resolvedValue
+                                                                            || parameter.rawValue,
+                                                                            version: (
+                                                                                getRequestVersion(
+                                                                                    item.data.inputParameters,
+                                                                                )
+                                                                            ),
+                                                                        },
+                                                                        newTab: true,
+                                                                    })}
+                                                            >
+                                                                <ChevronRightRounded />
+                                                            </Button>
+                                                        </Box>
+                                                    ) : (
+                                                        <p> </p>
+                                                    )
+                                                }
+                                                {
                                                     (parameter.name === 'dataset') ? (
-                                                        <Box marginLeft={20} marginTop={-2} marginBottom={1}>
+                                                        <Box marginLeft={20} marginTop={-3} marginBottom={1}>
                                                             <Button
                                                                 variant="contained"
                                                                 color="secondary"
@@ -300,6 +335,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                                                             name: parameter.resolvedValue
                                                                             || parameter.rawValue,
                                                                         },
+                                                                        newTab: true,
                                                                     })}
                                                             >
                                                                 <ChevronRightRounded />
@@ -310,9 +346,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                                     )
                                                 }
                                             </TableCell>
-                                            <TableCell className={classes.valueCell}>
-                                                {parameter.resolvedValue}
-                                            </TableCell>
+                                            <TableCell>{parameter.resolvedValue}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -321,7 +355,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                     </TableContainer>
                 </Box>
 
-                <Box marginBottom={2}>
+                <Box marginBottom={45}>
                     <Paper elevation={0}>
                         <Box padding={1.6}>
                             <Typography variant="subtitle2">
@@ -434,6 +468,16 @@ function ScriptExecutionDetailActions<ColumnNames>({
             </>
         );
     }
+}
+
+function getRequestVersion(inputParameters: IParameterRawValue[]) {
+    const inputParameter = inputParameters.find((ip: IParameterRawValue) =>
+        ip.name === 'requestVersion');
+
+    if (inputParameter === undefined || inputParameter.rawValue === '') {
+        return 0;
+    }
+    return inputParameter.resolvedValue || inputParameter.rawValue;
 }
 
 export default observe<IPublicProps<{}>>(
