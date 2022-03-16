@@ -113,9 +113,12 @@ function ScriptExecutionDetailActions<ColumnNames>({
     const classes = useStyles();
     const translator = getTranslator(state);
     const { executionRequestId } = useParams<IExecutionDetailPathParams>();
+    console.log(listItems);
 
     return (
+
         <>
+
             { listItems.map((item: IListItem<ColumnNames>) => (
                 <ExpansionPanel key={item.id as string} className={classes.expandableItem}>
                     <ExpansionPanelSummary
@@ -296,9 +299,20 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                                                 variant="contained"
                                                                 color="secondary"
                                                                 size="small"
-                                                                onClick={() => redirectTo({
-                                                                    routeKey: ROUTE_KEYS.R_COMPONENTS,
-                                                                })}
+                                                                onClick={() =>
+                                                                    redirectTo({
+                                                                        routeKey: ROUTE_KEYS.R_COMPONENT_DETAIL,
+                                                                        params: {
+                                                                            name: parameter.resolvedValue
+                                                                            || parameter.rawValue,
+                                                                            version: (
+                                                                                getRequestVersion(
+                                                                                    item.data.inputParameters,
+                                                                                )
+                                                                            ),
+                                                                        },
+                                                                        newTab: true,
+                                                                    })}
                                                             >
                                                                 <ChevronRightRounded />
                                                             </Button>
@@ -430,6 +444,16 @@ function ScriptExecutionDetailActions<ColumnNames>({
             </>
         );
     }
+}
+
+function getRequestVersion(inputParameters: IParameterRawValue[]) {
+    const inputParameter = inputParameters.find((ip: IParameterRawValue) =>
+        ip.name === 'requestVersion');
+
+    if (inputParameter === undefined || inputParameter.rawValue === '') {
+        return 0;
+    }
+    return inputParameter.resolvedValue || inputParameter.rawValue;
 }
 
 export default observe<IPublicProps<{}>>(

@@ -120,19 +120,25 @@ export function setBrowserHistory(history: History) {
     }
 }
 
-export function redirectTo({ routeKey, params, queryParams }: INavigateToRoute) {
+export function redirectTo({ routeKey, params, queryParams, newTab = false }: INavigateToRoute) {
     if (browserHistory) {
         // Do this on the next frame to make sure everything routeObserverManager has been registered
         window.requestAnimationFrame(() => {
-            browserHistory.push({
-                pathname: replacePathPlaceholders({
-                    path: getRoutePath({ routeKey }),
-                    placeholders: params,
-                }),
-                search: queryParams
-                    ? Object.keys(queryParams).map((key) => `${key}=${queryParams[key]}`).join('&')
-                    : '',
+            const pathname = replacePathPlaceholders({
+                path: getRoutePath({ routeKey }),
+                placeholders: params,
             });
+            const search = queryParams
+                ? Object.keys(queryParams).map((key) => `${key}=${queryParams[key]}`).join('&')
+                : '';
+            if (newTab) {
+                window.open(pathname + search);
+            } else {
+                browserHistory.push({
+                    pathname,
+                    search,
+                });
+            }
         });
     }
 }
