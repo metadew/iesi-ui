@@ -286,6 +286,29 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                             </TableCell>
                                             <TableCell className={classes.valueCell}>
                                                 {parameter.rawValue}
+                                                {
+                                                    (parameter.name === 'dataset') ? (
+                                                        <Box marginLeft={20} marginTop={-2} marginBottom={1}>
+                                                            <Button
+                                                                variant="contained"
+                                                                color="secondary"
+                                                                size="small"
+                                                                onClick={() =>
+                                                                    redirectTo({
+                                                                        routeKey: ROUTE_KEYS.R_DATASET_DETAIL,
+                                                                        params: {
+                                                                            name: parameter.resolvedValue
+                                                                            || parameter.rawValue,
+                                                                        },
+                                                                    })}
+                                                            >
+                                                                <ChevronRightRounded />
+                                                            </Button>
+                                                        </Box>
+                                                    ) : (
+                                                        <p> </p>
+                                                    )
+                                                }
                                             </TableCell>
                                             <TableCell className={classes.valueCell}>
                                                 {parameter.resolvedValue}
