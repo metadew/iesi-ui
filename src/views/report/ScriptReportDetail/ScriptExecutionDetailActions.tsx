@@ -326,7 +326,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                                     }
                                                     {
                                                         (parameter.name === 'dataset') ? (
-                                                            <Box marginLeft="90px">
+                                                            <Box marginLeft="100px">
                                                                 <Button
                                                                     variant="contained"
                                                                     color="secondary"
