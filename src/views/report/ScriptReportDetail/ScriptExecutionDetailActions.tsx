@@ -297,7 +297,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                                     {parameter.rawValue}
                                                     {
                                                         (parameter.name === 'request') ? (
-                                                            <Box marginLeft="100px">
+                                                            <Box marginLeft="90px">
                                                                 <Button
                                                                     variant="contained"
                                                                     color="secondary"
@@ -326,7 +326,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                                     }
                                                     {
                                                         (parameter.name === 'dataset') ? (
-                                                            <Box marginLeft="100px">
+                                                            <Box marginLeft="90px">
                                                                 <Button
                                                                     variant="contained"
                                                                     color="secondary"
