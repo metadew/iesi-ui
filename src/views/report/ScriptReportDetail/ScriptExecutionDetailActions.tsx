@@ -293,7 +293,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                                 {parameter.rawValue}
                                                 {
                                                     (parameter.name === 'request') ? (
-                                                        <Box marginLeft={15} marginTop={-2} marginBottom={1}>
+                                                        <Box marginLeft={20} marginTop={-2} marginBottom={1}>
                                                             <Button
                                                                 variant="contained"
                                                                 color="secondary"
