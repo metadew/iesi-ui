@@ -95,7 +95,7 @@ const useStyles = makeStyles(({ typography, palette, shape, spacing }: Theme) =>
     },
     thCell: {
         wordBreak: 'normal',
-        verticalAlign: 'top',
+        verticalAlign: 'center',
     },
     valueCell: {
         whiteSpace: 'pre-wrap',
@@ -289,61 +289,66 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                             <TableCell component="th" scope="row" className={classes.thCell}>
                                                 {parameter.name}
                                             </TableCell>
-                                            <TableCell>
-                                                {parameter.rawValue}
-                                                {
-                                                    (parameter.name === 'request') ? (
-                                                        <Box marginLeft={20} marginTop={-2} marginBottom={1}>
-                                                            <Button
-                                                                variant="contained"
-                                                                color="secondary"
-                                                                size="small"
-                                                                onClick={() =>
-                                                                    redirectTo({
-                                                                        routeKey: ROUTE_KEYS.R_COMPONENT_DETAIL,
-                                                                        params: {
-                                                                            name: parameter.resolvedValue
-                                                                            || parameter.rawValue,
-                                                                            version: (
-                                                                                getRequestVersion(
-                                                                                    item.data.inputParameters,
-                                                                                )
-                                                                            ),
-                                                                        },
-                                                                        newTab: true,
-                                                                    })}
-                                                            >
-                                                                <ChevronRightRounded />
-                                                            </Button>
-                                                        </Box>
-                                                    ) : (
-                                                        <p> </p>
-                                                    )
-                                                }
-                                                {
-                                                    (parameter.name === 'dataset') ? (
-                                                        <Box marginLeft={20} marginTop={-3} marginBottom={1}>
-                                                            <Button
-                                                                variant="contained"
-                                                                color="secondary"
-                                                                size="small"
-                                                                onClick={() =>
-                                                                    redirectTo({
-                                                                        routeKey: ROUTE_KEYS.R_DATASET_DETAIL,
-                                                                        params: {
-                                                                            name: parameter.resolvedValue
-                                                                            || parameter.rawValue,
-                                                                        },
-                                                                        newTab: true,
-                                                                    })}
-                                                            >
-                                                                <ChevronRightRounded />
-                                                            </Button>
-                                                        </Box>
-                                                    ) : (
-                                                        <p> </p>
-                                                    )
-                                                }
+                                            <TableCell className={classes.thCell}>
+                                                <Box
+                                                    display="flex"
+                                                    alignItems="center"
+                                                >
+                                                    {parameter.rawValue}
+                                                    {
+                                                        (parameter.name === 'request') ? (
+                                                            <Box marginLeft="100px">
+                                                                <Button
+                                                                    variant="contained"
+                                                                    color="secondary"
+                                                                    size="small"
+                                                                    onClick={() =>
+                                                                        redirectTo({
+                                                                            routeKey: ROUTE_KEYS.R_COMPONENT_DETAIL,
+                                                                            params: {
+                                                                                name: parameter.resolvedValue
+                                                                                || parameter.rawValue,
+                                                                                version: (
+                                                                                    getRequestVersion(
+                                                                                        item.data.inputParameters,
+                                                                                    )
+                                                                                ),
+                                                                            },
+                                                                            newTab: true,
+                                                                        })}
+                                                                >
+                                                                    <ChevronRightRounded />
+                                                                </Button>
+                                                            </Box>
+                                                        ) : (
+                                                            <p> </p>
+                                                        )
+                                                    }
+                                                    {
+                                                        (parameter.name === 'dataset') ? (
+                                                            <Box marginLeft="100px">
+                                                                <Button
+                                                                    variant="contained"
+                                                                    color="secondary"
+                                                                    size="small"
+                                                                    onClick={() =>
+                                                                        redirectTo({
+                                                                            routeKey: ROUTE_KEYS.R_DATASET_DETAIL,
+                                                                            params: {
+                                                                                name: parameter.resolvedValue
+                                                                                || parameter.rawValue,
+                                                                            },
+                                                                            newTab: true,
+                                                                        })}
+                                                                >
+                                                                    <ChevronRightRounded />
+                                                                </Button>
+                                                            </Box>
+                                                        ) : (
+                                                            <p> </p>
+                                                        )
+                                                    }
+                                                </Box>
                                             </TableCell>
                                             <TableCell>{parameter.resolvedValue}</TableCell>
                                         </TableRow>
