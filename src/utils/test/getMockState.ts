@@ -188,6 +188,20 @@ export default function getMockState({
                     error: null,
                 },
             },
+            datasetDetailExport: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            datasetDetailImport: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
             datasetImplementations: {
                 data: null,
                 fetch: {

@@ -34,6 +34,7 @@ const API_URLS = {
     OPEN_API_TRANSFORM: '/openapi/transform',
 
     DATASETS: '/datasets',
+    DATASETS_IMPORT: '/datasets/import',
     DATASET_BY_NAME: '/datasets/{name}',
     DATASET_BY_NAME_DOWNLOAD: '/datasets/{name}/download',
     DATASET_BY_UUID: '/datasets/{uuid}',

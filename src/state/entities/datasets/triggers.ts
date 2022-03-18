@@ -7,6 +7,7 @@ import {
     IDatasetImplementationsByUuidPayload,
     IFetchDatasetsListPayload,
     IDatasetByUuidPayload,
+    IDatasetImportPayload,
 } from 'models/state/datasets.model';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { StateChangeNotification } from 'models/state.models';
@@ -38,6 +39,36 @@ export const triggerExportDatasetDetail = (payload: IDatasetByNamePayload) =>
     entitiesStateManager.triggerAsyncEntityFetch<{}>({
         asyncEntityToFetch: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.datasetDetailExport,
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_DETAIL],
+    });
+
+export const triggerImportDatasetDetail = (payload: IDatasetImportPayload) =>
+    entitiesStateManager.triggerAsyncEntityCreate<{}>({
+        asyncEntityToCreate: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.datasetDetailImport,
+        },
+        onSuccess: ({ dispatch }) => dispatch(
+            triggerFlashMessage({
+                type: 'success',
+                translationKey: 'flash_messages.datasets.import',
+            }),
+        ),
+        onFail: ({ dispatch, error }) => {
+            if (error.status) {
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.common.responseError',
+                    translationPlaceholders: {
+                        message: error.response?.message,
+                    },
+                    type: 'error',
+                }));
+            } else {
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.datasets.import_error',
+                }));
+            }
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_DETAIL],

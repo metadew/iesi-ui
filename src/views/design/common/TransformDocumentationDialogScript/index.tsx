@@ -189,7 +189,6 @@ function TransformDocumentationDialog({ onClose, open, onOpen, state }: IPublicP
                 </Box>
             </ClosableDialog>
         </>
-
     );
 
     function createTransformResult() {

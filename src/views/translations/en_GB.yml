@@ -73,6 +73,9 @@ flash_messages:
     edit: 'The script has been updated'
     error: 'Incorrect representation of the script'
     import: 'The script has been successfully imported !'
+  datasets:
+    import: 'The dataset has been successfully imported !'
+    import_error: 'There is an error during the import of the dataset'
   error: 'An error has occured'
 scripts:
   overview:
@@ -553,6 +556,11 @@ datasets:
     header:
       amount: You have {amount} datasets
       add_button: Create new dataset
+      import_dataset_button: Import dataset
+    import_dataset_dialog:
+      title: Import dataset
+      data_object_label: Provide the dataset
+      import_button: Import
     list:
       fetch_error: Something went wrong while loading the datasets, please try again.
       sort:

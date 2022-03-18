@@ -26,11 +26,16 @@ import { IDataset, IDatasetColumnNames } from 'models/state/datasets.model';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import {
     getAsyncDatasetDetail,
+    getAsyncDatasetDetailImport,
     getAsyncDatasets,
     getAsyncDatasetsEntitty,
     getAsyncDatasetsPageData,
 } from 'state/entities/datasets/selectors';
-import { triggerDeleteDatasetDetail, triggerFetchDatasets } from 'state/entities/datasets/triggers';
+import {
+    triggerDeleteDatasetDetail,
+    triggerFetchDatasets,
+    triggerImportDatasetDetail,
+} from 'state/entities/datasets/triggers';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { setDatasetsListFilter } from 'state/ui/actions';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
@@ -48,6 +53,7 @@ import { getUniqueIdFromDataset } from 'utils/datasets/datasetUtils';
 import { StateChangeNotification } from 'models/state.models';
 import { Alert } from '@material-ui/lab';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
+import ImportDatasetDialog from './ImportDatasetDialog';
 
 const styles = ({ palette, typography }: Theme) => createStyles({
     header: {
@@ -90,6 +96,7 @@ const sortActions: SortActions<Partial<IDatasetColumnNames>> = {
 
 interface IDatasetState {
     datasetIdToDelete: string;
+    importDatasetDialogOpen: boolean;
 }
 
 type TProps = WithStyles<typeof styles>;
@@ -101,6 +108,7 @@ const DatasetOverview = withStyles(styles)(
 
             this.state = {
                 datasetIdToDelete: null,
+                importDatasetDialogOpen: false,
             };
 
             this.renderPanel = this.renderPanel.bind(this);
@@ -112,8 +120,12 @@ const DatasetOverview = withStyles(styles)(
 
             this.setDatasetToDelete = this.setDatasetToDelete.bind(this);
             this.onDeleteDataset = this.onDeleteDataset.bind(this);
+            this.onImportDatasetDialogClose = this.onImportDatasetDialogClose.bind(this);
+            this.onImportDatasetDialogOpen = this.onImportDatasetDialogOpen.bind(this);
             // eslint-disable-next-line max-len
             this.closeDeleteDeleteDialogAfterSuccessfulDelete = this.closeDeleteDeleteDialogAfterSuccessfulDelete.bind(this);
+            // eslint-disable-next-line max-len
+            this.closeImportDatasetDIalogAfterSuccessfulCreate = this.closeImportDatasetDIalogAfterSuccessfulCreate.bind(this);
         }
 
         public componentDidMount() {
@@ -139,17 +151,20 @@ const DatasetOverview = withStyles(styles)(
                 }));
             }
             this.closeDeleteDeleteDialogAfterSuccessfulDelete(prevProps);
+            this.closeImportDatasetDIalogAfterSuccessfulCreate(prevProps);
         }
 
         public render() {
             const { classes, state } = this.props;
-            const { datasetIdToDelete } = this.state;
+            const { datasetIdToDelete, importDatasetDialogOpen } = this.state;
             const translator = getTranslator(state);
             const pageData = getAsyncDatasetsPageData(this.props.state);
             const filterFromState = getDatasetsListFilter(state);
             const datasets = getAsyncDatasets(state);
             const listItems = mapDatasetsToListItems(datasets);
             const deleteStatus = getAsyncDatasetDetail(this.props.state).remove.status;
+            const importStatus = getAsyncDatasetDetailImport(this.props.state).create.status;
+
             return (
                 <>
                     <Box height="100%" display="flex" flexDirection="column" flex="1 0 auto">
@@ -175,7 +190,16 @@ const DatasetOverview = withStyles(styles)(
                                     </Box>
                                     {
                                         checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE) && (
-                                            <Box display="flex" alignItems="center">
+                                            <Box display="flex" alignItems="center" flex="0 0 auto">
+                                                <Box flex="0 0 auto" mr="16px">
+                                                    <ImportDatasetDialog
+                                                        open={importDatasetDialogOpen}
+                                                        onOpen={this.onImportDatasetDialogOpen}
+                                                        onClose={this.onImportDatasetDialogClose}
+                                                        onImport={(dataset) => triggerImportDatasetDetail(dataset)}
+                                                        showLoader={importStatus === AsyncStatus.Busy}
+                                                    />
+                                                </Box>
                                                 <Box flex="0 0 auto">
                                                     <Button
                                                         variant="contained"
@@ -344,6 +368,24 @@ const DatasetOverview = withStyles(styles)(
                     </Box>
                 </>
             );
+        }
+
+        private closeImportDatasetDIalogAfterSuccessfulCreate(prevProps: TProps & IObserveProps) {
+            const { status } = getAsyncDatasetDetailImport(this.props.state).create;
+            const prevStatus = getAsyncDatasetDetailImport(prevProps.state).create.status;
+
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                this.setState({ importDatasetDialogOpen: false });
+                this.fetchDatasetsWithFilterAndPagination({});
+            }
+        }
+
+        private onImportDatasetDialogOpen() {
+            this.setState({ importDatasetDialogOpen: true });
+        }
+
+        private onImportDatasetDialogClose() {
+            this.setState({ importDatasetDialogOpen: false });
         }
 
         private closeDeleteDeleteDialogAfterSuccessfulDelete(prevProps: TProps & IObserveProps) {

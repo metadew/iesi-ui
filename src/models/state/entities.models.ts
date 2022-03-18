@@ -47,6 +47,7 @@ export enum ASYNC_ENTITY_KEYS {
     datasets = 'datasets',
     datasetDetail = 'datasetDetail',
     datasetDetailExport = 'datasetDetailExport',
+    datasetDetailImport = 'datasetDetailImport',
     datasetImplementations = 'datasetImplementations',
 }
 
@@ -65,6 +66,8 @@ export interface IEntitiesState {
     connectionDetail: ICustomAsyncEntity<IConnection>;
     datasets: ICustomAsyncEntity<IDatasetEntity>;
     datasetDetail: ICustomAsyncEntity<IDataset>;
+    datasetDetailExport: ICustomAsyncEntity<IDataset>;
+    datasetDetailImport: ICustomAsyncEntity<IDataset>;
     datasetImplementations: ICustomAsyncEntity<IDatasetImplementation[]>;
     executionRequests: ICustomAsyncEntity<IExecutionRequestsEntity>;
     executionRequestDetail: ICustomAsyncEntity<IExecutionRequest>;

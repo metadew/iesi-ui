@@ -219,7 +219,7 @@ const ScriptsOverview = withStyles(styles)(
                                     {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)
                                         ? (
                                             <Box display="flex" alignItems="center" flex="0 0 auto">
-                                                <Box flex="0 0 auto" mr="8px" width="250px">
+                                                <Box flex="0 0 auto" mr="16px">
                                                     <TransformDocumentationDialogScript
                                                         open={this.state.importScriptDialogOpen}
                                                         onOpen={this.onImportScriptDialogOpen}

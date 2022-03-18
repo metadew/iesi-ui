@@ -34,6 +34,7 @@ import {
     IFetchDatasetsListPayload,
     IDatasetByUuidPayload,
     IDatasetByNamePayload,
+    IDatasetImportPayload,
 } from 'models/state/datasets.model';
 
 // eslint-disable-next-line max-len
@@ -422,6 +423,16 @@ entitiesConfigManager.register({
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
             apiInputSelector: ({ extraInput }) => extraInput as IDatasetByUuidPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.datasetDetailImport,
+    operationsConfig: {
+        create: {
+            api: api.datasets.createDatasetImport,
+            apiInputSelector: ({ extraInput }) => extraInput as IDatasetImportPayload,
         },
     },
 });

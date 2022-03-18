@@ -10,6 +10,7 @@ import {
     IDatasetImplementationsByUuidPayload,
     IFetchDatasetsListPayload,
     IDatasetByUuidPayload,
+    IDatasetImportPayload,
 } from 'models/state/datasets.model';
 import { IPageData } from 'models/state/iesiGeneric.models';
 
@@ -92,6 +93,20 @@ export function createDataset(dataset: IDatasetBase) {
         url: API_URLS.DATASETS,
         body: dataset,
         contentType: 'application/json',
+    });
+}
+
+export async function createDatasetImport({ value }: IDatasetImportPayload) {
+    return post<string | FormData>({
+        needsAuthentication: true,
+        isIesiApi: true,
+        url: API_URLS.DATASETS_IMPORT,
+        body: value,
+        contentType: value instanceof FormData ? 'multipart/form-data' : 'text/plain',
+        headers: {
+            'Content-Type': value instanceof FormData ? 'multipart/form-data' : 'text/plain',
+        },
+        mapResponse: ({ data }) => data,
     });
 }
 
