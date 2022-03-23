@@ -27,6 +27,7 @@ export enum ASYNC_ENTITY_KEYS {
     scripts = 'scripts',
     scriptDetail = 'scriptDetail',
     scriptDetailExport = 'scriptDetailExport',
+    scriptDetailImport = 'scriptDetailImport',
 
     components = 'components',
     componentDetail = 'componentDetail',
@@ -60,6 +61,7 @@ export interface IEntitiesState {
     scripts: ICustomAsyncEntity<IScriptsEntity>;
     scriptDetail: ICustomAsyncEntity<IScript>;
     scriptDetailExport: ICustomAsyncEntity<IScript>;
+    scriptDetailImport: ICustomAsyncEntity<IScript>;
     components: ICustomAsyncEntity<IComponentEntity>;
     componentDetail: ICustomAsyncEntity<IComponent>;
     connections: ICustomAsyncEntity<IConnectionEntity>;

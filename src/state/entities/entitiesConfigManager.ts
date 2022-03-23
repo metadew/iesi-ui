@@ -36,6 +36,7 @@ import {
     IDatasetByNamePayload,
     IDatasetImportPayload,
 } from 'models/state/datasets.model';
+import { IImportPayload } from 'models/state/iesiGeneric.models';
 
 // eslint-disable-next-line max-len
 const entitiesConfigManager = initAsyncEntitiesConfigManager<IState, {}, ITraceableApiError, string, IExtraProcessInput>();
@@ -93,6 +94,16 @@ entitiesConfigManager.register({
         fetch: {
             api: api.scripts.fetchScriptByNameAndVersionDownload,
             apiInputSelector: ({ extraInput }) => extraInput as IScriptByNameAndVersionPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetailImport,
+    operationsConfig: {
+        create: {
+            api: api.scripts.createScriptVersionImport,
+            apiInputSelector: ({ extraInput }) => extraInput as IImportPayload,
         },
     },
 });

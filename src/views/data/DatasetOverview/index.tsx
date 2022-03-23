@@ -53,7 +53,7 @@ import { getUniqueIdFromDataset } from 'utils/datasets/datasetUtils';
 import { StateChangeNotification } from 'models/state.models';
 import { Alert } from '@material-ui/lab';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
-import ImportDatasetDialog from './ImportDatasetDialog';
+import TextFileInputDialog from '../../common/layout/TextFileInputDialog';
 
 const styles = ({ palette, typography }: Theme) => createStyles({
     header: {
@@ -192,12 +192,13 @@ const DatasetOverview = withStyles(styles)(
                                         checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE) && (
                                             <Box display="flex" alignItems="center" flex="0 0 auto">
                                                 <Box flex="0 0 auto" mr="16px">
-                                                    <ImportDatasetDialog
+                                                    <TextFileInputDialog
                                                         open={importDatasetDialogOpen}
                                                         onOpen={this.onImportDatasetDialogOpen}
                                                         onClose={this.onImportDatasetDialogClose}
                                                         onImport={(dataset) => triggerImportDatasetDetail(dataset)}
                                                         showLoader={importStatus === AsyncStatus.Busy}
+                                                        metadataName="dataset"
                                                     />
                                                 </Box>
                                                 <Box flex="0 0 auto">

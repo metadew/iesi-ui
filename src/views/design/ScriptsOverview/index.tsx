@@ -1,51 +1,56 @@
 import React, { ReactText } from 'react';
 import {
-    Typography,
     Box,
-    Theme,
-    createStyles,
-    withStyles,
-    WithStyles,
     Button,
+    createStyles,
     FormControlLabel,
     Switch,
+    Theme,
+    Typography,
+    WithStyles,
+    withStyles,
 } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
 import { getTranslator } from 'state/i18n/selectors';
-import { Edit, PlayArrowRounded, AddRounded, Delete, Visibility } from '@material-ui/icons';
+import { AddRounded, Delete, Edit, PlayArrowRounded, Visibility } from '@material-ui/icons';
 import {
-    ListColumns,
-    ISortedColumn,
-    SortActions,
-    SortType,
-    FilterType,
-    ListFilters,
     FilterConfig,
+    FilterType,
     IListItem,
+    ISortedColumn,
+    ListColumns,
+    ListFilters,
+    SortActions,
     SortOrder,
+    SortType,
 } from 'models/list.models';
-import { IScript, IExpandScriptsResponseWith, IColumnNames, IScriptBase } from 'models/state/scripts.models';
+import { IColumnNames, IExpandScriptsResponseWith, IScript, IScriptBase } from 'models/state/scripts.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
-import { observe, IObserveProps } from 'views/observe';
+import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import {
-    getAsyncScriptsEntity,
     getAsyncScriptDetail,
+    getAsyncScriptDetailImport,
     getAsyncScripts,
+    getAsyncScriptsEntity,
     getAsyncScriptsPageData,
 } from 'state/entities/scripts/selectors';
-import { AsyncStatus, AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import { AsyncOperation, AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import OrderedList from 'views/common/list/OrderedList';
 import { Alert } from '@material-ui/lab';
-import { triggerDeleteScriptDetail, triggerFetchScripts } from 'state/entities/scripts/triggers';
-import { getUniqueIdFromScript, getLatestVersionsFromScripts } from 'utils/scripts/scriptUtils';
+import {
+    triggerDeleteScriptDetail,
+    triggerFetchScripts,
+    triggerImportScriptDetail,
+} from 'state/entities/scripts/triggers';
+import { getLatestVersionsFromScripts, getUniqueIdFromScript } from 'utils/scripts/scriptUtils';
 import { triggerResetAsyncExecutionRequest } from 'state/entities/executionRequests/triggers';
 import isSet from '@snipsonian/core/es/is/isSet';
 import { formatSortQueryParameter } from 'utils/core/string/format';
@@ -54,8 +59,8 @@ import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
 import { setScriptsListFilter } from 'state/ui/actions';
 import ReportIcon from 'views/common/icons/Report';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
-import { checkAuthorityGeneral, checkAuthority } from 'state/auth/selectors';
-import TransformDocumentationDialogScript from '../common/TransformDocumentationDialogScript';
+import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
+import TextFileInputDialog from 'views/common/layout/TextFileInputDialog';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -150,6 +155,8 @@ const ScriptsOverview = withStyles(styles)(
             this.onDeleteScript = this.onDeleteScript.bind(this);
             // eslint-disable-next-line max-len
             this.closeDeleteScriptDialogAfterSuccessfulDelete = this.closeDeleteScriptDialogAfterSuccessfulDelete.bind(this);
+            // eslint-disable-next-line max-len
+            this.closeImportDatasetDialogAfterSuccessfulCreate = this.closeImportDatasetDialogAfterSuccessfulCreate.bind(this);
 
             this.fetchScriptsWithFilterAndPagination = this.fetchScriptsWithFilterAndPagination.bind(this);
             this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
@@ -178,15 +185,17 @@ const ScriptsOverview = withStyles(styles)(
             }
 
             this.closeDeleteScriptDialogAfterSuccessfulDelete(prevProps);
+            this.closeImportDatasetDialogAfterSuccessfulCreate(prevProps);
         }
 
         public render() {
             const { classes, state } = this.props;
-            const { scriptIdToDelete, selectedScript } = this.state;
+            const { scriptIdToDelete, selectedScript, importScriptDialogOpen } = this.state;
             const filterFromState = getScriptsListFilter(state);
 
             const scripts = getAsyncScripts(this.props.state);
             const deleteStatus = getAsyncScriptDetail(this.props.state).remove.status;
+            const importStatus = getAsyncScriptDetail(this.props.state).create.status;
             const pageData = getAsyncScriptsPageData(this.props.state);
 
             const listItems = mapScriptsToListItems(filterFromState.onlyShowLatestVersion
@@ -220,10 +229,13 @@ const ScriptsOverview = withStyles(styles)(
                                         ? (
                                             <Box display="flex" alignItems="center" flex="0 0 auto">
                                                 <Box flex="0 0 auto" mr="16px">
-                                                    <TransformDocumentationDialogScript
-                                                        open={this.state.importScriptDialogOpen}
+                                                    <TextFileInputDialog
+                                                        open={importScriptDialogOpen}
                                                         onOpen={this.onImportScriptDialogOpen}
                                                         onClose={this.onImportScriptDialogClose}
+                                                        onImport={(script) => triggerImportScriptDetail(script)}
+                                                        showLoader={importStatus === AsyncStatus.Busy}
+                                                        metadataName="script"
                                                     />
                                                 </Box>
                                                 <Box flex="0 0 auto">
@@ -480,6 +492,24 @@ const ScriptsOverview = withStyles(styles)(
             );
         }
 
+        private closeImportDatasetDialogAfterSuccessfulCreate(prevProps: TProps & IObserveProps) {
+            const { status } = getAsyncScriptDetailImport(this.props.state).create;
+            const prevStatus = getAsyncScriptDetailImport(prevProps.state).create.status;
+
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                this.setState({ importScriptDialogOpen: false });
+                this.fetchScriptsWithFilterAndPagination({});
+            }
+        }
+
+        private onImportScriptDialogOpen() {
+            this.setState((state) => ({ ...state, importScriptDialogOpen: true }));
+        }
+
+        private onImportScriptDialogClose() {
+            this.setState((state) => ({ ...state, importScriptDialogOpen: false }));
+        }
+
         private onDeleteScript() {
             const { state } = this.props;
             const { scriptIdToDelete } = this.state;
@@ -599,14 +629,6 @@ const ScriptsOverview = withStyles(styles)(
         private onCloseExecuteDialog() {
             triggerResetAsyncExecutionRequest({ operation: AsyncOperation.create });
             this.setState({ selectedScript: null });
-        }
-
-        private onImportScriptDialogOpen() {
-            this.setState((state) => ({ ...state, importScriptDialogOpen: true }));
-        }
-
-        private onImportScriptDialogClose() {
-            this.setState((state) => ({ ...state, importScriptDialogOpen: false }));
         }
     },
 );

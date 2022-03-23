@@ -15,6 +15,7 @@ const API_URLS = {
     EXECUTION_REQUEST_BY_ID: '/execution-requests/{id}',
 
     SCRIPTS: '/scripts',
+    SCRIPTS_IMPORT: '/scripts/import',
     SCRIPT_BY_NAME: '/scripts/{name}',
     SCRIPT_BY_NAME_VERSION: '/scripts/{name}/{version}',
     SCRIPT_BY_NAME_VERSION_DOWNLOAD: '/scripts/{name}/{version}/download',
