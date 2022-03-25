@@ -107,6 +107,13 @@ export default function getMockState({
                     error: null,
                 },
             },
+            scriptDetailImport: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
             executionRequests: {
                 data: null,
                 fetch: {
@@ -182,6 +189,20 @@ export default function getMockState({
                 },
             },
             datasetDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            datasetDetailExport: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            datasetDetailImport: {
                 data: null,
                 fetch: {
                     status: AsyncStatus.Initial,

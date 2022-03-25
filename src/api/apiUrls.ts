@@ -15,6 +15,7 @@ const API_URLS = {
     EXECUTION_REQUEST_BY_ID: '/execution-requests/{id}',
 
     SCRIPTS: '/scripts',
+    SCRIPTS_IMPORT: '/scripts/import',
     SCRIPT_BY_NAME: '/scripts/{name}',
     SCRIPT_BY_NAME_VERSION: '/scripts/{name}/{version}',
     SCRIPT_BY_NAME_VERSION_DOWNLOAD: '/scripts/{name}/{version}/download',
@@ -34,7 +35,9 @@ const API_URLS = {
     OPEN_API_TRANSFORM: '/openapi/transform',
 
     DATASETS: '/datasets',
+    DATASETS_IMPORT: '/datasets/import',
     DATASET_BY_NAME: '/datasets/{name}',
+    DATASET_BY_NAME_DOWNLOAD: '/datasets/{name}/download',
     DATASET_BY_UUID: '/datasets/{uuid}',
     DATASET_IMPLEMENTATIONS: '/datasets/{uuid}/implementations',
 

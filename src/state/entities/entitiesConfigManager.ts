@@ -33,7 +33,10 @@ import {
     IDatasetImplementationsByUuidPayload,
     IFetchDatasetsListPayload,
     IDatasetByUuidPayload,
+    IDatasetByNamePayload,
+    IDatasetImportPayload,
 } from 'models/state/datasets.model';
+import { IImportPayload } from 'models/state/iesiGeneric.models';
 
 // eslint-disable-next-line max-len
 const entitiesConfigManager = initAsyncEntitiesConfigManager<IState, {}, ITraceableApiError, string, IExtraProcessInput>();
@@ -91,6 +94,16 @@ entitiesConfigManager.register({
         fetch: {
             api: api.scripts.fetchScriptByNameAndVersionDownload,
             apiInputSelector: ({ extraInput }) => extraInput as IScriptByNameAndVersionPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetailImport,
+    operationsConfig: {
+        create: {
+            api: api.scripts.createScriptVersionImport,
+            apiInputSelector: ({ extraInput }) => extraInput as IImportPayload,
         },
     },
 });
@@ -421,6 +434,26 @@ entitiesConfigManager.register({
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
             apiInputSelector: ({ extraInput }) => extraInput as IDatasetByUuidPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.datasetDetailImport,
+    operationsConfig: {
+        create: {
+            api: api.datasets.createDatasetImport,
+            apiInputSelector: ({ extraInput }) => extraInput as IDatasetImportPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.datasetDetailExport,
+    operationsConfig: {
+        fetch: {
+            api: api.datasets.fetchDatasetDownload,
+            apiInputSelector: ({ extraInput }) => extraInput as IDatasetByNamePayload,
         },
     },
 });
