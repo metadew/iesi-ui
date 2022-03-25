@@ -102,7 +102,6 @@ export const triggerExportScriptDetail = (payload: IScriptByNameAndVersionPayloa
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_DETAIL],
     });
 
-
 export const triggerResetAsyncScriptDetail = ({
     resetDataOnTrigger,
     operation,
@@ -118,6 +117,7 @@ export const triggerResetAsyncScriptDetail = ({
         extraInputSelector: () => ({}),
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_DETAIL],
         operation,
+    });
 
 export const triggerImportScriptDetail = (payload: IImportPayload) =>
     entitiesStateManager.triggerAsyncEntityCreate<{}>({

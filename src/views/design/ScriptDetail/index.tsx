@@ -42,9 +42,7 @@ import {
 } from 'state/entities/scripts/triggers';
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
-// eslint-disable-next-line max-len
 import ExecuteScriptDialog from '../common/ExecuteScriptDialog';
-
 import DetailActions from './DetailActions';
 import AddAction from './AddAction';
 import EditAction from './EditAction';

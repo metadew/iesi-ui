@@ -58,10 +58,11 @@ import { formatSortQueryParameter } from 'utils/core/string/format';
 import { getScriptsListFilter } from 'state/ui/selectors';
 import { setScriptsListFilter } from 'state/ui/actions';
 import ReportIcon from 'views/common/icons/Report';
-import DuplicateScriptDialog from '../common/DuplicateScriptDialog';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
+import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
 import TextFileInputDialog from 'views/common/layout/TextFileInputDialog';
+import DuplicateScriptDialog from '../common/DuplicateScriptDialog';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -199,10 +200,10 @@ const ScriptsOverview = withStyles(styles)(
         public render() {
             const { classes, state } = this.props;
             const {
-              scriptIdToDelete,
-              selectedScript,
-              importScriptDialogOpen,
-              scriptIdToDuplicate,
+                scriptIdToDelete,
+                selectedScript,
+                importScriptDialogOpen,
+                scriptIdToDuplicate,
             } = this.state;
             const filterFromState = getScriptsListFilter(state);
             const scripts = getAsyncScripts(this.props.state);
@@ -670,17 +671,12 @@ const ScriptsOverview = withStyles(styles)(
         private onCloseDuplicateDialog() {
             this.setState({ scriptIdToDuplicate: null });
         }
-        
+
         private setExecuteScriptDialogOpen(id: ReactText) {
             const scripts = getAsyncScripts(this.props.state);
             const selectedScript = scripts.find((item) =>
                 getUniqueIdFromScript(item) === id);
             this.setState({ selectedScript });
-        }
-
-        private onCloseExecuteDialog() {
-            triggerResetAsyncExecutionRequest({ operation: AsyncOperation.create });
-            this.setState({ selectedScript: null });
         }
     },
 );
