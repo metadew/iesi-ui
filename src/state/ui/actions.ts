@@ -10,8 +10,9 @@ import { IColumnNames as IExecutionsColumnNames } from 'models/state/executionRe
 import { getUniqueIdFromConnection } from 'utils/connections/connectionUtils';
 import { getUniqueIdFromComponent } from 'utils/components/componentUtils';
 import { ReactText } from 'react';
-import { IConnectionEntity } from 'models/state/connections.model';
-import { IComponentEntity } from 'models/state/components.model';
+import { IConnection, IConnectionColumnNamesBase } from 'models/state/connections.model';
+import { IComponent, IComponentColumnNamesBase } from 'models/state/components.model';
+import { IDatasetColumnNames, IDatasetImplementation } from 'models/state/datasets.model';
 
 export const triggerFlashMessage = (payload: ITriggerFlashMessagePayload) => createAction<ITriggerFlashMessagePayload>({
     type: 'TRIGGER_FLASH_MESSAGE',
@@ -186,10 +187,95 @@ export const setExecutionsListFilter = (payload: {
     },
 });
 
-export const handleConnection = (payload: {
-    currentConnection: IConnectionEntity;
+export const setComponentsListFilter = (payload: {
+    filters?: ListFilters<Partial<IComponentColumnNamesBase>>;
+    onlyShowLatestVersion?: boolean;
+    page?: number;
+    sortedColumn?: ISortedColumn<IComponentColumnNamesBase>;
 }) => createAction<{
-    currentConnection: IConnectionEntity;
+    filters?: ListFilters<Partial<IComponentColumnNamesBase>>;
+    onlyShowLatestVersion?: boolean;
+    page?: number;
+    sortedColumn?: ISortedColumn<IComponentColumnNamesBase>;
+}>({
+    type: 'UPDATE_COMPONENTS_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.components = {
+                    filters: payload.filters || draftState.ui.listFilters.components.filters,
+                    onlyShowLatestVersion: typeof payload.onlyShowLatestVersion !== 'undefined'
+                        ? payload.onlyShowLatestVersion
+                        : draftState.ui.listFilters.components.onlyShowLatestVersion,
+                    page: payload.page || draftState.ui.listFilters.components.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.components.sortedColumn,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_COMPONENTS],
+        });
+    },
+});
+
+export const setConnectionsListFilter = (payload: {
+    filters?: ListFilters<Partial<IConnectionColumnNamesBase>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<IConnectionColumnNamesBase>;
+}) => createAction<{
+    filters?: ListFilters<Partial<IConnectionColumnNamesBase>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<IConnectionColumnNamesBase>;
+}>({
+    type: 'UPDATE_CONNECTIONS_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.connections = {
+                    filters: payload.filters || draftState.ui.listFilters.connections.filters,
+                    page: payload.page || draftState.ui.listFilters.connections.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.connections.sortedColumn,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_COMPONENTS],
+        });
+    },
+});
+
+export const setDatasetsListFilter = (payload: {
+    filters?: ListFilters<Partial<IDatasetColumnNames>>;
+    onlyShowLatestVersion?: boolean;
+    page?: number;
+    sortedColumn?: ISortedColumn<IDatasetColumnNames>;
+}) => createAction<{
+    filters?: ListFilters<Partial<IDatasetColumnNames>>;
+    onlyShowLatestVersion?: boolean;
+    page?: number;
+    sortedColumn?: ISortedColumn<IDatasetColumnNames>;
+}>({
+    type: 'UPDATE_DATASETS_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.datasets = {
+                    filters: payload.filters || draftState.ui.listFilters.datasets.filters,
+                    page: payload.page || draftState.ui.listFilters.datasets.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.datasets.sortedColumn,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_DATASETS],
+        });
+    },
+});
+
+export const handleConnection = (payload: {
+    currentConnection: IConnection;
+}) => createAction<{
+    currentConnection: IConnection;
 }>({
     type: 'CONNECTION.HANDLE',
     payload,
@@ -244,9 +330,9 @@ export const deleteComponent = (payload: { id: ReactText }) => createAction<{ id
 });
 
 export const handleComponent = (payload: {
-    currentComponent: IComponentEntity;
+    currentComponent: IComponent;
 }) => createAction<{
-    currentComponent: IComponentEntity;
+    currentComponent: IComponent;
 }>({
     type: 'COMPONENT.HANDLE',
     payload,
@@ -269,11 +355,11 @@ export const handleComponent = (payload: {
 });
 
 export const editConnection = (payload: {
-    newConnection: IConnectionEntity;
-    currentConnection: IConnectionEntity;
+    newConnection: IConnection;
+    currentConnection: IConnection;
 }) => createAction<{
-    newConnection: IConnectionEntity;
-    currentConnection: IConnectionEntity;
+    newConnection: IConnection;
+    currentConnection: IConnection;
 }>({
     type: 'CONNECTION.EDIT',
     payload,
@@ -296,11 +382,11 @@ export const editConnection = (payload: {
 });
 
 export const editComponent = (payload: {
-    newComponent: IComponentEntity;
-    currentComponent: IComponentEntity;
+    newComponent: IComponent;
+    currentComponent: IComponent;
 }) => createAction<{
-    newComponent: IComponentEntity;
-    currentComponent: IComponentEntity;
+    newComponent: IComponent;
+    currentComponent: IComponent;
 }>({
     type: 'COMPONENT.EDIT',
     payload,
@@ -318,6 +404,33 @@ export const editComponent = (payload: {
                     ));
             },
             notificationsToTrigger: [StateChangeNotification.COMPONENT_EDIT],
+        });
+    },
+});
+
+export const fetchImplementations = (payload: {
+    implementations: IDatasetImplementation[];
+}) => createAction<{
+    implementations: IDatasetImplementation[];
+}>({
+    type: 'DATA_DATASETS.IMPLEMENTATIONS',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                const { implementations } = payload;
+                const datasetDetail = draftState.entities.datasetDetail.data;
+                // eslint-disable-next-line no-param-reassign
+                draftState.entities.datasetDetail.data = {
+                    ...datasetDetail,
+                    implementations: implementations.map((implementation) => ({
+                        type: implementation.type,
+                        labels: implementation.labels,
+                        keyValues: implementation.keyValues,
+                    })),
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_DETAIL],
         });
     },
 });

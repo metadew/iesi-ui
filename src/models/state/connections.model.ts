@@ -1,10 +1,35 @@
-export interface IConnectionEntity {
+import { IPageData, IPageFilter } from './iesiGeneric.models';
+
+export interface IFetchConnectionsListPayload {
+    pagination?: IPageFilter;
+    filter?: IConnectionListFilter;
+    sort: string;
+}
+
+interface IConnectionListFilter {
+    name?: string;
+}
+export interface IConnectionByNamePayload {
     name: string;
+}
+
+export interface IConnectionEntity {
+    connections: IConnection[];
+    page: IPageData;
+}
+
+export interface IConnection {
+    name: string;
+    securityGroupName: string;
     type: string;
     description: string;
+    environments: IConnectionEnvironment[];
+    isHandled?: boolean;
+}
+
+export interface IConnectionEnvironment {
     environment: string;
     parameters: IConnectionParameter[];
-    isHandled: boolean;
 }
 
 export interface IConnectionParameter {
@@ -20,4 +45,12 @@ export interface IConnectionColumnNames {
     baseUrl: string;
     tls: string;
     environment: string;
+}
+
+export interface IConnectionColumnNamesBase {
+    name: string;
+    securityGroupName: string;
+    type: string;
+    description: string;
+    environments: number;
 }

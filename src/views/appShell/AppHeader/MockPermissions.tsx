@@ -1,14 +1,9 @@
 import React from 'react';
 import { FormControlLabel, Switch, withStyles } from '@material-ui/core';
 import { red, green } from '@material-ui/core/colors';
-import { observe, IObserveProps } from 'views/observe';
+import { observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { IAccessLevel } from 'models/state/auth.models';
-import { getStore } from 'state';
-import { getUserPermissions } from 'state/auth/selectors';
-import { updateUserPermission } from 'state/auth/actions';
-
-const { dispatch } = getStore();
 
 const CustomSwitch = withStyles({
     switchBase: {
@@ -27,23 +22,21 @@ const CustomSwitch = withStyles({
     track: {},
 })(Switch);
 
-function MockPermissions({ state }: IObserveProps) {
+function MockPermissions() {
     const permissions = ['execute', 'edit'];
-    const userPermissions = getUserPermissions(state);
 
     return (
         <div>
             {permissions.map((p) => {
                 const permission = p as keyof IAccessLevel;
-                const hasPermission = userPermissions[permission];
+                // const hasPermission = userPermissions[permission];
 
                 return (
                     <FormControlLabel
                         key={`switch-${permission}-permission`}
                         control={(
                             <CustomSwitch
-                                checked={hasPermission}
-                                onClick={() => dispatch(updateUserPermission({ permission }))}
+                                // checked={hasPermission}
                                 color="default"
                             />
                         )}

@@ -3,6 +3,7 @@ import { ICustomAsyncEntity, IState } from 'models/state.models';
 import { IEnvConfig } from 'models/state/envConfig.models';
 import { II18nState } from 'models/state/i18n.models';
 import { DEFAULT_LOCALE } from 'config/i18n.config';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 export default function getMockState({
     envConfig = getDefaultEnvConfig(),
@@ -32,7 +33,23 @@ export default function getMockState({
                     page: 1,
                     sortedColumn: null,
                 },
+                components: {
+                    filters: null,
+                    onlyShowLatestVersion: true,
+                    page: 1,
+                    sortedColumn: null,
+                },
+                connections: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                },
                 executions: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                },
+                datasets: {
                     filters: null,
                     page: 1,
                     sortedColumn: null,
@@ -41,10 +58,11 @@ export default function getMockState({
         },
         auth: {
             username: 'mocked-test-user',
-            permissions: {
-                edit: true,
-                execute: true,
-            },
+            permissions: [{
+                group: 'PUBLIC',
+                privilege: SECURITY_PRIVILEGES.S_CONNECTIONS_READ,
+            }],
+            accessToken: '',
         },
         entities: {
             actionTypes: {
@@ -89,6 +107,13 @@ export default function getMockState({
                     error: null,
                 },
             },
+            scriptDetailImport: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
             executionRequests: {
                 data: null,
                 fetch: {
@@ -114,6 +139,34 @@ export default function getMockState({
                     error: null,
                 },
             },
+            components: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            componentDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            connections: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            connectionDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
             environments: {
                 data: null,
                 fetch: {
@@ -122,6 +175,41 @@ export default function getMockState({
                 },
             },
             openapi: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            datasets: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            datasetDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            datasetDetailExport: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            datasetDetailImport: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            datasetImplementations: {
                 data: null,
                 fetch: {
                     status: AsyncStatus.Initial,

@@ -11,10 +11,20 @@ export enum ROUTE_KEYS {
     R_SCRIPTS = 'R_SCRIPTS',
     R_SCRIPT_DETAIL = 'R_SCRIPT_DETAIL',
     R_SCRIPT_NEW = 'R_SCRIPT_NEW',
+    R_COMPONENTS = 'R_COMPONENTS',
+    R_COMPONENT_DETAIL = 'R_COMPONENT_DETAIL',
+    R_COMPONENT_NEW = 'R_COMPONENT_NEW',
+    R_CONNECTIONS = 'R_CONNECTIONS',
+    R_CONNECTION_DETAIL = 'R_CONNECTION_DETAIL',
+    R_CONNECTION_NEW = 'R_CONNECTION_NEW',
     /* reporting */
     R_REPORTS = 'R_REPORTS',
     R_REPORT_DETAIL = 'R_REPORT_DETAIL',
     R_NOT_FOUND = 'R_NOT_FOUND',
+    /* Dataset */
+    R_DATASETS = 'R_DATASETS',
+    R_DATASET_DETAIL = 'R_DATASET_DETAIL',
+    R_DATASET_NEW = 'R_DATASET_NEW',
     /* OpenAPI */
     R_OPENAPI = 'R_OPENAPI'
 }
@@ -126,6 +136,19 @@ export function redirectTo({ routeKey, params, queryParams }: INavigateToRoute) 
         });
     }
 }
+export function redirectToPath(pathname: string, search: string) {
+    if (browserHistory) {
+        // Do this on the next frame to make sure everything routeObserverManager has been registered
+        window.requestAnimationFrame(() => {
+            browserHistory.push({
+                pathname,
+                search,
+            });
+        });
+    }
+}
+
+// Create copy of above and provide simple url
 
 export function registerRouteObserver(onRoute: (routeLocation: IRouteLocation) => void) {
     routeObserverManager.registerObserver({

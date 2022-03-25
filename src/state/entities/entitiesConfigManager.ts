@@ -14,10 +14,29 @@ import {
     IScriptByNameAndVersionPayload,
     IScriptBase,
     IFetchScriptsListPayload,
+    IScriptImport,
 } from 'models/state/scripts.models';
 import { IOpenAPI } from 'models/state/openapi.model';
-import { IConnectionEntity } from 'models/state/connections.model';
-import { IComponentEntity } from 'models/state/components.model';
+import {
+    IConnection,
+    IConnectionByNamePayload,
+    IFetchConnectionsListPayload,
+} from 'models/state/connections.model';
+import {
+    IComponent,
+    IComponentByNameAndVersionPayload,
+    IFetchComponentsListPayload,
+} from 'models/state/components.model';
+import {
+    IDataset,
+    IDatasetBase,
+    IDatasetImplementationsByUuidPayload,
+    IFetchDatasetsListPayload,
+    IDatasetByUuidPayload,
+    IDatasetByNamePayload,
+    IDatasetImportPayload,
+} from 'models/state/datasets.model';
+import { IImportPayload } from 'models/state/iesiGeneric.models';
 
 // eslint-disable-next-line max-len
 const entitiesConfigManager = initAsyncEntitiesConfigManager<IState, {}, ITraceableApiError, string, IExtraProcessInput>();
@@ -46,7 +65,7 @@ entitiesConfigManager.register({
             api: api.scripts.createScriptVersion,
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
-            apiInputSelector: ({ extraInput }) => extraInput as IScriptBase,
+            apiInputSelector: ({ extraInput }) => extraInput as IScriptBase | IScriptImport,
         },
         update: {
             // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
@@ -75,6 +94,16 @@ entitiesConfigManager.register({
         fetch: {
             api: api.scripts.fetchScriptByNameAndVersionDownload,
             apiInputSelector: ({ extraInput }) => extraInput as IScriptByNameAndVersionPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetailImport,
+    operationsConfig: {
+        create: {
+            api: api.scripts.createScriptVersionImport,
+            apiInputSelector: ({ extraInput }) => extraInput as IImportPayload,
         },
     },
 });
@@ -155,6 +184,122 @@ entitiesConfigManager.register({
 });
 
 entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.components,
+    operationsConfig: {
+        fetch: {
+            api: api.components.fetchComponents,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchComponentsListPayload,
+        },
+        remove: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.components.deleteComponentVersion,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IComponentByNameAndVersionPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.componentDetail,
+    operationsConfig: {
+        fetch: {
+            api: api.components.fetchComponentVersion,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IComponentByNameAndVersionPayload,
+        },
+        create: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.components.createComponentVersion,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IComponent,
+        },
+        update: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.components.updateComponentVersion,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IComponent,
+        },
+        remove: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.components.deleteComponentVersion,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IComponentByNameAndVersionPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.connections,
+    operationsConfig: {
+        fetch: {
+            api: api.connections.fetchConnections,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchConnectionsListPayload,
+        },
+        remove: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.connections.deleteComponentEnvironment,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IConnectionByNamePayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.connectionDetail,
+    operationsConfig: {
+        fetch: {
+            api: api.connections.fetchConnection,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IConnectionByNamePayload,
+        },
+        create: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.connections.createConnection,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IConnection,
+        },
+        update: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.connections.updateConnection,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IConnection,
+        },
+        remove: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.connections.deleteConnection,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IConnectionByNamePayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
     asyncEntityKey: ASYNC_ENTITY_KEYS.openapi,
     operationsConfig: {
         create: {
@@ -165,29 +310,160 @@ entitiesConfigManager.register({
 });
 
 entitiesConfigManager.register({
-    asyncEntityKey: ASYNC_ENTITY_KEYS.connections,
+    asyncEntityKey: ASYNC_ENTITY_KEYS.openapiComponents,
     operationsConfig: {
-        create: {
-            api: api.connections.createConnection,
-            apiInputSelector: ({ extraInput }) => extraInput as IConnectionEntity,
+        fetch: {
+            api: api.components.fetchComponents,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchComponentsListPayload,
         },
-        update: {
-            api: api.connections.updateConnection,
-            apiInputSelector: ({ extraInput }) => extraInput as IConnectionEntity,
+        remove: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.components.deleteComponentVersion,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IComponentByNameAndVersionPayload,
         },
     },
 });
 
 entitiesConfigManager.register({
-    asyncEntityKey: ASYNC_ENTITY_KEYS.components,
+    asyncEntityKey: ASYNC_ENTITY_KEYS.componentDetail,
+    operationsConfig: {
+        fetch: {
+            api: api.components.fetchComponentVersion,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IComponentByNameAndVersionPayload,
+        },
+        create: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.components.createComponentVersion,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IComponent,
+        },
+        update: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.components.updateComponentVersion,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IComponent,
+        },
+        remove: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.components.deleteComponentVersion,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IComponentByNameAndVersionPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.openapiComponents,
     operationsConfig: {
         create: {
             api: api.components.createComponent,
-            apiInputSelector: ({ extraInput }) => extraInput as IComponentEntity,
+            apiInputSelector: ({ extraInput }) => extraInput as IComponent,
         },
         update: {
             api: api.components.updateComponent,
-            apiInputSelector: ({ extraInput }) => extraInput as IComponentEntity,
+            apiInputSelector: ({ extraInput }) => extraInput as IComponent,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.openapiConnections,
+    operationsConfig: {
+        create: {
+            api: api.connections.createConnection,
+            apiInputSelector: ({ extraInput }) => extraInput as IConnection,
+        },
+        update: {
+            api: api.connections.updateConnection,
+            apiInputSelector: ({ extraInput }) => extraInput as IConnection,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.datasets,
+    operationsConfig: {
+        fetch: {
+            api: api.datasets.fetchDatasets,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchDatasetsListPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.datasetDetail,
+    operationsConfig: {
+        fetch: {
+            api: api.datasets.fetchDataset,
+            apiInputSelector: ({ extraInput }) => extraInput as IDataset,
+        },
+        create: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.datasets.createDataset,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IDatasetBase,
+        },
+        update: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.datasets.updateDataset,
+            apiInputSelector: ({ extraInput }) => extraInput as IDataset,
+        },
+        remove: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.datasets.deleteDataset,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IDatasetByUuidPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.datasetDetailImport,
+    operationsConfig: {
+        create: {
+            api: api.datasets.createDatasetImport,
+            apiInputSelector: ({ extraInput }) => extraInput as IDatasetImportPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.datasetDetailExport,
+    operationsConfig: {
+        fetch: {
+            api: api.datasets.fetchDatasetDownload,
+            apiInputSelector: ({ extraInput }) => extraInput as IDatasetByNamePayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.datasetImplementations,
+    operationsConfig: {
+        fetch: {
+            api: api.datasets.fetchDatasetImplementations,
+            apiInputSelector: ({ extraInput }) => extraInput as IDatasetImplementationsByUuidPayload,
         },
     },
 });

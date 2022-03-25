@@ -8,12 +8,14 @@ const API_URLS = {
     COMPONENT_TYPES: '/component-types',
 
     ENVIRONMENTS: '/environments',
+    ENVIRONMENTS_LIST: '/environments/list',
     ENVIRONMENT_BY_NAME: '/environments/{name}',
 
     EXECUTION_REQUESTS: '/execution-requests',
     EXECUTION_REQUEST_BY_ID: '/execution-requests/{id}',
 
     SCRIPTS: '/scripts',
+    SCRIPTS_IMPORT: '/scripts/import',
     SCRIPT_BY_NAME: '/scripts/{name}',
     SCRIPT_BY_NAME_VERSION: '/scripts/{name}/{version}',
     SCRIPT_BY_NAME_VERSION_DOWNLOAD: '/scripts/{name}/{version}/download',
@@ -21,12 +23,23 @@ const API_URLS = {
     SCRIPT_EXECUTION_BY_RUN_AND_PROCESS_ID: '/script-executions/{runId}/{processId}',
 
     CONNECTIONS: '/connections',
+    CONNECTION_BY_NAME: '/connections/{name}',
 
     COMPONENTS: '/components',
+    COMPONENT_BY_NAME: '/components/{name}',
+    COMPONENT_BY_NAME_VERSION: '/components/{name}/{version}',
 
-    SECURITY_LOGON: '/users/login',
+    USER_LOGON: '/users/login',
+    USER_BY_UUID: '/users/{uuid}',
 
     OPEN_API_TRANSFORM: '/openapi/transform',
+
+    DATASETS: '/datasets',
+    DATASETS_IMPORT: '/datasets/import',
+    DATASET_BY_NAME: '/datasets/{name}',
+    DATASET_BY_NAME_DOWNLOAD: '/datasets/{name}/download',
+    DATASET_BY_UUID: '/datasets/{uuid}',
+    DATASET_IMPLEMENTATIONS: '/datasets/{uuid}/implementations',
 
     /* eslint-enable max-len */
 };

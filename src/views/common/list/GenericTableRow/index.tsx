@@ -59,7 +59,7 @@ interface IPublicProps<ColumnNames> {
 }
 
 const useStyles = makeStyles(({ palette, shape, typography, spacing }: Theme) => ({
-    tableRow: (props: { isHandled: boolean}) => ({
+    tableRow: (props: { isHandled: boolean }) => ({
         background: props.isHandled ? THEME_COLORS.GREY_LIGHT : palette.background.paper,
         height: '100%',
     }),
@@ -212,10 +212,10 @@ export default function GenericTableRow<ColumnNames>({
                 <TableCell className={classes.tableCell}>
                     {!isPlaceholder ? (
                         <Typography className={classes.index}>{formatNumberWithTwoDigits(rowIndex + 1)}</Typography>
-                    ) : renderPlaceholderCellContent()}
+                    ) : renderPlaceholderCellContent(rowIndex + 1)}
                 </TableCell>
             )}
-            { isPlaceholder ? renderPlaceholderCells() : renderDataCells() }
+            { isPlaceholder ? renderPlaceholderCells() : renderDataCells()}
             {listActions && (
                 <>
                     <TableCell
@@ -236,7 +236,6 @@ export default function GenericTableRow<ColumnNames>({
                                                     area-label={action.label}
                                                     onClick={() => action.onClick(item.id, rowIndex)}
                                                     className={classes.actionIcon}
-                                                    disabled={isHandled}
                                                 >
                                                     {action.icon}
                                                 </IconButton>
@@ -244,7 +243,7 @@ export default function GenericTableRow<ColumnNames>({
 
                                         </div>
                                     )
-                                ) : renderPlaceholderCellContent()
+                                ) : renderPlaceholderCellContent(listActionIndex)
                             ))}
                         </div>
                     </TableCell>
@@ -262,7 +261,7 @@ export default function GenericTableRow<ColumnNames>({
                                 >
                                     <MoreVertIcon />
                                 </IconButton>
-                            ) : renderPlaceholderCellContent()}
+                            ) : renderPlaceholderCellContent(rowIndex + 1)}
                             <Menu
                                 id={`actions-menu-${rowIndex}`}
                                 anchorEl={anchorEl}
@@ -326,51 +325,57 @@ export default function GenericTableRow<ColumnNames>({
                 || (typeof column.tooltip === 'function' ? column.tooltip(value) : column.tooltip);
 
             return (
-                <TableCell
-                    className={classNames(classes.tableCell, {
-                        [classes.hideOnCompactView]: !!column.hideOnCompactView,
-                    })}
-                    style={{ width: column.fixedWidth }}
-                    key={columnName as string}
-                >
-                    <Box display="flex" alignItems="center">
-                        {column.icon && (
-                            <Box flex="0 0 auto" paddingRight={0.5}>
-                                <Typography color="primary" className={classes.cellIcon}>
-                                    {column.icon}
-                                </Typography>
-                            </Box>
-                        )}
-                        <Box flex="1 1 auto">
-                            {column.label && (
-                                <Typography
-                                    display="block"
-                                    className={classes.label}
-                                >
-                                    {column.label}
-                                </Typography>
-                            )}
+                <>
+                    {!column.hide
+                    && (
+                        <TableCell
+                            className={classNames(classes.tableCell, {
+                                [classes.hideOnCompactView]: !!column.hideOnCompactView || !!column.hide,
+
+                            })}
+                            style={{ width: column.fixedWidth }}
+                            key={columnName as string}
+                        >
                             <Box display="flex" alignItems="center">
-                                {column.noWrap ? (
-                                    <TooltipDiv text={value} className={cellClassName} />
-                                ) : (
-                                    <Typography variant="body2" className={cellClassName}>
-                                        {value}
-                                    </Typography>
+                                {column.icon && (
+                                    <Box flex="0 0 auto" paddingRight={0.5}>
+                                        <Typography color="primary" className={classes.cellIcon}>
+                                            {column.icon}
+                                        </Typography>
+                                    </Box>
                                 )}
-                                {tooltip && (
-                                    <InfoTooltip title={tooltip} iconSize="small" />
-                                )}
+                                <Box flex="1 1 auto">
+                                    {column.label && (
+                                        <Typography
+                                            display="block"
+                                            className={classes.label}
+                                        >
+                                            {column.label}
+                                        </Typography>
+                                    )}
+                                    <Box display="flex" alignItems="center">
+                                        {column.noWrap ? (
+                                            <TooltipDiv text={value} className={cellClassName} />
+                                        ) : (
+                                            <Typography variant="body2" className={cellClassName}>
+                                                {value}
+                                            </Typography>
+                                        )}
+                                        {tooltip && (
+                                            <InfoTooltip title={tooltip} iconSize="small" />
+                                        )}
+                                    </Box>
+                                </Box>
                             </Box>
-                        </Box>
-                    </Box>
-                </TableCell>
+                        </TableCell>
+                    )}
+                </>
             );
         });
     }
 
     function renderPlaceholderCells() {
-        return Object.keys(columns).map((untypedColumnName) => {
+        return Object.keys(columns).map((untypedColumnName, index) => {
             const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
             const column = columns[columnName] as IColumn<ColumnNames>;
 
@@ -383,16 +388,17 @@ export default function GenericTableRow<ColumnNames>({
                     key={columnName as string}
                 >
                     <Box display="flex" alignItems="center">
-                        {renderPlaceholderCellContent()}
+                        {renderPlaceholderCellContent(index)}
                     </Box>
                 </TableCell>
             );
         });
     }
 
-    function renderPlaceholderCellContent() {
+    function renderPlaceholderCellContent(key: number) {
         return (
             <Box
+                key={key}
                 className={classes.placeholderContent}
                 flex="1 1 auto"
             />

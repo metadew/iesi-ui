@@ -4,6 +4,9 @@ app_shell:
       home: Home
       reports: Reports
       scripts: Scripts
+      components: Components
+      connections: Connections
+      datasets: Datasets
     title: iesi
 common:
   yes: Yes
@@ -34,6 +37,12 @@ common:
     no_results: No results
     sort:
       sort_by: Sort by
+  import:
+    dialog:
+      title: Import {metadataName}
+      input_placeholder: Please provide the file content
+      import_button: Import
+      import_file_button: Or use the file instead
 error:
   default:
     title: OOPS! Something went wrong
@@ -58,6 +67,23 @@ flash_messages:
     connections_unknown_error: 'Unknown error for the one or more connections'
     component_unknown_error: 'Unknown error for the component "{componentName}"'
     components_unknown_error: 'Unknown error for the one or more connections'
+  component: 
+    edit: 'The component has been updated'
+    error: 'An error has occured : {error}'
+  connection:
+    create: 'The connection has been created successfully'
+    edit: 'The connection has been updated successfully'
+    error: 'An error has occured: {error}'
+  script: 
+    create: 'The script has been successfully created !'
+    edit: 'The script has been updated'
+    error: 'Incorrect representation of the script'
+    import: 'The script has been successfully imported !'
+    import_error: 'There is an error during the import of the script'
+  datasets:
+    import: 'The dataset has been successfully imported !'
+    import_error: 'There is an error during the import of the dataset'
+  error: 'An error has occured'
 scripts:
   overview:
     delete_script_dialog:
@@ -69,7 +95,7 @@ scripts:
       error: Something went wrong during the creation of your execution request.
       success:
         text: Execution request is created.
-        close_button: Back to overview
+        close_button: Back
       form:
         description: Description
         name: Name
@@ -105,7 +131,9 @@ scripts:
       amount: 'You have {amount} scripts'
       add_button: Create new script
       generate_button: "Load OpenAPI documentation"
+      generate_script_button: "Import script documentation"
       transform_openapi_tooltip: "Transform an OpenAPI documentation into IESI connections and components"
+      transform_script_tooltip: "Transform a ScriptDetail documentation into IESI scripts"
     list:
       fetch_error: Something went wrong while loading the scripts, please try again.
       actions:
@@ -153,6 +181,17 @@ scripts:
         cancel: Discard changes
         save: Update action
         go_back: Go back
+    duplicate_action_dialog:
+      title: Duplicating "{actionName}"
+      confirm: Duplicate action
+      init_error:  Can't duplicate current action at this time. Please try again later.
+      error: Something went wrong during the duplication of your action.
+      success:
+        text: Action is duplicated.
+        close_button: Back to detail
+      form:
+        name: Name
+      text: Please specify the name for the new duplicated action.
     side:
       script_description: Script description
       script_name: Script name
@@ -213,12 +252,15 @@ script_reports:
     list:
       actions:
         report: Reporting
+        rerun: Re-run
       fetch_error: Something went wrong while loading the script executions, please try again.
       filter:
         script_name: Script name
         script_version: Script version
         environment: Environment
         labels: Label
+        run_id: Run Id
+        run_status: Status
       labels:
         environment: Environment
         labels: Labels
@@ -261,11 +303,13 @@ script_reports:
           name: Name
           value: Value
           none: '-'
+        go_to_script: View script detail
         go_to_script_detail: View script execution
         go_to_parent_script_detail: Back to parent execution
     side:
       toggle_button: Details
       execution:
+        rerun: Re-run script
         title: Execution data
         script_name:
           label: Script name
@@ -293,18 +337,185 @@ script_reports:
         output:
           label: Output
           none: '-'
-        username:
-          label: Username
-          none: '-'
-
+        requestor:
+          label: Requestor
+          none: 'anonymous'
+components:
+  overview:
+    delete_component_dialog:
+      text: Are you sure you want to delete this component?
+      title: Delete component
+      form:
+        description: Description
+        name: Name
+        environment: Environment
+        input_param:
+          add:
+            name: Name
+            value: Value
+            button: Add
+            title: Add input parameter
+          empty: No input params defined yet.
+          title: Input parameters
+    header:
+      amount: 'You have {amount} components'
+      add_button: Create new component
+      generate_button: "Load from OpenAPI documentation"
+    list:
+      labels:
+        name: Name
+        type: Type
+        version: Version
+        description: Description
+        security_group_name: Security Group Name
+      fetch_error: Something went wrong while loading the components, please try again.
+      actions:
+        delete: Delete
+        edit: Edit
+      filter:
+       component_name: Component name
+      sort:
+        component_name: Component name
+        version: Version
+  detail:
+    add_parameter: 'Add new parameter'
+    delete_component_dialog:
+      text: Are you sure you want to delete this component?
+      title: Delete component
+    save_component_dialog:
+      title: Save component
+      text: Do you want to overwrite the current version or create a new version with the current changes?
+      text_securityGroup: Sorry, you don't have the permission to create that connection because your don't belong to the group {securityGroup}
+      update_current_version: Update current version
+      save_as_new_version: Save as new version
+    side:
+      toggle_button: Details
+      component_type: Type
+      component_description: Description
+      component_name: Name
+      component_version: Version
+      component_security: Security Group
+    main:
+      no_parameters:
+        title: No parameters yet
+      actions:
+        add_parameter: Add new parameter
+        add_attribute: Add new attribute
+        delete: Delete component
+        save: Save
+        export: Export component
+        view: View
+      list:
+        labels:
+          name: Name
+          value: Value
+          mandatory: Mandatory
+          environment: Environment
+        actions:
+          edit: Edit
+          delete: Delete
+      alert:
+        save_changes: You made changes to this component. Don't forget to save them.
+    edit:
+      name: Name
+      value: Value
+      environment: Environment
+      footer:
+        cancel: Cancel
+        save: Save
+        update: Update
+    error:
+      save: Failed to save changes
+connections:
+  overview:
+    delete_connection_dialog:
+      text: Are you sure you want to delete this connection?
+      title: Delete connection
+    header:
+      amount: 'You have {amount} connections'
+      add_button: Create new connection
+      generate_button: "Load from OpenAPI documentation"
+    list:
+      labels:
+        name: Name
+        type: Type
+        environments: Environments
+        description: Description
+      fetch_error: Something went wrong while loading the connections, please try again.
+      actions:
+        delete: Delete
+        edit: Edit
+      filter:
+       connection_name: Connection name
+      sort:
+        connection_name: Connection name
+        version: Version
+  detail:
+    add_parameter: 'Add new parameter'
+    delete_connection_dialog:
+      text: Are you sure you want to delete this connection?
+      title: Delete connection
+    save_connection_dialog:
+      title: Save connection
+      text: Are you sure to create the connection {connectionName} ?
+      text_securityGroup: Sorry, you don't have the permission to read the connection because your don't belong to the group {securityGroup}
+      create: Create connection
+      update: Update connection
+    side:
+      connection_type: Type
+      connection_description: Description
+      connection_name: Name
+      connection_environment: Environment
+      connection_security: Security group
+      toggle_button: Details
+      environments:
+        title: Environments
+        empty: No environments
+        add_button: Add environment
+        add_dialog:
+          title: Add an environment
+          select_title: Choose an environment
+          cancel: Cancel
+          add: Add
+    main:
+      no_parameters:
+        title: No parameters yet
+      actions:
+        delete: Delete connection
+        save: Save
+        export: Export connection
+        view: View
+      list:
+        labels:
+          name: Name
+          value: Value
+          mandatory: Mandatory
+          environment: Environment
+        actions:
+          edit: Edit
+          delete: Delete
+      alert:
+        save_changes: You made changes to this connection. Don't forget to save them.
+    edit:
+      name: Name
+      value: Value
+      environment: Environment
+      footer:
+        cancel: Cancel
+        save: Save
+        update: Update
+    error:
+      save: Failed to save changes
 doc:
   dialog:
     transform:
       title: Provide an OpenAPI documentation to perform the transformation
+      scriptTitle: Provide JSON representation of the script
       json_content_label: Json Content
       file_label: 'Choose a file'
       file_helper: 'Only .JSON and .YAML are accepted'
       validate: 'Validate'
+      import: 'Import'
     edit:
       connection:
         title: 'Edit the connection values'
@@ -322,6 +533,7 @@ doc:
         title: Edit the component values
         name: 'Name'
         description: 'Description'
+        component_security: 'Security group'
         versionNumber: 'Version number'
         versionDescription: 'Version description'
         endpoint: 'Endpoint'
@@ -330,7 +542,6 @@ doc:
         footer:
           cancel: 'Discard changes'
           save: 'Update component'
-
   overview:
     openapi_title: 'Open API Title : {title}'
     openapi_version:  'Open API Version : {version}'
@@ -353,7 +564,97 @@ doc:
       endpoint: 'Endpoint'
       type: 'Type'
       connection: 'Connection'
+      security_group_name: 'Security group name'
     action_buttons:
       save: 'Save to database, if existing, update it'
       edit: 'Edit the table cells'
       delete: 'Delete from the table'
+datasets:
+  overview:
+    header:
+      amount: You have {amount} datasets
+      add_button: Create new dataset
+      import_dataset_button: Import dataset
+    list:
+      fetch_error: Something went wrong while loading the datasets, please try again.
+      sort:
+        dataset_name: Dataset name
+      filter:
+        dataset_name: Dataset name
+      labels:
+        name: Name
+        security_group: Security Group
+        implementations: Implementations
+      actions:
+        edit: Edit dataset
+        view: View
+        delete: Delete
+    delete_dataset_dialog:
+      title: Delete dataset
+      text: Are you sure you want to delete this dataset ?
+  detail:
+    save_dataset_dialog:
+      title_create: Save dataset
+      title_update: Update dataset
+      text_create: The dataset will be created
+      text_update: The dataset will be updated
+      save: Save
+      update: Update
+    delete_dataset_dialog:
+      text: Are you sure you want to delete this dataset?
+      title: Delete dataset
+    delete_implementation_dialog:
+      text: Are you sure you want to delete this implementation?
+      title: Delete implementation
+    duplicate_implementation_dialog:
+      title: Duplicating implementation
+      confirm: Duplicate action
+      init_error:  Can't duplicate current implementation at this time. Please try again later.
+      error: Something went wrong during the duplication of your implementation.
+      success:
+        text: Implementation has been duplicated successfully.
+        close_button: Back to detail
+      form:
+        name: Name
+      text: Please specify the name for the new duplicated action.
+    side:
+      dataset_name: Name
+      dataset_security: Security Group
+      toggle_button: Details
+    main:
+      actions:
+        add_implementation: Add implementation
+        save: Save
+        delete: Delete
+        export: Export
+      list:
+        labels:
+          labels: 'Labels'
+        actions:
+          edit: 'Edit'
+          delete: 'Delete'
+          duplicate: 'Duplicate'
+      no_implementations:
+        title: No implementations yet
+        button: Add implementations
+      alert:
+        save_changes: You made changes to this dataset. Don't forget to save them.
+    edit:
+      implementation:
+        title_edit: Update implementation
+        title_create: Add a new implementation
+        labels: Labels
+        labels_helper: Press enter to add individual labels
+        add_key_values: Add values to the implementation
+        remove_key_values: Remove value from the implementation
+        empty_labels_error: Please provide one label minimum
+        footer:
+          save: Save
+          update: Update
+          cancel: Cancel
+          discard: Discard changes
+    flash_messages:
+      create_success: The dataset {name} has been created successfully !
+      update_success: The dataset {name} has been updated successfully !
+      create_error: 'An error has occured when creating the dataset'
+      update_error: 'An error has occured when updating the dataset'

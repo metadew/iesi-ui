@@ -12,20 +12,21 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { THEME_COLORS } from 'config/themes/colors';
 import Tooltip from 'views/common/tooltips/Tooltip';
 import { observe, IObserveProps } from 'views/observe';
+import { ISecuredObject } from 'models/core.models';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
-import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
-import { IScript } from 'models/state/scripts.models';
+import { checkAuthority } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 interface IPublicProps {
-    onPlay: () => void;
-    onDelete: () => void;
-    onAdd: () => void;
-    onSave: () => void;
-    onViewReport: () => void;
-    onExport: () => void;
+    onPlay?: () => void;
+    onDelete?: () => void;
+    onAdd?: () => void;
+    onSave?: () => void;
+    onViewReport?: () => void;
+    onExport?: () => void;
     isCreateRoute?: boolean;
-    newScriptDetail?: IScript;
+    newScriptDetail?: ISecuredObject;
 }
 
 const useStyles = makeStyles(({ palette, spacing }) => ({
@@ -103,7 +104,11 @@ function DetailActions({
     return (
         <Box display="flex" alignItems="center" justifyContent="space-between" marginX={2.2}>
             <Box flex="0 0 auto">
-                {isCreateRoute || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, newScriptDetail.securityGroupName)
+                {isCreateRoute || checkAuthority(
+                    state,
+                    SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                    newScriptDetail.securityGroupName,
+                )
                     ? (
                         <Tooltip
                             title={translator('scripts.detail.main.actions.add_action')}
@@ -125,8 +130,11 @@ function DetailActions({
             <Box flex="0 0 auto">
                 <Paper elevation={0} className={classes.actions}>
                     <Box display="inline" marginRight={1}>
-                        {isCreateRoute
-                            || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, newScriptDetail.securityGroupName)
+                        {isCreateRoute || checkAuthority(
+                            state,
+                            SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                            newScriptDetail.securityGroupName,
+                        )
                             ? (
                                 <Button
                                     variant="contained"
@@ -150,7 +158,8 @@ function DetailActions({
                     ) : (
                         <>
                             {checkAuthority(
-                                SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_WRITE,
+                                state,
+                                SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_WRITE,
                                 newScriptDetail.securityGroupName,
                             )
                                 ? (
@@ -163,6 +172,7 @@ function DetailActions({
                                     </Tooltip>
                                 ) : null}
                             {checkAuthority(
+                                state,
                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                 newScriptDetail.securityGroupName,
                             )
@@ -176,7 +186,8 @@ function DetailActions({
                                     </Tooltip>
                                 ) : null}
                             {checkAuthority(
-                                SECURITY_PRIVILEGES.S_EXECUTION_REQUEST_READ,
+                                state,
+                                SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_READ,
                                 newScriptDetail.securityGroupName,
                             )
                                 ? (
@@ -189,6 +200,7 @@ function DetailActions({
                                     </Tooltip>
                                 ) : null}
                             {checkAuthority(
+                                state,
                                 SECURITY_PRIVILEGES.S_SCRIPTS_READ,
                                 newScriptDetail.securityGroupName,
                             )
