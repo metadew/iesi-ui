@@ -1,6 +1,6 @@
 import React from 'react';
 import { IObserveProps, observe } from 'views/observe';
-import { createStyles, withStyles, WithStyles, Theme, Typography, Box, Button } from '@material-ui/core';
+import { Box, Button, createStyles, Theme, Typography, withStyles, WithStyles } from '@material-ui/core';
 import { ITeam, ITeamColumnNames } from 'models/state/team.model';
 import {
     FilterConfig,
@@ -203,7 +203,7 @@ const TeamsOverview = withStyles(styles)(
                             />
                             <ConfirmationDialog
                                 title={translator('teams.overview.delete_team_dialog.title')}
-                                text={translator('teams.overview.delete_Team_dialog.text')}
+                                text={translator('teams.overview.delete_team_dialog.text')}
                                 open={!!teamIdToDelete}
                                 onClose={() => this.setState({ teamIdToDelete: null })}
                                 onConfirm={this.onDeleteTeam}
@@ -317,6 +317,8 @@ const TeamsOverview = withStyles(styles)(
                                                 getUniqueIdFromTeam(team) === id);
                                             this.setState({ teamIdToDelete: selectedTeam.id });
                                         },
+                                        hideAction: () =>
+                                            !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE),
                                     })}
                                 />
                             ) : (

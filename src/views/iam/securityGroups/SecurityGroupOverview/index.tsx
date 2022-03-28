@@ -1,6 +1,6 @@
 import React from 'react';
 import { IObserveProps, observe } from 'views/observe';
-import { createStyles, withStyles, WithStyles, Theme, Typography, Box, Button } from '@material-ui/core';
+import { Box, Button, createStyles, Theme, Typography, withStyles, WithStyles } from '@material-ui/core';
 import { ISecurityGroup, ISecurityGroupColumnNames } from 'models/state/securityGroups.model';
 import {
     FilterConfig,
@@ -31,7 +31,7 @@ import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericSort from 'views/common/list/GenericSort';
 import { checkAuthorityGeneral } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
-import { AddRounded, Edit, Visibility, Delete } from '@material-ui/icons';
+import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
@@ -313,6 +313,8 @@ const SecurityGroupsOverview = withStyles(styles)(
                                                 ));
                                             this.setState({ securityGroupIdToDelete: selectedSecurityGroup.id });
                                         },
+                                        hideAction: () =>
+                                            !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE),
                                     })}
                                 />
                             ) : (
