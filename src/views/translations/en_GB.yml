@@ -117,6 +117,16 @@ scripts:
           empty: No labels defined yet.
           title: Execution request labels
       text: Please specify a name and description for your execution request.
+    duplicate_script_dialog:
+      confirm: Duplicate script
+      init_error: Can't duplicate current script at this time. Please try again later.
+      error: Something went wrong during the creation of your duplicated script.
+      success:
+        text: Script is duplicated.
+        close_button: Back to overview
+      form:
+        name: Name
+      text: Please specify a name different from the current script
     header:
       amount: 'You have {amount} scripts'
       add_button: Create new script
@@ -132,6 +142,7 @@ scripts:
         view: View
         execute: Run script
         report: Reporting
+        duplicate: Duplicate
       filter:
         last_run_status: Last run status
         script_name: Script name

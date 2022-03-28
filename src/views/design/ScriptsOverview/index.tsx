@@ -15,7 +15,8 @@ import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
 import { getTranslator } from 'state/i18n/selectors';
-import { AddRounded, Delete, Edit, PlayArrowRounded, Visibility } from '@material-ui/icons';
+
+import { Edit, PlayArrowRounded, AddRounded, Delete, Visibility, FileCopy } from '@material-ui/icons';
 import {
     FilterConfig,
     FilterType,
@@ -55,12 +56,13 @@ import { triggerResetAsyncExecutionRequest } from 'state/entities/executionReque
 import isSet from '@snipsonian/core/es/is/isSet';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { getScriptsListFilter } from 'state/ui/selectors';
-import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
 import { setScriptsListFilter } from 'state/ui/actions';
 import ReportIcon from 'views/common/icons/Report';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
+import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
 import TextFileInputDialog from 'views/common/layout/TextFileInputDialog';
+import DuplicateScriptDialog from '../common/DuplicateScriptDialog';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -117,6 +119,7 @@ const sortActions: SortActions<Partial<IColumnNames>> = {
 
 interface IScriptState {
     scriptIdToDelete: string;
+    scriptIdToDuplicate: string;
     selectedScript: IScriptBase;
     importScriptDialogOpen: boolean;
 }
@@ -136,6 +139,7 @@ const ScriptsOverview = withStyles(styles)(
 
             this.state = {
                 scriptIdToDelete: null,
+                scriptIdToDuplicate: null,
                 selectedScript: null,
                 importScriptDialogOpen: false,
             };
@@ -146,8 +150,11 @@ const ScriptsOverview = withStyles(styles)(
             this.onFilter = this.onFilter.bind(this);
 
             this.clearScriptToDelete = this.clearScriptToDelete.bind(this);
+            this.clearScriptToDuplicate = this.clearScriptToDuplicate.bind(this);
             this.setScriptToDelete = this.setScriptToDelete.bind(this);
+            this.setScriptToDuplicate = this.setScriptToDuplicate.bind(this);
             this.onCloseExecuteDialog = this.onCloseExecuteDialog.bind(this);
+            this.onCloseDuplicateDialog = this.onCloseDuplicateDialog.bind(this);
             this.setExecuteScriptDialogOpen = this.setExecuteScriptDialogOpen.bind(this);
             this.onImportScriptDialogOpen = this.onImportScriptDialogOpen.bind(this);
             this.onImportScriptDialogClose = this.onImportScriptDialogClose.bind(this);
@@ -155,6 +162,7 @@ const ScriptsOverview = withStyles(styles)(
             this.onDeleteScript = this.onDeleteScript.bind(this);
             // eslint-disable-next-line max-len
             this.closeDeleteScriptDialogAfterSuccessfulDelete = this.closeDeleteScriptDialogAfterSuccessfulDelete.bind(this);
+            this.refreshListAfterSuccessfullDuplicate = this.refreshListAfterSuccessfullDuplicate.bind(this);
             // eslint-disable-next-line max-len
             this.closeImportDatasetDialogAfterSuccessfulCreate = this.closeImportDatasetDialogAfterSuccessfulCreate.bind(this);
 
@@ -185,14 +193,19 @@ const ScriptsOverview = withStyles(styles)(
             }
 
             this.closeDeleteScriptDialogAfterSuccessfulDelete(prevProps);
+            this.refreshListAfterSuccessfullDuplicate(prevProps);
             this.closeImportDatasetDialogAfterSuccessfulCreate(prevProps);
         }
 
         public render() {
             const { classes, state } = this.props;
-            const { scriptIdToDelete, selectedScript, importScriptDialogOpen } = this.state;
+            const {
+                scriptIdToDelete,
+                selectedScript,
+                importScriptDialogOpen,
+                scriptIdToDuplicate,
+            } = this.state;
             const filterFromState = getScriptsListFilter(state);
-
             const scripts = getAsyncScripts(this.props.state);
             const deleteStatus = getAsyncScriptDetail(this.props.state).remove.status;
             const importStatus = getAsyncScriptDetail(this.props.state).create.status;
@@ -279,6 +292,11 @@ const ScriptsOverview = withStyles(styles)(
                         onConfirm={this.onDeleteScript}
                         showLoader={deleteStatus === AsyncStatus.Busy}
                     />
+                    <DuplicateScriptDialog
+                        scriptUniqueId={scriptIdToDuplicate}
+                        open={!!scriptIdToDuplicate}
+                        onClose={this.onCloseDuplicateDialog}
+                    />
                     {
                         selectedScript && (
                             <ExecuteScriptDialog
@@ -288,7 +306,6 @@ const ScriptsOverview = withStyles(styles)(
                             />
                         )
                     }
-
                 </>
             );
         }
@@ -297,7 +314,6 @@ const ScriptsOverview = withStyles(styles)(
             const { state, dispatch } = this.props;
             const translator = getTranslator(state);
             const filterFromState = getScriptsListFilter(state);
-
             return (
                 <>
                     <GenericFilter
@@ -465,6 +481,17 @@ const ScriptsOverview = withStyles(styles)(
                                                 item.columns.securityGroupName.toString(),
                                             ),
                                     },
+                                    {
+                                        icon: <FileCopy />,
+                                        label: translator('scripts.overview.list.actions.duplicate'),
+                                        onClick: this.setScriptToDuplicate,
+                                        hideAction: (item: IListItem<IColumnNames>) =>
+                                            !checkAuthority(
+                                                state,
+                                                SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                                                item.columns.securityGroupName.toString(),
+                                            ),
+                                    },
                                 )}
                                 columns={columns}
                                 listItems={listItems}
@@ -527,6 +554,16 @@ const ScriptsOverview = withStyles(styles)(
 
             if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
                 this.clearScriptToDelete();
+                this.fetchScriptsWithFilterAndPagination({ expandResponseWith: { scheduling: false } });
+            }
+        }
+
+        private refreshListAfterSuccessfullDuplicate(prevProps: TProps & IObserveProps) {
+            const currentStatus = getAsyncScriptDetail(this.props.state).create.status;
+            const prevStatus = getAsyncScriptDetail(prevProps.state).create.status;
+
+            if (currentStatus === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                this.clearScriptToDuplicate();
                 this.fetchScriptsWithFilterAndPagination({ expandResponseWith: { scheduling: false } });
             }
         }
@@ -615,8 +652,25 @@ const ScriptsOverview = withStyles(styles)(
             this.setState({ scriptIdToDelete: null });
         }
 
+        private clearScriptToDuplicate() {
+            this.setState({ scriptIdToDuplicate: null });
+        }
+
         private setScriptToDelete(id: ReactText) {
             this.setState({ scriptIdToDelete: id as string });
+        }
+
+        private setScriptToDuplicate(id: ReactText) {
+            this.setState({ scriptIdToDuplicate: id as string });
+        }
+
+        private onCloseExecuteDialog() {
+            triggerResetAsyncExecutionRequest({ operation: AsyncOperation.create });
+            this.setState({ selectedScript: null });
+        }
+
+        private onCloseDuplicateDialog() {
+            this.setState({ scriptIdToDuplicate: null });
         }
 
         private setExecuteScriptDialogOpen(id: ReactText) {
@@ -624,11 +678,6 @@ const ScriptsOverview = withStyles(styles)(
             const selectedScript = scripts.find((item) =>
                 getUniqueIdFromScript(item) === id);
             this.setState({ selectedScript });
-        }
-
-        private onCloseExecuteDialog() {
-            triggerResetAsyncExecutionRequest({ operation: AsyncOperation.create });
-            this.setState({ selectedScript: null });
         }
     },
 );
