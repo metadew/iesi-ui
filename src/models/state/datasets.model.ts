@@ -62,3 +62,7 @@ export interface IDatasetByUuidPayload {
 export interface IDatasetImplementationsByUuidPayload {
     uuid: string;
 }
+
+export interface IDatasetImportPayload {
+    value: string | FormData;
+}

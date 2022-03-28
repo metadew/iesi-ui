@@ -16,6 +16,7 @@ export const getAsyncScriptsPageData = (state: IState) => {
 };
 
 export const getAsyncScriptDetail = (state: IState) => state.entities.scriptDetail;
+export const getAsyncScriptDetailImport = (state: IState) => state.entities.scriptDetailImport;
 
 export const getScriptByUniqueIdFromDetailOrList = (state: IState, uniqueId: string) => {
     const scriptDetail = getAsyncScriptDetail(state);

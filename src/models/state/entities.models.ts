@@ -30,6 +30,7 @@ export enum ASYNC_ENTITY_KEYS {
     scripts = 'scripts',
     scriptDetail = 'scriptDetail',
     scriptDetailExport = 'scriptDetailExport',
+    scriptDetailImport = 'scriptDetailImport',
 
     components = 'components',
     componentDetail = 'componentDetail',
@@ -49,6 +50,8 @@ export enum ASYNC_ENTITY_KEYS {
 
     datasets = 'datasets',
     datasetDetail = 'datasetDetail',
+    datasetDetailExport = 'datasetDetailExport',
+    datasetDetailImport = 'datasetDetailImport',
     datasetImplementations = 'datasetImplementations',
 
     users = 'users',
@@ -72,12 +75,15 @@ export interface IEntitiesState {
     scripts: ICustomAsyncEntity<IScriptsEntity>;
     scriptDetail: ICustomAsyncEntity<IScript>;
     scriptDetailExport: ICustomAsyncEntity<IScript>;
+    scriptDetailImport: ICustomAsyncEntity<IScript>;
     components: ICustomAsyncEntity<IComponentEntity>;
     componentDetail: ICustomAsyncEntity<IComponent>;
     connections: ICustomAsyncEntity<IConnectionEntity>;
     connectionDetail: ICustomAsyncEntity<IConnection>;
     datasets: ICustomAsyncEntity<IDatasetEntity>;
     datasetDetail: ICustomAsyncEntity<IDataset>;
+    datasetDetailExport: ICustomAsyncEntity<IDataset>;
+    datasetDetailImport: ICustomAsyncEntity<IDataset>;
     datasetImplementations: ICustomAsyncEntity<IDatasetImplementation[]>;
     executionRequests: ICustomAsyncEntity<IExecutionRequestsEntity>;
     executionRequestDetail: ICustomAsyncEntity<IExecutionRequest>;

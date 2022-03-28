@@ -9,6 +9,8 @@ import {
 import { StateChangeNotification } from 'models/state.models';
 import { triggerFlashMessage } from 'state/ui/actions';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import { IImportPayload } from 'models/state/iesiGeneric.models';
 
 export const triggerFetchScripts = (payload: IFetchScriptsListPayload) =>
     entitiesStateManager.triggerAsyncEntityFetch<{}>({
@@ -104,6 +106,53 @@ export const triggerExportScriptDetail = (payload: IScriptByNameAndVersionPayloa
     entitiesStateManager.triggerAsyncEntityFetch<{}>({
         asyncEntityToFetch: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetailExport,
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_DETAIL],
+    });
+
+export const triggerResetAsyncScriptDetail = ({
+    resetDataOnTrigger,
+    operation,
+}: {
+    resetDataOnTrigger?: boolean;
+    operation: AsyncOperation;
+}) =>
+    entitiesStateManager.triggerAsyncEntityReset({
+        asyncEntityToReset: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetail,
+            resetDataOnTrigger,
+        },
+        extraInputSelector: () => ({}),
+        notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_DETAIL],
+        operation,
+    });
+
+export const triggerImportScriptDetail = (payload: IImportPayload) =>
+    entitiesStateManager.triggerAsyncEntityCreate<{}>({
+        asyncEntityToCreate: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetailImport,
+        },
+        onSuccess: ({ dispatch }) => dispatch(
+            triggerFlashMessage({
+                type: 'success',
+                translationKey: 'flash_messages.script.import',
+            }),
+        ),
+        onFail: ({ dispatch, error }) => {
+            if (error.status) {
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.common.responseError',
+                    translationPlaceholders: {
+                        message: error.response?.message,
+                    },
+                    type: 'error',
+                }));
+            } else {
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.script.import_error',
+                }));
+            }
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_DETAIL],
