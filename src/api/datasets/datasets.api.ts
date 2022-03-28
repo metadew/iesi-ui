@@ -21,13 +21,6 @@ interface IDatasetsResponse {
     page: IPageData;
 }
 
-interface IDatasetResponse {
-    uuid: string;
-    name: string;
-    securityGroupName: string;
-    implementations: string[];
-}
-
 export function fetchDatasets({ pagination, filter, sort }: IFetchDatasetsListPayload) {
     return get<IDatasetEntity, IDatasetsResponse>({
         isIesiApi: true,

@@ -54,6 +54,21 @@ export default function getMockState({
                     page: 1,
                     sortedColumn: null,
                 },
+                users: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                },
+                teams: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                },
+                securityGroups: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                },
             },
         },
         auth: {
@@ -210,6 +225,62 @@ export default function getMockState({
                 },
             },
             datasetImplementations: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            users: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            userDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            userDetailRole: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            teams: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            teamDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            teamDetailSecurityGroup: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            securityGroups: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            securityGroupDetail: {
                 data: null,
                 fetch: {
                     status: AsyncStatus.Initial,

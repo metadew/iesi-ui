@@ -8,6 +8,7 @@ import {
 } from 'models/state/scripts.models';
 import { StateChangeNotification } from 'models/state.models';
 import { triggerFlashMessage } from 'state/ui/actions';
+import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import { AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { IImportPayload } from 'models/state/iesiGeneric.models';
 
@@ -22,7 +23,7 @@ export const triggerFetchScripts = (payload: IFetchScriptsListPayload) =>
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_LIST],
     });
 
-export const triggerFetchScriptDetail = (payload: IScriptByNameAndVersionPayload) =>
+export const triggerFetchScriptDetail = (payload: IScriptByNameAndVersionPayload, redirectTo404?: boolean) =>
     entitiesStateManager.triggerAsyncEntityFetch<{}>({
         asyncEntityToFetch: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetail,
@@ -30,6 +31,14 @@ export const triggerFetchScriptDetail = (payload: IScriptByNameAndVersionPayload
             resetDataOnTrigger: true,
         },
         extraInputSelector: () => payload,
+        onFail: ({ error }) => {
+            if (error.status === 404 && redirectTo404) {
+                console.log(redirectTo404);
+                redirectTo({
+                    routeKey: ROUTE_KEYS.R_NOT_FOUND,
+                });
+            }
+        },
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_DETAIL],
     });
 

@@ -31,7 +31,7 @@ export function fetchUserByUuid({ uuid }: IUserByIdPayload) {
     return get<IUser>({
         isIesiApi: true,
         needsAuthentication: true,
-        url: API_URLS.USER_BY_UUID,
+        url: API_URLS.USER_BY_ID,
         pathParams: {
             uuid,
         },
