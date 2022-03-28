@@ -1,5 +1,6 @@
 import API_URLS from 'api/apiUrls';
 import { get, post, put, remove } from 'api/requestWrapper';
+import FileSaver from 'file-saver';
 import {
     IDataset,
     IDatasetBase,
@@ -9,6 +10,7 @@ import {
     IDatasetImplementationsByUuidPayload,
     IFetchDatasetsListPayload,
     IDatasetByUuidPayload,
+    IDatasetImportPayload,
 } from 'models/state/datasets.model';
 import { IPageData } from 'models/state/iesiGeneric.models';
 
@@ -49,6 +51,22 @@ export function fetchDataset({ name }: IDatasetByNamePayload) {
     });
 }
 
+export async function fetchDatasetDownload({ name }: IDatasetByNamePayload) {
+    return get<any>({
+        needsAuthentication: true,
+        isIesiApi: true,
+        url: API_URLS.DATASET_BY_NAME_DOWNLOAD,
+        responseType: 'blob',
+        pathParams: {
+            name,
+        },
+    }).then((response) => {
+        const blob = new Blob([response]);
+        // eslint-disable-next-line
+        FileSaver.saveAs(blob, 'dataset_' + name + '.json');
+    });
+}
+
 export function fetchDatasetImplementations({ uuid }: IDatasetImplementationsByUuidPayload) {
     return get<IDatasetImplementation[]>({
         isIesiApi: true,
@@ -68,6 +86,20 @@ export function createDataset(dataset: IDatasetBase) {
         url: API_URLS.DATASETS,
         body: dataset,
         contentType: 'application/json',
+    });
+}
+
+export async function createDatasetImport({ value }: IDatasetImportPayload) {
+    return post<string | FormData>({
+        needsAuthentication: true,
+        isIesiApi: true,
+        url: API_URLS.DATASETS_IMPORT,
+        body: value,
+        contentType: value instanceof FormData ? 'multipart/form-data' : 'text/plain',
+        headers: {
+            'Content-Type': value instanceof FormData ? 'multipart/form-data' : 'text/plain',
+        },
+        mapResponse: ({ data }) => data,
     });
 }
 

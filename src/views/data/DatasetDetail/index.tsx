@@ -24,6 +24,7 @@ import entitiesStateManager from 'state/entities/entitiesStateManager';
 import {
     triggerCreateDatasetDetail,
     triggerDeleteDatasetDetail,
+    triggerExportDatasetDetail,
     triggerFetchDatasetImplementations,
     triggerUpdateDatasetDetail,
 } from 'state/entities/datasets/triggers';
@@ -35,7 +36,7 @@ import DescriptionList from 'views/common/list/DescriptionList';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import DuplicateImplementationDialog from './DuplicateImplementationDialog';
 import EditImplementation from './EditImplementation';
-import DetailActions from '../DetailActions';
+import DetailActions from './DetailActions';
 
 const styles = () => createStyles({});
 
@@ -95,6 +96,7 @@ const DatasetDetail = withStyles(styles)(
             this.navigateToDatasetsAfterDeletion = this.navigateToDatasetsAfterDeletion.bind(this);
 
             this.onDeleteDataset = this.onDeleteDataset.bind(this);
+            this.onExportDataset = this.onExportDataset.bind(this);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
@@ -339,6 +341,7 @@ const DatasetDetail = withStyles(styles)(
                             onSave={handleSaveAction}
                             onDelete={() => this.setState({ isConfirmDeleteComponentOpen: true })}
                             onAdd={() => this.setState({ isAddOpen: true })}
+                            onExport={() => this.onExportDataset()}
                             isCreateRoute={this.isCreateDatasetRoute()}
                         />
                     </Box>
@@ -404,6 +407,14 @@ const DatasetDetail = withStyles(styles)(
             const detail = getAsyncDatasetDetail(state).data;
             if (detail) {
                 triggerDeleteDatasetDetail({ uuid: detail.uuid });
+            }
+        }
+
+        private onExportDataset() {
+            const { state } = this.props;
+            const detail = getAsyncDatasetDetail(state).data;
+            if (detail) {
+                triggerExportDatasetDetail({ name: detail.name });
             }
         }
 

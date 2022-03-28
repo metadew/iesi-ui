@@ -113,7 +113,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
 
     return (
         <>
-            { listItems.map((item: IListItem<ColumnNames>) => (
+            {listItems.map((item: IListItem<ColumnNames>) => (
                 <ExpansionPanel key={item.id as string} className={classes.expandableItem}>
                     <ExpansionPanelSummary
                         className={classes.summary}
@@ -284,8 +284,12 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                             <TableCell component="th" scope="row" className={classes.thCell}>
                                                 {parameter.name}
                                             </TableCell>
-                                            <TableCell>{parameter.rawValue}</TableCell>
-                                            <TableCell>{parameter.resolvedValue}</TableCell>
+                                            <TableCell className={classes.valueCell}>
+                                                {parameter.rawValue}
+                                            </TableCell>
+                                            <TableCell className={classes.valueCell}>
+                                                {parameter.resolvedValue}
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>

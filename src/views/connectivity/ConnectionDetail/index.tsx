@@ -92,7 +92,7 @@ const ConnectionDetail = withStyles(styles)(
 
             this.state = {
                 newConnectionDetail: initialConnectionDetail,
-                environmentIndex: -1,
+                environmentIndex: 0,
                 editParameterIndex: -1,
                 isAddingParameter: false,
                 hasChangesToCheck: false,
