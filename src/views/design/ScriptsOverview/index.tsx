@@ -487,6 +487,7 @@ const ScriptsOverview = withStyles(styles)(
                                         onClick: this.setScriptToDuplicate,
                                         hideAction: (item: IListItem<IColumnNames>) =>
                                             !checkAuthority(
+                                                state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                                 item.columns.securityGroupName.toString(),
                                             ),
@@ -665,7 +666,7 @@ const ScriptsOverview = withStyles(styles)(
 
         private onCloseExecuteDialog() {
             triggerResetAsyncExecutionRequest({ operation: AsyncOperation.create });
-            this.setState({ scriptIdToExecute: null });
+            this.setState({ selectedScript: null });
         }
 
         private onCloseDuplicateDialog() {
