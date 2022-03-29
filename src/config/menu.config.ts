@@ -28,6 +28,10 @@ export const MAIN_NAV_ITEMS: IMenuItem[] = [
         routeKey: ROUTE_KEYS.R_DATASETS,
         translationKeySuffix: 'datasets',
     }),
+    toMenuItem({
+        routeKey: ROUTE_KEYS.R_ENVIRONMENTS,
+        translationKeySuffix: 'environments',
+    }),
 ];
 
 function toMenuItem({

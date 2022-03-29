@@ -39,6 +39,9 @@ import LoginView from './appShell/AppLogIn/LoginPage';
 import DatasetsTemplate from './data/DatasetsTemplate';
 import DatasetDetail from './data/DatasetDetail';
 import DatasetOverview from './data/DatasetOverview';
+import EnvironmentOverview from './environment/EnvironmentOverview';
+import EnvironmentDetail from './environment/EnvironmentDetail';
+import EnvironmentTemplate from './environment/EnvironmentOverview';
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
@@ -231,6 +234,63 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             };
 
             triggerFetchConnections(payload);
+        },
+    }],
+}, {
+    routeKey: ROUTE_KEYS.R_ENVIRONMENTS,
+    path: '/environments',
+    template: EnvironmentTemplate,
+    component: EnvironmentOverview,
+    childRoutes: [
+        {
+            routeKey: ROUTE_KEYS.R_ENVIRONMENT_NEW,
+            path: '/new',
+            component: EnvironmentDetail as React.ComponentType<unknown>,
+            executeOnRoute: [{
+                execute: triggerFetchConnectionTypes,
+            }],
+        }, {
+            routeKey: ROUTE_KEYS.R_ENVIRONMENT_DETAIL,
+            path: '/:name',
+            component: EnvironmentDetail as React.ComponentType<unknown>,
+            executeOnRoute: [{
+                // TODO: Fix this typing error so we dont need to cast to () => unknown? Can this be simpler?
+                // Maybe pass the routeLocation to the execute so we dont need the executeInputSelector prop?
+                execute: triggerFetchConnectionDetail as () => unknown,
+                executeInputSelector: ({ routeLocation }) => ({
+                    name: routeLocation.params.name,
+                }),
+            }, {
+                execute: triggerFetchConnectionTypes,
+            }],
+        },
+    ],
+    executeOnRoute: [{
+        execute: () => {
+            const { getState } = getStore();
+            const { filters, page, sortedColumn } = getConnectionsListFilter(getState());
+
+            const sort = sortedColumn || {
+                name: 'name',
+                sortOrder: SortOrder.Ascending,
+                sortType: SortType.String,
+            };
+
+            const payload: IFetchComponentsListPayload = {
+                sort: formatSortQueryParameter(sort),
+                filter: {
+                    ...(filters && {
+                        name:
+                            filters.name.values.length > 0
+                            && filters.name.values[0].toString(),
+                    }),
+                },
+                pagination: {
+                    page,
+                },
+            };
+
+            triggerFetchEnvironments(payload);
         },
     }],
 }, {
