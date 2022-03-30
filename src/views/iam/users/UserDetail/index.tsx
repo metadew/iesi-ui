@@ -162,8 +162,13 @@ const UserDetail = withStyles(styles)(
                         goBackTo={ROUTE_KEYS.R_USERS}
                     />
                     <ConfirmationDialog
-                        title={translator('users.detail.delete_role_dialog.title')}
-                        text={translator('users.detail.delete_role.text')}
+                        title={translator('users.detail.main.delete_role_dialog.title')}
+                        text={translator({
+                            msg: 'users.detail.main.delete_role_dialog.text',
+                            placeholders: {
+                                role: roleItems[roleIndexToDelete]?.data.name || '',
+                            },
+                        })}
                         open={roleIndexToDelete !== null}
                         onClose={() => this.setState({ roleIndexToDelete: null })}
                         onConfirm={() => triggerDeleteUserRole({

@@ -422,7 +422,7 @@ const TeamDetail = withStyles(styles)(
                                             ),
                                     }, {
                                         icon: <Visibility />,
-                                        label: translator('teams.detail.main.list.item.action.view'),
+                                        label: translator('teams.detail.main.list.item.actions.view'),
                                         onClick: (id, index) => redirectTo({
                                             routeKey: ROUTE_KEYS.R_USER_DETAIL,
                                             params: {

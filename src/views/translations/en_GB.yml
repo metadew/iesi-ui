@@ -724,6 +724,9 @@ users:
         footer:
           cancel: Cancel
           save: Save
+      delete_role_dialog:
+          title: Delete user role
+          text: Are you sure to delete the role {role} from this user ?
       list:
         item:
           labels:
@@ -782,7 +785,7 @@ teams:
       create: Create team
     delete_team_dialog:
       title: Delete team
-      text: Are you sure you want to delete this taem ?
+      text: Are you sure you want to delete this team ?
     side:
       toggle_button: Details
       team_name: Team name
