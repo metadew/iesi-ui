@@ -7,6 +7,7 @@ import {
     triggerFetchActionTypes,
     triggerFetchComponentTypes,
     triggerFetchConnectionTypes,
+    triggerFetchEnvironmentTypes,
 } from 'state/entities/constants/triggers';
 import { triggerFetchComponentDetail, triggerFetchComponents } from 'state/entities/components/triggers';
 import { triggerFetchConnectionDetail, triggerFetchConnections } from 'state/entities/connections/triggers';
@@ -247,7 +248,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             path: '/new',
             component: EnvironmentDetail as React.ComponentType<unknown>,
             executeOnRoute: [{
-                execute: triggerFetchConnectionTypes,
+                execute: triggerFetchEnvironmentTypes,
             }],
         }, {
             routeKey: ROUTE_KEYS.R_ENVIRONMENT_DETAIL,
@@ -261,7 +262,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
                     name: routeLocation.params.name,
                 }),
             }, {
-                execute: triggerFetchConnectionTypes,
+                execute: triggerFetchEnvironmentTypes,
             }],
         },
     ],

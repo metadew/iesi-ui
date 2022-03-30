@@ -107,9 +107,9 @@ function EditEnvironmentsDialog({
         }
     };
 
-    const getEnvironmentsItems = () => (environmentsAsync.data
+    const getEnvironmentsItems = () => (environmentsAsync.data.environments
         // eslint-disable-next-line max-len
-        ? environmentsAsync.data.filter((env) => !environments.some((envExisting) => env.name === envExisting.environment))
+        ? environmentsAsync.data.environments.filter((env) => !environments.some((envExisting) => env.name === envExisting.environment))
         : []);
 
     return (

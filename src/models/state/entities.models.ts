@@ -17,6 +17,7 @@ export enum ASYNC_ENTITY_KEYS {
     actionTypes = 'actionTypes',
     connectionTypes = 'connectionTypes',
     componentTypes = 'componentTypes',
+    environmentTypes = 'environmentTypes',
 
     environments = 'environments',
     environmentDetail = 'environmentDetail',
