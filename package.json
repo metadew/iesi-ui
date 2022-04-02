@@ -75,7 +75,7 @@
     "eslint-loader": "3.0.3",
     "eslint-plugin-import": "^2.22.1",
     "http-proxy-middleware": "^1.0.3",
-    "minimist": "1.2.5",
+    "minimist": "1.2.6",
     "node-sass": "^4.13.1",
     "stylelint-webpack-plugin": "^1.2.3",
     "winston": "^3.2.1",
