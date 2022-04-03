@@ -348,6 +348,35 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                                             <p> </p>
                                                         )
                                                     }
+                                                    {
+                                                        (parameter.name === 'script') ? (
+                                                            <Box marginLeft="100px">
+                                                                <Button
+                                                                    variant="contained"
+                                                                    color="secondary"
+                                                                    size="small"
+                                                                    onClick={() =>
+                                                                        redirectTo({
+                                                                            routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                                                            params: {
+                                                                                name: parameter.resolvedValue
+                                                                                || parameter.rawValue,
+                                                                                version: (
+                                                                                    getRequestVersion(
+                                                                                        item.data.inputParameters,
+                                                                                    )
+                                                                                ),
+                                                                            },
+                                                                            newTab: true,
+                                                                        })}
+                                                                >
+                                                                    <ChevronRightRounded />
+                                                                </Button>
+                                                            </Box>
+                                                        ) : (
+                                                            <p> </p>
+                                                        )
+                                                    }
                                                 </Box>
                                             </TableCell>
                                             <TableCell>{parameter.resolvedValue}</TableCell>
