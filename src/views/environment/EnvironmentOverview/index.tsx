@@ -178,7 +178,7 @@ const EnvironmentOverview = withStyles(styles)(
                                     /> */}
                                 </Box>
                                 {
-                                    checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE) && (
+                                    checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE) && (
                                         <Box display="flex" alignItems="center">
                                             <Box flex="0 0 auto" mr="8px" width="250px">
                                                 <TransformDocumentationDialog

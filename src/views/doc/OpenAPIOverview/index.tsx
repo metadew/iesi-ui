@@ -413,6 +413,7 @@ export default observe<TProps>([
     StateChangeNotification.HANDLE,
     StateChangeNotification.CONSTANTS_CONNECTION_TYPES,
     StateChangeNotification.CONSTANTS_COMPONENT_TYPES,
+    StateChangeNotification.CONSTANTS_ENVIRONMENT_TYPES,
     StateChangeNotification.CONNECTION_EDIT,
     StateChangeNotification.CONNECTION_DELETE,
     StateChangeNotification.COMPONENT_DELETE,

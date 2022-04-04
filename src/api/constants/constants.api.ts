@@ -1,4 +1,9 @@
-import { IActionType, IComponentType, IConnectionType, IConstantParameter } from 'models/state/constants.models';
+import {
+    IActionType,
+    IComponentType,
+    IConnectionType,
+    IConstantParameter,
+    IEnvironmentType } from 'models/state/constants.models';
 import { get } from 'api/requestWrapper';
 import API_URLS from '../apiUrls';
 
@@ -10,6 +15,12 @@ interface IActionTypeResponse {
 }
 
 interface IConnectionTypeResponse {
+    name: string;
+    description: string;
+    parameters: IConstantParameter[];
+}
+
+interface IEnvironmentTypeResponse {
     name: string;
     description: string;
     parameters: IConstantParameter[];
@@ -51,6 +62,22 @@ export function fetchConnectionTypes() {
                 type: connection.name,
                 name: connection.description,
                 parameters: connection.parameters,
+            }));
+        },
+    });
+}
+
+export function fetchEnvironmentTypes() {
+    return get<IEnvironmentType[], IEnvironmentTypeResponse[]>({
+        isIesiApi: true,
+        needsAuthentication: true,
+        url: API_URLS.ENVIRONMENT_TYPES,
+        // eslint-disable-next-line arrow-body-style
+        mapResponse: ({ data }) => {
+            return data.map((environment) => ({
+                name: environment.name,
+                description: environment.description,
+                parameters: environment.parameters,
             }));
         },
     });

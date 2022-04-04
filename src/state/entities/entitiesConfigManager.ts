@@ -135,10 +135,10 @@ entitiesConfigManager.register({
 });
 
 entitiesConfigManager.register({
-    asyncEntityKey: ASYNC_ENTITY_KEYS.environments,
+    asyncEntityKey: ASYNC_ENTITY_KEYS.environmentTypes,
     operationsConfig: {
         fetch: {
-            api: api.environments.fetchEnvironments,
+            api: api.constants.fetchEnvironmentTypes,
         },
     },
 });

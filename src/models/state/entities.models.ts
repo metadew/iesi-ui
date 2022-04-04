@@ -4,7 +4,7 @@ import { IAsyncEntity } from 'snipsonian/observable-state/src/actionableStore/en
 import { ITraceableApiError } from 'models/api.models';
 import { IScript, IScriptsEntity } from 'models/state/scripts.models';
 import { IExecutionRequest, IExecutionRequestsEntity } from './executionRequests.models';
-import { IActionType, IComponentType, IConnectionType } from './constants.models';
+import { IActionType, IComponentType, IConnectionType, IEnvironmentType } from './constants.models';
 import { IOpenAPIEntity } from './openapi.model';
 import { IComponent, IComponentEntity } from './components.model';
 import { IConnectionEntity, IConnection } from './connections.model';
@@ -55,6 +55,7 @@ export interface IEntitiesState {
     actionTypes: ICustomAsyncEntity<IActionType[]>;
     connectionTypes: ICustomAsyncEntity<IConnectionType[]>;
     componentTypes: ICustomAsyncEntity<IComponentType[]>;
+    environmentTypes: ICustomAsyncEntity<IEnvironmentType[]>;
     environments: ICustomAsyncEntity<IEnvironmentEntity>;
     environmentDetail: ICustomAsyncEntity<IEnvironment>;
     scripts: ICustomAsyncEntity<IScriptsEntity>;
