@@ -28,6 +28,11 @@ import {
     IFetchComponentsListPayload,
 } from 'models/state/components.model';
 import {
+    IEnvironment,
+    IEnvironmentByNamePayload,
+    IFetchEnvironmentsListPayload,
+} from 'models/state/environments.models';
+import {
     IDataset,
     IDatasetBase,
     IDatasetImplementationsByUuidPayload,
@@ -130,15 +135,6 @@ entitiesConfigManager.register({
         fetch: {
             api: api.scriptExecutions.fetchScriptExecutionDetail,
             apiInputSelector: ({ extraInput }) => extraInput as IScriptExecutionByRunIdAndProcessIdPayload,
-        },
-    },
-});
-
-entitiesConfigManager.register({
-    asyncEntityKey: ASYNC_ENTITY_KEYS.environmentTypes,
-    operationsConfig: {
-        fetch: {
-            api: api.constants.fetchEnvironmentTypes,
         },
     },
 });
@@ -287,6 +283,64 @@ entitiesConfigManager.register({
 });
 
 entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.environments,
+    operationsConfig: {
+        fetch: {
+            api: api.environments.fetchEnvironments,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchEnvironmentsListPayload,
+        },
+        remove: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.environments.deleteEnvironment,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IEnvironmentByNamePayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.environmentDetail,
+    operationsConfig: {
+        fetch: {
+            api: api.environments.fetchEnvironment,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IEnvironmentByNamePayload,
+        },
+        create: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.environments.createEnvironment,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IEnvironment,
+        },
+        update: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.environments.updateEnvironment,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IEnvironment,
+        },
+        remove: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.environments.deleteEnvironment,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IEnvironmentByNamePayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
     asyncEntityKey: ASYNC_ENTITY_KEYS.openapi,
     operationsConfig: {
         create: {
@@ -378,6 +432,20 @@ entitiesConfigManager.register({
         update: {
             api: api.connections.updateConnection,
             apiInputSelector: ({ extraInput }) => extraInput as IConnection,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.openapiEnvironments,
+    operationsConfig: {
+        create: {
+            api: api.environments.createEnvironment,
+            apiInputSelector: ({ extraInput }) => extraInput as IEnvironment,
+        },
+        update: {
+            api: api.environments.updateEnvironment,
+            apiInputSelector: ({ extraInput }) => extraInput as IEnvironment,
         },
     },
 });

@@ -7,7 +7,6 @@ import {
     triggerFetchActionTypes,
     triggerFetchComponentTypes,
     triggerFetchConnectionTypes,
-    triggerFetchEnvironmentTypes,
 } from 'state/entities/constants/triggers';
 import { triggerFetchComponentDetail, triggerFetchComponents } from 'state/entities/components/triggers';
 import { triggerFetchConnectionDetail, triggerFetchConnections } from 'state/entities/connections/triggers';
@@ -16,9 +15,14 @@ import { SortType, SortOrder } from 'models/list.models';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { getStore } from 'state';
-import { getComponentsListFilter, getConnectionsListFilter, getScriptsListFilter } from 'state/ui/selectors';
+import {
+    getComponentsListFilter,
+    getConnectionsListFilter,
+    getScriptsListFilter,
+    getEnvironmentsListFilter } from 'state/ui/selectors';
 import { IFetchScriptsListPayload } from 'models/state/scripts.models';
 import { IFetchComponentsListPayload } from 'models/state/components.model';
+import { IFetchEnvironmentsListPayload } from 'models/state/environments.models';
 import { ROUTE_KEYS, registerRoutes } from './routes';
 import NotFound from './appShell/NotFound';
 import Home from './Home';
@@ -248,7 +252,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             path: '/new',
             component: EnvironmentDetail as React.ComponentType<unknown>,
             executeOnRoute: [{
-                execute: triggerFetchEnvironmentTypes,
+                execute: triggerFetchEnvironments,
             }],
         }, {
             routeKey: ROUTE_KEYS.R_ENVIRONMENT_DETAIL,
@@ -262,14 +266,14 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
                     name: routeLocation.params.name,
                 }),
             }, {
-                execute: triggerFetchEnvironmentTypes,
+                execute: triggerFetchEnvironments,
             }],
         },
     ],
     executeOnRoute: [{
         execute: () => {
             const { getState } = getStore();
-            const { filters, page, sortedColumn } = getConnectionsListFilter(getState());
+            const { filters, page, sortedColumn } = getEnvironmentsListFilter(getState());
 
             const sort = sortedColumn || {
                 name: 'name',
@@ -277,7 +281,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
                 sortType: SortType.String,
             };
 
-            const payload: IFetchComponentsListPayload = {
+            const payload: IFetchEnvironmentsListPayload = {
                 sort: formatSortQueryParameter(sort),
                 filter: {
                     ...(filters && {

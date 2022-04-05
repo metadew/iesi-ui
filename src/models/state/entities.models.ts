@@ -17,7 +17,6 @@ export enum ASYNC_ENTITY_KEYS {
     actionTypes = 'actionTypes',
     connectionTypes = 'connectionTypes',
     componentTypes = 'componentTypes',
-    environmentTypes = 'environmentTypes',
 
     environments = 'environments',
     environmentDetail = 'environmentDetail',
@@ -42,6 +41,8 @@ export enum ASYNC_ENTITY_KEYS {
     openapiComponentDetail = 'openapiComponentDetail',
     openapiConnections = 'openapiConnections',
     openapiConnectionDetail = 'openapiConnectionDetail',
+    openapiEnvironments = 'openapiEnvironments',
+    openapiEnvironmentDetail = 'openapiEnvironmentDetail',
 
     authentication = 'authentication',
 

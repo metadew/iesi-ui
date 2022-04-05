@@ -4,20 +4,20 @@ import { Theme, Box, WithStyles, withStyles, Typography, Button } from '@materia
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import {
     getAsyncEnvironments,
-    // getAsyncEnvironmentsEntity,
+    getAsyncEnvironmentsEntity,
     getAsyncEnvironmentsPageData,
     // getAsyncEnvironmentDetail,
 } from 'state/entities/environments/selectors';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 // import GenericSort from 'views/common/list/GenericSort';
-import { IEnvironmentColumnNamesBase } from 'models/state/environments.models';
+import { IEnvironment, IEnvironmentColumnNamesBase } from 'models/state/environments.models';
 import {
     FilterConfig,
     FilterType,
     IListItem,
-    // ISortedColumn,
+    ISortedColumn,
     ListColumns,
-    // ListFilters,
+    ListFilters,
     // SortActions,
     SortOrder,
     SortType,
@@ -25,13 +25,13 @@ import {
 import { getEnvironmentsListFilter } from 'state/ui/selectors';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 // import { triggerDeleteConnectionDetail, triggerFetchConnections } from 'state/entities/connections/triggers';
-// import { formatSortQueryParameter } from 'utils/core/string/format';
+import { formatSortQueryParameter } from 'utils/core/string/format';
 import { setEnvironmentsListFilter } from 'state/ui/actions';
 import TransformDocumentationDialog from 'views/design/common/TransformDocumentationDialog';
 import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
-// import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
-// import { getUniqueIdFromEnvironment } from 'utils/environments/environmentUtils';
+import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
+import { getUniqueIdFromEnvironment } from 'utils/environments/environmentUtils';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { getTranslator } from 'state/i18n/selectors';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
@@ -41,6 +41,7 @@ import { StateChangeNotification } from 'models/state.models';
 // import OrderedList from 'views/common/list/OrderedList';
 import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
+import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 
 const styles = (({ palette, typography }: Theme) => ({
     header: {
@@ -82,11 +83,11 @@ const filterConfig: FilterConfig<Partial<IEnvironmentColumnNamesBase>> = {
 //     },
 // };
 
-// const defaultSortedColumn: ISortedColumn<IEnvironmentColumnNamesBase> = {
-//     name: 'name',
-//     sortOrder: SortOrder.Descending,
-//     sortType: SortType.String,
-// };
+const defaultSortedColumn: ISortedColumn<IEnvironmentColumnNamesBase> = {
+    name: 'name',
+    sortOrder: SortOrder.Descending,
+    sortType: SortType.String,
+};
 
 interface IComponentState {
     environmentIdToDelete: string;
@@ -105,12 +106,12 @@ const EnvironmentOverview = withStyles(styles)(
             };
 
             // this.onSort = this.onSort.bind(this);
-            // this.fetchConnectionssWithFilterAndPagination = this.fetchConnectionssWithFilterAndPagination.bind(this);
+            this.fetchEnvironmentsWithFilterAndPagination = this.fetchEnvironmentsWithFilterAndPagination.bind(this);
             this.renderPanel = this.renderPanel.bind(this);
             this.renderContent = this.renderContent.bind(this);
             // this.onFilter = this.onFilter.bind(this);
 
-            this.setConnectionToDelete = this.setConnectionToDelete.bind(this);
+            this.setEnvironmentToDelete = this.setEnvironmentToDelete.bind(this);
             // this.onDeleteConnection = this.onDeleteConnection.bind(this);
             // eslint-disable-next-line max-len
             // this.closeDeleteConnectionDialogAfterSuccessfulDelete = this.closeDeleteConnectionDialogAfterSuccessfulDelete.bind(this);
@@ -151,9 +152,11 @@ const EnvironmentOverview = withStyles(styles)(
             const { loadDocDialogOpen } = this.state;
             const pageData = getAsyncEnvironmentsPageData(state);
             // const filterFromState = getEnvironmentsListFilter(state);
-            console.log(getEnvironmentsListFilter(state));
-            // const connections = getAsyncEnvironments(state);
-            // const listItems = mapConnectionsToListItems(connections.data.environments);
+            console.log('page data ', pageData);
+            const environments = getAsyncEnvironmentsEntity(state);
+            console.log('environments ', environments);
+            const listItems = mapConnectionsToListItems(environments);
+            console.log('listItems ', listItems);
             // const translator = getTranslator(state);
             return (
                 <Box height="100%" display="flex" flexDirection="column" flex="1 0 auto">
@@ -206,17 +209,17 @@ const EnvironmentOverview = withStyles(styles)(
                             </Box>
                         </AppTemplateContainer>
                     </Box>
-                    {/* <ContentWithSlideoutPanel
+                    <ContentWithSlideoutPanel
                         toggleLabel={
                             <Translate msg="common.list.filter.toggle" />
                         }
-                        // panel={this.renderPanel({ listItems })}
-                        // content={this.renderContent({ listItems })}
-                        initialIsOpenState={
-                            (filterFromState.filters
-                                && (filterFromState.filters.name.values.length > 0))
-                        }
-                    /> */}
+                        panel={this.renderPanel({ listItems })}
+                        content={this.renderContent({ listItems })}
+                        // initialIsOpenState={
+                        //     (filterFromState.filters
+                        //         && (filterFromState.filters.name.values.length > 0))
+                        // }
+                    />
                     {/* <ConfirmationDialog
                         title={translator('environments.overview.delete_environment_dialog.title')}
                         text={translator('environments.overview.delete_environment_dialog.text')}
@@ -231,7 +234,6 @@ const EnvironmentOverview = withStyles(styles)(
         private renderPanel({ listItems }: { listItems: IListItem<IEnvironmentColumnNamesBase>[] }) {
             const { state } = this.props;
             const filterFromState = getEnvironmentsListFilter(state);
-
             return (
                 <>
                     <GenericFilter
@@ -246,7 +248,7 @@ const EnvironmentOverview = withStyles(styles)(
 
         private renderContent({ listItems }: { listItems: IListItem<IEnvironmentColumnNamesBase>[] }) {
             // const { classes, state, dispatch } = this.props;
-            const { classes, state } = this.props;
+            const { classes, state, dispatch } = this.props;
 
             const translator = getTranslator(state);
             const columns: ListColumns<IEnvironmentColumnNamesBase> = {
@@ -273,8 +275,8 @@ const EnvironmentOverview = withStyles(styles)(
             const connectionsFetchData = asyncConnectionsEntity.fetch;
             const isFetching = connectionsFetchData.status === AsyncStatus.Busy;
             const hasError = connectionsFetchData.status === AsyncStatus.Error;
-            // const connectionsData = asyncConnectionsEntity.data;
-            // const pageData = connectionsData ? connectionsData.page : null;
+            const connectionsData = asyncConnectionsEntity.data;
+            const pageData = connectionsData ? connectionsData.page : null;
 
             return (
                 <>
@@ -285,57 +287,57 @@ const EnvironmentOverview = withStyles(styles)(
                                     listActions={[].concat(
                                         {
                                             icon: <Edit />,
-                                            label: translator('connections.overview.list.actions.edit'),
-                                            // onClick: (id: string) => {
-                                            //     const connections = getAsyncEnvironmentsEntity(state);
-                                            //     const selectedConnection = connections.find((item) =>
-                                            //         getUniqueIdFromEnvironment(item) === id);
-                                            //     redirectTo({
-                                            //         routeKey: ROUTE_KEYS.R_CONNECTION_DETAIL,
-                                            //         params: {
-                                            //             name: selectedConnection.name,
-                                            //         },
-                                            //     });
-                                            // },
+                                            label: translator('environments.overview.list.actions.edit'),
+                                            onClick: (id: string) => {
+                                                const environments = getAsyncEnvironmentsEntity(state);
+                                                const selectedEnvironment = environments.find((item) =>
+                                                    getUniqueIdFromEnvironment(item) === id);
+                                                redirectTo({
+                                                    routeKey: ROUTE_KEYS.R_ENVIRONMENT_DETAIL,
+                                                    params: {
+                                                        name: selectedEnvironment.name,
+                                                    },
+                                                });
+                                            },
                                         }, {
                                             icon: <Visibility />,
                                             label: translator('connections.overview.list.actions.view'),
-                                            // onClick: (id: string) => {
-                                            //     const connections = getAsyncEnvironmentsEntity(state);
-                                            //     const selectedConnection = connections.find((item) =>
-                                            //         getUniqueIdFromEnvironment(item) === id);
-                                            //     redirectTo({
-                                            //         routeKey: ROUTE_KEYS.R_CONNECTION_DETAIL,
-                                            //         params: {
-                                            //             name: selectedConnection.name,
-                                            //         },
-                                            //     });
-                                            // },
+                                            onClick: (id: string) => {
+                                                const environments = getAsyncEnvironmentsEntity(state);
+                                                const selectedEnvironment = environments.find((item) =>
+                                                    getUniqueIdFromEnvironment(item) === id);
+                                                redirectTo({
+                                                    routeKey: ROUTE_KEYS.R_ENVIRONMENT_DETAIL,
+                                                    params: {
+                                                        name: selectedEnvironment.name,
+                                                    },
+                                                });
+                                            },
                                             hideAction: (item: IListItem<IEnvironmentColumnNamesBase>) => (
                                                 !checkAuthority(
                                                     state,
-                                                    SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
+                                                    SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE,
                                                     item.data.securityGroupName,
                                                 )
                                             ),
                                         }, {
                                             icon: <Delete />,
-                                            label: translator('connections.overview.list.actions.delete'),
-                                            onClick: this.setConnectionToDelete,
+                                            label: translator('environments.overview.list.actions.delete'),
+                                            onClick: this.setEnvironmentToDelete,
                                             hideAction: () => (
-                                                !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                                                !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE)
                                             ),
                                         },
                                     )}
                                     columns={columns}
                                     listItems={listItems}
-                                    // pagination={{
-                                    //     pageData,
-                                    //     onChange: ({ page }) => {
-                                    //         this.fetchConnectionssWithFilterAndPagination({ newPage: page });
-                                    //         dispatch(setEnvironmentsListFilter({ page }));
-                                    //     },
-                                    // }}
+                                    pagination={{
+                                        pageData,
+                                        onChange: ({ page }) => {
+                                            this.fetchEnvironmentsWithFilterAndPagination({ newPage: page });
+                                            dispatch(setEnvironmentsListFilter({ page }));
+                                        },
+                                    }}
                                     isLoading={isFetching}
                                 />
                             )
@@ -346,100 +348,34 @@ const EnvironmentOverview = withStyles(styles)(
             );
         }
 
-        // private onSort(sortedColumn: ISortedColumn<IEnvironmentColumnNamesBase>) {
-        //     const { dispatch } = this.props;
-        //     this.fetchConnectionssWithFilterAndPagination({ newSortedColumn: sortedColumn });
-        //     dispatch(setEnvironmentsListFilter({ sortedColumn }));
-        // }
+        private fetchEnvironmentsWithFilterAndPagination({
+            newPage,
+            newListFilters,
+            newSortedColumn,
+        }: {
+            newPage?: number;
+            newListFilters?: ListFilters<Partial<IEnvironmentColumnNamesBase>>;
+            newSortedColumn?: ISortedColumn<IEnvironmentColumnNamesBase>;
+        }) {
+            const { state } = this.props;
+            const pageData = getAsyncEnvironmentsPageData(this.props.state);
 
-        // private combineFiltersFromUrlAndCurrentFilters() {
-        //     const { state } = this.props;
-        //     const filterFromState = getEnvironmentsListFilter(state);
-        //     const searchParams = new URLSearchParams(window.location.search);
-        //     const defaultFilters = filterFromState.filters || getIntialFiltersFromFilterConfig(filterConfig);
-        //     const hasValidUrlParams = Array.from(searchParams.keys()).some((r) =>
-        //         Object.keys(filterConfig).includes(r));
+            const filtersFromState = getEnvironmentsListFilter(state);
 
-        //     if (hasValidUrlParams) {
-        //         // reset filters in redux state & only set url params
-        //         const filtersByUrlSearchParams = getIntialFiltersFromFilterConfig(filterConfig);
-        //         Array.from(searchParams.keys()).forEach(
-        //             (searchParamKey: string) => {
-        //                 if (Object.keys(filterConfig).includes(searchParamKey)) {
-        //                     const filterValue = searchParams.get(searchParamKey);
-        //                     if (
-        //                         !filtersByUrlSearchParams[searchParamKey as keyof IEnvironmentColumnNamesBase]
-        //                             .values.includes(filterValue)
-        //                     ) {
-        //                         filtersByUrlSearchParams[searchParamKey as keyof IEnvironmentColumnNamesBase].values
-        //                             .push(filterValue);
-        //                     }
-        //                 }
-        //             },
-        //         );
-        //         return filtersByUrlSearchParams;
-        //     }
+            const filters = newListFilters || filtersFromState.filters;
+            const page = newListFilters ? 1 : newPage || pageData.number;
+            const sortedColumn = newSortedColumn || filtersFromState.sortedColumn || defaultSortedColumn;
+            triggerFetchEnvironments({
+                pagination: { page },
+                filter: {
+                    name: filters.name.values.length > 0
+                        && filters.name.values[0].toString(),
+                },
+                sort: formatSortQueryParameter(sortedColumn),
+            });
+        }
 
-        //     return defaultFilters;
-        // }
-
-        // private fetchConnectionssWithFilterAndPagination({
-        //     newPage,
-        //     newListFilters,
-        //     newSortedColumn,
-        // }: {
-        //     newPage?: number;
-        //     newListFilters?: ListFilters<Partial<IEnvironmentColumnNamesBase>>;
-        //     newSortedColumn?: ISortedColumn<IEnvironmentColumnNamesBase>;
-        // }) {
-        //     const { state } = this.props;
-        //     const pageData = getAsyncEnvironmentsPageData(this.props.state);
-
-        //     const filtersFromState = getEnvironmentsListFilter(state);
-
-        //     // const filters = newListFilters || filtersFromState.filters;
-        //     // const page = newListFilters ? 1 : newPage || pageData.number;
-        //     // const sortedColumn = newSortedColumn || filtersFromState.sortedColumn || defaultSortedColumn;
-        //     // triggerFetchConnections({
-        //     //     pagination: { page },
-        //     //     filter: {
-        //     //         name: filters.name.values.length > 0
-        //     //             && filters.name.values[0].toString(),
-        //     //     },
-        //     //     sort: formatSortQueryParameter(sortedColumn),
-        //     // });
-        // }
-
-        // private onFilter(listFilters: ListFilters<Partial<IEnvironmentColumnNamesBase>>) {
-        //     const { dispatch } = this.props;
-        //     this.fetchConnectionssWithFilterAndPagination({ newListFilters: listFilters });
-        //     dispatch(setEnvironmentsListFilter({ filters: listFilters }));
-        // }
-
-        // private onDeleteConnection() {
-        //     const { state } = this.props;
-        //     const { environmentIdToDelete } = this.state;
-        //     const connectionToDelete = getAsyncEnvironmentsEntity(state).find((item) =>
-        //     getUniqueIdFromEnvironment(item) === environmentIdToDelete);
-
-        // if (connectionToDelete) {
-        //     triggerDeleteConnectionDetail({
-        //         name: connectionToDelete.name,
-        //     });
-        // }
-        // }
-
-        // private closeDeleteConnectionDialogAfterSuccessfulDelete(prevProps: TProps & IObserveProps) {
-        //     const { status } = getAsyncEnvironmentDetail(this.props.state).remove;
-        //     const prevStatus = getAsyncEnvironmentDetail(prevProps.state).remove.status;
-
-        //     if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
-        //         this.clearConnectionToDelete();
-        //         this.fetchConnectionssWithFilterAndPagination({});
-        //     }
-        // }
-
-        private setConnectionToDelete(id: ReactText) {
+        private setEnvironmentToDelete(id: ReactText) {
             this.setState({ environmentIdToDelete: id as string });
         }
 
@@ -457,33 +393,33 @@ const EnvironmentOverview = withStyles(styles)(
     },
 );
 
-// function mapConnectionsToListItems(environments: IEnvironment[]): IListItem<IEnvironmentColumnNamesBase>[] {
-//     return environments.map((environment) => ({
-//         id: getUniqueIdFromEnvironment(environment),
-//         columns: {
-//             name: environment.name,
-//             description: environment.description,
-//             parameters: {
-//                 value: environment.parameters.length,
-//                 tooltip: environment.parameters.length > 0 && (
-//                     <Typography>
-//                         <OrderedList
-//                             items={environment.parameters
-//                                 .map((parameter) => ({
-//                                     content: parameter.name,
-//                                 }))}
-//                         />
-//                     </Typography>
-//                 ),
-//             },
-//         },
-//         data: {
-//             parameters: environment.parameters,
-//         },
-//     }));
-// }
+function mapConnectionsToListItems(environments: IEnvironment[]): IListItem<IEnvironmentColumnNamesBase>[] {
+    return environments.map((environment) => ({
+        id: getUniqueIdFromEnvironment(environment),
+        columns: {
+            name: environment.name,
+            description: environment.description,
+            parameters: {
+                value: environment.parameters.length,
+                // tooltip: environment.parameters.length > 0 && (
+                //     <Typography>
+                //         <OrderedList
+                //             items={environment.parameters
+                //                 .map((parameter) => ({
+                //                     content: parameter.name,
+                //                 }))}
+                //         />
+                //     </Typography>
+                // ),
+            },
+        },
+        data: {
+            parameters: environment.parameters,
+        },
+    }));
+}
 
 export default observe<TProps>([
-    StateChangeNotification.CONNECTIVITY_CONNECTIONS_LIST,
-    StateChangeNotification.CONNECTIVITY_CONNECTION_DETAIL,
+    StateChangeNotification.ENVIRONMENTS,
+    StateChangeNotification.ENVIRONMENT_DETAIL,
 ], EnvironmentOverview);
