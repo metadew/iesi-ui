@@ -115,9 +115,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
     const { executionRequestId } = useParams<IExecutionDetailPathParams>();
 
     return (
-
         <>
-
             { listItems.map((item: IListItem<ColumnNames>) => (
                 <ExpansionPanel key={item.id as string} className={classes.expandableItem}>
                     <ExpansionPanelSummary
