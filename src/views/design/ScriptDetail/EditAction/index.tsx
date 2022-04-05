@@ -164,8 +164,8 @@ function EditAction({
                                     variant="contained"
                                     color="secondary"
                                     disabled={
-                                        !(parameterScript.value.length
-                                            && parameterVersion.value.length)
+                                        !(parameterScript.value && parameterScript.value.length
+                                            && parameterVersion.value && parameterVersion.value.length)
                                     }
                                     size="small"
                                     endIcon={<ChevronRightRounded />}
