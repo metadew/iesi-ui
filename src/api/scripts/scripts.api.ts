@@ -7,7 +7,7 @@ import {
     IScriptByNamePayload,
     IScriptByNameAndVersionPayload, IExpandScriptsResponseWith, IFetchScriptsListPayload, IScriptsEntity,
 } from 'models/state/scripts.models';
-import { IListResponse, IPageData } from 'models/state/iesiGeneric.models';
+import { IImportPayload, IListResponse, IPageData } from 'models/state/iesiGeneric.models';
 import FileSaver from 'file-saver';
 import { get, post, put, remove } from 'api/requestWrapper';
 import API_URLS from '../apiUrls';
@@ -113,6 +113,20 @@ export function createScriptVersion(script: IScriptBase | IScriptImport) {
                 && script.value instanceof FormData
                 ? 'multipart/form-data' : 'application/json',
         },
+    });
+}
+
+export function createScriptVersionImport({ value }: IImportPayload) {
+    return post<string | FormData>({
+        needsAuthentication: true,
+        isIesiApi: true,
+        url: API_URLS.SCRIPTS_IMPORT,
+        body: value,
+        contentType: value instanceof FormData ? 'multipart/form-data' : 'text/plain',
+        headers: {
+            'Content-Type': value instanceof FormData ? 'multipart/form-data' : 'text/plain',
+        },
+        mapResponse: ({ data }) => data,
     });
 }
 

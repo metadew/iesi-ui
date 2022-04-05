@@ -11,7 +11,6 @@ import Tooltip from 'views/common/tooltips/Tooltip';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
-import { IDatasetBase } from 'models/state/datasets.model';
 import { checkAuthorityGeneral } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
@@ -20,7 +19,6 @@ interface IPublicProps {
     onAdd?: () => void;
     onSave?: () => void;
     isCreateRoute?: boolean;
-    newDatasetDetail?: IDatasetBase;
 }
 
 const useStyles = makeStyles(({ palette, spacing }) => ({
@@ -53,8 +51,7 @@ function DetailActions({
 
     const DeleteButton = (
         <IconButton
-            disabled={isCreateRoute}
-            aria-label={translator('datasets.details.main.actions.delete')}
+            aria-label={translator('security_groups.details.main.actions.delete')}
             onClick={onDelete}
         >
             <DeleteIcon />
@@ -65,18 +62,20 @@ function DetailActions({
 
         <Box display="flex" alignItems="center" justifyContent="space-between" width="100%" paddingX={2.2}>
             <Box flex="0 0 auto">
-                {isCreateRoute || checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE)
+                {typeof onAdd === 'function'
+                    && checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE)
                     ? (
                         <Tooltip
-                            title={translator('datasets.detail.main.actions.add_implementation')}
+                            title={translator('security_groups.detail.main.actions.add_teams')}
                             enterDelay={1000}
                             enterNextDelay={1000}
                         >
                             <IconButton
-                                aria-label={translator('datasets.detail.main.actions.add_implementation')}
+                                aria-label={translator('security_groups.detail.main.actions.add_teams')}
                                 className={classes.addButton}
                                 onClick={onAdd}
                                 color="default"
+                                disabled={isCreateRoute}
                             >
                                 <AddIcon />
                             </IconButton>
@@ -86,11 +85,10 @@ function DetailActions({
             </Box>
             <Box flex="0 0 auto">
                 {
-                    checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE) && (
+                    checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE) && (
                         <Paper elevation={0} className={classes.actions}>
                             <Box display="inline" marginRight={1}>
-                                {isCreateRoute
-                                    || checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE)
+                                {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE)
                                     ? (
                                         <Button
                                             variant="contained"
@@ -98,30 +96,23 @@ function DetailActions({
                                             size="small"
                                             startIcon={<SaveIcon />}
                                             onClick={onSave}
+                                            disabled={!isCreateRoute}
                                         >
-                                            <Translate msg="datasets.detail.main.actions.save" />
+                                            <Translate msg="security_groups.detail.main.actions.save" />
                                         </Button>
                                     )
                                     : null}
                             </Box>
-                            {isCreateRoute ? (
-                                <>
-                                    {DeleteButton}
-                                </>
-                            ) : (
-                                <>
-                                    {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE)
-                                        ? (
-                                            <Tooltip
-                                                title={translator('datasets.detail.main.actions.delete')}
-                                                enterDelay={1000}
-                                                enterNextDelay={1000}
-                                            >
-                                                {DeleteButton}
-                                            </Tooltip>
-                                        ) : null}
-                                </>
-                            )}
+                            {!isCreateRoute && checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE)
+                                ? (
+                                    <Tooltip
+                                        title={translator('security_groups.detail.main.actions.delete')}
+                                        enterDelay={1000}
+                                        enterNextDelay={1000}
+                                    >
+                                        {DeleteButton}
+                                    </Tooltip>
+                                ) : null}
                         </Paper>
                     )
                 }

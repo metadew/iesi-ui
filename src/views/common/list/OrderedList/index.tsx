@@ -9,7 +9,7 @@ import {
     makeStyles,
     Typography,
 } from '@material-ui/core';
-import { Delete as DeleteIcon } from '@material-ui/icons';
+import { Delete as DeleteIcon, Visibility } from '@material-ui/icons';
 import { THEME_COLORS } from 'config/themes/colors';
 
 interface IPublicProps {
@@ -23,6 +23,7 @@ interface IOrderedListItem {
     button?: boolean;
     onSelect?: () => void;
     onDelete?: () => void;
+    onView?: () => void;
 }
 
 const useStyles = makeStyles(({ palette, spacing, shape, transitions, typography }) => ({
@@ -49,7 +50,10 @@ const useStyles = makeStyles(({ palette, spacing, shape, transitions, typography
         flex: '1 1 auto',
     },
     itemActions: {
+        width: 64,
+        display: 'flex',
         flex: '0 1 auto',
+        justifyContent: 'space-between',
     },
     itemActionButton: {
         padding: 0,
@@ -82,9 +86,9 @@ const OrderedList = ({ items }: IPublicProps) => {
                         <Typography className={classes.counter}>{index}</Typography>
                     </ListItemIcon>
                     <ListItemText primary={item.content} />
-                    {
-                        typeof item.onDelete === 'function' && (
-                            <ListItemSecondaryAction>
+                    <ListItemSecondaryAction className={classes.itemActions}>
+                        {
+                            typeof item.onDelete === 'function' && (
                                 <IconButton
                                     aria-label="delete item"
                                     onClick={item.onDelete}
@@ -93,9 +97,22 @@ const OrderedList = ({ items }: IPublicProps) => {
                                 >
                                     <DeleteIcon />
                                 </IconButton>
-                            </ListItemSecondaryAction>
-                        )
-                    }
+                            )
+                        }
+                        {
+                            typeof item.onView === 'function' && (
+                                <IconButton
+                                    aria-label="view item"
+                                    onClick={item.onView}
+                                    className={classes.itemActionButton}
+                                    disableRipple
+                                >
+                                    <Visibility />
+                                </IconButton>
+                            )
+                        }
+                    </ListItemSecondaryAction>
+
                 </ListItemOverride>
             ))}
         </List>
