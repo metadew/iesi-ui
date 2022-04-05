@@ -168,16 +168,16 @@ function EditAction({
                                             && parameterVersion.value && parameterVersion.value.length)
                                     }
                                     size="small"
-                                    endIcon={<ChevronRightRounded />}
                                     onClick={() => redirectTo({
                                         routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
                                         params: {
                                             name: parameterScript.value,
                                             version: parameterVersion.value,
                                         },
+                                        newTab: true,
                                     })}
                                 >
-                                    <Translate msg="script_reports.detail.main.action.go_to_script" />
+                                    <ChevronRightRounded />
                                 </Button>
                                 {
                                     !(parameterScript.value.length
