@@ -166,6 +166,7 @@ const LoginView = withStyles(styles)(
                 })
                     .then(async (response) => {
                         dispatch(triggerLogon(response));
+                        console.log('REDIRECT URI : ', redirectUri);
                         redirectToPath(redirectUri.pathname, redirectUri.search);
                     })
                     .catch((error) => {

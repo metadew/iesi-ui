@@ -1,7 +1,6 @@
 export interface IAuthState {
-    username: string;
     accessToken: string;
-    permissions: IAccessLevel[];
+    permissions: string[];
 }
 
 export interface IAccessToken {
