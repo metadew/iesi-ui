@@ -29,5 +29,6 @@ export interface IEnvironmentColumnNamesBase {
     name: string;
     description: string;
     parameters: number;
+    securityGroupName: string;
 }
 

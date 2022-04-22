@@ -266,7 +266,7 @@ export const setEnvironmentsListFilter = (payload: {
                     sortedColumn: payload.sortedColumn || draftState.ui.listFilters.environments.sortedColumn,
                 };
             },
-            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_COMPONENTS],
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_ENVIRONMENTS],
         });
     },
 });
@@ -300,6 +300,31 @@ export const setDatasetsListFilter = (payload: {
 });
 
 export const handleConnection = (payload: {
+    currentConnection: IConnection;
+}) => createAction<{
+    currentConnection: IConnection;
+}>({
+    type: 'CONNECTION.HANDLE',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                const { currentConnection } = payload;
+                const { connections } = draftState.entities.openapi.data;
+                const currentConnectionId = getUniqueIdFromConnection(currentConnection);
+                // eslint-disable-next-line no-param-reassign
+                draftState.entities.openapi.data.connections = connections
+                    .map((connection) => (getUniqueIdFromConnection(connection) === currentConnectionId
+                        ? { ...connection, isHandled: true }
+                        : connection
+                    ));
+            },
+            notificationsToTrigger: [StateChangeNotification.HANDLE],
+        });
+    },
+});
+
+export const handleEnvironment = (payload: {
     currentConnection: IConnection;
 }) => createAction<{
     currentConnection: IConnection;

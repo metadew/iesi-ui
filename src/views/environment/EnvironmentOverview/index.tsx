@@ -3,13 +3,13 @@ import { IObserveProps, observe } from 'views/observe';
 import { Theme, Box, WithStyles, withStyles, Typography, Button } from '@material-ui/core';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import {
+    getAsyncEnvironmentDetail,
     getAsyncEnvironments,
     getAsyncEnvironmentsEntity,
     getAsyncEnvironmentsPageData,
-    // getAsyncEnvironmentDetail,
 } from 'state/entities/environments/selectors';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-// import GenericSort from 'views/common/list/GenericSort';
+import GenericSort from 'views/common/list/GenericSort';
 import { IEnvironment, IEnvironmentColumnNamesBase } from 'models/state/environments.models';
 import {
     FilterConfig,
@@ -18,17 +18,16 @@ import {
     ISortedColumn,
     ListColumns,
     ListFilters,
-    // SortActions,
+    SortActions,
     SortOrder,
     SortType,
 } from 'models/list.models';
 import { getEnvironmentsListFilter } from 'state/ui/selectors';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
-// import { triggerDeleteConnectionDetail, triggerFetchConnections } from 'state/entities/connections/triggers';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { setEnvironmentsListFilter } from 'state/ui/actions';
 import TransformDocumentationDialog from 'views/design/common/TransformDocumentationDialog';
-import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
+import { AddRounded, Delete, Edit } from '@material-ui/icons';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import { getUniqueIdFromEnvironment } from 'utils/environments/environmentUtils';
@@ -36,12 +35,12 @@ import GenericFilter from 'views/common/list/GenericFilter';
 import { getTranslator } from 'state/i18n/selectors';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import GenericList from 'views/common/list/GenericList';
-// import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
+import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import { StateChangeNotification } from 'models/state.models';
 // import OrderedList from 'views/common/list/OrderedList';
-import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthorityGeneral } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
-import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
+import { triggerDeleteEnvironmentDetail, triggerFetchEnvironments } from 'state/entities/environments/triggers';
 
 const styles = (({ palette, typography }: Theme) => ({
     header: {
@@ -49,21 +48,14 @@ const styles = (({ palette, typography }: Theme) => ({
         borderBottom: '1px solid',
         borderBottomColor: palette.grey[200],
     },
-    connectionName: {
+    environmentName: {
         fontWeight: typography.fontWeightBold,
         color: palette.primary.main,
     },
-    connectionType: {
+    environmentParameter: {
         fontWeight: typography.fontWeightBold,
     },
-    connectionEnvironment: {
-        fontWeight: typography.fontWeightBold,
-    },
-    connectionDescription: {
-        fontWeight: typography.fontWeightBold,
-        fontSize: typography.pxToRem(12),
-    },
-    connectionSecurityGroupName: {
+    environmentDescription: {
         fontWeight: typography.fontWeightBold,
         fontSize: typography.pxToRem(12),
     },
@@ -71,17 +63,17 @@ const styles = (({ palette, typography }: Theme) => ({
 
 const filterConfig: FilterConfig<Partial<IEnvironmentColumnNamesBase>> = {
     name: {
-        label: <Translate msg="connections.overview.list.filter.connection_name" />,
+        label: <Translate msg="environments.overview.list.filter.environment_name" />,
         filterType: FilterType.Search,
     },
 };
 
-// const sortActions: SortActions<Partial<IEnvironmentColumnNamesBase>> = {
-//     name: {
-//         label: <Translate msg="connections.overview.list.sort.connection_name" />,
-//         sortType: SortType.String,
-//     },
-// };
+const sortActions: SortActions<Partial<IEnvironmentColumnNamesBase>> = {
+    name: {
+        label: <Translate msg="environments.overview.list.sort.environment_name" />,
+        sortType: SortType.String,
+    },
+};
 
 const defaultSortedColumn: ISortedColumn<IEnvironmentColumnNamesBase> = {
     name: 'name',
@@ -99,36 +91,36 @@ const EnvironmentOverview = withStyles(styles)(
     class extends React.Component<TProps & IObserveProps, IComponentState> {
         public constructor(props: TProps & IObserveProps) {
             super(props);
-
+            console.log('okkkkkkkkkk');
             this.state = {
                 environmentIdToDelete: null,
                 loadDocDialogOpen: false,
             };
 
-            // this.onSort = this.onSort.bind(this);
+            this.onSort = this.onSort.bind(this);
             this.fetchEnvironmentsWithFilterAndPagination = this.fetchEnvironmentsWithFilterAndPagination.bind(this);
             this.renderPanel = this.renderPanel.bind(this);
             this.renderContent = this.renderContent.bind(this);
-            // this.onFilter = this.onFilter.bind(this);
+            this.onFilter = this.onFilter.bind(this);
 
             this.setEnvironmentToDelete = this.setEnvironmentToDelete.bind(this);
-            // this.onDeleteConnection = this.onDeleteConnection.bind(this);
+            this.onDeleteEnvironment = this.onDeleteEnvironment.bind(this);
             // eslint-disable-next-line max-len
-            // this.closeDeleteConnectionDialogAfterSuccessfulDelete = this.closeDeleteConnectionDialogAfterSuccessfulDelete.bind(this);
+            this.closeDeleteDialogAfterSuccessfulDelete = this.closeDeleteDialogAfterSuccessfulDelete.bind(this);
             this.clearConnectionToDelete = this.clearConnectionToDelete.bind(this);
 
             this.onLoadDocDialogOpen = this.onLoadDocDialogOpen.bind(this);
             this.onLoadDocDialogClose = this.onLoadDocDialogClose.bind(this);
-            // this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
+            this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
         }
 
-        // public componentDidMount() {
-        //     const { dispatch } = this.props;
-        //     const initialFilters = this.combineFiltersFromUrlAndCurrentFilters();
+        public componentDidMount() {
+            const { dispatch } = this.props;
+            const initialFilters = this.combineFiltersFromUrlAndCurrentFilters();
 
-        //     this.fetchConnectionssWithFilterAndPagination({ newListFilters: initialFilters, newPage: 1 });
-        //     dispatch(setEnvironmentsListFilter({ filters: initialFilters }));
-        // }
+            this.fetchEnvironmentsWithFilterAndPagination({ newListFilters: initialFilters, newPage: 1 });
+            dispatch(setEnvironmentsListFilter({ filters: initialFilters }));
+        }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
             const { state, dispatch } = prevProps;
@@ -143,21 +135,17 @@ const EnvironmentOverview = withStyles(styles)(
                     },
                 }));
             }
-            // this.closeDeleteConnectionDialogAfterSuccessfulDelete(prevProps);
+            this.closeDeleteDialogAfterSuccessfulDelete(prevProps);
         }
 
         public render() {
             const { classes, state } = this.props;
-            // const { loadDocDialogOpen, environmentIdToDelete } = this.state;
-            const { loadDocDialogOpen } = this.state;
+            const { loadDocDialogOpen, environmentIdToDelete } = this.state;
             const pageData = getAsyncEnvironmentsPageData(state);
-            // const filterFromState = getEnvironmentsListFilter(state);
-            console.log('page data ', pageData);
+            const filterFromState = getEnvironmentsListFilter(state);
             const environments = getAsyncEnvironmentsEntity(state);
-            console.log('environments ', environments);
             const listItems = mapConnectionsToListItems(environments);
-            console.log('listItems ', listItems);
-            // const translator = getTranslator(state);
+            const translator = getTranslator(state);
             return (
                 <Box height="100%" display="flex" flexDirection="column" flex="1 0 auto">
                     <Box
@@ -174,11 +162,11 @@ const EnvironmentOverview = withStyles(styles)(
                             </Typography>
                             <Box display="flex" alignItems="flex-end">
                                 <Box flex="1 0 auto">
-                                    {/* <GenericSort
+                                    <GenericSort
                                         sortActions={sortActions}
-                                        // onSort={this.onSort}
+                                        onSort={this.onSort}
                                         sortedColumn={filterFromState.sortedColumn as ISortedColumn<{}>}
-                                    /> */}
+                                    />
                                 </Box>
                                 {
                                     checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE) && (
@@ -215,18 +203,18 @@ const EnvironmentOverview = withStyles(styles)(
                         }
                         panel={this.renderPanel({ listItems })}
                         content={this.renderContent({ listItems })}
-                        // initialIsOpenState={
-                        //     (filterFromState.filters
-                        //         && (filterFromState.filters.name.values.length > 0))
-                        // }
+                        initialIsOpenState={
+                            (filterFromState.filters
+                                && (filterFromState.filters.name.values.length > 0))
+                        }
                     />
-                    {/* <ConfirmationDialog
+                    <ConfirmationDialog
                         title={translator('environments.overview.delete_environment_dialog.title')}
                         text={translator('environments.overview.delete_environment_dialog.text')}
                         open={!!environmentIdToDelete}
                         onClose={this.clearConnectionToDelete}
-                        // onConfirm={this.onDeleteConnection}
-                    /> */}
+                        onConfirm={this.onDeleteEnvironment}
+                    />
                 </Box>
             );
         }
@@ -238,7 +226,7 @@ const EnvironmentOverview = withStyles(styles)(
                 <>
                     <GenericFilter
                         filterConfig={filterConfig}
-                        onFilterChange={null}
+                        onFilterChange={this.onFilter}
                         listItems={listItems}
                         initialFilters={filterFromState.filters}
                     />
@@ -247,36 +235,33 @@ const EnvironmentOverview = withStyles(styles)(
         }
 
         private renderContent({ listItems }: { listItems: IListItem<IEnvironmentColumnNamesBase>[] }) {
-            // const { classes, state, dispatch } = this.props;
             const { classes, state, dispatch } = this.props;
-
             const translator = getTranslator(state);
+            const asyncEnvironmentsEntity = getAsyncEnvironments(state);
+            const environmentsFetchData = asyncEnvironmentsEntity.fetch;
+            const isFetching = environmentsFetchData.status === AsyncStatus.Busy;
+            const hasError = environmentsFetchData.status === AsyncStatus.Error;
+            const environmentsData = asyncEnvironmentsEntity.data;
+            const pageData = environmentsData ? environmentsData.page : null;
             const columns: ListColumns<IEnvironmentColumnNamesBase> = {
                 name: {
                     label: <Translate msg="environments.overview.list.labels.name" />,
-                    className: classes.connectionName,
+                    className: classes.environmentName,
                     fixedWidth: '35%',
                 },
                 description: {
                     label: <Translate msg="environments.overview.list.labels.description" />,
-                    className: classes.connectionDescription,
+                    className: classes.environmentDescription,
                     fixedWidth: '40%',
                     noWrap: true,
                 },
                 parameters: {
                     label: <Translate msg="environments.overview.list.labels.parameters" />,
-                    className: classes.connectionEnvironment,
+                    className: classes.environmentParameter,
                     noWrap: true,
                     fixedWidth: '5%',
                 },
             };
-
-            const asyncConnectionsEntity = getAsyncEnvironments(state);
-            const connectionsFetchData = asyncConnectionsEntity.fetch;
-            const isFetching = connectionsFetchData.status === AsyncStatus.Busy;
-            const hasError = connectionsFetchData.status === AsyncStatus.Error;
-            const connectionsData = asyncConnectionsEntity.data;
-            const pageData = connectionsData ? connectionsData.page : null;
 
             return (
                 <>
@@ -299,26 +284,8 @@ const EnvironmentOverview = withStyles(styles)(
                                                     },
                                                 });
                                             },
-                                        }, {
-                                            icon: <Visibility />,
-                                            label: translator('connections.overview.list.actions.view'),
-                                            onClick: (id: string) => {
-                                                const environments = getAsyncEnvironmentsEntity(state);
-                                                const selectedEnvironment = environments.find((item) =>
-                                                    getUniqueIdFromEnvironment(item) === id);
-                                                redirectTo({
-                                                    routeKey: ROUTE_KEYS.R_ENVIRONMENT_DETAIL,
-                                                    params: {
-                                                        name: selectedEnvironment.name,
-                                                    },
-                                                });
-                                            },
-                                            hideAction: (item: IListItem<IEnvironmentColumnNamesBase>) => (
-                                                !checkAuthority(
-                                                    state,
-                                                    SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE,
-                                                    item.data.securityGroupName,
-                                                )
+                                            hideAction: () => (
+                                                !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE)
                                             ),
                                         }, {
                                             icon: <Delete />,
@@ -331,6 +298,7 @@ const EnvironmentOverview = withStyles(styles)(
                                     )}
                                     columns={columns}
                                     listItems={listItems}
+                                    isLoading={isFetching}
                                     pagination={{
                                         pageData,
                                         onChange: ({ page }) => {
@@ -338,7 +306,6 @@ const EnvironmentOverview = withStyles(styles)(
                                             dispatch(setEnvironmentsListFilter({ page }));
                                         },
                                     }}
-                                    isLoading={isFetching}
                                 />
                             )
                         }
@@ -346,6 +313,66 @@ const EnvironmentOverview = withStyles(styles)(
                     </Box>
                 </>
             );
+        }
+
+        private closeDeleteDialogAfterSuccessfulDelete(prevProps: TProps & IObserveProps) {
+            const { status } = getAsyncEnvironmentDetail(this.props.state).remove;
+            const prevStatus = getAsyncEnvironmentDetail(prevProps.state).remove.status;
+
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                this.setState({ environmentIdToDelete: null });
+                this.fetchEnvironmentsWithFilterAndPagination({});
+            }
+        }
+
+        private onDeleteEnvironment() {
+            const { state } = this.props;
+            const { environmentIdToDelete } = this.state;
+            const environmentToDelete = getAsyncEnvironmentsEntity(state).find((item) =>
+                getUniqueIdFromEnvironment(item) === environmentIdToDelete);
+
+            if (environmentToDelete) {
+                triggerDeleteEnvironmentDetail({
+                    name: environmentIdToDelete.name,
+                });
+            }
+        }
+
+        private onSort(sortedColumn: ISortedColumn<IEnvironmentColumnNamesBase>) {
+            const { dispatch } = this.props;
+            this.fetchEnvironmentsWithFilterAndPagination({ newSortedColumn: sortedColumn });
+            dispatch(setEnvironmentsListFilter({ sortedColumn }));
+        }
+
+        private combineFiltersFromUrlAndCurrentFilters() {
+            const { state } = this.props;
+            const filterFromState = getEnvironmentsListFilter(state);
+            const searchParams = new URLSearchParams(window.location.search);
+            const defaultFilters = filterFromState.filters || getIntialFiltersFromFilterConfig(filterConfig);
+            const hasValidUrlParams = Array.from(searchParams.keys()).some((r) =>
+                Object.keys(filterConfig).includes(r));
+
+            if (hasValidUrlParams) {
+                // reset filters in redux state & only set url params
+                const filtersByUrlSearchParams = getIntialFiltersFromFilterConfig(filterConfig);
+                Array.from(searchParams.keys()).forEach(
+                    (searchParamKey: string) => {
+                        if (Object.keys(filterConfig).includes(searchParamKey)) {
+                            const filterValue = searchParams.get(searchParamKey);
+                            if (
+                                !filtersByUrlSearchParams[searchParamKey as keyof IEnvironmentColumnNamesBase]
+                                    .values.includes(filterValue)
+                            ) {
+                                filtersByUrlSearchParams[searchParamKey as keyof IEnvironmentColumnNamesBase].values
+                                    .push(filterValue);
+                            }
+                        }
+                    },
+                );
+                return filtersByUrlSearchParams;
+            }
+
+            return defaultFilters;
         }
 
         private fetchEnvironmentsWithFilterAndPagination({
@@ -373,6 +400,12 @@ const EnvironmentOverview = withStyles(styles)(
                 },
                 sort: formatSortQueryParameter(sortedColumn),
             });
+        }
+
+        private onFilter(listFilters: ListFilters<Partial<IEnvironmentColumnNamesBase>>) {
+            const { dispatch } = this.props;
+            this.fetchEnvironmentsWithFilterAndPagination({ newListFilters: listFilters });
+            dispatch(setEnvironmentsListFilter({ filters: listFilters }));
         }
 
         private setEnvironmentToDelete(id: ReactText) {
@@ -422,4 +455,6 @@ function mapConnectionsToListItems(environments: IEnvironment[]): IListItem<IEnv
 export default observe<TProps>([
     StateChangeNotification.ENVIRONMENTS,
     StateChangeNotification.ENVIRONMENT_DETAIL,
+    StateChangeNotification.LIST_FILTER_ENVIRONMENTS,
+
 ], EnvironmentOverview);

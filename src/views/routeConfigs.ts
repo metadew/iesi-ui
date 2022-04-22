@@ -13,16 +13,17 @@ import { triggerFetchConnectionDetail, triggerFetchConnections } from 'state/ent
 import { triggerFetchDatasetDetail } from 'state/entities/datasets/triggers';
 import { SortType, SortOrder } from 'models/list.models';
 import { formatSortQueryParameter } from 'utils/core/string/format';
-import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
+import { triggerFetchEnvironment, triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { getStore } from 'state';
 import {
     getComponentsListFilter,
     getConnectionsListFilter,
     getScriptsListFilter,
-    getEnvironmentsListFilter } from 'state/ui/selectors';
+    // getEnvironmentsListFilter
+} from 'state/ui/selectors';
 import { IFetchScriptsListPayload } from 'models/state/scripts.models';
 import { IFetchComponentsListPayload } from 'models/state/components.model';
-import { IFetchEnvironmentsListPayload } from 'models/state/environments.models';
+// import { IFetchEnvironmentsListPayload } from 'models/state/environments.models';
 import { ROUTE_KEYS, registerRoutes } from './routes';
 import NotFound from './appShell/NotFound';
 import Home from './Home';
@@ -46,7 +47,7 @@ import DatasetDetail from './data/DatasetDetail';
 import DatasetOverview from './data/DatasetOverview';
 import EnvironmentOverview from './environment/EnvironmentOverview';
 import EnvironmentDetail from './environment/EnvironmentDetail';
-import EnvironmentTemplate from './environment/EnvironmentOverview';
+import EnvironmentTemplate from './environment/EnvironmentTemplate';
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
@@ -246,31 +247,22 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     path: '/environments',
     template: EnvironmentTemplate,
     component: EnvironmentOverview,
-    childRoutes: [
-        {
-            routeKey: ROUTE_KEYS.R_ENVIRONMENT_NEW,
-            path: '/new',
-            component: EnvironmentDetail as React.ComponentType<unknown>,
-            executeOnRoute: [{
-                execute: triggerFetchEnvironments,
-            }],
-        }, {
-            routeKey: ROUTE_KEYS.R_ENVIRONMENT_DETAIL,
-            path: '/:name',
-            component: EnvironmentDetail as React.ComponentType<unknown>,
-            executeOnRoute: [{
-                // TODO: Fix this typing error so we dont need to cast to () => unknown? Can this be simpler?
-                // Maybe pass the routeLocation to the execute so we dont need the executeInputSelector prop?
-                execute: triggerFetchConnectionDetail as () => unknown,
-                executeInputSelector: ({ routeLocation }) => ({
-                    name: routeLocation.params.name,
-                }),
-            }, {
-                execute: triggerFetchEnvironments,
-            }],
-        },
-    ],
-    executeOnRoute: [{
+    childRoutes: [{
+        routeKey: ROUTE_KEYS.R_ENVIRONMENT_NEW,
+        path: '/new',
+        component: EnvironmentDetail as React.ComponentType<unknown>,
+    }, {
+        routeKey: ROUTE_KEYS.R_ENVIRONMENT_DETAIL,
+        path: '/:name',
+        component: EnvironmentDetail as React.ComponentType<unknown>,
+        executeOnRoute: [{
+            execute: triggerFetchEnvironment as () => unknown,
+            executeInputSelector: ({ routeLocation }) => ({
+                name: routeLocation.params.name,
+            }),
+        }],
+    }],
+    /* executeOnRoute: [{
         execute: () => {
             const { getState } = getStore();
             const { filters, page, sortedColumn } = getEnvironmentsListFilter(getState());
@@ -297,7 +289,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
 
             triggerFetchEnvironments(payload);
         },
-    }],
+    }], */
 }, {
     routeKey: ROUTE_KEYS.R_REPORTS,
     path: '/reports',

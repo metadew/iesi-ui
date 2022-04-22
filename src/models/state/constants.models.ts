@@ -29,12 +29,6 @@ export interface IConnectionType {
     category: string;
 }
 
-export interface IEnvironmentType {
-    name: string;
-    description: string;
-    parameters: IConstantParameter[];
-}
-
 export interface IComponentType {
     name: string;
     type: string;

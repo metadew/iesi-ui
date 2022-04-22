@@ -9,7 +9,7 @@ const API_URLS = {
     ENVIRONMENT_TYPES: '/environment-types',
 
     ENVIRONMENTS: '/environments',
-    ENVIRONMENTS_LIST: '/environments/list',
+    //ENVIRONMENTS_LIST: '/environments/list',
     ENVIRONMENT_BY_NAME: '/environments/{name}',
 
     EXECUTION_REQUESTS: '/execution-requests',

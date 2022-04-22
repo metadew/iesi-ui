@@ -36,6 +36,8 @@ export function fetchEnvironment({ name }: { name: string }) {
         pathParams: {
             name,
         },
+        mapResponse: ({ data }) => ({ ...data }),
+
     });
 }
 
@@ -45,6 +47,7 @@ export function createEnvironment(environment: IEnvironment) {
         needsAuthentication: true,
         url: API_URLS.ENVIRONMENTS,
         body: environment,
+        contentType: 'application/json',
     });
 }
 
@@ -57,6 +60,7 @@ export function updateEnvironment(environment: IEnvironment) {
             name: environment.name,
         },
         body: environment,
+        contentType: 'application/json',
     });
 }
 
