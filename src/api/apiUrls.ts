@@ -1,5 +1,6 @@
 const API_URLS = {
     /* eslint-disable max-len */
+
     ENV_CONFIG: '/env-config.json',
 
     ACTION_TYPES: '/action-types',
@@ -31,7 +32,7 @@ const API_URLS = {
     USERS: '/users',
     USER_BY_NAME: '/users/{name}',
     USER_BY_ID: '/users/{id}',
-    USER_LOGON: '/oauth/token',
+    USER_LOGON: '/users/login',
     USER_CREATE: '/users/create',
 
     TEAMS: '/teams',

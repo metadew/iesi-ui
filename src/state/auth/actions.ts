@@ -1,7 +1,8 @@
 import { createAction } from 'state';
 import { StateChangeNotification } from 'models/state.models';
 import { IAuthenticationResponse } from 'api/security/security.api';
-import { getAuthoritiesFromToken } from 'state/auth/selectors';
+import { IAccessToken } from 'models/state/auth.models';
+import { extractAccessLevelFromUserRoles, getUserUuidFromToken } from './selectors';
 
 export const triggerLogon = (payload: IAuthenticationResponse) => createAction<IAuthenticationResponse>({
     type: 'LOGON',
@@ -9,10 +10,14 @@ export const triggerLogon = (payload: IAuthenticationResponse) => createAction<I
     process({ setStateImmutable, action }) {
         setStateImmutable({
             toState: (draftState) => {
+                const accessToken: IAccessToken = getUserUuidFromToken(action.payload.accessToken);
+                sessionStorage.setItem('token', action.payload.accessToken);
                 // eslint-disable-next-line no-param-reassign
-                draftState.auth.accessToken = action.payload.access_token;
+                draftState.auth.accessToken = action.payload.accessToken;
                 // eslint-disable-next-line no-param-reassign
-                draftState.auth.permissions = getAuthoritiesFromToken(action.payload.access_token);
+                draftState.auth.username = accessToken.sub;
+                // eslint-disable-next-line no-param-reassign
+                draftState.auth.permissions = extractAccessLevelFromUserRoles(action.payload.roles);
             },
             notificationsToTrigger: [StateChangeNotification.AUTH],
         });

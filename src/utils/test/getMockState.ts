@@ -3,6 +3,7 @@ import { ICustomAsyncEntity, IState } from 'models/state.models';
 import { IEnvConfig } from 'models/state/envConfig.models';
 import { II18nState } from 'models/state/i18n.models';
 import { DEFAULT_LOCALE } from 'config/i18n.config';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 export default function getMockState({
     envConfig = getDefaultEnvConfig(),
@@ -71,7 +72,11 @@ export default function getMockState({
             },
         },
         auth: {
-            permissions: ['S_CONNECTION_WRITE'],
+            username: 'mocked-test-user',
+            permissions: [{
+                group: 'PUBLIC',
+                privilege: SECURITY_PRIVILEGES.S_CONNECTIONS_READ,
+            }],
             accessToken: '',
         },
         entities: {

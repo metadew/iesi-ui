@@ -16,15 +16,12 @@ export const getAuth = (state: IState) => state.auth;
 
 export const hasRequiredAccessLevels = (
     state: IState,
-    // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
     requiredAccessLevels: IAccessLevel[] = [],
 ): boolean => {
-    // eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
     const userPermissions = getUserPermissions(state);
-    return null;
+    return requiredAccessLevels.every((requiredAccessLevel) => userPermissions.includes(requiredAccessLevel));
 };
 
-/*
 export const hasConceptAccessLevels = (
     state: IState,
     requiredAccessLevels: IAccessLevel[] = [],
@@ -32,7 +29,6 @@ export const hasConceptAccessLevels = (
     const userPermissions = getUserPermissions(state);
     return requiredAccessLevels.every((requiredAccessLevel) => userPermissions.includes(requiredAccessLevel));
 };
- */
 
 export const getAllowedParentRouteKeys = (state: IState): ROUTE_KEYS[] => getParentRouteKeys()
     .filter((routeKey) => hasRequiredAccessLevels(state, getRoute({ routeKey }).requiredAccessLevels));
@@ -49,12 +45,6 @@ export const getUserUuidFromToken = (token: string): IAccessToken | null => {
         };
     }
     return null;
-};
-
-export const getAuthoritiesFromToken = (token: string): string[] => {
-    const decoded: null | { [key: string]: any } = decode(token, { json: true });
-    console.log('DECODED : ', decoded);
-    return decoded.authorities;
 };
 
 export const extractAccessLevelFromUser = (user: IUser): IAccessLevel[] =>
@@ -91,15 +81,12 @@ export function checkAuthority(state: IState, privilege: SECURITY_PRIVILEGES, se
     if (securityGroupName == null || privilege == null) {
         return false;
     }
-    return null;
+    return state.auth.permissions.some((permission: IAccessLevel) => permission.group === securityGroupName
+        && permission.privilege === privilege);
 }
 
-// eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars,@typescript-eslint/ban-ts-ignore
-// @ts-ignore
-// eslint-disable-next-line no-unused-vars,@typescript-eslint/no-unused-vars
 export function checkAuthorityGeneral(state: IState, privilege: SECURITY_PRIVILEGES) {
-    console.log('STATE : ', state.auth);
-    return true;
+    return state.auth.permissions.some((permission: IAccessLevel) => permission.privilege === privilege);
 }
 
 export function isAuthenticated(state: IState) {

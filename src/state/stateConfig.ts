@@ -65,6 +65,8 @@ export const initialState: IState = {
         },
     },
     auth: {
+        // Dummy auth
+        username: 'dummy-test-user',
         accessToken: '',
         permissions: [],
     },
