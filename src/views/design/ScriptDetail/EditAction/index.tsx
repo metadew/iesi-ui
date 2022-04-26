@@ -180,8 +180,8 @@ function EditAction({
                                     <ChevronRightRounded />
                                 </Button>
                                 {
-                                    !(parameterScript.value.length
-                                    && parameterVersion.value.length)
+                                    !(parameterScript.value && parameterScript.value.length
+                                    && parameterVersion.value && parameterVersion.value.length)
                                     && (
                                         <Translate msg="Script name and version are required to see the script" />
                                     )
