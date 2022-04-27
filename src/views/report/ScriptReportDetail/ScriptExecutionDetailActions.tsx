@@ -287,7 +287,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                             <TableCell component="th" scope="row" className={classes.thCell}>
                                                 {parameter.name}
                                             </TableCell>
-                                            <TableCell className={classes.thCell}>
+                                            <TableCell>
                                                 <Box
                                                     display="flex"
                                                     alignItems="center"
@@ -295,7 +295,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                                     {parameter.rawValue}
                                                     {
                                                         (parameter.name === 'request') ? (
-                                                            <Box marginLeft="90px">
+                                                            <Box marginLeft={15}>
                                                                 <Button
                                                                     variant="contained"
                                                                     color="secondary"
@@ -386,7 +386,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                     </TableContainer>
                 </Box>
 
-                <Box marginBottom={45}>
+                <Box marginBottom={2}>
                     <Paper elevation={0}>
                         <Box padding={1.6}>
                             <Typography variant="subtitle2">
