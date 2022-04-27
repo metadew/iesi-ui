@@ -74,10 +74,10 @@ export default function getMockState({
         auth: {
             username: 'mocked-test-user',
             permissions: [{
-                group: 'PUBLIC',
                 privilege: SECURITY_PRIVILEGES.S_CONNECTIONS_READ,
             }],
             accessToken: '',
+            refreshToken: '',
         },
         entities: {
             actionTypes: {

@@ -1,14 +1,14 @@
 import React from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { clone } from 'ramda';
 import { getTranslator } from 'state/i18n/selectors';
-import { Box, Typography, Button, withStyles, createStyles, Theme, WithStyles, Collapse } from '@material-ui/core';
+import { Box, Button, Collapse, createStyles, Theme, Typography, WithStyles, withStyles } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
-    Edit as EditIcon,
     Delete as DeleteIcon,
-    Visibility,
+    Edit as EditIcon,
     FileCopy,
+    Visibility,
 } from '@material-ui/icons';
 import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
@@ -17,28 +17,28 @@ import { IScript, IScriptAction } from 'models/state/scripts.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import TextInput from 'views/common/input/TextInput';
 import DescriptionList from 'views/common/list/DescriptionList';
-import { ROUTE_KEYS, getRouteKeyByPath, redirectTo } from 'views/routes';
-import { ListColumns, IListItem } from 'models/list.models';
+import { getRouteKeyByPath, redirectTo, ROUTE_KEYS } from 'views/routes';
+import { IListItem, ListColumns } from 'models/list.models';
 import GenericDraggableList from 'views/common/list/GenericDraggableList';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel/index';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import { THEME_COLORS } from 'config/themes/colors';
-import { observe, IObserveProps } from 'views/observe';
+import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAsyncScriptDetail } from 'state/entities/scripts/selectors';
 import { getUniqueIdFromScript } from 'utils/scripts/scriptUtils';
 import { getAsyncActionTypes } from 'state/entities/constants/selectors';
 import { triggerResetAsyncExecutionRequest } from 'state/entities/executionRequests/triggers';
-import { AsyncStatus, AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import { AsyncOperation, AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import Loader from 'views/common/waiting/Loader';
 import uniqueActionNamesCheck from 'utils/form/uniqueActionNamesCheck';
 import {
-    triggerUpdateScriptDetail,
     triggerCreateScriptDetail,
     triggerDeleteScriptDetail,
     triggerExportScriptDetail,
     triggerFetchScriptDetail,
+    triggerUpdateScriptDetail,
 } from 'state/entities/scripts/triggers';
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
@@ -629,6 +629,13 @@ const ScriptDetail = withStyles(styles)(
         }
 
         private renderAddScriptContent() {
+            const { state } = this.props;
+            const scriptDetailStatus = getAsyncScriptDetail(state).fetch.status;
+
+            if (scriptDetailStatus === AsyncStatus.Initial) {
+                return <></>;
+            }
+
             return (
                 <AddAction
                     onClose={() => this.setState({ isAddOpen: false })}

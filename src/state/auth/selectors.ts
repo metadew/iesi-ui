@@ -33,15 +33,11 @@ export const hasConceptAccessLevels = (
 export const getAllowedParentRouteKeys = (state: IState): ROUTE_KEYS[] => getParentRouteKeys()
     .filter((routeKey) => hasRequiredAccessLevels(state, getRoute({ routeKey }).requiredAccessLevels));
 
-export const getUserUuidFromToken = (token: string): IAccessToken | null => {
+export const getDecodedToken = (token: string): IAccessToken | null => {
     const decoded: null | { [key: string]: any } = decode(token, { json: true });
     if (decoded !== undefined) {
         return {
-            sub: decoded.sub,
-            iss: decoded.iss,
-            exp: decoded.exp,
-            iat: decoded.iat,
-            uuid: decoded.uuid,
+            authorities: decoded.authorities,
         };
     }
     return null;
@@ -77,12 +73,12 @@ export const extractAccessLevelFromUserRoles = (userRoles: IUserRole[]): IAccess
                 .flat();
         }).flat();
 
-export function checkAuthority(state: IState, privilege: SECURITY_PRIVILEGES, securityGroupName: string) {
+export function checkAuthority(state: IState, privilege: SECURITY_PRIVILEGES, securityGroupName = '') {
     if (securityGroupName == null || privilege == null) {
         return false;
     }
-    return state.auth.permissions.some((permission: IAccessLevel) => permission.group === securityGroupName
-        && permission.privilege === privilege);
+
+    return state.auth.permissions.some((permission: IAccessLevel) => permission.privilege === privilege);
 }
 
 export function checkAuthorityGeneral(state: IState, privilege: SECURITY_PRIVILEGES) {

@@ -4,6 +4,9 @@ import { createObservableStateAction } from '@snipsonian/observable-state/es/act
 import {
     TNrOfParentNotificationLevelsToTrigger,
 } from '@snipsonian/observable-state/es/observer/extendNotificationsToTrigger';
+import { getStore } from 'state';
+import { refreshToken } from 'api/security/security.api';
+import { triggerRfresh } from 'state/auth/actions';
 import {
     AsyncOperation,
     IAsyncEntity,
@@ -38,7 +41,7 @@ export interface IAsyncEntityActionCreators<ActionType, State, ExtraProcessInput
         // eslint-disable-next-line max-len
         props: ICreateFetchAsyncEntityActionProps<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse>
         // eslint-disable-next-line max-len
-    ): IObservableStateAction<ActionType, IAsyncEntityActionPayload, State, ExtraProcessInput, StateChangeNotificationKey>;
+    ): Promise<IObservableStateAction<ActionType, IAsyncEntityActionPayload, State, ExtraProcessInput, StateChangeNotificationKey>>;
 
     resetAsyncEntityAction(
         props: ICReateResetAsyncEntityActionProps<State, StateChangeNotificationKey>
@@ -200,7 +203,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
             }),
 
         // TODO (but e.g. without always storing the response on success in the data)
-        fetchAsyncEntityAction: <ExtraInput extends object, ApiInput, ApiResult, ApiResponse = ApiResult>({
+        fetchAsyncEntityAction: async <ExtraInput extends object, ApiInput, ApiResult, ApiResponse = ApiResult>({
             asyncEntityKey,
             extraInput = ({} as ExtraInput),
             api,
@@ -379,6 +382,39 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                         });
                     }
                 } catch (error) {
+                    if (error.response.error === 'invalid_token'
+                        && (error.response.error_description as string).includes('Access token expired')) {
+                        const refresh = getStore().getState().auth.refreshToken;
+                        console.log('PREVIOUS ACCES TOKEN : ', getStore().getState().auth.accessToken);
+                        try {
+                            const response = await refreshToken(refresh);
+                            getStore().dispatch(triggerRfresh(response));
+                            const apiInput = isSet(apiInputSelector)
+                                ? apiInputSelector({ state: getState(), extraInput })
+                                : null;
+                            const apiResponse = await api(apiInput);
+                            const apiResult = isSet(mapApiResponse)
+                                ? mapApiResponse({ response: apiResponse, state: getState() })
+                                : apiResponse;
+
+                            if (typeof onSuccess === 'function') {
+                                onSuccess({ dispatch, currentEntity: apiResponse });
+                            }
+
+                            // eslint-disable-next-line arrow-body-style
+                            updateAsyncEntityInState((entity) => {
+                                return updateDataOnSuccess
+                                    ? getAsyncEntityUpdaterFromOperation(operation)
+                                        .succeeded(entity, apiResult)
+                                    : getAsyncEntityUpdaterFromOperation(operation)
+                                        .succeededWithoutDataSet(entity);
+                            });
+                            return;
+                        } catch (refreshTokenError) {
+                            console.log('REFRESH ERROR : ', refreshTokenError);
+                        }
+                    }
+
                     if (typeof onFail === 'function') {
                         onFail({ dispatch, error });
                     }

@@ -1,20 +1,16 @@
 export interface IAuthState {
     username: string;
     accessToken: string;
+    refreshToken: string;
     permissions: IAccessLevel[];
 }
 
 export interface IAccessToken {
-    sub: string;
-    iss: string;
-    exp: number;
-    iat: number;
-    uuid: string;
+    authorities: SECURITY_PRIVILEGES[];
 }
 
 // TODO once authentication mechanism
 export interface IAccessLevel {
-    group: string;
     privilege: SECURITY_PRIVILEGES;
 }
 
