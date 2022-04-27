@@ -8,6 +8,7 @@ export const getAsyncEnvironmentsEntity = (state: IState) => {
     return environmentsEntity && environmentsEntity.data && environmentsEntity.data.environments
         ? environmentsEntity.data.environments : [] as IEnvironment[];
 };
+
 export const getEnvironmentsForDropdown = (state: IState) => {
     const asyncEnvironments = getAsyncEnvironments(state);
     const environments = asyncEnvironments.data.environments || [] as IEnvironment[];

@@ -69,6 +69,10 @@ flash_messages:
     create: 'The connection has been created successfully'
     edit: 'The connection has been updated successfully'
     error: 'An error has occured: {error}'
+  environment:
+    create: 'The environment has been created successfully'
+    edit: 'The environment has been updated successfully'
+    error: 'An error has occured: {error}'
   script: 
     create: 'The script has been successfully created !'
     edit: 'The script has been updated'

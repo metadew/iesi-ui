@@ -3,44 +3,25 @@ import {
     Box,
     Button,
     Collapse,
-    // Box,
-    // Button,
-    // Collapse,
     createStyles,
     darken,
     Theme,
     Typography,
-    // Typography,
     withStyles,
     WithStyles,
 } from '@material-ui/core';
 import { IEnvironment } from 'models/state/environments.models';
 import { THEME_COLORS } from 'config/themes/colors';
 import { IObserveProps, observe } from 'views/observe';
-// import { getAsyncConnectionDetail } from 'state/entities/connections/selectors';
 import { StateChangeNotification } from 'models/state.models';
-// import { getUniqueIdFromConnection } from 'utils/connections/connectionUtils';
-// import { clone } from 'lodash';
 import Loader from 'views/common/waiting/Loader';
-// import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
-// import { getAsyncConnectionTypes } from 'state/entities/constants/selectors';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-// import { getRouteKeyByPath, redirectTo, ROUTE_KEYS } from 'views/routes';
-// import { Alert, Autocomplete } from '@material-ui/lab';
-// import { IConnectionType } from 'models/state/constants.models';
-// import { IListItem, ListColumns } from 'models/list.models';
-// import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
-// import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
-// import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
-// import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
-// import ClosableDialog from 'views/common/layout/ClosableDialog';
-// import TextInput from 'views/common/input/TextInput';
 import { TRequiredFieldsState } from 'models/form.models';
 import { getAsyncEnvironmentDetail, getAsyncEnvironments } from 'state/entities/environments/selectors';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { getTranslator } from 'state/i18n/selectors';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel';
-import { getRouteKeyByPath, ROUTE_KEYS } from 'views/routes';
+import { getRouteKeyByPath, redirectTo, ROUTE_KEYS } from 'views/routes';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import { IParameter } from 'models/state/iesiGeneric.models';
@@ -48,8 +29,8 @@ import { IListItem, ListColumns } from 'models/list.models';
 import { Edit, Delete } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import { clone } from 'lodash';
-import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
-import { checkAuthority } from 'state/auth/selectors';
+// import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
+// import { checkAuthority } from 'state/auth/selectors';
 import TextInput from 'views/common/input/TextInput';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
@@ -59,16 +40,7 @@ import {
     triggerCreateEnvironmentDetail,
     triggerDeleteEnvironmentDetail,
     triggerUpdateEnvironmentDetail } from 'state/entities/environments/triggers';
-import { IConnectionParameter } from 'models/state/connections.model';
 import EditParameter from 'views/connectivity/EditParameter';
-// import GenericList from 'views/common/list/GenericList';
-// import { Delete, Edit } from '@material-ui/icons';
-// import DescriptionList from 'views/common/list/DescriptionList';
-// import {
-//     triggerCreateEnvironmentDetail,
-//     triggerDeleteEnvironmentDetail,
-//     triggerUpdateEnvironmentDetail,
-// } from 'state/entities/environments/triggers';
 
 const styles = (({ palette }: Theme) => createStyles({
     addButton: {
@@ -121,8 +93,8 @@ const EnvironmentDetail = withStyles(styles)(
 
             // eslint-disable-next-line max-len
             // this.updateConnectionInStateIfNewConnectionWasLoaded = this.updateConnectionInStateIfNewConnectionWasLoaded.bind(this);
-            // this.navigateToComponentAfterCreation = this.navigateToComponentAfterCreation.bind(this);
-            // this.navigateToConnectionAfterDeletion = this.navigateToConnectionAfterDeletion.bind(this);
+            this.navigateToComponentAfterCreation = this.navigateToComponentAfterCreation.bind(this);
+            this.navigateToEnvironmentAfterDeletion = this.navigateToEnvironmentAfterDeletion.bind(this);
             this.renderEnvironmentDetailPanel = this.renderEnvironmentDetailPanel.bind(this);
             this.renderEditParameterContent = this.renderEditParameterContent.bind(this);
             this.renderEnvironmentDetailContent = this.renderEnvironmentDetailContent.bind(this);
@@ -131,11 +103,11 @@ const EnvironmentDetail = withStyles(styles)(
             this.getEditParameter = this.getEditParameter.bind(this);
         }
 
-        // public componentDidUpdate(prevProps: TProps & IObserveProps) {
-        //     this.updateConnectionInStateIfNewConnectionWasLoaded(prevProps);
-        //     this.navigateToComponentAfterCreation(prevProps);
-        //     this.navigateToConnectionAfterDeletion(prevProps);
-        // }
+        public componentDidUpdate(prevProps: TProps & IObserveProps) {
+            // this.updateConnectionInStateIfNewConnectionWasLoaded(prevProps);
+            this.navigateToComponentAfterCreation(prevProps);
+            this.navigateToEnvironmentAfterDeletion(prevProps);
+        }
 
         public render() {
             const {
@@ -182,33 +154,17 @@ const EnvironmentDetail = withStyles(styles)(
                         onClose={() => this.setState({ isSaveDialogOpen: false })}
                     >
                         <Typography>
-                            {
-                                checkAuthority(
-                                    state,
-                                    SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE,
-                                    newEnvironmentDetail.description,
-                                )
-                                    ? (
-                                        <Translate
-                                            msg="environments.detail.save_environment_dialog.text"
-                                            placeholders={{
-                                                environmentName: newEnvironmentDetail.name,
-                                            }}
-                                        />
-                                    ) : (
-                                        <Translate
-                                            msg="environments.detail.save_environment_dialog.text_description"
-                                            placeholders={{
-                                                description: newEnvironmentDetail.description,
-                                            }}
-                                        />
-                                    )
-                            }
+                            <Translate
+                                msg="environments.detail.save_environment_dialog.text"
+                                placeholders={{
+                                    environmentName: newEnvironmentDetail.name,
+                                }}
+                            />
                         </Typography>
                         <Box display="flex" alignItems="center" justifyContent="center" marginTop={2}>
                             <Box paddingRight={1}>
                                 <Button
-                                    id="save-update-connection"
+                                    id="save-update-environment"
                                     onClick={() => {
                                         if (this.isCreateEnvironmentRoute()) {
                                             triggerCreateEnvironmentDetail(newEnvironmentDetail);
@@ -219,17 +175,12 @@ const EnvironmentDetail = withStyles(styles)(
                                     }}
                                     variant="contained"
                                     color="secondary"
-                                    // disabled={!checkAuthority(
-                                    //     state,
-                                    //     SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE,
-                                    // )}
-
                                 >
                                     {
                                         this.isCreateEnvironmentRoute() ? (
-                                            <Translate msg="connections.detail.save_connection_dialog.create" />
+                                            <Translate msg="environments.detail.save_environment_dialog.create" />
                                         ) : (
-                                            <Translate msg="connections.detail.save_connection_dialog.update" />
+                                            <Translate msg="environments.detail.save_environment_dialog.update" />
                                         )
                                     }
                                 </Button>
@@ -241,75 +192,19 @@ const EnvironmentDetail = withStyles(styles)(
         }
 
         private renderEnvironmentDetailPanel() {
-            const {
-                newEnvironmentDetail,
-                // environmentIndex,
-                requiredFieldsState,
-            } = this.state;
             const { state } = this.props;
+            const { newEnvironmentDetail, requiredFieldsState } = this.state;
             const translator = getTranslator(state);
-            // const environments = getAsyncEnvironments(state).data.environments || [];
+
             return (
                 <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
                     <Box flex="1 1 auto">
                         <form noValidate autoComplete="off">
-                            {/* <Autocomplete
-                                id="combo-box-connection-types"
-                                options={connectionTypeListItems}
-                                value={autoComplete || null}
-                                getOptionLabel={(option) => option.data.type}
-                                getOptionDisabled={() =>
-                                    !checkAuthorityGeneral(
-                                        state,
-                                        SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE,
-                                    )}
-                                renderInput={(params) => (
-                                    <TextInput
-                                        {...params}
-                                        label={translator('environments.detail.side.connection_type')}
-                                        variant="filled"
-                                        error={requiredFieldsState.type.showError}
-                                        // eslint-disable-next-line max-len
-                                        helperText={requiredFieldsState.type.showError &&
-                                            'Connection type is a required field'}
-                                        InputProps={{
-                                            ...params.InputProps,
-                                            readOnly: !this.isCreateConnectionRoute() && !checkAuthority(
-                                                state,
-                                                SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE,
-                                            ),
-                                            disableUnderline: true,
-                                        }}
-                                    />
-                                )}
-                                onChange={(
-                                    e: React.ChangeEvent<{}>,
-                                    newValue: IListItem<IConnectionTypeColumnNames, IListData>,
-                                ) => {
-                                    this.updateConnection({
-                                        type: newValue ? newValue.data.type : null,
-                                        environments: newEnvironmentDetail.environments
-                                            .map((environment) => (
-                                                {
-                                                    ...environment,
-                                                    parameters: newValue
-                                                        ? environments
-                                                            .find((item) => item.type === newValue?.data?.type)
-                                                            .parameters?.filter((item) => item.mandatory)
-                                                            .map((item) => ({ name: item.name, value: '' }))
-                                                        : [],
-
-                                                }
-                                            )),
-                                    });
-                                }}
-                            /> */}
                             <TextInput
                                 id="environment-name"
                                 label={translator('environments.detail.side.environment_name')}
                                 InputProps={{
                                     readOnly: !this.isCreateEnvironmentRoute() && newEnvironmentDetail !== undefined,
-                                    //    && !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
                                     disableUnderline: true,
                                 }}
                                 value={newEnvironmentDetail.name}
@@ -322,130 +217,235 @@ const EnvironmentDetail = withStyles(styles)(
                             <TextInput
                                 id="environment-description"
                                 label={translator('environments.detail.side.environment_description')}
-                                multiline
-                                rows={8}
                                 InputProps={{
-                                    readOnly: (!this.isCreateEnvironmentRoute && newEnvironmentDetail !== undefined),
-                                    // || !checkAuthority(
-                                    //     state,
-                                    //     SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE,
-                                    // ),
+                                    readOnly: !this.isCreateEnvironmentRoute() && newEnvironmentDetail !== undefined,
                                     disableUnderline: true,
-
                                 }}
                                 value={newEnvironmentDetail.description}
-                                onChange={(e) => this.updateEnvironment({
-                                    description: e.target.value,
-                                })}
+                                onChange={(e) => this.updateEnvironment({ description: e.target.value })}
+                                required={this.isCreateEnvironmentRoute()}
+                                error={requiredFieldsState.description.showError}
+                                helperText={requiredFieldsState.description.showError
+                                    && 'Environment description is a required field'}
                             />
-                            {
-                                /*
-                            {
-                                this.isCreateConnectionRoute() ? (
-                                    <>
-                                        <TextInput
-                                            id="connection-security-group"
-                                            label={translator('connections.detail.side.connection_security')}
-                                            error={requiredFieldsState.securityGroupName.showError}
-                                            // eslint-disable-next-line max-len
-                                            helperText={requiredFieldsState.securityGroupName.showError
-                                                && 'Security group is a required field'}
-                                            value={newConnectionDetail && newConnectionDetail.securityGroupName
-                                                ? newConnectionDetail.securityGroupName : ''}
-                                            onChange={(e) => this.updateConnection({
-                                                securityGroupName: e.target.value,
-                                            })}
-                                            InputProps={{
-                                                disableUnderline: true,
-                                            }}
-                                            required
-                                        />
-                                        <DescriptionList
-                                            noLineAfterListItem
-                                            items={[].concat({
-                                                label: <Translate msg="connections.detail.side.environments.title" />,
-                                                value: <EditEnvironments
-                                                    // eslint-disable-next-line max-len
-                                                    environments={newConnectionDetail &&
-                                                        newConnectionDetail.environments}
-                                                    selectedIndex={environmentIndex}
-                                                    onEnvironmentSelected={(index) =>
-                                                        this.setState({ environmentIndex: index })}
-                                                    onSubmit={(newEnvironment) => {
-                                                        this.updateConnection({
-                                                            environments: [...newConnectionDetail.environments, {
-                                                                ...newEnvironment,
-                                                                parameters: newConnectionDetail.type
-                                                                    ? connectionTypes
-                                                                        // eslint-disable-next-line max-len
-                                                                        .find((item) => item.type
-                                                                        === newConnectionDetail.type)
-                                                                        .parameters?.filter((item) => item.mandatory)
-                                                                        .map((item) => ({ name: item.name, value: '' }))
-                                                                    : [],
-                                                            }],
-                                                        });
-                                                    }}
-                                                    onDelete={(index) => {
-                                                        const environments = [...newConnectionDetail.environments];
-                                                        environments.splice(index, 1);
-                                                        this.updateConnection({
-                                                            environments,
-                                                        });
-                                                    }}
-                                                    isCreateConnectionRoute={this.isCreateConnectionRoute()}
-                                                />,
-                                            })}
-                                        />
-                                    </>
-                                ) : (
-                                    <DescriptionList
-                                        noLineAfterListItem
-                                        items={[].concat({
-                                            label: translator('connections.detail.side.connection_security'),
-                                            value: newConnectionDetail && newConnectionDetail.securityGroupName
-                                                ? newConnectionDetail.securityGroupName : '',
-                                        }, {
-                                            label: <Translate msg="connections.detail.side.environments.title" />,
-                                            value: <EditEnvironments
-                                                environments={newConnectionDetail && newConnectionDetail.environments}
-                                                selectedIndex={environmentIndex}
-                                                // eslint-disable-next-line max-len
-                                                onEnvironmentSelected={(index) =>
-                                                    this.setState({ environmentIndex: index })}
-                                                onSubmit={(newEnvironment) => {
-                                                    this.updateConnection({
-                                                        environments: [...newConnectionDetail.environments, {
-                                                            ...newEnvironment,
-                                                            parameters: newConnectionDetail.type
-                                                                ? connectionTypes
-                                                                    // eslint-disable-next-line max-len
-                                                                    .find((item) => item.type ===
-                                                                    newConnectionDetail.type)
-                                                                    .parameters?.filter((item) => item.mandatory)
-                                                                    .map((item) => ({ name: item.name, value: '' }))
-                                                                : [],
-                                                        }],
-                                                    });
-                                                }}
-                                                onDelete={(index) => {
-                                                    const environments = [...newConnectionDetail.environments];
-                                                    environments.splice(index, 1);
-                                                    this.updateConnection({
-                                                        environments,
-                                                    });
-                                                }}
-                                                isCreateConnectionRoute={this.isCreateConnectionRoute()}
-                                            />,
-                                        })}
-                                    />
-                                )
-                            } */}
                         </form>
                     </Box>
                 </Box>
             );
         }
+
+        // private renderEnvironmentDetailPanel() {
+        //     const {
+        //         newEnvironmentDetail,
+        //         // environmentIndex,
+        //         requiredFieldsState,
+        //     } = this.state;
+        //     const { state } = this.props;
+        //     const translator = getTranslator(state);
+        //     const environments = getAsyncEnvironments(state).data.environments || [];
+        //     const environmentListItems = mapEnvironmentsToListItems(environments);
+        //     const autoComplete = environmentListItems
+        //     .find((item) => item.data.name === newEnvironmentDetail.name);
+        //     return (
+        //         <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
+        //             <Box flex="1 1 auto">
+        //                 <form noValidate autoComplete="off">
+        //                     <Autocomplete
+        //                         id="combo-box-environments"
+        //                         options={environmentListItems}
+        //                         value={autoComplete || null}
+        //                         // getOptionLabel={(option) => option.data.type}
+        //                         // getOptionDisabled={() =>
+        //                         //     !checkAuthorityGeneral(
+        //                         //         state,
+        //                         //         SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE,
+        //                         //     )}
+        //                         renderInput={(params) => (
+        //                             <TextInput
+        //                                 {...params}
+        //                                 label={translator('environments.detail.side.environment')}
+        //                                 variant="filled"
+        //                                 error={requiredFieldsState.name.showError}
+        //                                 // eslint-disable-next-line max-len
+        //                                 helperText={requiredFieldsState.name.showError &&
+        //                                     'Environment is a required field'}
+        //                                 InputProps={{
+        //                                     ...params.InputProps,
+        //                                     readOnly: !this.isCreateEnvironmentRoute(),
+        //                                     // && !checkAuthority(
+        //                                     //     state,
+        //                                     //     SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE,
+        //                                     // ),
+        //                                     disableUnderline: true,
+        //                                 }}
+        //                             />
+        //                         )}
+        //                         // onChange={(
+        //                         //     e: React.ChangeEvent<{}>,
+        //                         //     newValue: IListItem<IEnvironmentColumnNamesBase, IListData>,
+        //                         // ) => {
+        //                         //     this.updateEnvironment({
+        //                         //         type: newValue ? newValue.data.type : null,
+        //                         //         environments: newEnvironmentDetail.environments
+        //                         //             .map((environment) => (
+        //                         //                 {
+        //                         //                     ...environment,
+        //                         //                     parameters: newValue
+        //                         //                         ? environments
+        //                         //                             .find((item) => item.type === newValue?.data?.type)
+        //                         //                             .parameters?.filter((item) => item.mandatory)
+        //                         //                             .map((item) => ({ name: item.name, value: '' }))
+        //                         //                         : [],
+
+        //                         //                 }
+        //                         //             )),
+        //                         //     });
+        //                         // }}
+        //                     />
+        //                     <TextInput
+        //                         id="environment-name"
+        //                         label={translator('environments.detail.side.environment_name')}
+        //                         InputProps={{
+        //                             readOnly: !this.isCreateEnvironmentRoute() && newEnvironmentDetail !== undefined,
+        //                             //    && !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
+        //                             disableUnderline: true,
+        //                         }}
+        //                         value={newEnvironmentDetail.name}
+        //                         onChange={(e) => this.updateEnvironment({ name: e.target.value })}
+        //                         required={this.isCreateEnvironmentRoute()}
+        //                         error={requiredFieldsState.name.showError}
+        //                         helperText={requiredFieldsState.name.showError
+        //                             && 'Environment name is a required field'}
+        //                     />
+        //                     <TextInput
+        //                         id="environment-description"
+        //                         label={translator('environments.detail.side.environment_description')}
+        //                         multiline
+        //                         rows={8}
+        //                         InputProps={{
+        //                             readOnly: (!this.isCreateEnvironmentRoute && newEnvironmentDetail !== undefined),
+        //                             // || !checkAuthority(
+        //                             //     state,
+        //                             //     SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE,
+        //                             // ),
+        //                             disableUnderline: true,
+
+        //                         }}
+        //                         value={newEnvironmentDetail.description}
+        //                         onChange={(e) => this.updateEnvironment({
+        //                             description: e.target.value,
+        //                         })}
+        //                     />
+        //                     {
+        //                         /*
+        //                     {
+        //                         this.isCreateConnectionRoute() ? (
+        //                             <>
+        //                                 <TextInput
+        //                                     id="connection-security-group"
+        //                                     label={translator('connections.detail.side.connection_security')}
+        //                                     error={requiredFieldsState.securityGroupName.showError}
+        //                                     // eslint-disable-next-line max-len
+        //                                     helperText={requiredFieldsState.securityGroupName.showError
+        //                                         && 'Security group is a required field'}
+        //                                     value={newConnectionDetail && newConnectionDetail.securityGroupName
+        //                                         ? newConnectionDetail.securityGroupName : ''}
+        //                                     onChange={(e) => this.updateConnection({
+        //                                         securityGroupName: e.target.value,
+        //                                     })}
+        //                                     InputProps={{
+        //                                         disableUnderline: true,
+        //                                     }}
+        //                                     required
+        //                                 />
+        //                                 <DescriptionList
+        //                                     noLineAfterListItem
+        //                                     items={[].concat({
+        //                                         label: <Translate msg="connections.detail.side" />,
+        //                                         value: <EditEnvironments
+        //                                             // eslint-disable-next-line max-len
+        //                                             environments={newConnectionDetail &&
+        //                                                 newConnectionDetail.environments}
+        //                                             selectedIndex={environmentIndex}
+        //                                             onEnvironmentSelected={(index) =>
+        //                                                 this.setState({ environmentIndex: index })}
+        //                                             onSubmit={(newEnvironment) => {
+        //                                                 this.updateConnection({
+        //                                                     environments: [...newConnectionDetail.environments, {
+        //                                                         ...newEnvironment,
+        //                                                         parameters: newConnectionDetail.type
+        //                                                             ? connectionTypes
+        //                                                                 // eslint-disable-next-line max-len
+        //                                                                 .find((item) => item.type
+        //                                                                 === newConnectionDetail.type)
+        //                                                                 .parameters?.filter((item) => item.mandatory)
+        //                                                                 .map((item) =>
+        //                                                                  ({ name: item.name, value: '' }))
+        //                                                             : [],
+        //                                                     }],
+        //                                                 });
+        //                                             }}
+        //                                             onDelete={(index) => {
+        //                                                 const environments = [...newConnectionDetail.environments];
+        //                                                 environments.splice(index, 1);
+        //                                                 this.updateConnection({
+        //                                                     environments,
+        //                                                 });
+        //                                             }}
+        //                                             isCreateConnectionRoute={this.isCreateConnectionRoute()}
+        //                                         />,
+        //                                     })}
+        //                                 />
+        //                             </>
+        //                         ) : (
+        //                             <DescriptionList
+        //                                 noLineAfterListItem
+        //                                 items={[].concat({
+        //                                     label: translator('connections.detail.side.connection_security'),
+        //                                     value: newConnectionDetail && newConnectionDetail.securityGroupName
+        //                                         ? newConnectionDetail.securityGroupName : '',
+        //                                 }, {
+        //                                     label: <Translate msg="connections.detail.side.environments.title" />,
+        //                                     value: <EditEnvironments
+        //                                         environments={newConnectionDetail &&
+        //                                          newConnectionDetail.environments}
+        //                                         selectedIndex={environmentIndex}
+        //                                         // eslint-disable-next-line max-len
+        //                                         onEnvironmentSelected={(index) =>
+        //                                             this.setState({ environmentIndex: index })}
+        //                                         onSubmit={(newEnvironment) => {
+        //                                             this.updateConnection({
+        //                                                 environments: [...newConnectionDetail.environments, {
+        //                                                     ...newEnvironment,
+        //                                                     parameters: newConnectionDetail.type
+        //                                                         ? connectionTypes
+        //                                                             // eslint-disable-next-line max-len
+        //                                                             .find((item) => item.type ===
+        //                                                             newConnectionDetail.type)
+        //                                                             .parameters?.filter((item) => item.mandatory)
+        //                                                             .map((item) => ({ name: item.name, value: '' }))
+        //                                                         : [],
+        //                                                 }],
+        //                                             });
+        //                                         }}
+        //                                         onDelete={(index) => {
+        //                                             const environments = [...newConnectionDetail.environments];
+        //                                             environments.splice(index, 1);
+        //                                             this.updateConnection({
+        //                                                 environments,
+        //                                             });
+        //                                         }}
+        //                                         isCreateConnectionRoute={this.isCreateConnectionRoute()}
+        //                                     />,
+        //                                 })}
+        //                             />
+        //                         )
+        //                     } */}
+        //                 </form>
+        //             </Box>
+        //         </Box>
+        //     );
+        // }
 
         private renderEnvironmentDetailContent() {
             const {
@@ -455,13 +455,9 @@ const EnvironmentDetail = withStyles(styles)(
             } = this.state;
             const { state } = this.props;
             const translator = getTranslator(state);
-            const environments = getAsyncEnvironments(state).data.environments || [];
-            const matchingEnvironment = environments.find((item) => item.name === newEnvironmentDetail.name);
-            const parameterItems = getParametersFromEnvironment(
-                newEnvironmentDetail,
-                matchingEnvironment,
-            );
-            // const hasParameters = parameterItems.length > 0;
+            // const environments = getAsyncEnvironments(state).data.environments || [];
+            const parameterItems = getParametersFromEnvironment(newEnvironmentDetail);
+            const hasParameters = parameterItems.length > 0;
 
             const handleSaveAction = () => {
                 const { passed: passedRequired, requiredFieldsState } = requiredFieldsCheck({
@@ -493,23 +489,59 @@ const EnvironmentDetail = withStyles(styles)(
                 },
             };
 
-            // if (!hasParameters) {
-            //     return (
-            //         <Box
-            //             display="flex"
-            //             flexDirection="column"
-            //             flex="1 1 auto"
-            //             justifyContent="center"
-            //             paddingBottom={5}
-            //         >
-            //             <Box textAlign="center">
-            //                 <Typography variant="h2" paragraph>
-            //                     <Translate msg="connections.detail.main.no_parameters.title" />
-            //                 </Typography>
-            //             </Box>
-            //         </Box>
-            //     );
-            // }
+            if (!hasParameters) {
+                return (
+                    <>
+                        <Box>
+                            <Collapse in={hasChangesToCheck}>
+                                <Box marginX={2} marginBottom={2}>
+                                    <Alert severity="warning">
+                                        <Translate msg="environments.detail.main.alert.save_changes" />
+                                    </Alert>
+                                </Box>
+                            </Collapse>
+                            <DetailActions
+                                onSave={handleSaveAction}
+                                onDelete={() => this.setState({ isConfirmDeleteEnvironmentOpen: true })}
+                                onAdd={() => {
+                                    this.setState({ isAddingParameter: true });
+                                }}
+                                isCreateRoute={this.isCreateEnvironmentRoute()}
+                            />
+                        </Box>
+                        <Box marginY={1}>
+                            <GenericList
+                                listItems={parameterItems}
+                                columns={parameterColumns}
+                                listActions={[{
+                                    icon: <Edit />,
+                                    label: translator('environments.detail.main.list.actions.edit'),
+                                    onClick: (_, index) => this.setState({ editParameterIndex: index }),
+                                    hideAction: () => null,
+                                }, {
+                                    icon: <Delete />,
+                                    label: translator('environments.detail.main.list.actions.delete'),
+                                    onClick: (_, index) => this.setState({ editParameterIndex: index }),
+                                    hideAction: () => null,
+                                }]}
+                            />
+                        </Box>
+                        <Box
+                            display="flex"
+                            flexDirection="column"
+                            flex="1 1 auto"
+                            justifyContent="center"
+                            paddingBottom={5}
+                        >
+                            <Box textAlign="center">
+                                <Typography variant="h2" paragraph>
+                                    <Translate msg="environments.detail.main.no_parameters.title" />
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </>
+                );
+            }
 
             return (
                 <>
@@ -523,7 +555,7 @@ const EnvironmentDetail = withStyles(styles)(
                         </Collapse>
                         <DetailActions
                             onSave={handleSaveAction}
-                            // onDelete={() => this.setState({ isConfirmDeleteConnectionOpen: true })}
+                            onDelete={() => this.setState({ isConfirmDeleteEnvironmentOpen: true })}
                             onAdd={() => {
                                 this.setState({ isAddingParameter: true });
                             }}
@@ -537,42 +569,22 @@ const EnvironmentDetail = withStyles(styles)(
                             listActions={[{
                                 icon: <Edit />,
                                 label: translator('environments.detail.main.list.actions.edit'),
-                                onClick: (_, index) => {
-                                    this.setState({ editParameterIndex: index });
-                                },
-                                hideAction: (item) => ((
-                                    !this.isCreateEnvironmentRoute() && !checkAuthority(
-                                        state,
-                                        SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE,
-                                        item.data.securityGroupName,
-                                    )
-                                ) || !item.canBeDeleted
-                                ),
+                                onClick: (_, index) => this.setState({ editParameterIndex: index }),
+                                hideAction: () => null,
                             }, {
                                 icon: <Delete />,
                                 label: translator('environments.detail.main.list.actions.delete'),
-                                onClick: (_, index) => {
-                                    const newParameters = [
-                                        ...newEnvironmentDetail.parameters,
-                                    ];
-                                    newParameters.splice(index, 1);
-                                    // this.updateEnvironment({
-                                    //     environments: newEnvironmentDetail.environments
-                                    //         .map((environment, envIndex) => (
-                                    //             envIndex === environmentIndex
-                                    //                 ? { ...environment, parameters: newParameters }
-                                    //                 : environment
-                                    //         )),
-                                    // });
-                                },
-                                hideAction: (item) => ((
-                                    !this.isCreateEnvironmentRoute() && !checkAuthority(
-                                        state,
-                                        SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE,
-                                        item.data.securityGroupName,
-                                    )
-                                ) || !item.canBeDeleted
-                                ),
+                                onClick: (_, index) => this.setState({ editParameterIndex: index }),
+                                // onClick: (_, index) => {
+                                //     if (newEnvironmentDetail.parameters.length > 0) {
+                                //         const newParameters = [...newEnvironmentDetail.parameters];
+                                //         newParameters.splice(index, 1);
+                                //         this.updateEnvironment({
+                                //             parameters: newParameters,
+                                //         });
+                                //     }
+                                // },
+                                hideAction: () => null,
                             }]}
                         />
                     </Box>
@@ -587,25 +599,17 @@ const EnvironmentDetail = withStyles(styles)(
                 editParameterIndex,
                 isAddingParameter,
             } = this.state;
-            const { state } = this.props;
+            // const { state } = this.props;
             // if editing, get current parameters else (adding new parameter) create an empty parameter
             const parameter = editParameterIndex > -1 ? this.getEditParameter() : {
                 name: '',
                 value: '',
             };
-
-            const environments = getAsyncEnvironments(state).data.environments || [];
-            const matchingEnvironment = environments
-                .find((item) => item.name === newEnvironmentDetail?.name);
-            const mandatory = matchingEnvironment
-                ? matchingEnvironment.parameters
-                    .some((item) => item.name === parameter.name && item.value)
-                : false;
             return (
                 <EditParameter
                     onClose={() => this.setState({ editParameterIndex: -1, isAddingParameter: false })}
                     parameter={parameter}
-                    mandatory={mandatory}
+                    mandatory={null}
                     isCreateParameter={isAddingParameter}
                     onEdit={(newParameter) => {
                         let newParameters: IParameter[];
@@ -671,30 +675,30 @@ const EnvironmentDetail = withStyles(styles)(
             }
         }
 
-        // private navigateToComponentAfterCreation(prevProps: TProps & IObserveProps) {
-        //     const { newConnectionDetail } = this.state;
-        //     const { status } = getAsyncConnectionDetail(this.props.state).create;
-        //     const prevStatus = getAsyncConnectionDetail(prevProps.state).create.status;
-        //     if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
-        //         redirectTo({
-        //             routeKey: ROUTE_KEYS.R_CONNECTION_DETAIL,
-        //             params: {
-        //                 name: newConnectionDetail.name,
-        //             },
-        //         });
-        //     }
-        // }
+        private navigateToComponentAfterCreation(prevProps: TProps & IObserveProps) {
+            const { newEnvironmentDetail } = this.state;
+            const { status } = getAsyncEnvironmentDetail(this.props.state).create;
+            const prevStatus = getAsyncEnvironmentDetail(prevProps.state).create.status;
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                redirectTo({
+                    routeKey: ROUTE_KEYS.R_ENVIRONMENT_DETAIL,
+                    params: {
+                        name: newEnvironmentDetail.name,
+                    },
+                });
+            }
+        }
 
-        // private navigateToConnectionAfterDeletion(prevProps: TProps & IObserveProps) {
-        //     const { status } = getAsyncConnectionDetail(this.props.state).remove;
-        //     const prevStatus = getAsyncConnectionDetail(prevProps.state).remove.status;
+        private navigateToEnvironmentAfterDeletion(prevProps: TProps & IObserveProps) {
+            const { status } = getAsyncEnvironmentDetail(this.props.state).remove;
+            const prevStatus = getAsyncEnvironmentDetail(prevProps.state).remove.status;
 
-        //     if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
-        //         redirectTo({
-        //             routeKey: ROUTE_KEYS.R_CONNECTIONS,
-        //         });
-        //     }
-        // }
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                redirectTo({
+                    routeKey: ROUTE_KEYS.R_ENVIRONMENTS,
+                });
+            }
+        }
 
         private getEditParameter() {
             const { newEnvironmentDetail, editParameterIndex } = this.state;
@@ -712,59 +716,39 @@ const EnvironmentDetail = withStyles(styles)(
         }
     },
 );
-function getParametersFromEnvironment(environment: IEnvironment, environments: IEnvironment) {
-    const parameters = environment
-        ? environment.parameters
-            .map((parameter) => ({
-                name: parameter.name,
-                value: parameter.value,
-                mandatory: environments
-                    ? environments.parameters
-                        .some((type) => type.name === parameter.name && type.value === parameter.value)
-                    : false,
-            }))
-        : [];
 
-    const mandatoryParameters = parameters
-        .filter((p) => p.mandatory)
-        .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
+function getParametersFromEnvironment(environments: IEnvironment) {
+    const allParameters = environments.parameters;
 
-    const nonMandatoryParameters = parameters
-        .filter((p) => !p.mandatory)
-        .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
-
-    const allParameters = mandatoryParameters.concat(nonMandatoryParameters);
-
-    const newListItems: IListItem<IConnectionParameter>[] = allParameters.map((parameter, index) => ({
+    const newListItems: IListItem<IParameter>[] = allParameters.map((parameter, index) => ({
         id: index,
         columns: {
-            name: parameter.name.concat(parameter.mandatory ? '*' : ''),
+            name: parameter.name,
             value: parameter.value,
         },
         data: {
             name: parameter.name,
             value: parameter.value,
-            mandatory: parameter.mandatory,
         },
-        canBeDeleted: !parameter.mandatory,
     }));
 
     return newListItems;
 }
 
-// function mapConnectionTypeToListItems(items: IConnectionType[]) {
-//     const connectionToList: IListItem<IConnectionTypeColumnNames, IListData>[] = items
+// function mapEnvironmentsToListItems(items: IEnvironment[]) {
+//     const environmentToList: IListItem<IEnvironmentColumnNamesBase, IListData>[] = items
 //         ? items.map((item) => ({
-//             id: item.type,
+//             // id: item,
 //             columns: {
 //                 name: item.name,
-//                 type: item.type,
+//                 description: item.description,
 //             },
 //             data: {
-//                 type: item.type,
+//                 name: item.name,
+//                 description: item.description,
 //             },
 //         })) : [];
-//     return connectionToList;
+//     return environmentToList;
 // }
 
 // function orderConnectionParameters(items: IConnectionParameter[], connectionType: IConnectionType) {

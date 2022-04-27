@@ -54,7 +54,7 @@ export const triggerUpdateEnvironmentDetail = (payload: IEnvironment) =>
         onSuccess: ({ dispatch, currentEntity }) => dispatch(
             triggerFlashMessage({
                 type: 'success',
-                translationKey: 'environments.detail.flash_messages.update_success',
+                translationKey: 'flash_messages.environment.update',
                 translationPlaceholders: {
                     name: (currentEntity as IEnvironment).name,
                 },
@@ -63,13 +63,13 @@ export const triggerUpdateEnvironmentDetail = (payload: IEnvironment) =>
         onFail: ({ dispatch }) => dispatch(
             triggerFlashMessage({
                 type: 'error',
-                translationKey: 'datasets.detail.flash_messages.update_error',
+                translationKey: 'flash_messages.common.responseError',
             }),
         ),
         notificationsToTrigger: [StateChangeNotification.ENVIRONMENT_DETAIL],
     });
 
-    export const triggerCreateEnvironmentDetail = (payload: IEnvironment) =>
+export const triggerCreateEnvironmentDetail = (payload: IEnvironment) =>
     entitiesStateManager.triggerAsyncEntityCreate<{}>({
         asyncEntityToCreate: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.environmentDetail,
@@ -77,7 +77,7 @@ export const triggerUpdateEnvironmentDetail = (payload: IEnvironment) =>
         onSuccess: ({ dispatch, currentEntity }) => dispatch(
             triggerFlashMessage({
                 type: 'success',
-                translationKey: 'environments.detail.flash_messages.create_success',
+                translationKey: 'flash_messages.environment.create',
                 translationPlaceholders: {
                     name: (currentEntity as IEnvironment).name,
                 },
@@ -86,7 +86,7 @@ export const triggerUpdateEnvironmentDetail = (payload: IEnvironment) =>
         onFail: ({ dispatch }) => dispatch(
             triggerFlashMessage({
                 type: 'error',
-                translationKey: 'environments.detail.flash_messages.create_error',
+                translationKey: 'flash_messages.common.responseError',
             }),
         ),
         extraInputSelector: () => payload,

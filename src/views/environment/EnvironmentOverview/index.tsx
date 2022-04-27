@@ -41,6 +41,7 @@ import { StateChangeNotification } from 'models/state.models';
 import { checkAuthorityGeneral } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { triggerDeleteEnvironmentDetail, triggerFetchEnvironments } from 'state/entities/environments/triggers';
+import OrderedList from 'views/common/list/OrderedList';
 
 const styles = (({ palette, typography }: Theme) => ({
     header: {
@@ -434,16 +435,16 @@ function mapConnectionsToListItems(environments: IEnvironment[]): IListItem<IEnv
             description: environment.description,
             parameters: {
                 value: environment.parameters.length,
-                // tooltip: environment.parameters.length > 0 && (
-                //     <Typography>
-                //         <OrderedList
-                //             items={environment.parameters
-                //                 .map((parameter) => ({
-                //                     content: parameter.name,
-                //                 }))}
-                //         />
-                //     </Typography>
-                // ),
+                tooltip: environment.parameters.length > 0 && (
+                    <Typography>
+                        <OrderedList
+                            items={environment.parameters
+                                .map((parameter) => ({
+                                    content: parameter.name,
+                                }))}
+                        />
+                    </Typography>
+                ),
             },
         },
         data: {
