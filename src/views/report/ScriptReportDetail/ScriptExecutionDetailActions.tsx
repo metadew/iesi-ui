@@ -290,12 +290,13 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                             <TableCell>
                                                 <Box
                                                     display="flex"
+                                                    justifyContent="space-between"
                                                     alignItems="center"
                                                 >
                                                     {parameter.rawValue}
                                                     {
                                                         (parameter.name === 'request') ? (
-                                                            <Box marginLeft={15}>
+                                                            <Box display="flex">
                                                                 <Button
                                                                     variant="contained"
                                                                     color="secondary"
@@ -324,7 +325,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                                     }
                                                     {
                                                         (parameter.name === 'dataset') ? (
-                                                            <Box marginLeft="100px">
+                                                            <Box display="flex">
                                                                 <Button
                                                                     variant="contained"
                                                                     color="secondary"
@@ -348,7 +349,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                                     }
                                                     {
                                                         (parameter.name === 'script') ? (
-                                                            <Box marginLeft="100px">
+                                                            <Box display="flex">
                                                                 <Button
                                                                     variant="contained"
                                                                     color="secondary"
