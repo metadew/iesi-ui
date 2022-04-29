@@ -334,7 +334,7 @@ const EnvironmentOverview = withStyles(styles)(
 
             if (environmentToDelete) {
                 triggerDeleteEnvironmentDetail({
-                    name: environmentIdToDelete.name,
+                    name: environmentToDelete.name,
                 });
             }
         }
