@@ -12,7 +12,7 @@ import {
     IListAction,
 } from 'models/list.models';
 import { IState } from 'models/state.models';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import {
     TableCell,
@@ -43,7 +43,7 @@ export default function GenericDraggableList<ColumnNames>({
         <DragDropContext onDragEnd={onDragEnd}>
             <Droppable
                 droppableId="droppable"
-                isDropDisabled={!checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)}
+                isDropDisabled={!checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)}
             >
                 {(droppableProvided, droppableSnapshot) => (
                     <TableContainer

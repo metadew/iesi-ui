@@ -197,7 +197,6 @@ const DatasetDetail = withStyles(styles)(
                                     disabled={newDatasetDetail && !checkAuthority(
                                         state,
                                         SECURITY_PRIVILEGES.S_DATASETS_WRITE,
-                                        newDatasetDetail.securityGroupName,
                                     )}
                                 >
                                     <Translate

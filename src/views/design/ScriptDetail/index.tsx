@@ -258,7 +258,6 @@ const ScriptDetail = withStyles(styles)(
                                         || (newScriptDetail && !checkAuthority(
                                             state,
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                            newScriptDetail.securityGroupName,
                                         ))}
                                 >
                                     <Translate msg="scripts.detail.save_script_dialog.update_current_version" />
@@ -284,7 +283,6 @@ const ScriptDetail = withStyles(styles)(
                                     disabled={newScriptDetail && !checkAuthority(
                                         state,
                                         SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                        newScriptDetail.securityGroupName,
                                     )}
                                 >
                                     <Translate msg="scripts.detail.save_script_dialog.save_as_new_version" />
@@ -352,7 +350,6 @@ const ScriptDetail = withStyles(styles)(
                                     readOnly: !this.isCreateScriptRoute() && newScriptDetail && !checkAuthority(
                                         state,
                                         SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                        newScriptDetail.securityGroupName,
                                     ),
                                     disableUnderline: true,
                                 }}
@@ -558,7 +555,6 @@ const ScriptDetail = withStyles(styles)(
                                         !this.isCreateScriptRoute() && !(newScriptDetail && checkAuthority(
                                             state,
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                            newScriptDetail.securityGroupName,
                                         )),
                                 },
                                 {
@@ -572,12 +568,10 @@ const ScriptDetail = withStyles(styles)(
                                             && !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                                newScriptDetail.securityGroupName,
                                             )
                                             && checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_READ,
-                                                newScriptDetail.securityGroupName,
                                             )),
                                 },
                                 {
@@ -590,7 +584,6 @@ const ScriptDetail = withStyles(styles)(
                                         && !(newScriptDetail && checkAuthority(
                                             state,
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                            newScriptDetail.securityGroupName,
                                         )),
                                 },
                                 {
@@ -603,7 +596,6 @@ const ScriptDetail = withStyles(styles)(
                                         && !(newScriptDetail && checkAuthority(
                                             state,
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                            newScriptDetail.securityGroupName,
                                         )),
                                 },
                             )}
@@ -629,13 +621,6 @@ const ScriptDetail = withStyles(styles)(
         }
 
         private renderAddScriptContent() {
-            const { state } = this.props;
-            const scriptDetailStatus = getAsyncScriptDetail(state).fetch.status;
-
-            if (scriptDetailStatus === AsyncStatus.Initial) {
-                return <></>;
-            }
-
             return (
                 <AddAction
                     onClose={() => this.setState({ isAddOpen: false })}

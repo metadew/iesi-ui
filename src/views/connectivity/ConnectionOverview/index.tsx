@@ -39,7 +39,7 @@ import GenericList from 'views/common/list/GenericList';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import { StateChangeNotification } from 'models/state.models';
 import OrderedList from 'views/common/list/OrderedList';
-import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 const styles = (({ palette, typography }: Theme) => ({
@@ -177,7 +177,7 @@ const ConnectionOverview = withStyles(styles)(
                                     />
                                 </Box>
                                 {
-                                    checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE) && (
+                                    checkAuthority(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE) && (
                                         <Box display="flex" alignItems="center">
                                             <Box flex="0 0 auto" mr="8px" width="250px">
                                                 <TransformDocumentationDialog
@@ -304,11 +304,10 @@ const ConnectionOverview = withStyles(styles)(
                                                     },
                                                 });
                                             },
-                                            hideAction: (item: IListItem<IConnectionColumnNamesBase>) => (
+                                            hideAction: () => (
                                                 !checkAuthority(
                                                     state,
                                                     SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
-                                                    item.columns.securityGroupName.toString(),
                                                 )
                                             ),
                                         }, {
@@ -325,11 +324,10 @@ const ConnectionOverview = withStyles(styles)(
                                                     },
                                                 });
                                             },
-                                            hideAction: (item: IListItem<IConnectionColumnNamesBase>) => (
-                                                !checkAuthority(
+                                            hideAction: () => (
+                                                checkAuthority(
                                                     state,
                                                     SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
-                                                    item.data.securityGroupName,
                                                 )
                                             ),
                                         }, {
@@ -337,7 +335,7 @@ const ConnectionOverview = withStyles(styles)(
                                             label: translator('connections.overview.list.actions.delete'),
                                             onClick: this.setConnectionToDelete,
                                             hideAction: () => (
-                                                !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                                                !checkAuthority(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                                             ),
                                         },
                                     )}

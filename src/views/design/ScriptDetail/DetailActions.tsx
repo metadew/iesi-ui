@@ -55,7 +55,6 @@ function DetailActions({
     onViewReport,
     onExport,
     isCreateRoute,
-    newScriptDetail,
     state,
 }: IPublicProps & IObserveProps) {
     const classes = useStyles();
@@ -107,7 +106,6 @@ function DetailActions({
                 {isCreateRoute || checkAuthority(
                     state,
                     SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                    newScriptDetail.securityGroupName,
                 )
                     ? (
                         <Tooltip
@@ -133,7 +131,6 @@ function DetailActions({
                         {isCreateRoute || checkAuthority(
                             state,
                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                            newScriptDetail.securityGroupName,
                         )
                             ? (
                                 <Button
@@ -160,7 +157,6 @@ function DetailActions({
                             {checkAuthority(
                                 state,
                                 SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_WRITE,
-                                newScriptDetail.securityGroupName,
                             )
                                 ? (
                                     <Tooltip
@@ -174,7 +170,6 @@ function DetailActions({
                             {checkAuthority(
                                 state,
                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                newScriptDetail.securityGroupName,
                             )
                                 ? (
                                     <Tooltip
@@ -188,7 +183,6 @@ function DetailActions({
                             {checkAuthority(
                                 state,
                                 SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_READ,
-                                newScriptDetail.securityGroupName,
                             )
                                 ? (
                                     <Tooltip
@@ -202,7 +196,6 @@ function DetailActions({
                             {checkAuthority(
                                 state,
                                 SECURITY_PRIVILEGES.S_SCRIPTS_READ,
-                                newScriptDetail.securityGroupName,
                             )
                                 ? (
                                     <Tooltip

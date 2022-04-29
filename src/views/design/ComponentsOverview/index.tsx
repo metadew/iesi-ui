@@ -18,10 +18,10 @@ import {
     SortOrder,
     SortType,
 } from 'models/list.models';
-import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
-import { IComponent, IComponentColumnNames, IComponentColumnNamesBase } from 'models/state/components.model';
+import { IComponent, IComponentColumnNamesBase } from 'models/state/components.model';
 import GenericList from 'views/common/list/GenericList';
 import { getTranslator } from 'state/i18n/selectors';
 import { setComponentsListFilter } from 'state/ui/actions';
@@ -174,7 +174,7 @@ const ComponentsOverview = withStyles(styles)(
                                         />
                                     </Box>
                                     {
-                                        checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                        checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
                                         && (
                                             <Box display="flex" alignItems="center">
                                                 <Box flex="0 0 auto" mr="8px" width="250px">
@@ -304,11 +304,10 @@ const ComponentsOverview = withStyles(styles)(
                                                     },
                                                 });
                                             },
-                                            hideAction: (item: IListItem<IComponentColumnNames>) => (
+                                            hideAction: () => (
                                                 !checkAuthority(
                                                     state,
                                                     SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
-                                                    item.columns.securityGroupName.toString(),
                                                 )
                                             ),
                                         }, {
@@ -326,22 +325,20 @@ const ComponentsOverview = withStyles(styles)(
                                                     },
                                                 });
                                             },
-                                            hideAction: (item: IListItem<IComponentColumnNames>) => (
+                                            hideAction: () => (
                                                 checkAuthority(
                                                     state,
                                                     SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
-                                                    item.columns.securityGroupName.toString(),
                                                 )
                                             ),
                                         }, {
                                             icon: <Delete />,
                                             label: translator('components.overview.list.actions.delete'),
                                             onClick: this.setComponentToDelete,
-                                            hideAction: (item: IListItem<IComponentColumnNames>) => (
+                                            hideAction: () => (
                                                 !checkAuthority(
                                                     state,
                                                     SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
-                                                    item.columns.securityGroupName.toString(),
                                                 )
                                             ),
                                         },

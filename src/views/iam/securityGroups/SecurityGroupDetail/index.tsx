@@ -27,7 +27,7 @@ import { getAsyncTeamDetailSecurityGroup } from 'state/entities/teams/selectors'
 import { clone } from 'lodash';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import Loader from 'views/common/waiting/Loader';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import { TRequiredFieldsState } from 'models/form.models';
@@ -328,7 +328,7 @@ const SecurityGroupDetail = withStyles(styles)(
                                             },
                                         }),
                                         hideAction: () =>
-                                            !checkAuthorityGeneral(
+                                            !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_TEAMS_WRITE,
                                             ),
@@ -343,10 +343,10 @@ const SecurityGroupDetail = withStyles(styles)(
                                             },
                                         }),
                                         hideAction: () =>
-                                            checkAuthorityGeneral(
+                                            checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_TEAMS_WRITE,
-                                            ) || !checkAuthorityGeneral(
+                                            ) || !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_TEAMS_READ,
                                             ),

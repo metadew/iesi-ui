@@ -11,7 +11,7 @@ import Tooltip from 'views/common/tooltips/Tooltip';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 interface IPublicProps {
@@ -68,7 +68,7 @@ function DetailActions({
             <Box flex="0 0 auto">
                 {!isCreateRoute
                     && typeof onAdd === 'function'
-                    && checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
+                    && checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
                     ? (
                         <Tooltip
                             title={translator('users.detail.main.actions.add_roles')}
@@ -89,11 +89,11 @@ function DetailActions({
             </Box>
             <Box flex="0 0 auto">
                 {
-                    checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE) && (
+                    checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE) && (
                         <Paper elevation={0} className={classes.actions}>
                             <Box display="inline" marginRight={1}>
                                 {isCreateRoute
-                                    || checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
+                                    || checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
                                     ? (
                                         <Button
                                             variant="contained"
@@ -110,7 +110,7 @@ function DetailActions({
                             </Box>
                             {isCreateRoute ? DeleteButton : (
                                 <>
-                                    {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
+                                    {checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
                                         ? (
                                             <Tooltip
                                                 title={translator('users.detail.main.actions.delete')}

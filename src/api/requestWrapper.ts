@@ -12,6 +12,7 @@ import {
 } from 'models/api.models';
 import { DEFAULT_TIMEOUT_IN_MILLIS } from 'config/api.config';
 import { isApiLoggingEnabled } from 'config/develop.config';
+// eslint-disable-next-line import/no-cycle
 import { getStore } from 'state';
 
 const apiLogger = isApiLoggingEnabled

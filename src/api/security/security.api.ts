@@ -1,5 +1,9 @@
-import { IUser, IUserByIdPayload } from 'models/state/auth.models';
-import { get, post } from '../requestWrapper';
+// eslint-disable-next-line import/no-cycle
+import { getAsyncEnvConfig } from 'state/envConfig/selectors';
+// eslint-disable-next-line import/no-cycle
+import { getStore } from 'state';
+// eslint-disable-next-line import/no-cycle
+import { post } from '../requestWrapper';
 import API_URLS from '../apiUrls';
 
 export interface IAuthenticationRequest {
@@ -20,6 +24,7 @@ export interface IAuthenticationResponse {
 }
 
 export function logon(credentials: IAuthenticationRequest) {
+    const envConfig = getAsyncEnvConfig(getStore().getState()).data;
     return post<IAuthenticationResponse, IAuthenticationResponse>({
         isIesiApi: true,
         needsAuthentication: false,
@@ -38,17 +43,18 @@ export function logon(credentials: IAuthenticationRequest) {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({
+            grant_type: 'password',
             username: credentials.username,
             password: credentials.password,
-            client_id: 'iesi',
-            client_secret: 'iesi',
-            grant_type: 'password',
+            client_id: envConfig.iesi_api_client_id,
+            client_secret: envConfig.iesi_api_client_secret,
         }),
     });
 }
 
 // eslint-disable-next-line camelcase,@typescript-eslint/camelcase
 export function refreshToken(refresh_token: string) {
+    const envConfig = getAsyncEnvConfig(getStore().getState()).data;
     return post<IAuthenticationResponse, IAuthenticationResponse>({
         isIesiApi: true,
         needsAuthentication: false,
@@ -67,23 +73,10 @@ export function refreshToken(refresh_token: string) {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: new URLSearchParams({
-            client_id: 'iesi',
-            client_secret: 'iesi',
-            refresh_token,
             grant_type: 'refresh_token',
+            client_id: envConfig.iesi_api_client_id,
+            client_secret: envConfig.iesi_api_client_secret,
+            refresh_token,
         }),
-    });
-}
-
-export function fetchUserByUuid({ uuid }: IUserByIdPayload) {
-    return get<IUser>({
-        isIesiApi: true,
-        needsAuthentication: true,
-        url: API_URLS.USER_BY_ID,
-        pathParams: {
-            uuid,
-        },
-        // eslint-disable-next-line no-underscore-dangle
-        mapResponse: ({ data }) => data,
     });
 }

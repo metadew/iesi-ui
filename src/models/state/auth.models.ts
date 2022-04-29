@@ -2,6 +2,7 @@ export interface IAuthState {
     username: string;
     accessToken: string;
     refreshToken: string;
+    expiresAt: Date;
     permissions: IAccessLevel[];
 }
 
