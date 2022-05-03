@@ -171,7 +171,6 @@ function ScriptExecutionDetailActions<ColumnNames>({
             const column = columns[columnName] as IColumn<ColumnNames>;
 
             const value = getListItemValueFromColumn(item, columnName).toString();
-
             const colClassName = typeof column.className === 'function'
                 ? column.className(value)
                 : column.className;
@@ -361,7 +360,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                                                                 name: parameter.resolvedValue
                                                                                 || parameter.rawValue,
                                                                                 version: (
-                                                                                    getRequestVersion(
+                                                                                    getRequestVersionScript(
                                                                                         item.data.inputParameters,
                                                                                     )
                                                                                 ),
@@ -506,6 +505,15 @@ function getRequestVersion(inputParameters: IParameterRawValue[]) {
     const inputParameter = inputParameters.find((ip: IParameterRawValue) =>
         ip.name === 'requestVersion');
 
+    if (inputParameter === undefined || inputParameter.rawValue === '') {
+        return 0;
+    }
+    return inputParameter.resolvedValue || inputParameter.rawValue;
+}
+
+function getRequestVersionScript(inputParameters: IParameterRawValue[]) {
+    const inputParameter = inputParameters.find((ip: IParameterRawValue) =>
+        ip.name === 'version');
     if (inputParameter === undefined || inputParameter.rawValue === '') {
         return 0;
     }
