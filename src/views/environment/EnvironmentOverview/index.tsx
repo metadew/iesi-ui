@@ -92,7 +92,6 @@ const EnvironmentOverview = withStyles(styles)(
     class extends React.Component<TProps & IObserveProps, IComponentState> {
         public constructor(props: TProps & IObserveProps) {
             super(props);
-            console.log('okkkkkkkkkk');
             this.state = {
                 environmentIdToDelete: null,
                 loadDocDialogOpen: false,
