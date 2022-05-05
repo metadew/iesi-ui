@@ -30,7 +30,7 @@ export const triggerFetchEnvironment = (payload: IEnvironmentByNamePayload) =>
         asyncEntityToFetch: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.environmentDetail,
             refreshMode: 'always',
-            resetDataOnTrigger: false,
+            resetDataOnTrigger: true,
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.ENVIRONMENT_DETAIL],
@@ -54,7 +54,7 @@ export const triggerUpdateEnvironmentDetail = (payload: IEnvironment) =>
         onSuccess: ({ dispatch, currentEntity }) => dispatch(
             triggerFlashMessage({
                 type: 'success',
-                translationKey: 'flash_messages.environment.update',
+                translationKey: 'flash_messages.environment.edit',
                 translationPlaceholders: {
                     name: (currentEntity as IEnvironment).name,
                 },

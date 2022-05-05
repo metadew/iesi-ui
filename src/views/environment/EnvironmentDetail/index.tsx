@@ -39,6 +39,7 @@ import {
     triggerCreateEnvironmentDetail,
     triggerDeleteEnvironmentDetail,
     triggerUpdateEnvironmentDetail } from 'state/entities/environments/triggers';
+import { getUniqueIdFromEnvironment } from 'utils/environments/environmentUtils';
 import EditParameter from './EditParameter';
 
 const styles = (({ palette }: Theme) => createStyles({
@@ -91,7 +92,6 @@ const EnvironmentDetail = withStyles(styles)(
             };
 
             // eslint-disable-next-line max-len
-            // this.updateConnectionInStateIfNewConnectionWasLoaded = this.updateConnectionInStateIfNewConnectionWasLoaded.bind(this);
             this.navigateToComponentAfterCreation = this.navigateToComponentAfterCreation.bind(this);
             this.navigateToEnvironmentAfterDeletion = this.navigateToEnvironmentAfterDeletion.bind(this);
             this.renderEnvironmentDetailPanel = this.renderEnvironmentDetailPanel.bind(this);
@@ -100,10 +100,11 @@ const EnvironmentDetail = withStyles(styles)(
             this.onDeleteEnvironment = this.onDeleteEnvironment.bind(this);
             this.isCreateEnvironmentRoute = this.isCreateEnvironmentRoute.bind(this);
             this.getEditParameter = this.getEditParameter.bind(this);
+            this.updateEnvInStateIfNewEnvironmentWasLoaded = this.updateEnvInStateIfNewEnvironmentWasLoaded.bind(this);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
-            // this.updateConnectionInStateIfNewConnectionWasLoaded(prevProps);
+            this.updateEnvInStateIfNewEnvironmentWasLoaded(prevProps);
             this.navigateToComponentAfterCreation(prevProps);
             this.navigateToEnvironmentAfterDeletion(prevProps);
         }
@@ -194,11 +195,6 @@ const EnvironmentDetail = withStyles(styles)(
             const { state } = this.props;
             const { newEnvironmentDetail, requiredFieldsState } = this.state;
             const translator = getTranslator(state);
-            // const environments = getAsyncEnvironments(state).data.environments || [];
-            // const environmentListItems = mapEnvironmentsToListItems(environments);
-            // const autoComplete = environmentListItems
-            //     .find((item) => item.data.name === newEnvironmentDetail.name);
-
             return (
                 <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
                     <Box flex="1 1 auto">
@@ -237,228 +233,13 @@ const EnvironmentDetail = withStyles(styles)(
             );
         }
 
-        // private renderEnvironmentDetailPanel() {
-        //     const {
-        //         newEnvironmentDetail,
-        //         // environmentIndex,
-        //         requiredFieldsState,
-        //     } = this.state;
-        //     const { state } = this.props;
-        //     const translator = getTranslator(state);
-        //     const environments = getAsyncEnvironments(state).data.environments || [];
-        //     const environmentListItems = mapEnvironmentsToListItems(environments);
-        //     const autoComplete = environmentListItems
-        //     .find((item) => item.data.name === newEnvironmentDetail.name);
-        //     return (
-        //         <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
-        //             <Box flex="1 1 auto">
-        //                 <form noValidate autoComplete="off">
-        //                     <Autocomplete
-        //                         id="combo-box-environments"
-        //                         options={environmentListItems}
-        //                         value={autoComplete || null}
-        //                         // getOptionLabel={(option) => option.data.type}
-        //                         // getOptionDisabled={() =>
-        //                         //     !checkAuthorityGeneral(
-        //                         //         state,
-        //                         //         SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE,
-        //                         //     )}
-        //                         renderInput={(params) => (
-        //                             <TextInput
-        //                                 {...params}
-        //                                 label={translator('environments.detail.side.environment')}
-        //                                 variant="filled"
-        //                                 error={requiredFieldsState.name.showError}
-        //                                 // eslint-disable-next-line max-len
-        //                                 helperText={requiredFieldsState.name.showError &&
-        //                                     'Environment is a required field'}
-        //                                 InputProps={{
-        //                                     ...params.InputProps,
-        //                                     readOnly: !this.isCreateEnvironmentRoute(),
-        //                                     // && !checkAuthority(
-        //                                     //     state,
-        //                                     //     SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE,
-        //                                     // ),
-        //                                     disableUnderline: true,
-        //                                 }}
-        //                             />
-        //                         )}
-        //                         // onChange={(
-        //                         //     e: React.ChangeEvent<{}>,
-        //                         //     newValue: IListItem<IEnvironmentColumnNamesBase, IListData>,
-        //                         // ) => {
-        //                         //     this.updateEnvironment({
-        //                         //         type: newValue ? newValue.data.type : null,
-        //                         //         environments: newEnvironmentDetail.environments
-        //                         //             .map((environment) => (
-        //                         //                 {
-        //                         //                     ...environment,
-        //                         //                     parameters: newValue
-        //                         //                         ? environments
-        //                         //                             .find((item) => item.type === newValue?.data?.type)
-        //                         //                             .parameters?.filter((item) => item.mandatory)
-        //                         //                             .map((item) => ({ name: item.name, value: '' }))
-        //                         //                         : [],
-
-        //                         //                 }
-        //                         //             )),
-        //                         //     });
-        //                         // }}
-        //                     />
-        //                     <TextInput
-        //                         id="environment-name"
-        //                         label={translator('environments.detail.side.environment_name')}
-        //                         InputProps={{
-        //                             readOnly: !this.isCreateEnvironmentRoute() && newEnvironmentDetail !== undefined,
-        //                             //    && !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
-        //                             disableUnderline: true,
-        //                         }}
-        //                         value={newEnvironmentDetail.name}
-        //                         onChange={(e) => this.updateEnvironment({ name: e.target.value })}
-        //                         required={this.isCreateEnvironmentRoute()}
-        //                         error={requiredFieldsState.name.showError}
-        //                         helperText={requiredFieldsState.name.showError
-        //                             && 'Environment name is a required field'}
-        //                     />
-        //                     <TextInput
-        //                         id="environment-description"
-        //                         label={translator('environments.detail.side.environment_description')}
-        //                         multiline
-        //                         rows={8}
-        //                         InputProps={{
-        //                             readOnly: (!this.isCreateEnvironmentRoute && newEnvironmentDetail !== undefined),
-        //                             // || !checkAuthority(
-        //                             //     state,
-        //                             //     SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE,
-        //                             // ),
-        //                             disableUnderline: true,
-
-        //                         }}
-        //                         value={newEnvironmentDetail.description}
-        //                         onChange={(e) => this.updateEnvironment({
-        //                             description: e.target.value,
-        //                         })}
-        //                     />
-        //                     {
-        //                         /*
-        //                     {
-        //                         this.isCreateConnectionRoute() ? (
-        //                             <>
-        //                                 <TextInput
-        //                                     id="connection-security-group"
-        //                                     label={translator('connections.detail.side.connection_security')}
-        //                                     error={requiredFieldsState.securityGroupName.showError}
-        //                                     // eslint-disable-next-line max-len
-        //                                     helperText={requiredFieldsState.securityGroupName.showError
-        //                                         && 'Security group is a required field'}
-        //                                     value={newConnectionDetail && newConnectionDetail.securityGroupName
-        //                                         ? newConnectionDetail.securityGroupName : ''}
-        //                                     onChange={(e) => this.updateConnection({
-        //                                         securityGroupName: e.target.value,
-        //                                     })}
-        //                                     InputProps={{
-        //                                         disableUnderline: true,
-        //                                     }}
-        //                                     required
-        //                                 />
-        //                                 <DescriptionList
-        //                                     noLineAfterListItem
-        //                                     items={[].concat({
-        //                                         label: <Translate msg="connections.detail.side" />,
-        //                                         value: <EditEnvironments
-        //                                             // eslint-disable-next-line max-len
-        //                                             environments={newConnectionDetail &&
-        //                                                 newConnectionDetail.environments}
-        //                                             selectedIndex={environmentIndex}
-        //                                             onEnvironmentSelected={(index) =>
-        //                                                 this.setState({ environmentIndex: index })}
-        //                                             onSubmit={(newEnvironment) => {
-        //                                                 this.updateConnection({
-        //                                                     environments: [...newConnectionDetail.environments, {
-        //                                                         ...newEnvironment,
-        //                                                         parameters: newConnectionDetail.type
-        //                                                             ? connectionTypes
-        //                                                                 // eslint-disable-next-line max-len
-        //                                                                 .find((item) => item.type
-        //                                                                 === newConnectionDetail.type)
-        //                                                                 .parameters?.filter((item) => item.mandatory)
-        //                                                                 .map((item) =>
-        //                                                                  ({ name: item.name, value: '' }))
-        //                                                             : [],
-        //                                                     }],
-        //                                                 });
-        //                                             }}
-        //                                             onDelete={(index) => {
-        //                                                 const environments = [...newConnectionDetail.environments];
-        //                                                 environments.splice(index, 1);
-        //                                                 this.updateConnection({
-        //                                                     environments,
-        //                                                 });
-        //                                             }}
-        //                                             isCreateConnectionRoute={this.isCreateConnectionRoute()}
-        //                                         />,
-        //                                     })}
-        //                                 />
-        //                             </>
-        //                         ) : (
-        //                             <DescriptionList
-        //                                 noLineAfterListItem
-        //                                 items={[].concat({
-        //                                     label: translator('connections.detail.side.connection_security'),
-        //                                     value: newConnectionDetail && newConnectionDetail.securityGroupName
-        //                                         ? newConnectionDetail.securityGroupName : '',
-        //                                 }, {
-        //                                     label: <Translate msg="connections.detail.side.environments.title" />,
-        //                                     value: <EditEnvironments
-        //                                         environments={newConnectionDetail &&
-        //                                          newConnectionDetail.environments}
-        //                                         selectedIndex={environmentIndex}
-        //                                         // eslint-disable-next-line max-len
-        //                                         onEnvironmentSelected={(index) =>
-        //                                             this.setState({ environmentIndex: index })}
-        //                                         onSubmit={(newEnvironment) => {
-        //                                             this.updateConnection({
-        //                                                 environments: [...newConnectionDetail.environments, {
-        //                                                     ...newEnvironment,
-        //                                                     parameters: newConnectionDetail.type
-        //                                                         ? connectionTypes
-        //                                                             // eslint-disable-next-line max-len
-        //                                                             .find((item) => item.type ===
-        //                                                             newConnectionDetail.type)
-        //                                                             .parameters?.filter((item) => item.mandatory)
-        //                                                             .map((item) => ({ name: item.name, value: '' }))
-        //                                                         : [],
-        //                                                 }],
-        //                                             });
-        //                                         }}
-        //                                         onDelete={(index) => {
-        //                                             const environments = [...newConnectionDetail.environments];
-        //                                             environments.splice(index, 1);
-        //                                             this.updateConnection({
-        //                                                 environments,
-        //                                             });
-        //                                         }}
-        //                                         isCreateConnectionRoute={this.isCreateConnectionRoute()}
-        //                                     />,
-        //                                 })}
-        //                             />
-        //                         )
-        //                     } */}
-        //                 </form>
-        //             </Box>
-        //         </Box>
-        //     );
-        // }
-
         private renderEnvironmentDetailContent() {
             const {
                 newEnvironmentDetail,
-                // environmentIndex,
                 hasChangesToCheck,
             } = this.state;
             const { state } = this.props;
             const translator = getTranslator(state);
-            // const environments = getAsyncEnvironments(state).data.environments || [];
             const parameterItems = getParametersFromEnvironment(newEnvironmentDetail);
             const hasParameters = parameterItems.length > 0;
 
@@ -547,16 +328,15 @@ const EnvironmentDetail = withStyles(styles)(
                             }, {
                                 icon: <Delete />,
                                 label: translator('environments.detail.main.list.actions.delete'),
-                                onClick: (_, index) => this.setState({ editParameterIndex: index }),
-                                // onClick: (_, index) => {
-                                //     if (newEnvironmentDetail.parameters.length > 0) {
-                                //         const newParameters = [...newEnvironmentDetail.parameters];
-                                //         newParameters.splice(index, 1);
-                                //         this.updateEnvironment({
-                                //             parameters: newParameters,
-                                //         });
-                                //     }
-                                // },
+                                onClick: (_, index) => {
+                                    if (newEnvironmentDetail.parameters.length > 0) {
+                                        const newParameters = [...newEnvironmentDetail.parameters];
+                                        newParameters.splice(index, 1);
+                                        this.updateEnvironment({
+                                            parameters: newParameters,
+                                        });
+                                    }
+                                },
                                 hideAction: () => null,
                             }]}
                         />
@@ -568,12 +348,10 @@ const EnvironmentDetail = withStyles(styles)(
         private renderEditParameterContent() {
             const {
                 newEnvironmentDetail,
-                // environmentIndex,
                 editParameterIndex,
                 isAddingParameter,
             } = this.state;
             const { state } = this.props;
-            // if editing, get current parameters else (adding new parameter) create an empty parameter
             const parameter = editParameterIndex > -1 ? this.getEditParameter() : {
                 name: '',
                 value: '',
@@ -595,72 +373,27 @@ const EnvironmentDetail = withStyles(styles)(
                         if (!isAddingParameter) {
                             newParameters[editParameterIndex] = newParameter;
                         }
-                        const orderedParameters = orderComponentParameters(newParameters, matchingEnvironment);
+                        const orderedParameters = orderEnvironmentParameters(newParameters, matchingEnvironment);
                         this.updateEnvironment({
                             parameters: orderedParameters,
                         });
                     }}
-                    // onClose={() => this.setState({ editParameterIndex: -1, isAddingParameter: false })}
-                    // parameter={parameter}
-                    // isCreateParameter={isAddingParameter}
-                    // mandatory={null}
-                    // onEdit={(newParameter) => {
-                    //     const parameters = editParameterIndex !== null ? (
-                    //         newEnvironmentDetail.parameters.map((paramState, index) => {
-                    //             if (index !== editParameterIndex) {
-                    //                 return paramState;
-                    //             }
-                    //             return newParameter;
-                    //         })
-                    //     ) : [...newEnvironmentDetail.parameters, newParameter];
-                    //     this.updateEnvironment({ parameters });
-                    // }}
-                    // newParameter={newEnvironmentDetail.parameters[editParameterIndex]}
-                    // onEdit={(newParameter) => {
-                    //     let newParameters: IEnvironmentParameter[];
-                    //     if (isAddingParameter) {
-                    //         newParameters = [
-                    //             ...newEnvironmentDetail.parameters, newParameter,
-                    //         ];
-                    //     } else {
-                    //         newParameters = [...newEnvironmentDetail.parameters];
-                    //         newParameters[editParameterIndex] = newParameter;
-                    //     }
-
-                    // const orderedEnvironments = orderEnvironments(
-                    //     newEnvironmentDetail, matchingEnvironment,
-                    //     newParameters,
-                    //     newEnvironmentDetail.environments[environmentIndex],
-                    // );
-                    // this.updateConnection({
-                    //     environments: orderedEnvironments,
-                    // });
-                // }}
                 />
             );
         }
 
-        // private updateConnectionInStateIfNewConnectionWasLoaded(prevProps: TProps & IObserveProps) {
-        //     const connectionDetail = getAsyncConnectionDetail(this.props.state).data;
-        //     const prevConnectionDetail = getAsyncConnectionDetail(prevProps.state).data;
-        //     if (getUniqueIdFromConnection(connectionDetail) !== getUniqueIdFromConnection(prevConnectionDetail)) {
-        //         const connectionDetailDeepClone = clone(connectionDetail);
-        //         if (connectionDetailDeepClone) {
-        //             const connectionTypes = getAsyncConnectionTypes(this.props.state).data || [];
-        //             const matchingConnectionType = connectionTypes
-        //                 .find((item) => item.type === connectionDetailDeepClone.type);
-        //             const orderedEnvironments = orderEnvironments(
-        //                 connectionDetailDeepClone, matchingConnectionType,
-        //             );
-        //             this.setState({
-        //                 newConnectionDetail: {
-        //                     ...connectionDetailDeepClone,
-        //                     environments: orderedEnvironments,
-        //                 },
-        //             });
-        //         }
-        //     }
-        // }
+        private updateEnvInStateIfNewEnvironmentWasLoaded(prevProps: TProps & IObserveProps) {
+            const environmentDetail = getAsyncEnvironmentDetail(this.props.state).data;
+            const prevEnvironmentDetail = getAsyncEnvironmentDetail(prevProps.state).data;
+            if (getUniqueIdFromEnvironment(environmentDetail) !== getUniqueIdFromEnvironment(prevEnvironmentDetail)) {
+                const environmentDetailDeepClone = clone(environmentDetail);
+                if (environmentDetailDeepClone) {
+                    this.setState({
+                        newEnvironmentDetail: environmentDetailDeepClone,
+                    });
+                }
+            }
+        }
 
         private updateEnvironment(fieldsToUpdate: Partial<IEnvironment>) {
             this.setState((prevState) => ({
@@ -756,7 +489,7 @@ function getParametersFromEnvironment(environments: IEnvironment) {
 //     return environmentToList;
 // }
 
-function orderComponentParameters(items: IEnvironmentParameter[], environment: IEnvironment) {
+function orderEnvironmentParameters(items: IEnvironmentParameter[], environment: IEnvironment) {
     const parameters = items
         ? items
             .map((parameter) => ({
