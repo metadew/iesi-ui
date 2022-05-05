@@ -22,9 +22,13 @@ export interface IEnvironmentEntity {
 export interface IEnvironment {
     name: string;
     description: string;
-    parameters?: IParameter[];
+    parameters?: IEnvironmentParameter[];
 }
-
+export interface IEnvironmentParameter {
+    [key: string]: string;
+    name: string;
+    value: string;
+}
 export interface IEnvironmentColumnNamesBase {
     name: string;
     description: string;

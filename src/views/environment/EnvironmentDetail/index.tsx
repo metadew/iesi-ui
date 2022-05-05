@@ -10,10 +10,10 @@ import {
     withStyles,
     WithStyles,
 } from '@material-ui/core';
-import { IEnvironment } from 'models/state/environments.models';
+import { IEnvironment, IEnvironmentParameter } from 'models/state/environments.models';
 import { THEME_COLORS } from 'config/themes/colors';
 import { IObserveProps, observe } from 'views/observe';
-import { StateChangeNotification } from 'models/state.models';
+import { IState, StateChangeNotification } from 'models/state.models';
 import Loader from 'views/common/waiting/Loader';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { TRequiredFieldsState } from 'models/form.models';
@@ -24,7 +24,6 @@ import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel';
 import { getRouteKeyByPath, redirectTo, ROUTE_KEYS } from 'views/routes';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
-import { IParameter } from 'models/state/iesiGeneric.models';
 import { IListItem, ListColumns } from 'models/list.models';
 import { Edit, Delete } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
@@ -40,7 +39,7 @@ import {
     triggerCreateEnvironmentDetail,
     triggerDeleteEnvironmentDetail,
     triggerUpdateEnvironmentDetail } from 'state/entities/environments/triggers';
-import EditParameter from 'views/connectivity/EditParameter';
+import EditParameter from './EditParameter';
 
 const styles = (({ palette }: Theme) => createStyles({
     addButton: {
@@ -195,6 +194,10 @@ const EnvironmentDetail = withStyles(styles)(
             const { state } = this.props;
             const { newEnvironmentDetail, requiredFieldsState } = this.state;
             const translator = getTranslator(state);
+            // const environments = getAsyncEnvironments(state).data.environments || [];
+            // const environmentListItems = mapEnvironmentsToListItems(environments);
+            // const autoComplete = environmentListItems
+            //     .find((item) => item.data.name === newEnvironmentDetail.name);
 
             return (
                 <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
@@ -478,7 +481,7 @@ const EnvironmentDetail = withStyles(styles)(
                 }
             };
 
-            const parameterColumns: ListColumns<IParameter> = {
+            const parameterColumns: ListColumns<IEnvironmentParameter> = {
                 name: {
                     label: <Translate msg="environments.detail.main.list.labels.name" />,
                     fixedWidth: '40%',
@@ -508,36 +511,6 @@ const EnvironmentDetail = withStyles(styles)(
                                 }}
                                 isCreateRoute={this.isCreateEnvironmentRoute()}
                             />
-                        </Box>
-                        <Box marginY={1}>
-                            <GenericList
-                                listItems={parameterItems}
-                                columns={parameterColumns}
-                                listActions={[{
-                                    icon: <Edit />,
-                                    label: translator('environments.detail.main.list.actions.edit'),
-                                    onClick: (_, index) => this.setState({ editParameterIndex: index }),
-                                    hideAction: () => null,
-                                }, {
-                                    icon: <Delete />,
-                                    label: translator('environments.detail.main.list.actions.delete'),
-                                    onClick: (_, index) => this.setState({ editParameterIndex: index }),
-                                    hideAction: () => null,
-                                }]}
-                            />
-                        </Box>
-                        <Box
-                            display="flex"
-                            flexDirection="column"
-                            flex="1 1 auto"
-                            justifyContent="center"
-                            paddingBottom={5}
-                        >
-                            <Box textAlign="center">
-                                <Typography variant="h2" paragraph>
-                                    <Translate msg="environments.detail.main.no_parameters.title" />
-                                </Typography>
-                            </Box>
                         </Box>
                     </>
                 );
@@ -599,38 +572,70 @@ const EnvironmentDetail = withStyles(styles)(
                 editParameterIndex,
                 isAddingParameter,
             } = this.state;
-            // const { state } = this.props;
+            const { state } = this.props;
             // if editing, get current parameters else (adding new parameter) create an empty parameter
             const parameter = editParameterIndex > -1 ? this.getEditParameter() : {
                 name: '',
                 value: '',
             };
+            const matchingEnvironment = matchEnvironment(state, newEnvironmentDetail);
+            const mandatory = matchingEnvironment
+                ? matchingEnvironment.parameters
+                    .some((item) => item.name === parameter.name && item.mandatory)
+                : false;
             return (
                 <EditParameter
                     onClose={() => this.setState({ editParameterIndex: -1, isAddingParameter: false })}
                     parameter={parameter}
-                    mandatory={null}
+                    mandatory={mandatory}
                     isCreateParameter={isAddingParameter}
                     onEdit={(newParameter) => {
-                        let newParameters: IParameter[];
-                        if (isAddingParameter) {
-                            newParameters = [
-                                ...newEnvironmentDetail.parameters, newParameter,
-                            ];
-                        } else {
-                            newParameters = [...newEnvironmentDetail.parameters];
+                        const newParameters = isAddingParameter
+                            ? [...newEnvironmentDetail.parameters, newParameter] : [...newEnvironmentDetail.parameters];
+                        if (!isAddingParameter) {
                             newParameters[editParameterIndex] = newParameter;
                         }
-
-                        // const orderedEnvironments = orderEnvironments(
-                        //     newEnvironmentDetail, matchingEnvironment,
-                        //     newParameters,
-                        //     newEnvironmentDetail.environments[environmentIndex],
-                        // );
-                        // this.updateConnection({
-                        //     environments: orderedEnvironments,
-                        // });
+                        const orderedParameters = orderComponentParameters(newParameters, matchingEnvironment);
+                        this.updateEnvironment({
+                            parameters: orderedParameters,
+                        });
                     }}
+                    // onClose={() => this.setState({ editParameterIndex: -1, isAddingParameter: false })}
+                    // parameter={parameter}
+                    // isCreateParameter={isAddingParameter}
+                    // mandatory={null}
+                    // onEdit={(newParameter) => {
+                    //     const parameters = editParameterIndex !== null ? (
+                    //         newEnvironmentDetail.parameters.map((paramState, index) => {
+                    //             if (index !== editParameterIndex) {
+                    //                 return paramState;
+                    //             }
+                    //             return newParameter;
+                    //         })
+                    //     ) : [...newEnvironmentDetail.parameters, newParameter];
+                    //     this.updateEnvironment({ parameters });
+                    // }}
+                    // newParameter={newEnvironmentDetail.parameters[editParameterIndex]}
+                    // onEdit={(newParameter) => {
+                    //     let newParameters: IEnvironmentParameter[];
+                    //     if (isAddingParameter) {
+                    //         newParameters = [
+                    //             ...newEnvironmentDetail.parameters, newParameter,
+                    //         ];
+                    //     } else {
+                    //         newParameters = [...newEnvironmentDetail.parameters];
+                    //         newParameters[editParameterIndex] = newParameter;
+                    //     }
+
+                    // const orderedEnvironments = orderEnvironments(
+                    //     newEnvironmentDetail, matchingEnvironment,
+                    //     newParameters,
+                    //     newEnvironmentDetail.environments[environmentIndex],
+                    // );
+                    // this.updateConnection({
+                    //     environments: orderedEnvironments,
+                    // });
+                // }}
                 />
             );
         }
@@ -720,7 +725,7 @@ const EnvironmentDetail = withStyles(styles)(
 function getParametersFromEnvironment(environments: IEnvironment) {
     const allParameters = environments.parameters;
 
-    const newListItems: IListItem<IParameter>[] = allParameters.map((parameter, index) => ({
+    const newListItems: IListItem<IEnvironmentParameter>[] = allParameters.map((parameter, index) => ({
         id: index,
         columns: {
             name: parameter.name,
@@ -751,32 +756,39 @@ function getParametersFromEnvironment(environments: IEnvironment) {
 //     return environmentToList;
 // }
 
-// function orderConnectionParameters(items: IConnectionParameter[], connectionType: IConnectionType) {
-//     const parameters = items
-//         ? items
-//             .map((parameter) => ({
-//                 name: parameter.name,
-//                 value: parameter.value,
-//                 mandatory: connectionType
-//                     ? connectionType.parameters
-//                         .some((type) => type.name === parameter.name && type.mandatory === true)
-//                     : false,
-//             }))
-//         : [];
-//     const mandatoryParameters = parameters
-//         .filter((p) => p.mandatory)
-//         .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
-//     const nonMandatoryParameters = parameters
-//         .filter((p) => !p.mandatory)
-//         .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
-//     const orderedParameters: IConnectionParameter[] = mandatoryParameters
-//         .concat(nonMandatoryParameters)
-//         .map((p) => ({
-//             name: p.name,
-//             value: p.value,
-//             }));
-//         return orderedParameters;
-//     }
+function orderComponentParameters(items: IEnvironmentParameter[], environment: IEnvironment) {
+    const parameters = items
+        ? items
+            .map((parameter) => ({
+                name: parameter.name,
+                value: parameter.value,
+                mandatory: environment
+                    ? environment.parameters
+                        .some((type) => type.name === parameter.name)
+                    : false,
+            }))
+        : [];
+    const mandatoryParameters = parameters
+        .filter((p) => p.mandatory)
+        .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
+    const nonMandatoryParameters = parameters
+        .filter((p) => !p.mandatory)
+        .sort((a, b) => a.name.toLowerCase().localeCompare(b.name));
+    const orderedParameters: IEnvironmentParameter[] = mandatoryParameters
+        .concat(nonMandatoryParameters)
+        .map((p) => ({
+            name: p.name,
+            value: p.value,
+        }));
+    return orderedParameters;
+}
+
+function matchEnvironment(state: IState, env: IEnvironment) {
+    const environment = getAsyncEnvironments(state).data.environments || [];
+    const matchingEnvironment = environment
+        .find((item) => item.name === env?.name);
+    return matchingEnvironment;
+}
 
 export default observe([
     StateChangeNotification.ENVIRONMENT_DETAIL,

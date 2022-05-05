@@ -269,6 +269,16 @@ const EnvironmentOverview = withStyles(styles)(
                         {
                             !hasError && (
                                 <GenericList
+                                    columns={columns}
+                                    listItems={listItems}
+                                    isLoading={isFetching}
+                                    pagination={{
+                                        pageData,
+                                        onChange: ({ page }) => {
+                                            this.fetchEnvironmentsWithFilterAndPagination({ newPage: page });
+                                            dispatch(setEnvironmentsListFilter({ page }));
+                                        },
+                                    }}
                                     listActions={[].concat(
                                         {
                                             icon: <Edit />,
@@ -296,16 +306,6 @@ const EnvironmentOverview = withStyles(styles)(
                                             ),
                                         },
                                     )}
-                                    columns={columns}
-                                    listItems={listItems}
-                                    isLoading={isFetching}
-                                    pagination={{
-                                        pageData,
-                                        onChange: ({ page }) => {
-                                            this.fetchEnvironmentsWithFilterAndPagination({ newPage: page });
-                                            dispatch(setEnvironmentsListFilter({ page }));
-                                        },
-                                    }}
                                 />
                             )
                         }
