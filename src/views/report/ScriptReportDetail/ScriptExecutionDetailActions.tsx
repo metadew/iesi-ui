@@ -171,7 +171,6 @@ function ScriptExecutionDetailActions<ColumnNames>({
             const column = columns[columnName] as IColumn<ColumnNames>;
 
             const value = getListItemValueFromColumn(item, columnName).toString();
-
             const colClassName = typeof column.className === 'function'
                 ? column.className(value)
                 : column.className;
@@ -287,44 +286,44 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                             <TableCell component="th" scope="row" className={classes.thCell}>
                                                 {parameter.name}
                                             </TableCell>
-                                            <TableCell className={classes.thCell}>
+                                            <TableCell className={classes.valueCell}>
                                                 <Box
                                                     display="flex"
+                                                    justifyContent="space-between"
                                                     alignItems="center"
+                                                    width="100%"
                                                 >
                                                     {parameter.rawValue}
                                                     {
                                                         (parameter.name === 'request') ? (
-                                                            <Box marginLeft="90px">
-                                                                <Button
-                                                                    variant="contained"
-                                                                    color="secondary"
-                                                                    size="small"
-                                                                    onClick={() =>
-                                                                        redirectTo({
-                                                                            routeKey: ROUTE_KEYS.R_COMPONENT_DETAIL,
-                                                                            params: {
-                                                                                name: parameter.resolvedValue
-                                                                                || parameter.rawValue,
-                                                                                version: (
-                                                                                    getRequestVersion(
-                                                                                        item.data.inputParameters,
-                                                                                    )
-                                                                                ),
-                                                                            },
-                                                                            newTab: true,
-                                                                        })}
-                                                                >
-                                                                    <ChevronRightRounded />
-                                                                </Button>
-                                                            </Box>
+                                                            <Button
+                                                                variant="contained"
+                                                                color="secondary"
+                                                                size="small"
+                                                                onClick={() =>
+                                                                    redirectTo({
+                                                                        routeKey: ROUTE_KEYS.R_COMPONENT_DETAIL,
+                                                                        params: {
+                                                                            name: parameter.resolvedValue
+                                                                            || parameter.rawValue,
+                                                                            version: (
+                                                                                getRequestVersion(
+                                                                                    item.data.inputParameters,
+                                                                                )
+                                                                            ),
+                                                                        },
+                                                                        newTab: true,
+                                                                    })}
+                                                            >
+                                                                <ChevronRightRounded />
+                                                            </Button>
                                                         ) : (
                                                             <p> </p>
                                                         )
                                                     }
                                                     {
                                                         (parameter.name === 'dataset') ? (
-                                                            <Box marginLeft="100px">
+                                                            <Box>
                                                                 <Button
                                                                     variant="contained"
                                                                     color="secondary"
@@ -348,36 +347,36 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                                     }
                                                     {
                                                         (parameter.name === 'script') ? (
-                                                            <Box marginLeft="100px">
-                                                                <Button
-                                                                    variant="contained"
-                                                                    color="secondary"
-                                                                    size="small"
-                                                                    onClick={() =>
-                                                                        redirectTo({
-                                                                            routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                                                            params: {
-                                                                                name: parameter.resolvedValue
-                                                                                || parameter.rawValue,
-                                                                                version: (
-                                                                                    getRequestVersion(
-                                                                                        item.data.inputParameters,
-                                                                                    )
-                                                                                ),
-                                                                            },
-                                                                            newTab: true,
-                                                                        })}
-                                                                >
-                                                                    <ChevronRightRounded />
-                                                                </Button>
-                                                            </Box>
+                                                            <Button
+                                                                variant="contained"
+                                                                color="secondary"
+                                                                size="small"
+                                                                onClick={() =>
+                                                                    redirectTo({
+                                                                        routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                                                        params: {
+                                                                            name: parameter.resolvedValue
+                                                                            || parameter.rawValue,
+                                                                            version: (
+                                                                                getRequestVersionScript(
+                                                                                    item.data.inputParameters,
+                                                                                )
+                                                                            ),
+                                                                        },
+                                                                        newTab: true,
+                                                                    })}
+                                                            >
+                                                                <ChevronRightRounded />
+                                                            </Button>
                                                         ) : (
                                                             <p> </p>
                                                         )
                                                     }
                                                 </Box>
                                             </TableCell>
-                                            <TableCell>{parameter.resolvedValue}</TableCell>
+                                            <TableCell className={classes.valueCell}>
+                                                {parameter.resolvedValue}
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -386,7 +385,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                     </TableContainer>
                 </Box>
 
-                <Box marginBottom={45}>
+                <Box marginBottom={2}>
                     <Paper elevation={0}>
                         <Box padding={1.6}>
                             <Typography variant="subtitle2">
@@ -505,6 +504,15 @@ function getRequestVersion(inputParameters: IParameterRawValue[]) {
     const inputParameter = inputParameters.find((ip: IParameterRawValue) =>
         ip.name === 'requestVersion');
 
+    if (inputParameter === undefined || inputParameter.rawValue === '') {
+        return 0;
+    }
+    return inputParameter.resolvedValue || inputParameter.rawValue;
+}
+
+function getRequestVersionScript(inputParameters: IParameterRawValue[]) {
+    const inputParameter = inputParameters.find((ip: IParameterRawValue) =>
+        ip.name === 'version');
     if (inputParameter === undefined || inputParameter.rawValue === '') {
         return 0;
     }
