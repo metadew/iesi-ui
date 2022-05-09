@@ -28,8 +28,6 @@ import { IListItem, ListColumns } from 'models/list.models';
 import { Edit, Delete } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import { clone } from 'lodash';
-// import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
-// import { checkAuthority } from 'state/auth/selectors';
 import TextInput from 'views/common/input/TextInput';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
@@ -472,22 +470,6 @@ function getParametersFromEnvironment(environments: IEnvironment) {
 
     return newListItems;
 }
-
-// function mapEnvironmentsToListItems(items: IEnvironment[]) {
-//     const environmentToList: IListItem<IEnvironmentColumnNamesBase, IListData>[] = items
-//         ? items.map((item) => ({
-//             // id: item,
-//             columns: {
-//                 name: item.name,
-//                 description: item.description,
-//             },
-//             data: {
-//                 name: item.name,
-//                 description: item.description,
-//             },
-//         })) : [];
-//     return environmentToList;
-// }
 
 function orderEnvironmentParameters(items: IEnvironmentParameter[], environment: IEnvironment) {
     const parameters = items
