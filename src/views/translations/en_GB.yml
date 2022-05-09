@@ -645,6 +645,7 @@ datasets:
         save: Save
         delete: Delete
         export: Export
+        view: View
       list:
         labels:
           labels: 'Labels'
@@ -670,6 +671,7 @@ datasets:
           save: Save
           update: Update
           cancel: Cancel
+          close: Close
           discard: Discard changes
     flash_messages:
       create_success: The dataset {name} h as been created successfully !

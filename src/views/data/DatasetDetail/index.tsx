@@ -1,14 +1,14 @@
 import React from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { clone } from 'ramda';
 import { getUniqueIdFromDataset } from 'utils/datasets/datasetUtils';
 import { IObserveProps, observe } from 'views/observe';
-import { Box, Collapse, createStyles, Typography, WithStyles, withStyles, Button } from '@material-ui/core';
+import { Box, Button, Collapse, createStyles, Typography, withStyles, WithStyles } from '@material-ui/core';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel';
 import { IDatasetBase, IDatasetImplementation, IDatasetImplementationColumn } from 'models/state/datasets.model';
 import TextInput from 'views/common/input/TextInput';
 import { getTranslator } from 'state/i18n/selectors';
-import { getRouteKeyByPath, ROUTE_KEYS, redirectTo } from 'views/routes';
+import { getRouteKeyByPath, redirectTo, ROUTE_KEYS } from 'views/routes';
 import { TRequiredFieldsState } from 'models/form.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { Alert } from '@material-ui/lab';
@@ -16,7 +16,7 @@ import GenericList from 'views/common/list/GenericList';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import Loader from 'views/common/waiting/Loader';
 import { IListItem, ListColumns } from 'models/list.models';
-import { Add, Edit, Delete, FileCopy } from '@material-ui/icons';
+import { Add, Delete, Edit, FileCopy, Visibility } from '@material-ui/icons';
 import { getAsyncDatasetDetail } from 'state/entities/datasets/selectors';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
@@ -28,7 +28,7 @@ import {
     triggerFetchDatasetImplementations,
     triggerUpdateDatasetDetail,
 } from 'state/entities/datasets/triggers';
-import { checkAuthority } from 'state/auth/selectors';
+import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import { StateChangeNotification } from 'models/state.models';
@@ -353,17 +353,22 @@ const DatasetDetail = withStyles(styles)(
                                 icon: <Edit />,
                                 label: translator('datasets.detail.main.list.actions.edit'),
                                 onClick: (id, index) => this.setState({ implementationIndexToEdit: index }),
-                                hideAction: () => null,
+                                hideAction: () => !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE),
                             }, {
                                 icon: <Delete />,
                                 label: translator('datasets.detail.main.list.actions.delete'),
                                 onClick: (id, index) => this.setState({ implementationIndexToDelete: index }),
-                                hideAction: () => null,
+                                hideAction: () => !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE),
                             }, {
                                 icon: <FileCopy />,
                                 label: translator('datasets.detail.main.list.actions.duplicate'),
                                 onClick: (id, index) => this.setState({ implementationIndexToDuplicate: index }),
-                                hideAction: () => null,
+                                hideAction: () => !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE),
+                            }, {
+                                icon: <Visibility />,
+                                label: translator('datasets.detail.main.list.actions.view'),
+                                onClick: (id, index) => this.setState({ implementationIndexToEdit: index }),
+                                hideAction: () => checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE),
                             }]}
                         />
                     </Box>

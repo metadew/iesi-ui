@@ -1,20 +1,7 @@
 import React, { useRef, useState } from 'react';
 import classnames from 'classnames';
-import {
-    makeStyles,
-    Box,
-    Typography,
-    Paper,
-    Chip,
-    Button,
-    IconButton,
-    darken,
-    ButtonGroup,
-} from '@material-ui/core';
-import {
-    AddRounded as AddIcon,
-    RemoveCircle as RemoveIcon,
-} from '@material-ui/icons';
+import { Box, Button, ButtonGroup, Chip, darken, IconButton, makeStyles, Paper, Typography } from '@material-ui/core';
+import { AddRounded as AddIcon, RemoveCircle as RemoveIcon } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { THEME_COLORS } from 'config/themes/colors';
 import { getTranslator } from 'state/i18n/selectors';
@@ -23,6 +10,8 @@ import TextInput from 'views/common/input/TextInput';
 import { Autocomplete } from '@material-ui/lab';
 import Tooltip from 'views/common/tooltips/Tooltip';
 import { IDatasetImplementation, IKeyValue } from 'models/state/datasets.model';
+import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 const useStyles = makeStyles(({ palette, typography }) => ({
     dialog: {
@@ -156,6 +145,7 @@ function EditImplementation({
                 <Box marginBottom={2}>
                     <Paper className={classes.paper}>
                         <Autocomplete
+                            disabled={!checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE)}
                             ref={ref}
                             multiple
                             id="implementation-labels"
@@ -194,23 +184,26 @@ function EditImplementation({
                         />
                     </Paper>
                 </Box>
-                <Box marginBottom={2}>
-                    <Tooltip
-                        title={translator('datasets.detail.edit.implementation.add_key_values')}
-                        enterDelay={1000}
-                        enterNextDelay={1000}
-                    >
-                        <IconButton
-                            aria-label={translator('datasets.detail.edit.implementation.add_key_values')}
-                            className={classes.addButton}
-                            onClick={addValue}
-                            color="default"
-                        >
-                            <AddIcon />
-                        </IconButton>
-                    </Tooltip>
-
-                </Box>
+                {
+                    checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE) && (
+                        <Box marginBottom={2}>
+                            <Tooltip
+                                title={translator('datasets.detail.edit.implementation.add_key_values')}
+                                enterDelay={1000}
+                                enterNextDelay={1000}
+                            >
+                                <IconButton
+                                    aria-label={translator('datasets.detail.edit.implementation.add_key_values')}
+                                    className={classes.addButton}
+                                    onClick={addValue}
+                                    color="default"
+                                >
+                                    <AddIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
+                    )
+                }
                 {
                     keyValues.length > 0 && keyValues.map((keyValue) => (
                         <Box
@@ -233,6 +226,7 @@ function EditImplementation({
                                         className={classes.textField}
                                         defaultValue={keyValue.key}
                                         onChange={(e) => onKeyChanges(e.target.value, keyValue.uuid)}
+                                        disabled={!checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE)}
                                         fullWidth
                                     />
                                 </Paper>
@@ -249,49 +243,70 @@ function EditImplementation({
                                         className={classes.textField}
                                         defaultValue={keyValue.value}
                                         onChange={(e) => onValueChanges(e.target.value, keyValue.uuid)}
+                                        disabled={!checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE)}
                                         fullWidth
                                     />
                                 </Paper>
                             </Box>
-                            <Box marginLeft={1}>
-                                <Tooltip
-                                    title={translator('datasets.detail.edit.implementation.remove_key_values')}
-                                    enterDelay={1000}
-                                    enterNextDelay={1000}
-                                >
-                                    <IconButton
-                                        aria-label={translator('datasets.detail.edit.implementation.remove_key_values')}
-                                        className={classes.addButton}
-                                        onClick={() => removeValue(keyValue.uuid)}
-                                        color="default"
-                                    >
-                                        <RemoveIcon />
-                                    </IconButton>
-                                </Tooltip>
-                            </Box>
+                            {
+                                checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE) && (
+                                    <Box marginLeft={1}>
+                                        <Tooltip
+                                            title={translator('datasets.detail.edit.implementation.remove_key_values')}
+                                            enterDelay={1000}
+                                            enterNextDelay={1000}
+                                        >
+                                            <IconButton
+                                                aria-label={translator(
+                                                    'datasets.detail.edit.implementation.remove_key_values',
+                                                )}
+                                                className={classes.addButton}
+                                                onClick={() => removeValue(keyValue.uuid)}
+                                                color="default"
+                                            >
+                                                <RemoveIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Box>
+                                )
+                            }
                         </Box>
                     ))
                 }
                 <Box marginTop={3} textAlign="right">
-                    <ButtonGroup size="small">
-                        <Button
-                            variant="outlined"
-                            color="default"
-                            onClick={onClose}
-                            disableElevation
-                        >
-                            <Translate msg="datasets.detail.edit.implementation.footer.cancel" />
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            onClick={add}
-                            disableElevation
-                        >
-                            <Translate msg="datasets.detail.edit.implementation.footer.save" />
-                        </Button>
-                    </ButtonGroup>
+                    {
+                        checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE) ? (
 
+                            <ButtonGroup size="small">
+                                <Button
+                                    variant="outlined"
+                                    color="default"
+                                    onClick={onClose}
+                                    disableElevation
+                                >
+                                    <Translate msg="datasets.detail.edit.implementation.footer.cancel" />
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    onClick={add}
+                                    disableElevation
+                                >
+                                    <Translate msg="datasets.detail.edit.implementation.footer.save" />
+                                </Button>
+                            </ButtonGroup>
+                        ) : (
+                            <Button
+                                variant="outlined"
+                                color="default"
+                                size="small"
+                                onClick={onClose}
+                                disableElevation
+                            >
+                                <Translate msg="datasets.detail.edit.implementation.footer.close" />
+                            </Button>
+                        )
+                    }
                 </Box>
             </Box>
         </Box>
