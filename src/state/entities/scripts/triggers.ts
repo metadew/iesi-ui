@@ -83,6 +83,14 @@ export const triggerCreateScriptDetail = (payload: IScriptBase | IScriptImport) 
                         break;
                 }
                 dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.common.responseError',
+                    translationPlaceholders: {
+                        message,
+                    },
+                    type: 'error',
+                }));
+            } else {
+                dispatch(triggerFlashMessage({
                     translationKey: 'flash_messages.script.error',
                     translationPlaceholders: {
                         message,

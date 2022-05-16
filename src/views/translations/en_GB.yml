@@ -59,6 +59,7 @@ flash_messages:
     responseError: '{message}'
   execution_request:
     run_finished: 'Script execution "{scriptName}" is finished!'
+    error: 'An error has occured'
   openapi:
     connection_successfully_created: 'The connection {connectionName} has been successfully created !'
     connections_successfully_created: 'The connections have been successfully created ! '
@@ -80,7 +81,7 @@ flash_messages:
   script: 
     create: 'The script has been successfully created !'
     edit: 'The script has been updated'
-    error: 'Incorrect representation of the script'
+    error: 'An error has occured'
     import: 'The script has been successfully imported !'
   user:
     create: The user has been created successfully !
@@ -101,7 +102,7 @@ flash_messages:
   datasets:
     import: 'The dataset has been successfully imported !'
     import_error: 'There is an error during the import of the dataset'
-  error: 'An error has occured'
+    error: 'An error has occured'
 scripts:
   overview:
     delete_script_dialog:

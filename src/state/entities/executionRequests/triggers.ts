@@ -7,6 +7,7 @@ import {
 } from 'models/state/executionRequests.models';
 import { StateChangeNotification } from 'models/state.models';
 import { AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import { triggerFlashMessage } from 'state/ui/actions';
 
 export const triggerFetchExecutionRequests = (payload: IFetchExecutionRequestListPayload) =>
     entitiesStateManager.triggerAsyncEntityFetch<{}>({
@@ -37,6 +38,34 @@ export const triggerCreateExecutionRequest = (payload: ICreateExecutionRequestPa
             updateDataOnSuccess: true,
         },
         extraInputSelector: () => payload,
+        onFail: ({ dispatch, error }) => {
+            let message = 'Unknown error';
+            if (error.status) {
+                switch (error.status) {
+                    case -1:
+                        message = 'Cannot connect to the server';
+                        break;
+                    default:
+                        message = error.response?.message;
+                        break;
+                }
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.common.responseError',
+                    translationPlaceholders: {
+                        message,
+                    },
+                    type: 'error',
+                }));
+            } else {
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.execution_request.error',
+                    translationPlaceholders: {
+                        message,
+                    },
+                    type: 'error',
+                }));
+            }
+        },
         notificationsToTrigger: [StateChangeNotification.EXECUTION_REQUESTS_CREATE],
     });
 
