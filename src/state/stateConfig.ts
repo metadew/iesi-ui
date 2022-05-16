@@ -68,6 +68,8 @@ export const initialState: IState = {
         // Dummy auth
         username: 'dummy-test-user',
         accessToken: '',
+        refreshToken: '',
+        expiresAt: new Date(),
         permissions: [],
     },
     entities: entitiesConfigManager.getEntitiesInititialState() as unknown as IEntitiesState,

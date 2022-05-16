@@ -25,7 +25,7 @@ import { StateChangeNotification } from 'models/state.models';
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import OrderedList from 'views/common/list/OrderedList';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 const useStyles = makeStyles(({ palette }: Theme) => ({
@@ -123,7 +123,7 @@ function EditEnvironmentsDialog({
                             button: true,
                             onSelect: () => onEnvironmentSelected(index),
                             onDelete: isCreateConnectionRoute
-                            || checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                            || checkAuthority(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                                 ? () => onDelete(index) : null,
                         }))}
                     />
@@ -132,7 +132,7 @@ function EditEnvironmentsDialog({
                         <Translate msg="connections.detail.side.environments.empty" />
                     </Typography>
                 )}
-            { checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+            { checkAuthority(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                 && (
                     <Button
                         variant="outlined"

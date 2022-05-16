@@ -9,6 +9,7 @@ import {
 } from 'models/state/scripts.models';
 import { IImportPayload, IListResponse, IPageData } from 'models/state/iesiGeneric.models';
 import FileSaver from 'file-saver';
+// eslint-disable-next-line import/no-cycle
 import { get, post, put, remove } from 'api/requestWrapper';
 import API_URLS from '../apiUrls';
 

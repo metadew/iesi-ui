@@ -40,7 +40,7 @@ import { formatSortQueryParameter } from 'utils/core/string/format';
 import { setDatasetsListFilter } from 'state/ui/actions';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericSort from 'views/common/list/GenericSort';
-import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
@@ -189,7 +189,7 @@ const DatasetOverview = withStyles(styles)(
                                         />
                                     </Box>
                                     {
-                                        checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE) && (
+                                        checkAuthority(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE) && (
                                             <Box display="flex" alignItems="center" flex="0 0 auto">
                                                 <Box flex="0 0 auto" mr="16px">
                                                     <TextFileInputDialog
@@ -318,11 +318,10 @@ const DatasetOverview = withStyles(styles)(
                                                 },
                                             });
                                         },
-                                        hideAction: (item: IListItem<IDatasetColumnNames>) => (
+                                        hideAction: () => (
                                             !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_DATASETS_WRITE,
-                                                item.columns.securityGroupName.toString(),
                                             )
                                         ),
                                     }, {
@@ -339,22 +338,20 @@ const DatasetOverview = withStyles(styles)(
                                                 },
                                             });
                                         },
-                                        hideAction: (item: IListItem<IDatasetColumnNames>) => (
+                                        hideAction: () => (
                                             checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_DATASETS_WRITE,
-                                                item.columns.securityGroupName.toString(),
                                             )
                                         ),
                                     }, {
                                         icon: <Delete />,
                                         label: translator('datasets.overview.list.actions.delete'),
                                         onClick: this.setDatasetToDelete,
-                                        hideAction: (item: IListItem<IDatasetColumnNames>) => (
+                                        hideAction: () => (
                                             !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_DATASETS_WRITE,
-                                                item.columns.securityGroupName.toString(),
                                             )),
                                     })}
                                 />

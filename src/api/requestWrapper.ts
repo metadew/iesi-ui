@@ -12,6 +12,8 @@ import {
 } from 'models/api.models';
 import { DEFAULT_TIMEOUT_IN_MILLIS } from 'config/api.config';
 import { isApiLoggingEnabled } from 'config/develop.config';
+// eslint-disable-next-line import/no-cycle
+import { getStore } from 'state';
 
 const apiLogger = isApiLoggingEnabled
     ? getApiLogger({ groupLogger: consoleGroupLogger })
@@ -78,7 +80,7 @@ export function get<Result, ResponseData = Result>(
         return requestWrapper.get({ ...config,
             headers: {
                 ...config.headers,
-                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                Authorization: `Bearer ${getStore().getState().auth.accessToken}`,
             } });
     }
     return requestWrapper.get(config);
@@ -91,7 +93,7 @@ export function post<Result, ResponseData = Result>(
         return requestWrapper.post({ ...config,
             headers: {
                 ...config.headers,
-                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                Authorization: `Bearer ${getStore().getState().auth.accessToken}`,
             } });
     }
     return requestWrapper.post(config);
@@ -104,7 +106,7 @@ export function put<Result, ResponseData = Result>(
         return requestWrapper.put({ ...config,
             headers: {
                 ...config.headers,
-                Authorization: `Bearer ${sessionStorage.getItem('token')}}`,
+                Authorization: `Bearer ${getStore().getState().auth.accessToken}`,
             } });
     }
     return requestWrapper.put(config);
@@ -117,7 +119,7 @@ export function remove<Result, ResponseData = Result>(
         return requestWrapper.remove({ ...config,
             headers: {
                 ...config.headers,
-                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                Authorization: `Bearer ${getStore().getState().auth.accessToken}`,
             } });
     }
     return requestWrapper.remove(config);

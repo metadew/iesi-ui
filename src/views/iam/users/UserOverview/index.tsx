@@ -31,7 +31,7 @@ import { setUsersListFilter } from 'state/ui/actions';
 import { StateChangeNotification } from 'models/state.models';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericSort from 'views/common/list/GenericSort';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { AddRounded, Edit, Visibility } from '@material-ui/icons';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
@@ -165,7 +165,7 @@ const UsersOverview = withStyles(styles)(
                                         />
                                     </Box>
                                     {
-                                        checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE) && (
+                                        checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE) && (
                                             <Box display="flex" alignItems="center">
                                                 <Box flex="0 0 auto">
                                                     <Button
@@ -288,7 +288,7 @@ const UsersOverview = withStyles(styles)(
                                             });
                                         },
                                         hideAction: () =>
-                                            !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE),
+                                            !checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE),
                                     }, {
                                         icon: <Visibility />,
                                         label: translator('users.overview.list.actions.view'),
@@ -304,8 +304,8 @@ const UsersOverview = withStyles(styles)(
                                             });
                                         },
                                         hideAction: () =>
-                                            checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
-                                            || !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_READ),
+                                            checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
+                                            || !checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_READ),
                                     })}
                                 />
                             ) : (

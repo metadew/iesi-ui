@@ -11,7 +11,7 @@ import Tooltip from 'views/common/tooltips/Tooltip';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 interface IPublicProps {
@@ -63,7 +63,7 @@ function DetailActions({
         <Box display="flex" alignItems="center" justifyContent="space-between" width="100%" paddingX={2.2}>
             <Box flex="0 0 auto">
                 {typeof onAdd === 'function'
-                    && checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE)
+                    && checkAuthority(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE)
                     ? (
                         <Tooltip
                             title={translator('security_groups.detail.main.actions.add_teams')}
@@ -85,10 +85,10 @@ function DetailActions({
             </Box>
             <Box flex="0 0 auto">
                 {
-                    checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE) && (
+                    checkAuthority(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE) && (
                         <Paper elevation={0} className={classes.actions}>
                             <Box display="inline" marginRight={1}>
-                                {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE)
+                                {checkAuthority(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE)
                                     ? (
                                         <Button
                                             variant="contained"
@@ -103,7 +103,7 @@ function DetailActions({
                                     )
                                     : null}
                             </Box>
-                            {!isCreateRoute && checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE)
+                            {!isCreateRoute && checkAuthority(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE)
                                 ? (
                                     <Tooltip
                                         title={translator('security_groups.detail.main.actions.delete')}

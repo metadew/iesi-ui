@@ -23,7 +23,7 @@ import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import { triggerCreateUserDetail, triggerDeleteUserRole } from 'state/entities/users/triggers';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { clone } from 'ramda';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
@@ -500,8 +500,8 @@ const UserDetail = withStyles(styles)(
                                         label: translator('user.detail.main.list.item.actions.delete'),
                                         onClick: (id, index) => this.setState({ roleIndexToDelete: index }),
                                         hideAction: () => (
-                                            !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_ROLES_WRITE)
-                                            || !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
+                                            !checkAuthority(state, SECURITY_PRIVILEGES.S_ROLES_WRITE)
+                                            || !checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
                                         ),
                                     }]}
                                 />

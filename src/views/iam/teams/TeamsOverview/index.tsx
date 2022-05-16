@@ -31,7 +31,7 @@ import { StateChangeNotification } from 'models/state.models';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericSort from 'views/common/list/GenericSort';
 import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
@@ -168,7 +168,7 @@ const TeamsOverview = withStyles(styles)(
                                         />
                                     </Box>
                                     {
-                                        checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE) && (
+                                        checkAuthority(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE) && (
                                             <Box display="flex" alignItems="center">
                                                 <Box flex="0 0 auto">
                                                     <Button
@@ -291,7 +291,7 @@ const TeamsOverview = withStyles(styles)(
                                             });
                                         },
                                         hideAction: () =>
-                                            !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE),
+                                            !checkAuthority(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE),
                                     }, {
                                         icon: <Visibility />,
                                         label: translator('teams.overview.list.actions.view'),
@@ -307,7 +307,7 @@ const TeamsOverview = withStyles(styles)(
                                             });
                                         },
                                         hideAction: () =>
-                                            checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE),
+                                            checkAuthority(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE),
                                     }, {
                                         icon: <Delete />,
                                         label: translator('teams.overview.list.actions.delete'),
@@ -318,7 +318,7 @@ const TeamsOverview = withStyles(styles)(
                                             this.setState({ teamIdToDelete: selectedTeam.id });
                                         },
                                         hideAction: () =>
-                                            !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE),
+                                            !checkAuthority(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE),
                                     })}
                                 />
                             ) : (

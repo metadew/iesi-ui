@@ -9,7 +9,7 @@ import { MenuRounded as MenuIcon } from '@material-ui/icons';
 import { StateChangeNotification } from 'models/state.models';
 import { IMenuItem, MAIN_NAV_ITEMS } from 'config/menu.config';
 import { getRoute, redirectTo, ROUTE_KEYS } from 'views/routes';
-import { checkAuthorityGeneral, hasRequiredAccessLevels } from 'state/auth/selectors';
+import { checkAuthority, hasRequiredAccessLevels } from 'state/auth/selectors';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { IObserveProps, observe } from 'views/observe';
 import { useLocation } from 'react-router-dom';
@@ -60,7 +60,7 @@ function NavigationMenu({ state }: IObserveProps) {
                         disableAutoFocusItem
                     >
                         {MAIN_NAV_ITEMS.flatMap((item) => (
-                            checkAuthorityGeneral(state, item.securityPrivilege) ? [renderNavItem(item)] : []
+                            checkAuthority(state, item.securityPrivilege) ? [renderNavItem(item)] : []
                         ))}
                     </Menu>
                 )

@@ -12,7 +12,7 @@ import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
 import { IComponent } from 'models/state/components.model';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 interface IPublicProps {
@@ -67,7 +67,7 @@ function DetailActions({
     return (
         <Box display="flex" alignItems="center" justifyContent="space-between" width="100%" paddingX={2.2}>
             <Box flex="0 0 auto">
-                {isCreateRoute || checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                {isCreateRoute || checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
                     ? (
                         <Tooltip
                             title={translator('components.detail.main.actions.add_parameter')}
@@ -88,11 +88,11 @@ function DetailActions({
             </Box>
             <Box flex="0 0 auto">
                 {
-                    checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE) && (
+                    checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE) && (
                         <Paper elevation={0} className={classes.actions}>
                             <Box display="inline" marginRight={1}>
                                 {isCreateRoute
-                                    || checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                    || checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
                                     ? (
                                         <Button
                                             variant="contained"
@@ -112,7 +112,7 @@ function DetailActions({
                                 </>
                             ) : (
                                 <>
-                                    {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                    {checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
                                         ? (
                                             <Tooltip
                                                 title={translator('components.detail.main.actions.delete')}

@@ -1,6 +1,6 @@
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import React, { useEffect } from 'react';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { ROUTE_KEYS, redirectTo } from 'views/routes';
 import { IObserveProps, observe } from './observe';
 
@@ -8,9 +8,9 @@ function Home({ state }: IObserveProps) {
     useEffect(() => {
         redirectTo({
             // eslint-disable-next-line max-len
-            routeKey: checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_READ) && checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_SCRIPTS_READ) ? (
+            routeKey: checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_READ) && checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_READ) ? (
                 ROUTE_KEYS.R_SCRIPTS
-            ) : checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_READ) && (
+            ) : checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_READ) && (
                 ROUTE_KEYS.R_USERS
             ),
         });

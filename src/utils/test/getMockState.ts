@@ -74,10 +74,11 @@ export default function getMockState({
         auth: {
             username: 'mocked-test-user',
             permissions: [{
-                group: 'PUBLIC',
                 privilege: SECURITY_PRIVILEGES.S_CONNECTIONS_READ,
             }],
             accessToken: '',
+            refreshToken: '',
+            expiresAt: new Date(),
         },
         entities: {
             actionTypes: {
@@ -296,6 +297,8 @@ function getDefaultEnvConfig(): ICustomAsyncEntity<IEnvConfig> {
         data: {
             iesi_api_base_url: 'https://some.iesi-api.be',
             iesi_api_timeout_in_seconds: 1,
+            iesi_api_client_id: 'iesi-client',
+            iesi_api_client_secret: 'iesi',
             translation_label_overrides: {
                 en_GB: {},
             },

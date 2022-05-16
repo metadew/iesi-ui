@@ -253,7 +253,6 @@ function ExecutionDetail({ state }: IObserveProps) {
                             hidden={!checkAuthority(
                                 state,
                                 SECURITY_PRIVILEGES.S_SCRIPTS_READ,
-                                scriptExecutionData.securityGroupName,
                             )}
                         >
                             <Translate msg="script_reports.overview.header.redirect_to" />
@@ -370,7 +369,6 @@ function ExecutionDetail({ state }: IObserveProps) {
                             hidden={scriptExecutionData && !checkAuthority(
                                 state,
                                 SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_WRITE,
-                                scriptExecutionData.securityGroupName,
                             )}
                         >
                             <Translate msg="script_reports.detail.side.execution.rerun" />

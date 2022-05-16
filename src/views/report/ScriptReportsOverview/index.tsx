@@ -444,7 +444,6 @@ const ScriptReportsOverview = withStyles(styles)(
                                 return execution.data.runId === null || !checkAuthority(
                                     state,
                                     SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_READ,
-                                    item.columns.securityGroupName.toString(),
                                 );
                             },
                         }, {
@@ -453,10 +452,9 @@ const ScriptReportsOverview = withStyles(styles)(
                             onClick: (id: number) => {
                                 this.onOpenExecuteDialog(id.toString());
                             },
-                            hideAction: (item: IListItem<IColumnNames>) => !checkAuthority(
+                            hideAction: () => !checkAuthority(
                                 state,
                                 SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_WRITE,
-                                item.columns.securityGroupName.toString(),
                             ),
                         })}
                         columns={columns}
