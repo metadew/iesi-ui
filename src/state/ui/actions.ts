@@ -13,6 +13,10 @@ import { ReactText } from 'react';
 import { IConnection, IConnectionColumnNamesBase } from 'models/state/connections.model';
 import { IComponent, IComponentColumnNamesBase } from 'models/state/components.model';
 import { IDatasetColumnNames, IDatasetImplementation } from 'models/state/datasets.model';
+import { IUserColumnName } from 'models/state/user.model';
+import { ITeamColumnNames } from 'models/state/team.model';
+import { ISecurityGroupColumnNames } from 'models/state/securityGroups.model';
+import { IEnvironmentColumnNamesBase } from 'models/state/environments.models';
 
 export const triggerFlashMessage = (payload: ITriggerFlashMessagePayload) => createAction<ITriggerFlashMessagePayload>({
     type: 'TRIGGER_FLASH_MESSAGE',
@@ -104,7 +108,6 @@ export const checkPollingExecutionRequests = () => createAction<{}>({
     payload: {},
     async process({ getState, api }) {
         const { dispatch } = getStore();
-
         try {
             const state = getState();
             await state.ui.pollingExecutionRequestIds.forEach(async (id) => {
@@ -272,6 +275,110 @@ export const setDatasetsListFilter = (payload: {
     },
 });
 
+export const setEnvironmentsListFilter = (payload: {
+    filters?: ListFilters<Partial<IEnvironmentColumnNamesBase>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<IEnvironmentColumnNamesBase>;
+}) => createAction<{
+    filters?: ListFilters<Partial<IEnvironmentColumnNamesBase>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<IEnvironmentColumnNamesBase>;
+}>({
+    type: 'UPDATE_ENVIRONMENTS_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.environments = {
+                    filters: payload.filters || draftState.ui.listFilters.environments.filters,
+                    page: payload.page || draftState.ui.listFilters.environments.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.environments.sortedColumn,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_ENVIRONMENTS],
+        });
+    },
+});
+
+export const setUsersListFilter = (payload: {
+    filters?: ListFilters<Partial<IUserColumnName>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<IUserColumnName>;
+}) => createAction<{
+    filters?: ListFilters<Partial<IUserColumnName>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<IUserColumnName>;
+}>({
+    type: 'UPDATE_USERS_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.users = {
+                    filters: payload.filters || draftState.ui.listFilters.users.filters,
+                    page: payload.page || draftState.ui.listFilters.users.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.users.sortedColumn,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_USERS],
+        });
+    },
+});
+
+export const setTeamsListFilter = (payload: {
+    filters?: ListFilters<Partial<ITeamColumnNames>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<ITeamColumnNames>;
+}) => createAction<{
+    filters?: ListFilters<Partial<ITeamColumnNames>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<ITeamColumnNames>;
+}>({
+    type: 'UPDATE_TEAMS_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.teams = {
+                    filters: payload.filters || draftState.ui.listFilters.teams.filters,
+                    page: payload.page || draftState.ui.listFilters.teams.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.teams.sortedColumn,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_TEAMS],
+        });
+    },
+});
+
+export const setSecurityGroupsListFilter = (payload: {
+    filters?: ListFilters<Partial<ISecurityGroupColumnNames>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<ISecurityGroupColumnNames>;
+}) => createAction<{
+    filters?: ListFilters<Partial<ISecurityGroupColumnNames>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<ISecurityGroupColumnNames>;
+}>({
+    type: 'UPDATE_SECURITY_GROUPS_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.securityGroups = {
+                    filters: payload.filters || draftState.ui.listFilters.securityGroups.filters,
+                    page: payload.page || draftState.ui.listFilters.securityGroups.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.securityGroups.sortedColumn,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_SECURITY_GROUPS],
+        });
+    },
+});
+
 export const handleConnection = (payload: {
     currentConnection: IConnection;
 }) => createAction<{
@@ -288,8 +395,8 @@ export const handleConnection = (payload: {
                 // eslint-disable-next-line no-param-reassign
                 draftState.entities.openapi.data.connections = connections
                     .map((connection) => (getUniqueIdFromConnection(connection) === currentConnectionId
-                        ? { ...connection, isHandled: true }
-                        : connection
+                            ? { ...connection, isHandled: true }
+                            : connection
                     ));
             },
             notificationsToTrigger: [StateChangeNotification.HANDLE],
@@ -345,8 +452,8 @@ export const handleComponent = (payload: {
                 // eslint-disable-next-line no-param-reassign
                 draftState.entities.openapi.data.components = components
                     .map((component) => (getUniqueIdFromComponent(component) === currentComponentId
-                        ? { ...component, isHandled: true }
-                        : component
+                            ? { ...component, isHandled: true }
+                            : component
                     ));
             },
             notificationsToTrigger: [StateChangeNotification.HANDLE],
@@ -372,8 +479,8 @@ export const editConnection = (payload: {
                 // eslint-disable-next-line no-param-reassign
                 draftState.entities.openapi.data.connections = connections
                     .map((connection) => (getUniqueIdFromConnection(connection) === currentConnectionId
-                        ? newConnection
-                        : connection
+                            ? newConnection
+                            : connection
                     ));
             },
             notificationsToTrigger: [StateChangeNotification.CONNECTION_EDIT],
@@ -399,8 +506,8 @@ export const editComponent = (payload: {
                 // eslint-disable-next-line no-param-reassign
                 draftState.entities.openapi.data.components = components
                     .map((component) => (getUniqueIdFromComponent(component) === currentComponentId
-                        ? newComponent
-                        : component
+                            ? newComponent
+                            : component
                     ));
             },
             notificationsToTrigger: [StateChangeNotification.COMPONENT_EDIT],

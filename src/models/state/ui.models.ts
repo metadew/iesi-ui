@@ -7,6 +7,10 @@ import { IColumnNames as IExecutionsColumnNames } from 'models/state/executionRe
 import { IComponentColumnNames } from './components.model';
 import { IConnectionColumnNamesBase } from './connections.model';
 import { IDatasetColumnNames } from './datasets.model';
+import { IEnvironmentColumnNamesBase } from './environments.models';
+import { IUserColumnName } from './user.model';
+import { ITeamColumnNames } from './team.model';
+import { ISecurityGroupColumnNames } from './securityGroups.model';
 
 export interface IUiState {
     flashMessages: IFlashMessage[];
@@ -15,8 +19,12 @@ export interface IUiState {
         scripts: IScriptsListFilters;
         components: IComponentsListFilters;
         connections: IListFilters<IConnectionColumnNamesBase>;
+        environments: IListFilters<IEnvironmentColumnNamesBase>;
         executions: IListFilters<IExecutionsColumnNames>;
         datasets: IListFilters<IDatasetColumnNames>;
+        users: IListFilters<IUserColumnName>;
+        teams: IListFilters<ITeamColumnNames>;
+        securityGroups: IListFilters<ISecurityGroupColumnNames>;
     };
 }
 

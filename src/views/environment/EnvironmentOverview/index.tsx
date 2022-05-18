@@ -26,8 +26,7 @@ import { getEnvironmentsListFilter } from 'state/ui/selectors';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { setEnvironmentsListFilter } from 'state/ui/actions';
-import TransformDocumentationDialog from 'views/design/common/TransformDocumentationDialog';
-import { AddRounded, Delete, Edit } from '@material-ui/icons';
+import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import { getUniqueIdFromEnvironment } from 'utils/environments/environmentUtils';
@@ -38,7 +37,7 @@ import GenericList from 'views/common/list/GenericList';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import { StateChangeNotification } from 'models/state.models';
 // import OrderedList from 'views/common/list/OrderedList';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { triggerDeleteEnvironmentDetail, triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import OrderedList from 'views/common/list/OrderedList';
@@ -108,7 +107,6 @@ const EnvironmentOverview = withStyles(styles)(
             // eslint-disable-next-line max-len
             this.closeDeleteDialogAfterSuccessfulDelete = this.closeDeleteDialogAfterSuccessfulDelete.bind(this);
             this.clearConnectionToDelete = this.clearConnectionToDelete.bind(this);
-
             this.onLoadDocDialogOpen = this.onLoadDocDialogOpen.bind(this);
             this.onLoadDocDialogClose = this.onLoadDocDialogClose.bind(this);
             this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
@@ -140,7 +138,7 @@ const EnvironmentOverview = withStyles(styles)(
 
         public render() {
             const { classes, state } = this.props;
-            const { loadDocDialogOpen, environmentIdToDelete } = this.state;
+            const { environmentIdToDelete } = this.state;
             const pageData = getAsyncEnvironmentsPageData(state);
             const filterFromState = getEnvironmentsListFilter(state);
             const environments = getAsyncEnvironmentsEntity(state);
@@ -169,15 +167,8 @@ const EnvironmentOverview = withStyles(styles)(
                                     />
                                 </Box>
                                 {
-                                    checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE) && (
+                                    checkAuthority(state, SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE) && (
                                         <Box display="flex" alignItems="center">
-                                            <Box flex="0 0 auto" mr="8px" width="250px">
-                                                <TransformDocumentationDialog
-                                                    open={loadDocDialogOpen}
-                                                    onOpen={this.onLoadDocDialogOpen}
-                                                    onClose={this.onLoadDocDialogClose}
-                                                />
-                                            </Box>
                                             <Box flex="0 0 auto">
                                                 <Button
                                                     variant="contained"
@@ -295,14 +286,30 @@ const EnvironmentOverview = withStyles(styles)(
                                                 });
                                             },
                                             hideAction: () => (
-                                                !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE)
+                                                !checkAuthority(state, SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE)
                                             ),
+                                        }, {
+                                            icon: <Visibility />,
+                                            label: translator('security_groups.overview.list.actions.view'),
+                                            onClick: (id: string) => {
+                                                const environments = getAsyncEnvironmentsEntity(state);
+                                                const selectedEnvironment = environments.find((item) =>
+                                                    getUniqueIdFromEnvironment(item) === id);
+                                                redirectTo({
+                                                    routeKey: ROUTE_KEYS.R_ENVIRONMENT_DETAIL,
+                                                    params: {
+                                                        name: selectedEnvironment.name,
+                                                    },
+                                                });
+                                            },
+                                            hideAction: () =>
+                                                checkAuthority(state, SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE),
                                         }, {
                                             icon: <Delete />,
                                             label: translator('environments.overview.list.actions.delete'),
                                             onClick: this.setEnvironmentToDelete,
                                             hideAction: () => (
-                                                !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE)
+                                                !checkAuthority(state, SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE)
                                             ),
                                         },
                                     )}
@@ -376,10 +383,10 @@ const EnvironmentOverview = withStyles(styles)(
         }
 
         private fetchEnvironmentsWithFilterAndPagination({
-            newPage,
-            newListFilters,
-            newSortedColumn,
-        }: {
+                                                             newPage,
+                                                             newListFilters,
+                                                             newSortedColumn,
+                                                         }: {
             newPage?: number;
             newListFilters?: ListFilters<Partial<IEnvironmentColumnNamesBase>>;
             newSortedColumn?: ISortedColumn<IEnvironmentColumnNamesBase>;
