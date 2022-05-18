@@ -383,17 +383,16 @@ const EnvironmentOverview = withStyles(styles)(
         }
 
         private fetchEnvironmentsWithFilterAndPagination({
-                                                             newPage,
-                                                             newListFilters,
-                                                             newSortedColumn,
-                                                         }: {
+                 newPage,
+                 newListFilters,
+                 newSortedColumn,
+             }: {
             newPage?: number;
             newListFilters?: ListFilters<Partial<IEnvironmentColumnNamesBase>>;
             newSortedColumn?: ISortedColumn<IEnvironmentColumnNamesBase>;
         }) {
             const { state } = this.props;
             const pageData = getAsyncEnvironmentsPageData(this.props.state);
-
             const filtersFromState = getEnvironmentsListFilter(state);
 
             const filters = newListFilters || filtersFromState.filters;

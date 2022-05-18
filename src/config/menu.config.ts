@@ -53,6 +53,7 @@ export const MAIN_NAV_ITEMS: IMenuItem[] = [
     toMenuItem({
         routeKey: ROUTE_KEYS.R_ENVIRONMENTS,
         translationKeySuffix: 'environments',
+        securityPrivilege: SECURITY_PRIVILEGES.S_ENVIRONMENTS_READ,
     }),
 ];
 

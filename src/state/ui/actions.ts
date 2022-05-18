@@ -395,8 +395,8 @@ export const handleConnection = (payload: {
                 // eslint-disable-next-line no-param-reassign
                 draftState.entities.openapi.data.connections = connections
                     .map((connection) => (getUniqueIdFromConnection(connection) === currentConnectionId
-                            ? { ...connection, isHandled: true }
-                            : connection
+                        ? { ...connection, isHandled: true }
+                        : connection
                     ));
             },
             notificationsToTrigger: [StateChangeNotification.HANDLE],
@@ -452,8 +452,8 @@ export const handleComponent = (payload: {
                 // eslint-disable-next-line no-param-reassign
                 draftState.entities.openapi.data.components = components
                     .map((component) => (getUniqueIdFromComponent(component) === currentComponentId
-                            ? { ...component, isHandled: true }
-                            : component
+                        ? { ...component, isHandled: true }
+                        : component
                     ));
             },
             notificationsToTrigger: [StateChangeNotification.HANDLE],
@@ -479,8 +479,8 @@ export const editConnection = (payload: {
                 // eslint-disable-next-line no-param-reassign
                 draftState.entities.openapi.data.connections = connections
                     .map((connection) => (getUniqueIdFromConnection(connection) === currentConnectionId
-                            ? newConnection
-                            : connection
+                        ? newConnection
+                        : connection
                     ));
             },
             notificationsToTrigger: [StateChangeNotification.CONNECTION_EDIT],
@@ -506,8 +506,8 @@ export const editComponent = (payload: {
                 // eslint-disable-next-line no-param-reassign
                 draftState.entities.openapi.data.components = components
                     .map((component) => (getUniqueIdFromComponent(component) === currentComponentId
-                            ? newComponent
-                            : component
+                        ? newComponent
+                        : component
                     ));
             },
             notificationsToTrigger: [StateChangeNotification.COMPONENT_EDIT],

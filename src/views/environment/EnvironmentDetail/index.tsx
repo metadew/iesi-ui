@@ -38,6 +38,8 @@ import {
     triggerDeleteEnvironmentDetail,
     triggerUpdateEnvironmentDetail } from 'state/entities/environments/triggers';
 import { getUniqueIdFromEnvironment } from 'utils/environments/environmentUtils';
+import { checkAuthority } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import EditParameter from './EditParameter';
 
 const styles = (({ palette }: Theme) => createStyles({
@@ -322,7 +324,8 @@ const EnvironmentDetail = withStyles(styles)(
                                 icon: <Edit />,
                                 label: translator('environments.detail.main.list.actions.edit'),
                                 onClick: (_, index) => this.setState({ editParameterIndex: index }),
-                                hideAction: () => null,
+                                hideAction: () =>
+                                    !checkAuthority(state, SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE),
                             }, {
                                 icon: <Delete />,
                                 label: translator('environments.detail.main.list.actions.delete'),
@@ -335,7 +338,11 @@ const EnvironmentDetail = withStyles(styles)(
                                         });
                                     }
                                 },
-                                hideAction: () => null,
+                                hideAction: () =>
+                                    !checkAuthority(
+                                        state,
+                                        SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE,
+                                    ),
                             }]}
                         />
                     </Box>
