@@ -10,7 +10,7 @@ import TextInput from 'views/common/input/TextInput';
 import { Autocomplete } from '@material-ui/lab';
 import Tooltip from 'views/common/tooltips/Tooltip';
 import { IDatasetImplementation, IKeyValue } from 'models/state/datasets.model';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 const useStyles = makeStyles(({ palette, typography }) => ({
@@ -145,7 +145,7 @@ function EditImplementation({
                 <Box marginBottom={2}>
                     <Paper className={classes.paper}>
                         <Autocomplete
-                            disabled={!checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE)}
+                            disabled={!checkAuthority(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE)}
                             ref={ref}
                             multiple
                             id="implementation-labels"
@@ -185,7 +185,7 @@ function EditImplementation({
                     </Paper>
                 </Box>
                 {
-                    checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE) && (
+                    checkAuthority(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE) && (
                         <Box marginBottom={2}>
                             <Tooltip
                                 title={translator('datasets.detail.edit.implementation.add_key_values')}
@@ -226,7 +226,7 @@ function EditImplementation({
                                         className={classes.textField}
                                         defaultValue={keyValue.key}
                                         onChange={(e) => onKeyChanges(e.target.value, keyValue.uuid)}
-                                        disabled={!checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE)}
+                                        disabled={!checkAuthority(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE)}
                                         fullWidth
                                     />
                                 </Paper>
@@ -243,13 +243,13 @@ function EditImplementation({
                                         className={classes.textField}
                                         defaultValue={keyValue.value}
                                         onChange={(e) => onValueChanges(e.target.value, keyValue.uuid)}
-                                        disabled={!checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE)}
+                                        disabled={!checkAuthority(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE)}
                                         fullWidth
                                     />
                                 </Paper>
                             </Box>
                             {
-                                checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE) && (
+                                checkAuthority(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE) && (
                                     <Box marginLeft={1}>
                                         <Tooltip
                                             title={translator('datasets.detail.edit.implementation.remove_key_values')}
@@ -275,7 +275,7 @@ function EditImplementation({
                 }
                 <Box marginTop={3} textAlign="right">
                     {
-                        checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE) ? (
+                        checkAuthority(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE) ? (
 
                             <ButtonGroup size="small">
                                 <Button
