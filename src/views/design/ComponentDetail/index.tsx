@@ -19,7 +19,7 @@ import {
     triggerCreateComponentDetail,
     triggerDeleteComponentDetail,
 } from 'state/entities/components/triggers';
-import { checkAuthorityGeneral, checkAuthority } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { IObserveProps, observe } from 'views/observe';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel';
@@ -210,7 +210,6 @@ const ComponentDetail = withStyles(styles)(
                                 checkAuthority(
                                     state,
                                     SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
-                                    newComponentDetail.securityGroupName,
                                 )
                                     ? (
                                         <Translate msg="components.detail.save_component_dialog.text" />
@@ -238,7 +237,6 @@ const ComponentDetail = withStyles(styles)(
                                         || !checkAuthority(
                                             state,
                                             SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
-                                            newComponentDetail.securityGroupName,
                                         )}
                                 >
                                     <Translate msg="components.detail.save_component_dialog.update_current_version" />
@@ -265,7 +263,6 @@ const ComponentDetail = withStyles(styles)(
                                         && !checkAuthority(
                                             state,
                                             SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
-                                            newComponentDetail.securityGroupName,
                                         )}
                                 >
                                     <Translate msg="components.detail.save_component_dialog.save_as_new_version" />
@@ -296,7 +293,7 @@ const ComponentDetail = withStyles(styles)(
                                 value={autoCompleteValue || null}
                                 getOptionLabel={(option) => option.data.type}
                                 // disabled={!checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
-                                getOptionDisabled={() => !checkAuthorityGeneral(
+                                getOptionDisabled={() => !checkAuthority(
                                     state,
                                     SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
                                 )}
@@ -310,7 +307,7 @@ const ComponentDetail = withStyles(styles)(
                                         helperText={requiredFieldsState.type.showError && 'Component type is a required field'}
                                         InputProps={{
                                             ...params.InputProps,
-                                            readOnly: !checkAuthorityGeneral(
+                                            readOnly: !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
                                             ),
@@ -355,7 +352,7 @@ const ComponentDetail = withStyles(styles)(
                                 rows={8}
                                 InputProps={{
                                     readOnly: (!this.isCreateComponentRoute && newComponentDetail !== undefined)
-                                        || !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
+                                        || !checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
                                     disableUnderline: true,
                                 }}
                                 value={newComponentDetail.version.description}
@@ -533,7 +530,7 @@ const ComponentDetail = withStyles(styles)(
                                     this.setState({ editParameterIndex: index });
                                 },
                                 hideAction: () => (
-                                    !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                    !checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
                                 ),
                             }, {
                                 icon: <Delete />,
@@ -548,7 +545,7 @@ const ComponentDetail = withStyles(styles)(
                                     }
                                 },
                                 hideAction: (item) => (
-                                    !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                    !checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
                                     || !item.canBeDeleted
                                 ),
                             }]}

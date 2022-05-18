@@ -18,7 +18,7 @@ import { getAsyncComponentTypes } from 'state/entities/constants/selectors';
 import ExpandableParameter from 'views/design/ScriptDetail/EditAction/ExpandableParameter';
 import TextInput from 'views/common/input/TextInput';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 
@@ -205,7 +205,7 @@ function EditComponentDialog({ onClose, open, state, dispatch, component }: IPub
                                     }}
                                     parameter={parameter}
                                     constantParameter={constantParameter}
-                                    readOnly={!checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
+                                    readOnly={!checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
                                 />
                             );
                         })

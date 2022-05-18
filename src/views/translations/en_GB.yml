@@ -7,7 +7,6 @@ app_shell:
       components: Components
       connections: Connections
       datasets: Datasets
-      environments: Environments
     title: iesi
 common:
   yes: Yes
@@ -68,10 +67,6 @@ flash_messages:
   connection:
     create: 'The connection has been created successfully'
     edit: 'The connection has been updated successfully'
-    error: 'An error has occured: {error}'
-  environment:
-    create: 'The environment has been created successfully'
-    edit: 'The environment has been updated successfully'
     error: 'An error has occured: {error}'
   script: 
     create: 'The script has been successfully created !'
@@ -484,81 +479,6 @@ connections:
       name: Name
       value: Value
       environment: Environment
-      footer:
-        cancel: Cancel
-        save: Save
-        update: Update
-    error:
-      save: Failed to save changes
-environments:
-  overview:
-    delete_environment_dialog:
-      text: Are you sure you want to delete this environment?
-      title: Delete environment
-    header:
-      amount: 'You have {amount} environments'
-      add_button: Create new environment
-      generate_button: "Load from OpenAPI documentation"
-    list:
-      labels:
-        name: Name
-        parameters: Parameters
-        description: Description
-      fetch_error: Something went wrong while loading the environments, please try again.
-      actions:
-        delete: Delete
-        edit: Edit
-      filter:
-       environment_name: Environment name
-      sort:
-        environment_name: Environment name
-  detail:
-    add_parameter: 'Add new parameter'
-    delete_environment_dialog:
-      text: Are you sure you want to delete this environment?
-      title: Delete environment
-    save_environment_dialog:
-      title: Save environment
-      text: Are you sure to create the environment {environmentName} ?
-      create: Create environment
-      update: Update environment
-    side:
-      environment_description: Description
-      environment_name: Name
-      environment_parameter: Parameter
-      toggle_button: Details
-      parameters:
-        title: Parameters
-        empty: No parameters
-        add_button: Add parameters
-        add_dialog:
-          title: Add a parameter
-          select_title: Choose a parameter
-          cancel: Cancel
-          add: Add
-    main:
-      no_parameters:
-        title: No parameters yet
-      actions:
-        delete: Delete environment
-        save: Save
-        export: Export environment
-        view: View
-      list:
-        labels:
-          name: Name
-          value: Value
-          mandatory: Mandatory
-          parameter: Parameter
-        actions:
-          edit: Edit
-          delete: Delete
-      alert:
-        save_changes: You made changes to this environment. Don't forget to save them.
-    edit:
-      name: Name
-      value: Value
-      parameter: Parameter
       footer:
         cancel: Cancel
         save: Save

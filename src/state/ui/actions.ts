@@ -13,7 +13,6 @@ import { ReactText } from 'react';
 import { IConnection, IConnectionColumnNamesBase } from 'models/state/connections.model';
 import { IComponent, IComponentColumnNamesBase } from 'models/state/components.model';
 import { IDatasetColumnNames, IDatasetImplementation } from 'models/state/datasets.model';
-import { IEnvironmentColumnNamesBase } from 'models/state/environments.models';
 
 export const triggerFlashMessage = (payload: ITriggerFlashMessagePayload) => createAction<ITriggerFlashMessagePayload>({
     type: 'TRIGGER_FLASH_MESSAGE',
@@ -245,32 +244,6 @@ export const setConnectionsListFilter = (payload: {
     },
 });
 
-export const setEnvironmentsListFilter = (payload: {
-    filters?: ListFilters<Partial<IEnvironmentColumnNamesBase>>;
-    page?: number;
-    sortedColumn?: ISortedColumn<IEnvironmentColumnNamesBase>;
-}) => createAction<{
-    filters?: ListFilters<Partial<IEnvironmentColumnNamesBase>>;
-    page?: number;
-    sortedColumn?: ISortedColumn<IEnvironmentColumnNamesBase>;
-}>({
-    type: 'UPDATE_ENVIRONMENTS_LIST_FILTER',
-    payload,
-    process({ setStateImmutable }) {
-        setStateImmutable({
-            toState: (draftState) => {
-                // eslint-disable-next-line no-param-reassign
-                draftState.ui.listFilters.environments = {
-                    filters: payload.filters || draftState.ui.listFilters.environments.filters,
-                    page: payload.page || draftState.ui.listFilters.environments.page,
-                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.environments.sortedColumn,
-                };
-            },
-            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_ENVIRONMENTS],
-        });
-    },
-});
-
 export const setDatasetsListFilter = (payload: {
     filters?: ListFilters<Partial<IDatasetColumnNames>>;
     onlyShowLatestVersion?: boolean;
@@ -300,31 +273,6 @@ export const setDatasetsListFilter = (payload: {
 });
 
 export const handleConnection = (payload: {
-    currentConnection: IConnection;
-}) => createAction<{
-    currentConnection: IConnection;
-}>({
-    type: 'CONNECTION.HANDLE',
-    payload,
-    process({ setStateImmutable }) {
-        setStateImmutable({
-            toState: (draftState) => {
-                const { currentConnection } = payload;
-                const { connections } = draftState.entities.openapi.data;
-                const currentConnectionId = getUniqueIdFromConnection(currentConnection);
-                // eslint-disable-next-line no-param-reassign
-                draftState.entities.openapi.data.connections = connections
-                    .map((connection) => (getUniqueIdFromConnection(connection) === currentConnectionId
-                        ? { ...connection, isHandled: true }
-                        : connection
-                    ));
-            },
-            notificationsToTrigger: [StateChangeNotification.HANDLE],
-        });
-    },
-});
-
-export const handleEnvironment = (payload: {
     currentConnection: IConnection;
 }) => createAction<{
     currentConnection: IConnection;

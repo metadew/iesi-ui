@@ -32,7 +32,7 @@ import {
     triggerDeleteConnectionDetail,
     triggerUpdateConnectionDetail,
 } from 'state/entities/connections/triggers';
-import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
@@ -92,7 +92,7 @@ const ConnectionDetail = withStyles(styles)(
 
             this.state = {
                 newConnectionDetail: initialConnectionDetail,
-                environmentIndex: -1,
+                environmentIndex: 0,
                 editParameterIndex: -1,
                 isAddingParameter: false,
                 hasChangesToCheck: false,
@@ -174,28 +174,12 @@ const ConnectionDetail = withStyles(styles)(
                         onClose={() => this.setState({ isSaveDialogOpen: false })}
                     >
                         <Typography>
-                            {
-                                checkAuthority(
-                                    state,
-                                    SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
-                                    newConnectionDetail.securityGroupName,
-                                )
-                                    ? (
-                                        <Translate
-                                            msg="connections.detail.save_connection_dialog.text"
-                                            placeholders={{
-                                                connectionName: newConnectionDetail.name,
-                                            }}
-                                        />
-                                    ) : (
-                                        <Translate
-                                            msg="connections.detail.save_connection_dialog.text_securityGroup"
-                                            placeholders={{
-                                                securityGroup: newConnectionDetail.securityGroupName,
-                                            }}
-                                        />
-                                    )
-                            }
+                            <Translate
+                                msg="connections.detail.save_connection_dialog.text"
+                                placeholders={{
+                                    connectionName: newConnectionDetail.name,
+                                }}
+                            />
                         </Typography>
                         <Box display="flex" alignItems="center" justifyContent="center" marginTop={2}>
                             <Box paddingRight={1}>
@@ -214,7 +198,6 @@ const ConnectionDetail = withStyles(styles)(
                                     disabled={!checkAuthority(
                                         state,
                                         SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
-                                        newConnectionDetail.securityGroupName,
                                     )}
 
                                 >
@@ -255,7 +238,7 @@ const ConnectionDetail = withStyles(styles)(
                                 value={autoComplete || null}
                                 getOptionLabel={(option) => option.data.type}
                                 getOptionDisabled={() =>
-                                    !checkAuthorityGeneral(
+                                    !checkAuthority(
                                         state,
                                         SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
                                     )}
@@ -272,7 +255,6 @@ const ConnectionDetail = withStyles(styles)(
                                             readOnly: !this.isCreateConnectionRoute() && !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
-                                                newConnectionDetail.securityGroupName,
                                             ),
                                             disableUnderline: true,
                                         }}
@@ -305,7 +287,6 @@ const ConnectionDetail = withStyles(styles)(
                                 label={translator('connections.detail.side.connection_name')}
                                 InputProps={{
                                     readOnly: !this.isCreateConnectionRoute() && newConnectionDetail !== undefined,
-                                    //    && !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
                                     disableUnderline: true,
                                 }}
                                 value={newConnectionDetail.name}
@@ -324,7 +305,6 @@ const ConnectionDetail = withStyles(styles)(
                                         || !checkAuthority(
                                             state,
                                             SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
-                                            newConnectionDetail.securityGroupName,
                                         ),
                                     disableUnderline: true,
 
@@ -533,7 +513,6 @@ const ConnectionDetail = withStyles(styles)(
                                     !this.isCreateConnectionRoute() && !checkAuthority(
                                         state,
                                         SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
-                                        newConnectionDetail.securityGroupName,
                                     )
                                 ),
                             }, {
@@ -557,7 +536,6 @@ const ConnectionDetail = withStyles(styles)(
                                     !this.isCreateConnectionRoute() && !checkAuthority(
                                         state,
                                         SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
-                                        item.data.securityGroupName,
                                     )
                                 ) || !item.canBeDeleted
                                 ),

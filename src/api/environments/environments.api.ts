@@ -1,30 +1,15 @@
-import { IPageData } from 'models/state/iesiGeneric.models';
-import { IEnvironment, IEnvironmentEntity, IFetchEnvironmentsListPayload } from 'models/state/environments.models';
+import { IEnvironment } from 'models/state/environments.models';
+import { IListResponse } from 'models/state/iesiGeneric.models';
 import { get, post, put, remove } from 'api/requestWrapper';
 import API_URLS from '../apiUrls';
 
-interface IEnvironmentsResponse {
-    _embedded: {
-        environmentDtoList: IEnvironment[];
-    };
-    page: IPageData;
-}
-
-export function fetchEnvironments({ pagination, filter, sort }: IFetchEnvironmentsListPayload) {
-    return get<IEnvironmentEntity, IEnvironmentsResponse>({
+export function fetchEnvironments() {
+    return get<IEnvironment[], IListResponse<IEnvironment>>({
         isIesiApi: true,
         needsAuthentication: true,
-        url: API_URLS.ENVIRONMENTS,
-        queryParams: {
-            ...pagination,
-            ...filter,
-            sort,
-        },
-        mapResponse: ({ data }) => ({
-            // eslint-disable-next-line no-underscore-dangle
-            environments: data._embedded.environmentDtoList,
-            page: data.page,
-        }),
+        url: API_URLS.ENVIRONMENTS_LIST,
+        // eslint-disable-next-line no-underscore-dangle
+        mapResponse: ({ data }) => data._embedded,
     });
 }
 
@@ -36,8 +21,6 @@ export function fetchEnvironment({ name }: { name: string }) {
         pathParams: {
             name,
         },
-        mapResponse: ({ data }) => ({ ...data }),
-
     });
 }
 
@@ -47,7 +30,6 @@ export function createEnvironment(environment: IEnvironment) {
         needsAuthentication: true,
         url: API_URLS.ENVIRONMENTS,
         body: environment,
-        contentType: 'application/json',
     });
 }
 
@@ -60,7 +42,6 @@ export function updateEnvironment(environment: IEnvironment) {
             name: environment.name,
         },
         body: environment,
-        contentType: 'application/json',
     });
 }
 

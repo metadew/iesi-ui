@@ -7,7 +7,6 @@ import { IColumnNames as IExecutionsColumnNames } from 'models/state/executionRe
 import { IComponentColumnNames } from './components.model';
 import { IConnectionColumnNamesBase } from './connections.model';
 import { IDatasetColumnNames } from './datasets.model';
-import { IEnvironmentColumnNamesBase } from './environments.models';
 
 export interface IUiState {
     flashMessages: IFlashMessage[];
@@ -16,7 +15,6 @@ export interface IUiState {
         scripts: IScriptsListFilters;
         components: IComponentsListFilters;
         connections: IListFilters<IConnectionColumnNamesBase>;
-        environments: IListFilters<IEnvironmentColumnNamesBase>;
         executions: IListFilters<IExecutionsColumnNames>;
         datasets: IListFilters<IDatasetColumnNames>;
     };

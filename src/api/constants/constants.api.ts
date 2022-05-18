@@ -1,8 +1,4 @@
-import {
-    IActionType,
-    IComponentType,
-    IConnectionType,
-    IConstantParameter } from 'models/state/constants.models';
+import { IActionType, IComponentType, IConnectionType, IConstantParameter } from 'models/state/constants.models';
 import { get } from 'api/requestWrapper';
 import API_URLS from '../apiUrls';
 
@@ -14,12 +10,6 @@ interface IActionTypeResponse {
 }
 
 interface IConnectionTypeResponse {
-    name: string;
-    description: string;
-    parameters: IConstantParameter[];
-}
-
-interface IEnvironmentTypeResponse {
     name: string;
     description: string;
     parameters: IConstantParameter[];

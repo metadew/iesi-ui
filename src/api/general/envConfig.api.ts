@@ -1,4 +1,5 @@
 import { IEnvConfig } from 'models/state/envConfig.models';
+// eslint-disable-next-line import/no-cycle
 import { get } from '../requestWrapper';
 import API_URLS from '../apiUrls';
 

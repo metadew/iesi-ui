@@ -21,7 +21,6 @@ interface IPublicProps {
 function EditLabels({
     labels,
     onChange,
-    securityGroupName,
     isCreateScriptRoute,
     state,
 }: IPublicProps & IObserveProps) {
@@ -56,7 +55,6 @@ function EditLabels({
                             onDelete: isCreateScriptRoute || checkAuthority(
                                 state,
                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                securityGroupName,
                             )
                                 ? () => onChange(labels.filter((l) => l.name !== label.name))
                                 : null,
@@ -72,7 +70,6 @@ function EditLabels({
                     {isCreateScriptRoute || checkAuthority(
                         state,
                         SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                        securityGroupName,
                     )
                         ? (
                             <ButtonWithContent

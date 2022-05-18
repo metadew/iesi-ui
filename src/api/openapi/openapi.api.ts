@@ -1,4 +1,5 @@
 import API_URLS from 'api/apiUrls';
+// eslint-disable-next-line import/no-cycle
 import { post } from 'api/requestWrapper';
 import { IOpenAPI, IOpenAPIEntity } from 'models/state/openapi.model';
 

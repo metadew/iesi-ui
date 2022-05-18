@@ -34,3 +34,7 @@ export interface IPageData {
     totalPages: number;
     number: number;
 }
+
+export interface IImportPayload {
+    value: string | FormData;
+}

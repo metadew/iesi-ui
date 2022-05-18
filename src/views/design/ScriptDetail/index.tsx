@@ -1,14 +1,14 @@
 import React from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { clone } from 'ramda';
 import { getTranslator } from 'state/i18n/selectors';
-import { Box, Typography, Button, withStyles, createStyles, Theme, WithStyles, Collapse } from '@material-ui/core';
+import { Box, Button, Collapse, createStyles, Theme, Typography, WithStyles, withStyles } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
-    Edit as EditIcon,
     Delete as DeleteIcon,
-    Visibility,
+    Edit as EditIcon,
     FileCopy,
+    Visibility,
 } from '@material-ui/icons';
 import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
@@ -17,33 +17,32 @@ import { IScript, IScriptAction } from 'models/state/scripts.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import TextInput from 'views/common/input/TextInput';
 import DescriptionList from 'views/common/list/DescriptionList';
-import { ROUTE_KEYS, getRouteKeyByPath, redirectTo } from 'views/routes';
-import { ListColumns, IListItem } from 'models/list.models';
+import { getRouteKeyByPath, redirectTo, ROUTE_KEYS } from 'views/routes';
+import { IListItem, ListColumns } from 'models/list.models';
 import GenericDraggableList from 'views/common/list/GenericDraggableList';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel/index';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import { THEME_COLORS } from 'config/themes/colors';
-import { observe, IObserveProps } from 'views/observe';
+import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAsyncScriptDetail } from 'state/entities/scripts/selectors';
 import { getUniqueIdFromScript } from 'utils/scripts/scriptUtils';
 import { getAsyncActionTypes } from 'state/entities/constants/selectors';
 import { triggerResetAsyncExecutionRequest } from 'state/entities/executionRequests/triggers';
-import { AsyncStatus, AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import { AsyncOperation, AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import Loader from 'views/common/waiting/Loader';
 import uniqueActionNamesCheck from 'utils/form/uniqueActionNamesCheck';
 import {
-    triggerUpdateScriptDetail,
     triggerCreateScriptDetail,
     triggerDeleteScriptDetail,
     triggerExportScriptDetail,
+    triggerFetchScriptDetail,
+    triggerUpdateScriptDetail,
 } from 'state/entities/scripts/triggers';
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
-// eslint-disable-next-line max-len
 import ExecuteScriptDialog from '../common/ExecuteScriptDialog';
-
 import DetailActions from './DetailActions';
 import AddAction from './AddAction';
 import EditAction from './EditAction';
@@ -153,6 +152,7 @@ const ScriptDetail = withStyles(styles)(
             this.isCreateScriptRoute = this.isCreateScriptRoute.bind(this);
 
             this.updateScriptInStateIfNewScriptWasLoaded = this.updateScriptInStateIfNewScriptWasLoaded.bind(this);
+            this.refreshPageAfterUpdate = this.refreshPageAfterUpdate.bind(this);
             this.navigateToScriptAfterCreation = this.navigateToScriptAfterCreation.bind(this);
             this.navigateToScriptAfterDeletion = this.navigateToScriptAfterDeletion.bind(this);
 
@@ -165,6 +165,7 @@ const ScriptDetail = withStyles(styles)(
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
             this.updateScriptInStateIfNewScriptWasLoaded(prevProps);
+            this.refreshPageAfterUpdate(prevProps);
             this.navigateToScriptAfterCreation(prevProps);
             this.navigateToScriptAfterDeletion(prevProps);
         }
@@ -257,7 +258,6 @@ const ScriptDetail = withStyles(styles)(
                                         || (newScriptDetail && !checkAuthority(
                                             state,
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                            newScriptDetail.securityGroupName,
                                         ))}
                                 >
                                     <Translate msg="scripts.detail.save_script_dialog.update_current_version" />
@@ -283,7 +283,6 @@ const ScriptDetail = withStyles(styles)(
                                     disabled={newScriptDetail && !checkAuthority(
                                         state,
                                         SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                        newScriptDetail.securityGroupName,
                                     )}
                                 >
                                     <Translate msg="scripts.detail.save_script_dialog.save_as_new_version" />
@@ -351,7 +350,6 @@ const ScriptDetail = withStyles(styles)(
                                     readOnly: !this.isCreateScriptRoute() && newScriptDetail && !checkAuthority(
                                         state,
                                         SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                        newScriptDetail.securityGroupName,
                                     ),
                                     disableUnderline: true,
                                 }}
@@ -557,7 +555,6 @@ const ScriptDetail = withStyles(styles)(
                                         !this.isCreateScriptRoute() && !(newScriptDetail && checkAuthority(
                                             state,
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                            newScriptDetail.securityGroupName,
                                         )),
                                 },
                                 {
@@ -571,12 +568,10 @@ const ScriptDetail = withStyles(styles)(
                                             && !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                                newScriptDetail.securityGroupName,
                                             )
                                             && checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_READ,
-                                                newScriptDetail.securityGroupName,
                                             )),
                                 },
                                 {
@@ -589,7 +584,6 @@ const ScriptDetail = withStyles(styles)(
                                         && !(newScriptDetail && checkAuthority(
                                             state,
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                            newScriptDetail.securityGroupName,
                                         )),
                                 },
                                 {
@@ -602,7 +596,6 @@ const ScriptDetail = withStyles(styles)(
                                         && !(newScriptDetail && checkAuthority(
                                             state,
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                            newScriptDetail.securityGroupName,
                                         )),
                                 },
                             )}
@@ -725,6 +718,19 @@ const ScriptDetail = withStyles(styles)(
                 const scriptDetailDeepClone = clone(scriptDetail);
                 // eslint-disable-next-line react/no-did-update-set-state
                 this.setState({ newScriptDetail: scriptDetailDeepClone });
+            }
+        }
+
+        private refreshPageAfterUpdate(prevProps: TProps & IObserveProps) {
+            const currentScriptDetail = getAsyncScriptDetail(this.props.state);
+            const prevScriptDetail = getAsyncScriptDetail(prevProps.state);
+            if (
+                currentScriptDetail.update.status === AsyncStatus.Success
+                && prevScriptDetail.update.status !== AsyncStatus.Success) {
+                triggerFetchScriptDetail({
+                    name: currentScriptDetail.data.name,
+                    version: currentScriptDetail.data.version.number,
+                });
             }
         }
 

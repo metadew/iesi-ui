@@ -8,22 +8,28 @@ interface IExecutePeriodicallyConfig {
     toBeExecuted: () => void;
     intervalInMillis: number;
     executeImmediatelyInActiveTab?: boolean; // default false
+    onlyIfBrowserTabActive: boolean;
 }
 
-export default function executePeriodicallyWhenBrowserTabActive(config: IExecutePeriodicallyConfig): TStopListening {
-    let intervalId = executeWhenBrowserTabActive(config);
+export default function executePeriodically(config: IExecutePeriodicallyConfig): TStopListening {
+    let intervalId = execute(config);
 
-    const stopListeningToTabChanges = onBrowserTabVisibilityChange({
-        onActivatedHandler: () => {
+    if (config.onlyIfBrowserTabActive) {
+        const stopListeningToTabChanges = onBrowserTabVisibilityChange({
+            onActivatedHandler: () => {
+                clearIntervalIfSet();
+                intervalId = execute(config);
+            },
+            onDeactivatedHandler: () => clearIntervalIfSet(),
+        });
+        return () => {
             clearIntervalIfSet();
-            intervalId = executeWhenBrowserTabActive(config);
-        },
-        onDeactivatedHandler: () => clearIntervalIfSet(),
-    });
+            stopListeningToTabChanges();
+        };
+    }
 
     return () => {
         clearIntervalIfSet();
-        stopListeningToTabChanges();
     };
 
     function clearIntervalIfSet() {
@@ -35,12 +41,22 @@ export default function executePeriodicallyWhenBrowserTabActive(config: IExecute
     }
 }
 
-function executeWhenBrowserTabActive({
+function execute({
     toBeExecuted,
     intervalInMillis,
     executeImmediatelyInActiveTab = false,
+    onlyIfBrowserTabActive,
 }: IExecutePeriodicallyConfig): number {
-    if (isBrowserTabActive()) {
+    if (onlyIfBrowserTabActive && isBrowserTabActive()) {
+        if (executeImmediatelyInActiveTab) {
+            setTimeout(
+                () => toBeExecuted(),
+                0,
+            );
+        }
+
+        return window.setInterval(toBeExecuted, intervalInMillis);
+    } if (!onlyIfBrowserTabActive) {
         if (executeImmediatelyInActiveTab) {
             setTimeout(
                 () => toBeExecuted(),
