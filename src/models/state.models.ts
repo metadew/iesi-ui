@@ -73,6 +73,9 @@ export enum StateChangeNotification {
     IAM_TEAM_DETAIL_SECURITY_GROUP = 'IAM_TEAMS.DETAIL_SECURITY_GROUP',
     IAM_SECURITY_GROUPS_LIST = 'IAM_SECURITY_GROUPS.LIST',
     IAM_SECURITY_GROUPS_DETAIL = 'IAM_SECURITY_GROUPS.DETAIL',
+    TEMPLATES = 'TEMPLATES',
+    TEMPLATE_DETAIL = 'TEMPLATE.DETAIL',
+
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

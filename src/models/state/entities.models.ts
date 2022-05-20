@@ -3,7 +3,7 @@ import { IEnvironment } from 'models/state/environments.models';
 import { IAsyncEntity } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { ITraceableApiError } from 'models/api.models';
 import { IScript, IScriptsEntity } from 'models/state/scripts.models';
-import { ITemplate } from 'models/state/templates.models';
+import {ITemplate, ITemplateEntity} from 'models/state/templates.models';
 import { IExecutionRequest, IExecutionRequestsEntity } from './executionRequests.models';
 import { IActionType, IComponentType, IConnectionType } from './constants.models';
 import { IOpenAPIEntity } from './openapi.model';
@@ -100,7 +100,7 @@ export interface IEntitiesState {
     teamDetailSecurityGroup: ICustomAsyncEntity<ISecurityGroup>;
     securityGroups: ICustomAsyncEntity<ISecurityGroupEntity>;
     securityGroupDetail: ICustomAsyncEntity<ISecurityGroup>;
-    templates: ICustomAsyncEntity<ITemplate>;
+    templates: ICustomAsyncEntity<ITemplateEntity>;
     templateDetail: ICustomAsyncEntity<ITemplate>;
     openapi: ICustomAsyncEntity<IOpenAPIEntity>;
 }
