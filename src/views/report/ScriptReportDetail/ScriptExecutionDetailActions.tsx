@@ -295,7 +295,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                                 >
                                                     {parameter.rawValue}
                                                     {
-                                                        (parameter.name === 'request') ? (
+                                                        (parameter.name === 'request') && (
                                                             <Button
                                                                 variant="contained"
                                                                 color="secondary"
@@ -317,12 +317,10 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                                             >
                                                                 <ChevronRightRounded />
                                                             </Button>
-                                                        ) : (
-                                                            <p> </p>
                                                         )
                                                     }
                                                     {
-                                                        (parameter.name === 'dataset') ? (
+                                                        (parameter.name === 'dataset') && (
                                                             <Box>
                                                                 <Button
                                                                     variant="contained"
@@ -341,12 +339,10 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                                                     <ChevronRightRounded />
                                                                 </Button>
                                                             </Box>
-                                                        ) : (
-                                                            <p> </p>
                                                         )
                                                     }
                                                     {
-                                                        (parameter.name === 'script') ? (
+                                                        (parameter.name === 'script') && (
                                                             <Button
                                                                 variant="contained"
                                                                 color="secondary"
@@ -368,8 +364,6 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                                             >
                                                                 <ChevronRightRounded />
                                                             </Button>
-                                                        ) : (
-                                                            <p> </p>
                                                         )
                                                     }
                                                 </Box>
