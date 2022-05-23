@@ -32,7 +32,7 @@ import TextInput from 'views/common/input/TextInput';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import GenericList from 'views/common/list/GenericList';
-import DetailActions from 'views/connectivity/DetailActions';
+import DetailActions from 'views/environment/DetailActions';
 import {
     triggerCreateEnvironmentDetail,
     triggerDeleteEnvironmentDetail,

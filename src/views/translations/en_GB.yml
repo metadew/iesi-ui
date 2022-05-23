@@ -504,9 +504,9 @@ connections:
       no_parameters:
         title: No parameters yet
       actions:
-        delete: Delete environment
+        delete: Delete connection
         save: Save
-        export: Export environment
+        export: Export connection
         view: View
       list:
         labels:
@@ -518,7 +518,7 @@ connections:
           edit: Edit
           delete: Delete
       alert:
-        save_changes: You made changes to this environment. Don't forget to save them.
+        save_changes: You made changes to this connection. Don't forget to save them.
     edit:
       name: Name
       value: Value
