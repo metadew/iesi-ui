@@ -498,7 +498,7 @@ function getRequestVersion(inputParameters: IParameterRawValue[]) {
     const inputParameter = inputParameters.find((ip: IParameterRawValue) =>
         ip.name === 'requestVersion');
 
-    if (inputParameter === undefined || inputParameter.rawValue === '') {
+    if (inputParameter === undefined) {
         return 0;
     }
     return inputParameter.resolvedValue || inputParameter.rawValue;
