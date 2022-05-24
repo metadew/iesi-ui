@@ -29,6 +29,9 @@ function initEnvConfigFileIfItDoesNotExistYet() {
         iesi_api_base_url: argv.url,
         iesi_api_timeout_in_seconds: (argv.timeout && argv.timeout !== WINDOWS_TIMEOUT_IF_NOT_FILLED_IN)
             ? argv.timeout : 10,
+        iesi_api_client_id: 'iesi',
+        iesi_api_client_secret: 'iesi',
+        iesi_time_to_refresh_in_seconds: 10,
         translation_label_overrides: {
             en_GB: {},
         },
