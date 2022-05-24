@@ -55,6 +55,7 @@ import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { checkAuthority } from 'state/auth/selectors';
 import { getEnvironmentsForDropdown } from 'state/entities/environments/selectors';
 import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
+import configData from '../../../env-config.json';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -167,6 +168,8 @@ const defaultSortedColumn: ISortedColumn<IColumnNames> = {
     sortType: SortType.String,
 };
 
+let pageInterval: NodeJS.Timeout;
+
 type TProps = WithStyles<typeof styles>;
 type TState = {
     selectedExecutionRequest: IExecutionRequest;
@@ -199,6 +202,10 @@ const ScriptReportsOverview = withStyles(styles)(
 
             this.fetchExecutionRequestsWithFilterAndPagination({ newListFilters: initialFilters, newPage: 1 });
             dispatch(setExecutionsListFilter({ filters: initialFilters }));
+            pageInterval = setInterval(() => {
+                const pageData = getAsyncExecutionRequestsPageData(this.props.state);
+                this.fetchExecutionRequestsWithFilterAndPagination({ newPage: pageData.number || 1 });
+            }, configData.iesi_time_to_refresh_in_seconds * 1000);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
@@ -208,6 +215,10 @@ const ScriptReportsOverview = withStyles(styles)(
             if (filterFromState.sortedColumn === null) {
                 dispatch(setExecutionsListFilter({ sortedColumn: defaultSortedColumn }));
             }
+        }
+
+        public componentWillUnmount() {
+            clearInterval(pageInterval);
         }
 
         public render() {
@@ -415,7 +426,7 @@ const ScriptReportsOverview = withStyles(styles)(
 
             const asyncExecutionRequestsEntity = getAsyncExecutionRequestsEntity(this.props.state);
             const executionsFetchData = asyncExecutionRequestsEntity.fetch;
-            const isFetching = executionsFetchData.status === AsyncStatus.Busy;
+            const isFetching = executionsFetchData.status === AsyncStatus.Initial;
             const hasError = executionsFetchData.status === AsyncStatus.Error;
 
             const executionRequestsData = asyncExecutionRequestsEntity.data;
