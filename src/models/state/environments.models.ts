@@ -1,4 +1,4 @@
-import { IParameter, IPageData, IPageFilter } from './iesiGeneric.models';
+import { IPageData, IPageFilter } from './iesiGeneric.models';
 
 export interface IFetchEnvironmentsListPayload {
     pagination?: IPageFilter;
@@ -34,4 +34,3 @@ export interface IEnvironmentColumnNamesBase {
     description: string;
     parameters: number;
 }
-

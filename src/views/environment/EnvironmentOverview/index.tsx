@@ -383,10 +383,10 @@ const EnvironmentOverview = withStyles(styles)(
         }
 
         private fetchEnvironmentsWithFilterAndPagination({
-                 newPage,
-                 newListFilters,
-                 newSortedColumn,
-             }: {
+            newPage,
+            newListFilters,
+            newSortedColumn,
+        }: {
             newPage?: number;
             newListFilters?: ListFilters<Partial<IEnvironmentColumnNamesBase>>;
             newSortedColumn?: ISortedColumn<IEnvironmentColumnNamesBase>;

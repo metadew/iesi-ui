@@ -1,5 +1,6 @@
 import { IPageData } from 'models/state/iesiGeneric.models';
 import { IEnvironment, IEnvironmentEntity, IFetchEnvironmentsListPayload } from 'models/state/environments.models';
+// eslint-disable-next-line import/no-cycle
 import { get, post, put, remove } from 'api/requestWrapper';
 import API_URLS from '../apiUrls';
 
