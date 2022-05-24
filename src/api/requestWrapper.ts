@@ -12,6 +12,8 @@ import {
 } from 'models/api.models';
 import { DEFAULT_TIMEOUT_IN_MILLIS } from 'config/api.config';
 import { isApiLoggingEnabled } from 'config/develop.config';
+// eslint-disable-next-line import/no-cycle
+import { getStore } from 'state';
 
 const apiLogger = isApiLoggingEnabled
     ? getApiLogger({ groupLogger: consoleGroupLogger })
@@ -37,7 +39,7 @@ export function setIesiApiTimeoutInSeconds(timeoutInSeconds: number) {
 /**
  * As the first calls (getting the env-config.json file) are definitely to the same host as the front-end,
  * there is no base url.
- * For the calls that need it afterwards (~ IEAI api calls) the baseUrl (that is retrieved from env-config.json)
+ * For the calls that need it afterwards (~ IESI api calls) the baseUrl (that is retrieved from env-config.json)
  * will be added via the requestCustomTransformer.
  */
 export const requestWrapper = getRequestWrapper<ICustomApiConfig, ITraceableApiError>({
@@ -73,11 +75,12 @@ export const requestWrapper = getRequestWrapper<ICustomApiConfig, ITraceableApiE
 export function get<Result, ResponseData = Result>(
     config: IGetRequestConfig<Result, ResponseData> & ICustomApiConfig,
 ): Promise<Result> {
+    // TODO: if needsAuthentication get IAUTHSTATE and include accessToken
     if (config.isIesiApi && config.needsAuthentication) {
         return requestWrapper.get({ ...config,
             headers: {
                 ...config.headers,
-                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                Authorization: `Bearer ${getStore().getState().auth.accessToken}`,
             } });
     }
     return requestWrapper.get(config);
@@ -90,7 +93,7 @@ export function post<Result, ResponseData = Result>(
         return requestWrapper.post({ ...config,
             headers: {
                 ...config.headers,
-                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                Authorization: `Bearer ${getStore().getState().auth.accessToken}`,
             } });
     }
     return requestWrapper.post(config);
@@ -103,7 +106,7 @@ export function put<Result, ResponseData = Result>(
         return requestWrapper.put({ ...config,
             headers: {
                 ...config.headers,
-                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                Authorization: `Bearer ${getStore().getState().auth.accessToken}`,
             } });
     }
     return requestWrapper.put(config);
@@ -116,7 +119,7 @@ export function remove<Result, ResponseData = Result>(
         return requestWrapper.remove({ ...config,
             headers: {
                 ...config.headers,
-                Authorization: `Bearer ${sessionStorage.getItem('token')}`,
+                Authorization: `Bearer ${getStore().getState().auth.accessToken}`,
             } });
     }
     return requestWrapper.remove(config);

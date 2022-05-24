@@ -4,6 +4,7 @@ import { createObservableStateAction } from '@snipsonian/observable-state/es/act
 import { IState, IExtraProcessInput, StateChangeNotification, IAction } from 'models/state.models';
 
 /** Without circular dependencies */
+// TODO: is this something to get 'global' state?
 export function getStore() {
     // eslint-disable-next-line max-len
     return getRegisteredStore<IState, StateChangeNotification>() as IActionableObservableStateStore<IState, StateChangeNotification>;

@@ -4,7 +4,6 @@ import GenericFilter from 'views/common/list/GenericFilter';
 import { Box, Button, Theme, Typography, WithStyles, withStyles, createStyles } from '@material-ui/core';
 import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import { checkAuthorityGeneral, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import { getComponentsListFilter } from 'state/ui/selectors';
 import GenericSort from 'views/common/list/GenericSort';
@@ -19,6 +18,8 @@ import {
     SortOrder,
     SortType,
 } from 'models/list.models';
+import { checkAuthority } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import { IComponent, IComponentColumnNamesBase } from 'models/state/components.model';
 import GenericList from 'views/common/list/GenericList';
@@ -58,6 +59,10 @@ const styles = ({ palette, typography }: Theme) =>
             fontWeight: typography.fontWeightBold,
         },
         componentDescription: {
+            fontWeight: typography.fontWeightBold,
+            fontSize: typography.pxToRem(12),
+        },
+        securityGroupName: {
             fontWeight: typography.fontWeightBold,
             fontSize: typography.pxToRem(12),
         },
@@ -169,7 +174,7 @@ const ComponentsOverview = withStyles(styles)(
                                         />
                                     </Box>
                                     {
-                                        checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                        checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
                                         && (
                                             <Box display="flex" alignItems="center">
                                                 <Box flex="0 0 auto" mr="8px" width="250px">
@@ -261,8 +266,12 @@ const ComponentsOverview = withStyles(styles)(
                 description: {
                     label: <Translate msg="components.overview.list.labels.description" />,
                     className: classes.componentDescription,
-                    fixedWidth: '40%',
+                    fixedWidth: '30%',
                     noWrap: true,
+                },
+                securityGroupName: {
+                    className: classes.securityGroupName,
+                    fixedWidth: '10%',
                 },
             };
 
@@ -296,7 +305,10 @@ const ComponentsOverview = withStyles(styles)(
                                                 });
                                             },
                                             hideAction: () => (
-                                                !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                                !checkAuthority(
+                                                    state,
+                                                    SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
+                                                )
                                             ),
                                         }, {
                                             icon: <Visibility />,
@@ -314,14 +326,20 @@ const ComponentsOverview = withStyles(styles)(
                                                 });
                                             },
                                             hideAction: () => (
-                                                checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                                checkAuthority(
+                                                    state,
+                                                    SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
+                                                )
                                             ),
                                         }, {
                                             icon: <Delete />,
                                             label: translator('components.overview.list.actions.delete'),
                                             onClick: this.setComponentToDelete,
                                             hideAction: () => (
-                                                !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                                !checkAuthority(
+                                                    state,
+                                                    SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
+                                                )
                                             ),
                                         },
                                     )}
@@ -462,6 +480,7 @@ function mapComponentsToListItems(components: IComponent[]): IListItem<IComponen
         id: getUniqueIdFromComponent(component),
         columns: {
             name: component.name,
+            securityGroupName: component.securityGroupName,
             description: component.version.description,
             version: component.version.number,
             type: component.type,

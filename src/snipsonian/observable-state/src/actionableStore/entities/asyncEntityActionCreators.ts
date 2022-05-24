@@ -366,7 +366,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                             : apiResponse;
 
                         if (typeof onSuccess === 'function') {
-                            onSuccess({ dispatch });
+                            onSuccess({ dispatch, currentEntity: apiResponse });
                         }
 
                         // eslint-disable-next-line arrow-body-style

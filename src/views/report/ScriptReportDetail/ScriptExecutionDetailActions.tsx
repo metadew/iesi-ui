@@ -95,7 +95,13 @@ const useStyles = makeStyles(({ typography, palette, shape, spacing }: Theme) =>
     },
     thCell: {
         wordBreak: 'normal',
-        verticalAlign: 'top',
+        verticalAlign: 'center',
+    },
+    valueCell: {
+        whiteSpace: 'pre-wrap',
+    },
+    btnRequest: {
+        marginLeft: 0,
     },
 }));
 
@@ -165,7 +171,6 @@ function ScriptExecutionDetailActions<ColumnNames>({
             const column = columns[columnName] as IColumn<ColumnNames>;
 
             const value = getListItemValueFromColumn(item, columnName).toString();
-
             const colClassName = typeof column.className === 'function'
                 ? column.className(value)
                 : column.className;
@@ -281,8 +286,91 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                             <TableCell component="th" scope="row" className={classes.thCell}>
                                                 {parameter.name}
                                             </TableCell>
-                                            <TableCell>{parameter.rawValue}</TableCell>
-                                            <TableCell>{parameter.resolvedValue}</TableCell>
+                                            <TableCell className={classes.valueCell}>
+                                                <Box
+                                                    display="flex"
+                                                    justifyContent="space-between"
+                                                    alignItems="center"
+                                                    width="100%"
+                                                >
+                                                    {parameter.rawValue}
+                                                    {
+                                                        (parameter.name === 'request') && (
+                                                            <Button
+                                                                variant="contained"
+                                                                color="secondary"
+                                                                size="small"
+                                                                onClick={() =>
+                                                                    redirectTo({
+                                                                        routeKey: ROUTE_KEYS.R_COMPONENT_DETAIL,
+                                                                        params: {
+                                                                            name: parameter.resolvedValue
+                                                                            || parameter.rawValue,
+                                                                            version: (
+                                                                                getRequestVersion(
+                                                                                    item.data.inputParameters,
+                                                                                )
+                                                                            ),
+                                                                        },
+                                                                        newTab: true,
+                                                                    })}
+                                                            >
+                                                                <ChevronRightRounded />
+                                                            </Button>
+                                                        )
+                                                    }
+                                                    {
+                                                        (parameter.name === 'dataset') && (
+                                                            <Box>
+                                                                <Button
+                                                                    variant="contained"
+                                                                    color="secondary"
+                                                                    size="small"
+                                                                    onClick={() =>
+                                                                        redirectTo({
+                                                                            routeKey: ROUTE_KEYS.R_DATASET_DETAIL,
+                                                                            params: {
+                                                                                name: parameter.resolvedValue
+                                                                                || parameter.rawValue,
+                                                                            },
+                                                                            newTab: true,
+                                                                        })}
+                                                                >
+                                                                    <ChevronRightRounded />
+                                                                </Button>
+                                                            </Box>
+                                                        )
+                                                    }
+                                                    {
+                                                        (parameter.name === 'script') && (
+                                                            <Button
+                                                                variant="contained"
+                                                                color="secondary"
+                                                                size="small"
+                                                                onClick={() =>
+                                                                    redirectTo({
+                                                                        routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                                                        params: {
+                                                                            name: parameter.resolvedValue
+                                                                            || parameter.rawValue,
+                                                                            version: (
+                                                                                getRequestVersionScript(
+                                                                                    item.data.inputParameters,
+                                                                                )
+                                                                            ),
+                                                                        },
+                                                                        newTab: true,
+                                                                    })}
+                                                            >
+                                                                <ChevronRightRounded />
+                                                            </Button>
+                                                        )
+                                                    }
+                                                </Box>
+                                            </TableCell>
+                                            <TableCell className={classes.valueCell}>
+                                                {parameter.resolvedValue}
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -391,7 +479,9 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                             <TableCell component="th" scope="row" className={classes.thCell}>
                                                 {output.name}
                                             </TableCell>
-                                            <TableCell>{output.value}</TableCell>
+                                            <TableCell className={classes.valueCell}>
+                                                {output.value}
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -402,6 +492,25 @@ function ScriptExecutionDetailActions<ColumnNames>({
             </>
         );
     }
+}
+
+function getRequestVersion(inputParameters: IParameterRawValue[]) {
+    const inputParameter = inputParameters.find((ip: IParameterRawValue) =>
+        ip.name === 'requestVersion');
+
+    if (inputParameter === undefined) {
+        return 0;
+    }
+    return inputParameter.resolvedValue || inputParameter.rawValue;
+}
+
+function getRequestVersionScript(inputParameters: IParameterRawValue[]) {
+    const inputParameter = inputParameters.find((ip: IParameterRawValue) =>
+        ip.name === 'version');
+    if (inputParameter === undefined || inputParameter.rawValue === '') {
+        return 0;
+    }
+    return inputParameter.resolvedValue || inputParameter.rawValue;
 }
 
 export default observe<IPublicProps<{}>>(

@@ -11,8 +11,9 @@ import Tooltip from 'views/common/tooltips/Tooltip';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
-import { checkAuthorityGeneral, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import { IConnection } from 'models/state/connections.model';
+import { checkAuthority } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 interface IPublicProps {
     onPlay?: () => void;
@@ -67,7 +68,7 @@ function DetailActions({
 
         <Box display="flex" alignItems="center" justifyContent="space-between" width="100%" paddingX={2.2}>
             <Box flex="0 0 auto">
-                {isCreateRoute || checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                {isCreateRoute || checkAuthority(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                     ? (
                         <Tooltip
                             title={translator('connections.detail.main.actions.add_parameter')}
@@ -88,11 +89,11 @@ function DetailActions({
             </Box>
             <Box flex="0 0 auto">
                 {
-                    checkAuthorityGeneral(SECURITY_PRIVILEGES.S_COMPONENTS_WRITE) && (
+                    checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE) && (
                         <Paper elevation={0} className={classes.actions}>
                             <Box display="inline" marginRight={1}>
                                 {isCreateRoute
-                                    || checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                                    || checkAuthority(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                                     ? (
                                         <Button
                                             variant="contained"
@@ -112,7 +113,7 @@ function DetailActions({
                                 </>
                             ) : (
                                 <>
-                                    {checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                                    {checkAuthority(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                                         ? (
                                             <Tooltip
                                                 title={translator('connections.detail.main.actions.delete')}

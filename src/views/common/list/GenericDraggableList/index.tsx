@@ -11,20 +11,23 @@ import {
     ListColumns,
     IListAction,
 } from 'models/list.models';
+import { IState } from 'models/state.models';
+import { checkAuthority } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import {
     TableCell,
     Typography,
 } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import { SECURITY_PRIVILEGES, checkAuthorityGeneral } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
-import GenericTableRow from '../GenericTableRow';
 import { useListStyles } from '../common';
+import GenericTableRow from '../GenericTableRow';
 
 interface IPublicProps<ColumnNames> {
     columns: ListColumns<ColumnNames>;
     listItems: IListItem<ColumnNames>[];
     listActions?: IListAction<ColumnNames>[];
     onOrder: (newListItems: IListItem<ColumnNames>[]) => void;
+    state: IState;
 }
 
 export default function GenericDraggableList<ColumnNames>({
@@ -32,6 +35,7 @@ export default function GenericDraggableList<ColumnNames>({
     columns,
     listActions,
     onOrder,
+    state,
 }: IPublicProps<ColumnNames>) {
     const listClasses = useListStyles();
 
@@ -39,7 +43,7 @@ export default function GenericDraggableList<ColumnNames>({
         <DragDropContext onDragEnd={onDragEnd}>
             <Droppable
                 droppableId="droppable"
-                isDropDisabled={!checkAuthorityGeneral(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)}
+                isDropDisabled={!checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)}
             >
                 {(droppableProvided, droppableSnapshot) => (
                     <TableContainer

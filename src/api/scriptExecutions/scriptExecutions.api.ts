@@ -2,6 +2,7 @@ import {
     IScriptExecutionDetail,
     IScriptExecutionByRunIdAndProcessIdPayload,
 } from 'models/state/scriptExecutions.models';
+// eslint-disable-next-line import/no-cycle
 import { get } from 'api/requestWrapper';
 import API_URLS from '../apiUrls';
 

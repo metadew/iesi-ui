@@ -42,15 +42,35 @@ export const initialState: IState = {
                 page: 1,
                 sortedColumn: null,
             },
+            datasets: {
+                filters: null,
+                page: 1,
+                sortedColumn: null,
+            },
+            users: {
+                filters: null,
+                page: 1,
+                sortedColumn: null,
+            },
+            teams: {
+                filters: null,
+                page: 1,
+                sortedColumn: null,
+            },
+            securityGroups: {
+                filters: null,
+                page: 1,
+                sortedColumn: null,
+            },
         },
     },
     auth: {
         // Dummy auth
         username: 'dummy-test-user',
-        permissions: {
-            edit: true,
-            execute: true,
-        },
+        accessToken: '',
+        refreshToken: '',
+        expiresAt: new Date(),
+        permissions: [],
     },
     entities: entitiesConfigManager.getEntitiesInititialState() as unknown as IEntitiesState,
 };

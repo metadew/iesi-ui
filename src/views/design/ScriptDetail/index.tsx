@@ -1,48 +1,48 @@
-import React, { ReactText } from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import React from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { clone } from 'ramda';
 import { getTranslator } from 'state/i18n/selectors';
-import { Box, Typography, Button, withStyles, createStyles, Theme, WithStyles, Collapse } from '@material-ui/core';
+import { Box, Button, Collapse, createStyles, Theme, Typography, WithStyles, withStyles } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
-    Edit as EditIcon,
     Delete as DeleteIcon,
-    Visibility,
+    Edit as EditIcon,
     FileCopy,
+    Visibility,
 } from '@material-ui/icons';
+import { checkAuthority } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { Alert } from '@material-ui/lab';
 import { IScript, IScriptAction } from 'models/state/scripts.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import TextInput from 'views/common/input/TextInput';
 import DescriptionList from 'views/common/list/DescriptionList';
-import { ROUTE_KEYS, getRouteKeyByPath, redirectTo } from 'views/routes';
-import { ListColumns, IListItem } from 'models/list.models';
+import { getRouteKeyByPath, redirectTo, ROUTE_KEYS } from 'views/routes';
+import { IListItem, ListColumns } from 'models/list.models';
 import GenericDraggableList from 'views/common/list/GenericDraggableList';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel/index';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import { THEME_COLORS } from 'config/themes/colors';
-import { observe, IObserveProps } from 'views/observe';
+import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAsyncScriptDetail } from 'state/entities/scripts/selectors';
 import { getUniqueIdFromScript } from 'utils/scripts/scriptUtils';
 import { getAsyncActionTypes } from 'state/entities/constants/selectors';
 import { triggerResetAsyncExecutionRequest } from 'state/entities/executionRequests/triggers';
-import { AsyncStatus, AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import { AsyncOperation, AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import Loader from 'views/common/waiting/Loader';
 import uniqueActionNamesCheck from 'utils/form/uniqueActionNamesCheck';
 import {
-    triggerUpdateScriptDetail,
     triggerCreateScriptDetail,
     triggerDeleteScriptDetail,
     triggerExportScriptDetail,
+    triggerFetchScriptDetail,
+    triggerUpdateScriptDetail,
 } from 'state/entities/scripts/triggers';
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
-// eslint-disable-next-line max-len
-import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import ExecuteScriptDialog from '../common/ExecuteScriptDialog';
-
 import DetailActions from './DetailActions';
 import AddAction from './AddAction';
 import EditAction from './EditAction';
@@ -86,12 +86,12 @@ interface IComponentState {
     isAddOpen: boolean;
     isConfirmDeleteScriptOpen: boolean;
     isSaveDialogOpen: boolean;
+    isExecuteDialogOpen: boolean;
     editActionIndex: number;
     newScriptDetail: IScript;
     hasChangesToCheck: boolean;
     hasActionsWithDuplicateNames: boolean;
     requiredFieldsState: TRequiredFieldsState<IScript>;
-    scriptIdToExecute: string;
     actionIndexToDelete: number;
     actionIndexToDuplicate: number;
 }
@@ -107,6 +107,7 @@ const ScriptDetail = withStyles(styles)(
                 actionIndexToDelete: null,
                 actionIndexToDuplicate: null,
                 isSaveDialogOpen: false,
+                isExecuteDialogOpen: false,
                 editActionIndex: -1,
                 newScriptDetail: {
                     actions: [],
@@ -135,7 +136,6 @@ const ScriptDetail = withStyles(styles)(
                         showError: false,
                     },
                 },
-                scriptIdToExecute: null,
             };
 
             this.renderAddScriptContent = this.renderAddScriptContent.bind(this);
@@ -152,6 +152,7 @@ const ScriptDetail = withStyles(styles)(
             this.isCreateScriptRoute = this.isCreateScriptRoute.bind(this);
 
             this.updateScriptInStateIfNewScriptWasLoaded = this.updateScriptInStateIfNewScriptWasLoaded.bind(this);
+            this.refreshPageAfterUpdate = this.refreshPageAfterUpdate.bind(this);
             this.navigateToScriptAfterCreation = this.navigateToScriptAfterCreation.bind(this);
             this.navigateToScriptAfterDeletion = this.navigateToScriptAfterDeletion.bind(this);
 
@@ -164,6 +165,7 @@ const ScriptDetail = withStyles(styles)(
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
             this.updateScriptInStateIfNewScriptWasLoaded(prevProps);
+            this.refreshPageAfterUpdate(prevProps);
             this.navigateToScriptAfterCreation(prevProps);
             this.navigateToScriptAfterDeletion(prevProps);
         }
@@ -173,9 +175,9 @@ const ScriptDetail = withStyles(styles)(
             const {
                 isAddOpen,
                 isConfirmDeleteScriptOpen,
+                isExecuteDialogOpen,
                 isSaveDialogOpen,
                 newScriptDetail,
-                scriptIdToExecute,
                 actionIndexToDelete,
                 actionIndexToDuplicate,
             } = this.state;
@@ -223,12 +225,16 @@ const ScriptDetail = withStyles(styles)(
                         onClose={() => this.setState({ actionIndexToDuplicate: null })}
                         onDuplicate={(action) => this.onAddActions([action])}
                     />
+                    {
+                        isExecuteDialogOpen && (
+                            <ExecuteScriptDialog
+                                onClose={this.onCloseExecuteDialog}
+                                scriptName={newScriptDetail.name}
+                                scriptVersion={newScriptDetail.version.number}
+                            />
+                        )
+                    }
 
-                    <ExecuteScriptDialog
-                        scriptUniqueId={getUniqueIdFromScript(newScriptDetail)}
-                        open={!!scriptIdToExecute}
-                        onClose={this.onCloseExecuteDialog}
-                    />
                     <ClosableDialog
                         title={translator('scripts.detail.save_script_dialog.title')}
                         open={isSaveDialogOpen}
@@ -250,8 +256,8 @@ const ScriptDetail = withStyles(styles)(
                                     color="secondary"
                                     disabled={this.isCreateScriptRoute()
                                         || (newScriptDetail && !checkAuthority(
+                                            state,
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                            newScriptDetail.securityGroupName,
                                         ))}
                                 >
                                     <Translate msg="scripts.detail.save_script_dialog.update_current_version" />
@@ -275,8 +281,8 @@ const ScriptDetail = withStyles(styles)(
                                     color="secondary"
                                     variant="outlined"
                                     disabled={newScriptDetail && !checkAuthority(
+                                        state,
                                         SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                        newScriptDetail.securityGroupName,
                                     )}
                                 >
                                     <Translate msg="scripts.detail.save_script_dialog.save_as_new_version" />
@@ -342,8 +348,8 @@ const ScriptDetail = withStyles(styles)(
                                 })}
                                 InputProps={{
                                     readOnly: !this.isCreateScriptRoute() && newScriptDetail && !checkAuthority(
+                                        state,
                                         SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                        newScriptDetail.securityGroupName,
                                     ),
                                     disableUnderline: true,
                                 }}
@@ -517,7 +523,7 @@ const ScriptDetail = withStyles(styles)(
                             onSave={handleSaveAction}
                             onDelete={() => this.setState({ isConfirmDeleteScriptOpen: true })}
                             onAdd={() => this.setState({ isAddOpen: true })}
-                            onPlay={() => this.setScriptToExecute(getUniqueIdFromScript(newScriptDetail))}
+                            onPlay={() => this.setState({ isExecuteDialogOpen: true })}
                             onExport={() => this.onExportScript()}
                             onViewReport={() => {
                                 redirectTo({
@@ -535,6 +541,7 @@ const ScriptDetail = withStyles(styles)(
                     </Box>
                     <Box marginY={1}>
                         <GenericDraggableList
+                            state={state}
                             listItems={listItems}
                             columns={columns}
                             listActions={[].concat(
@@ -546,8 +553,8 @@ const ScriptDetail = withStyles(styles)(
                                     },
                                     hideAction: () =>
                                         !this.isCreateScriptRoute() && !(newScriptDetail && checkAuthority(
+                                            state,
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                            newScriptDetail.securityGroupName,
                                         )),
                                 },
                                 {
@@ -559,12 +566,12 @@ const ScriptDetail = withStyles(styles)(
                                     hideAction: () =>
                                         this.isCreateScriptRoute() || !(newScriptDetail
                                             && !checkAuthority(
+                                                state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                                newScriptDetail.securityGroupName,
                                             )
                                             && checkAuthority(
+                                                state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_READ,
-                                                newScriptDetail.securityGroupName,
                                             )),
                                 },
                                 {
@@ -575,8 +582,8 @@ const ScriptDetail = withStyles(styles)(
                                     },
                                     hideAction: () => !this.isCreateScriptRoute()
                                         && !(newScriptDetail && checkAuthority(
+                                            state,
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                            newScriptDetail.securityGroupName,
                                         )),
                                 },
                                 {
@@ -587,8 +594,8 @@ const ScriptDetail = withStyles(styles)(
                                     },
                                     hideAction: () => !this.isCreateScriptRoute()
                                         && !(newScriptDetail && checkAuthority(
+                                            state,
                                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                            newScriptDetail.securityGroupName,
                                         )),
                                 },
                             )}
@@ -698,13 +705,9 @@ const ScriptDetail = withStyles(styles)(
                 && clone(newScriptDetail.actions[editActionIndex]);
         }
 
-        private setScriptToExecute(id: ReactText) {
-            this.setState({ scriptIdToExecute: id as string });
-        }
-
         private onCloseExecuteDialog() {
             triggerResetAsyncExecutionRequest({ operation: AsyncOperation.create });
-            this.setState({ scriptIdToExecute: null });
+            this.setState({ isExecuteDialogOpen: false });
         }
 
         private updateScriptInStateIfNewScriptWasLoaded(prevProps: TProps & IObserveProps) {
@@ -715,6 +718,19 @@ const ScriptDetail = withStyles(styles)(
                 const scriptDetailDeepClone = clone(scriptDetail);
                 // eslint-disable-next-line react/no-did-update-set-state
                 this.setState({ newScriptDetail: scriptDetailDeepClone });
+            }
+        }
+
+        private refreshPageAfterUpdate(prevProps: TProps & IObserveProps) {
+            const currentScriptDetail = getAsyncScriptDetail(this.props.state);
+            const prevScriptDetail = getAsyncScriptDetail(prevProps.state);
+            if (
+                currentScriptDetail.update.status === AsyncStatus.Success
+                && prevScriptDetail.update.status !== AsyncStatus.Success) {
+                triggerFetchScriptDetail({
+                    name: currentScriptDetail.data.name,
+                    version: currentScriptDetail.data.version.number,
+                });
             }
         }
 

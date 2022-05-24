@@ -21,6 +21,22 @@ export enum ROUTE_KEYS {
     R_REPORTS = 'R_REPORTS',
     R_REPORT_DETAIL = 'R_REPORT_DETAIL',
     R_NOT_FOUND = 'R_NOT_FOUND',
+    /* Dataset */
+    R_DATASETS = 'R_DATASETS',
+    R_DATASET_DETAIL = 'R_DATASET_DETAIL',
+    R_DATASET_NEW = 'R_DATASET_NEW',
+    /* Security groups */
+    R_SECURITY_GROUPS = 'R_SECURITY_GROUPS',
+    R_SECURITY_GROUP_DETAIL = 'R_SECURITY_GROUP_DETAIL',
+    R_SECURITY_GROUP_NEW = 'R_SECURITY_GROUP_NEW',
+    /* User */
+    R_USERS = 'R_USERS',
+    R_USER_DETAIL = 'R_USER_DETAIL',
+    R_USER_NEW = 'R_USER_NEW',
+    /* TEAM */
+    R_TEAMS = 'R_TEAMS',
+    R_TEAM_DETAIL = 'R_TEAM_DETAIL',
+    R_TEAM_NEW = 'R_TEAM_NEW',
     /* OpenAPI */
     R_OPENAPI = 'R_OPENAPI'
 }
@@ -116,22 +132,41 @@ export function setBrowserHistory(history: History) {
     }
 }
 
-export function redirectTo({ routeKey, params, queryParams }: INavigateToRoute) {
+export function redirectTo({ routeKey, params, queryParams, newTab = false }: INavigateToRoute) {
+    if (browserHistory) {
+        // Do this on the next frame to make sure everything routeObserverManager has been registered
+        window.requestAnimationFrame(() => {
+            const pathname = replacePathPlaceholders({
+                path: getRoutePath({ routeKey }),
+                placeholders: params,
+            });
+            const search = queryParams
+                ? Object.keys(queryParams).map((key) => `${key}=${queryParams[key]}`).join('&')
+                : '';
+            if (newTab) {
+                window.open(pathname + search);
+            } else {
+                browserHistory.push({
+                    pathname,
+                    search,
+                });
+            }
+        });
+    }
+}
+export function redirectToPath(pathname: string, search: string) {
     if (browserHistory) {
         // Do this on the next frame to make sure everything routeObserverManager has been registered
         window.requestAnimationFrame(() => {
             browserHistory.push({
-                pathname: replacePathPlaceholders({
-                    path: getRoutePath({ routeKey }),
-                    placeholders: params,
-                }),
-                search: queryParams
-                    ? Object.keys(queryParams).map((key) => `${key}=${queryParams[key]}`).join('&')
-                    : '',
+                pathname,
+                search,
             });
         });
     }
 }
+
+// Create copy of above and provide simple url
 
 export function registerRouteObserver(onRoute: (routeLocation: IRouteLocation) => void) {
     routeObserverManager.registerObserver({

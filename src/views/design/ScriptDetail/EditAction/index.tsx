@@ -9,8 +9,9 @@ import {
     Button,
     ButtonGroup,
     Paper,
-    TextField,
 } from '@material-ui/core';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
+import { checkAuthority } from 'state/auth/selectors';
 import { IScriptAction } from 'models/state/scripts.models';
 import { formatNumberWithTwoDigits } from 'utils/number/format';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -19,8 +20,10 @@ import { IObserveProps, observe } from 'views/observe';
 import { getAsyncActionTypes } from 'state/entities/constants/selectors';
 import { getTranslator } from 'state/i18n/selectors';
 import { StateChangeNotification } from 'models/state.models';
-import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import { IConstantParameter, IActionType } from 'models/state/constants.models';
+import { ChevronRightRounded } from '@material-ui/icons';
+import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { IParameter } from 'models/state/iesiGeneric.models';
 import ExpandableParameter from './ExpandableParameter';
 
 interface IPublicProps {
@@ -63,6 +66,10 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
     },
     nameTextField: {
         width: '100%',
+        marginTop: 0,
+        '& .MuiFilledInput-root': {
+            background: palette.background.paper,
+        },
     },
     conditionTextField: {
         width: '100%',
@@ -87,6 +94,13 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
             backgroundColor: THEME_COLORS.GREY,
         },
     },
+    buttonContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'end',
+        color: palette.grey[500],
+        fontSize: '.7rem',
+    },
 }));
 
 function EditAction({
@@ -94,7 +108,6 @@ function EditAction({
     action,
     onEdit,
     isCreateScriptRoute,
-    securityGroupName,
     state,
 }: IPublicProps & IObserveProps) {
     const classes = useStyles();
@@ -108,6 +121,8 @@ function EditAction({
     const actionTypes = getAsyncActionTypes(state).data || [];
     const matchingActionType = actionTypes.find((item) => action.type === item.type);
     const orderedActionTypeParameters = orderActionTypeParameters(matchingActionType.parameters, matchingActionType);
+    const parameterScript = getParameterDetail(parameters, 'script');
+    const parameterVersion = getParameterDetail(parameters, 'version');
     return (
         <Box className={classes.dialog}>
             <Box
@@ -115,7 +130,7 @@ function EditAction({
                 display="flex"
                 justifyContent="space-between"
                 alignItems="center"
-                padding={1}
+                padding={2}
             >
                 <Box
                     paddingX={3}
@@ -129,10 +144,7 @@ function EditAction({
                 <Box
                     paddingX={3}
                     paddingY={1.1}
-                    className={classnames(
-                        classes.tableCell,
-                        classes.actionType,
-                    )}
+                    className={classnames(classes.actionType)}
                     width="40%"
                 >
                     {action.type}
@@ -143,22 +155,58 @@ function EditAction({
                     className={classnames(classes.actionName)}
                     width="60%"
                 >
-                    <TextField
-                        id="action-name"
-                        label={translator('scripts.detail.edit_action.name')}
-                        defaultValue={name}
-                        onBlur={(e) => setName(e.target.value)}
-                        className={classes.nameTextField}
-                        InputProps={{
-                            readOnly: !isCreateScriptRoute
-                                && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
-                            disableUnderline: !isCreateScriptRoute
-                                && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
-                        }}
-                    />
+                    {
+                        matchingActionType.type === 'fwk.executeScript'
+                        && (
+                            <Box paddingX={2} className={classes.buttonContainer}>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    disabled={
+                                        !(parameterScript.value && parameterScript.value.length
+                                            && parameterVersion.value && parameterVersion.value.length)
+                                    }
+                                    size="small"
+                                    onClick={() => redirectTo({
+                                        routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
+                                        params: {
+                                            name: parameterScript.value,
+                                            version: parameterVersion.value,
+                                        },
+                                        newTab: true,
+                                    })}
+                                >
+                                    <ChevronRightRounded />
+                                </Button>
+                                {
+                                    !(parameterScript.value && parameterScript.value.length
+                                    && parameterVersion.value && parameterVersion.value.length)
+                                    && (
+                                        <Translate msg="Script name and version are required to see the script" />
+                                    )
+                                }
+                            </Box>
+                        )
+                    }
                 </Box>
             </Box>
             <Box padding={2}>
+                <Box marginBottom={2}>
+                    <Paper>
+                        <TextInput
+                            id="action-name"
+                            label={translator('scripts.detail.edit_action.name')}
+                            defaultValue={name}
+                            onBlur={(e) => setName(e.target.value)}
+                            className={classes.nameTextField}
+                            InputProps={{
+                                readOnly: !isCreateScriptRoute
+                                    && !checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE),
+                                disableUnderline: true,
+                            }}
+                        />
+                    </Paper>
+                </Box>
                 <Box marginBottom={2}>
                     <Paper>
                         <TextInput
@@ -173,7 +221,7 @@ function EditAction({
                             onBlur={(e) => setDescription(e.target.value)}
                             InputProps={{
                                 readOnly: !isCreateScriptRoute
-                                    && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
+                                    && !checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE),
                                 disableUnderline: true,
                             }}
                         />
@@ -191,7 +239,7 @@ function EditAction({
                             onBlur={(e) => setCondition(e.target.value)}
                             InputProps={{
                                 readOnly: !isCreateScriptRoute
-                                    && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName),
+                                    && !checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE),
                                 disableUnderline: true,
                             }}
                         />
@@ -219,6 +267,7 @@ function EditAction({
                                 }}
                                 parameter={parameter}
                                 constantParameter={constantParameter}
+                                readOnly={!checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)}
                             />
                         );
                     })}
@@ -240,7 +289,7 @@ function EditAction({
                                 setErrorStopChecked(!errorStopChecked);
                             }}
                             disabled={!isCreateScriptRoute
-                                && !checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)}
+                                && !checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)}
                         />
                     </Box>
                     <Box display="flex" alignItems="center" marginLeft={2}>
@@ -254,14 +303,14 @@ function EditAction({
                                 setErrorExpectedChecked(!errorExpectedChecked);
                             }}
                             disabled={!(isCreateScriptRoute
-                                || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName))}
+                                || checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE))}
                         />
                     </Box>
 
                     <Box marginLeft={2}>
                         <ButtonGroup size="small">
                             {isCreateScriptRoute
-                                || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)
+                                || checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)
                                 ? (
                                     <Button
                                         color="default"
@@ -280,7 +329,7 @@ function EditAction({
                                     </Button>
                                 )}
                             {isCreateScriptRoute
-                                || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)
+                                || checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)
                                 ? (
                                     <Button
                                         variant="contained"
@@ -342,6 +391,11 @@ function EditAction({
                 encrypted: p.encrypted,
             }));
         return orderedParameters;
+    }
+
+    function getParameterDetail(actionParameters: IParameter[], param: string) {
+        const parameterDetail = actionParameters.find((parameter) => parameter.name === param);
+        return parameterDetail || { name: '', value: '' };
     }
 }
 

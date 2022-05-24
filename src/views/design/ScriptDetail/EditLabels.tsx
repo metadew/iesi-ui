@@ -8,7 +8,8 @@ import ButtonWithContent from 'views/common/input/ButtonWithContent';
 import TextInput from 'views/common/input/TextInput';
 import { observe, IObserveProps } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
-import { SECURITY_PRIVILEGES, checkAuthority } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
+import { checkAuthority } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 interface IPublicProps {
     labels: ILabel[];
@@ -20,7 +21,6 @@ interface IPublicProps {
 function EditLabels({
     labels,
     onChange,
-    securityGroupName,
     isCreateScriptRoute,
     state,
 }: IPublicProps & IObserveProps) {
@@ -53,8 +53,8 @@ function EditLabels({
                         items={labels.map((label) => ({
                             content: `${label.name}:${label.value}`,
                             onDelete: isCreateScriptRoute || checkAuthority(
+                                state,
                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                securityGroupName,
                             )
                                 ? () => onChange(labels.filter((l) => l.name !== label.name))
                                 : null,
@@ -67,7 +67,10 @@ function EditLabels({
                 )}
             <ClickAwayListener onClickAway={handleClickAway}>
                 <div>
-                    {isCreateScriptRoute || checkAuthority(SECURITY_PRIVILEGES.S_SCRIPTS_WRITE, securityGroupName)
+                    {isCreateScriptRoute || checkAuthority(
+                        state,
+                        SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
+                    )
                         ? (
                             <ButtonWithContent
                                 buttonText={<Translate msg="scripts.detail.side.labels.add_button" />}

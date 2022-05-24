@@ -66,7 +66,7 @@ function DuplicateActionDialog({
                         <Translate msg="scripts.detail.duplicate_action_dialog.text" />
                     </Box>
                     <TextField
-                        id="execute-script-name"
+                        id="action-name"
                         type="text"
                         value={actionName}
                         label={translator('scripts.detail.duplicate_action_dialog.form.name')}

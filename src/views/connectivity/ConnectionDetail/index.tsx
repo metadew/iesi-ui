@@ -27,12 +27,13 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { Alert, Autocomplete } from '@material-ui/lab';
 import { IConnectionType } from 'models/state/constants.models';
 import { IListItem, ListColumns } from 'models/list.models';
-import { checkAuthorityGeneral, SECURITY_PRIVILEGES } from 'views/appShell/AppLogIn/components/AuthorithiesChecker';
 import {
     triggerCreateConnectionDetail,
     triggerDeleteConnectionDetail,
     triggerUpdateConnectionDetail,
 } from 'state/entities/connections/triggers';
+import { checkAuthority } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
@@ -78,6 +79,7 @@ interface IComponentState {
 
 const initialConnectionDetail: IConnection = {
     type: '',
+    securityGroupName: '',
     name: '',
     description: '',
     environments: [],
@@ -90,7 +92,7 @@ const ConnectionDetail = withStyles(styles)(
 
             this.state = {
                 newConnectionDetail: initialConnectionDetail,
-                environmentIndex: -1,
+                environmentIndex: 0,
                 editParameterIndex: -1,
                 isAddingParameter: false,
                 hasChangesToCheck: false,
@@ -101,6 +103,9 @@ const ConnectionDetail = withStyles(styles)(
                         showError: false,
                     },
                     name: {
+                        showError: false,
+                    },
+                    securityGroupName: {
                         showError: false,
                     },
                 },
@@ -169,7 +174,12 @@ const ConnectionDetail = withStyles(styles)(
                         onClose={() => this.setState({ isSaveDialogOpen: false })}
                     >
                         <Typography>
-                            <Translate msg="connections.detail.save_connection_dialog.text" />
+                            <Translate
+                                msg="connections.detail.save_connection_dialog.text"
+                                placeholders={{
+                                    connectionName: newConnectionDetail.name,
+                                }}
+                            />
                         </Typography>
                         <Box display="flex" alignItems="center" justifyContent="center" marginTop={2}>
                             <Box paddingRight={1}>
@@ -185,7 +195,11 @@ const ConnectionDetail = withStyles(styles)(
                                     }}
                                     variant="contained"
                                     color="secondary"
-                                    disabled={!checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)}
+                                    disabled={!checkAuthority(
+                                        state,
+                                        SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
+                                    )}
+
                                 >
                                     {
                                         this.isCreateConnectionRoute() ? (
@@ -224,7 +238,10 @@ const ConnectionDetail = withStyles(styles)(
                                 value={autoComplete || null}
                                 getOptionLabel={(option) => option.data.type}
                                 getOptionDisabled={() =>
-                                    !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)}
+                                    !checkAuthority(
+                                        state,
+                                        SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
+                                    )}
                                 renderInput={(params) => (
                                     <TextInput
                                         {...params}
@@ -235,7 +252,10 @@ const ConnectionDetail = withStyles(styles)(
                                         helperText={requiredFieldsState.type.showError && 'Connection type is a required field'}
                                         InputProps={{
                                             ...params.InputProps,
-                                            readOnly: !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
+                                            readOnly: !this.isCreateConnectionRoute() && !checkAuthority(
+                                                state,
+                                                SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
+                                            ),
                                             disableUnderline: true,
                                         }}
                                     />
@@ -267,7 +287,6 @@ const ConnectionDetail = withStyles(styles)(
                                 label={translator('connections.detail.side.connection_name')}
                                 InputProps={{
                                     readOnly: !this.isCreateConnectionRoute() && newConnectionDetail !== undefined,
-                                    //    && !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
                                     disableUnderline: true,
                                 }}
                                 value={newConnectionDetail.name}
@@ -283,7 +302,10 @@ const ConnectionDetail = withStyles(styles)(
                                 rows={8}
                                 InputProps={{
                                     readOnly: (!this.isCreateConnectionRoute && newConnectionDetail !== undefined)
-                                        || !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
+                                        || !checkAuthority(
+                                            state,
+                                            SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
+                                        ),
                                     disableUnderline: true,
 
                                 }}
@@ -292,39 +314,103 @@ const ConnectionDetail = withStyles(styles)(
                                     description: e.target.value,
                                 })}
                             />
+                            {
+                                this.isCreateConnectionRoute() ? (
+                                    <>
+                                        <TextInput
+                                            id="connection-security-group"
+                                            label={translator('connections.detail.side.connection_security')}
+                                            error={requiredFieldsState.securityGroupName.showError}
+                                            // eslint-disable-next-line max-len
+                                            helperText={requiredFieldsState.securityGroupName.showError && 'Security group is a required field'}
+                                            value={newConnectionDetail && newConnectionDetail.securityGroupName
+                                                ? newConnectionDetail.securityGroupName : ''}
+                                            onChange={(e) => this.updateConnection({
+                                                securityGroupName: e.target.value,
+                                            })}
+                                            InputProps={{
+                                                disableUnderline: true,
+                                            }}
+                                            required
+                                        />
+                                        <DescriptionList
+                                            noLineAfterListItem
+                                            items={[].concat({
+                                                label: <Translate msg="connections.detail.side.environments.title" />,
+                                                value: <EditEnvironments
+                                                    // eslint-disable-next-line max-len
+                                                    environments={newConnectionDetail && newConnectionDetail.environments}
+                                                    selectedIndex={environmentIndex}
+                                                    // eslint-disable-next-line max-len
+                                                    onEnvironmentSelected={(index) => this.setState({ environmentIndex: index })}
+                                                    onSubmit={(newEnvironment) => {
+                                                        this.updateConnection({
+                                                            environments: [...newConnectionDetail.environments, {
+                                                                ...newEnvironment,
+                                                                parameters: newConnectionDetail.type
+                                                                    ? connectionTypes
+                                                                        // eslint-disable-next-line max-len
+                                                                        .find((item) => item.type === newConnectionDetail.type)
+                                                                        .parameters?.filter((item) => item.mandatory)
+                                                                        .map((item) => ({ name: item.name, value: '' }))
+                                                                    : [],
+                                                            }],
+                                                        });
+                                                    }}
+                                                    onDelete={(index) => {
+                                                        const environments = [...newConnectionDetail.environments];
+                                                        environments.splice(index, 1);
+                                                        this.updateConnection({
+                                                            environments,
+                                                        });
+                                                    }}
+                                                    isCreateConnectionRoute={this.isCreateConnectionRoute()}
+                                                />,
+                                            })}
+                                        />
+                                    </>
+                                ) : (
+                                    <DescriptionList
+                                        noLineAfterListItem
+                                        items={[].concat({
+                                            label: translator('connections.detail.side.connection_security'),
+                                            value: newConnectionDetail && newConnectionDetail.securityGroupName
+                                                ? newConnectionDetail.securityGroupName : '',
+                                        }, {
+                                            label: <Translate msg="connections.detail.side.environments.title" />,
+                                            value: <EditEnvironments
+                                                environments={newConnectionDetail && newConnectionDetail.environments}
+                                                selectedIndex={environmentIndex}
+                                                // eslint-disable-next-line max-len
+                                                onEnvironmentSelected={(index) => this.setState({ environmentIndex: index })}
+                                                onSubmit={(newEnvironment) => {
+                                                    this.updateConnection({
+                                                        environments: [...newConnectionDetail.environments, {
+                                                            ...newEnvironment,
+                                                            parameters: newConnectionDetail.type
+                                                                ? connectionTypes
+                                                                    // eslint-disable-next-line max-len
+                                                                    .find((item) => item.type === newConnectionDetail.type)
+                                                                    .parameters?.filter((item) => item.mandatory)
+                                                                    .map((item) => ({ name: item.name, value: '' }))
+                                                                : [],
+                                                        }],
+                                                    });
+                                                }}
+                                                onDelete={(index) => {
+                                                    const environments = [...newConnectionDetail.environments];
+                                                    environments.splice(index, 1);
+                                                    this.updateConnection({
+                                                        environments,
+                                                    });
+                                                }}
+                                                isCreateConnectionRoute={this.isCreateConnectionRoute()}
+                                            />,
+                                        })}
+                                    />
+                                )
+                            }
                         </form>
-                        <DescriptionList
-                            noLineAfterListItem
-                            items={[].concat({
-                                label: <Translate msg="connections.detail.side.environments.title" />,
-                                value: <EditEnvironments
-                                    environments={newConnectionDetail && newConnectionDetail.environments}
-                                    selectedIndex={environmentIndex}
-                                    onEnvironmentSelected={(index) => this.setState({ environmentIndex: index })}
-                                    onSubmit={(newEnvironment) => {
-                                        this.updateConnection({
-                                            environments: [...newConnectionDetail.environments, {
-                                                ...newEnvironment,
-                                                parameters: newConnectionDetail.type
-                                                    ? connectionTypes
-                                                        .find((item) => item.type === newConnectionDetail.type)
-                                                        .parameters?.filter((item) => item.mandatory)
-                                                        .map((item) => ({ name: item.name, value: '' }))
-                                                    : [],
-                                            }],
-                                        });
-                                    }}
-                                    onDelete={(index) => {
-                                        const environments = [...newConnectionDetail.environments];
-                                        environments.splice(index, 1);
-                                        this.updateConnection({
-                                            environments,
-                                        });
-                                    }}
-                                    isCreateConnectionRoute={this.isCreateConnectionRoute()}
-                                />,
-                            })}
-                        />
                     </Box>
                 </Box>
             );
@@ -349,7 +435,7 @@ const ConnectionDetail = withStyles(styles)(
             const handleSaveAction = () => {
                 const { passed: passedRequired, requiredFieldsState } = requiredFieldsCheck({
                     data: newConnectionDetail,
-                    requiredFields: ['type', 'name'],
+                    requiredFields: ['type', 'name', 'securityGroupName'],
                 });
 
                 if (passedRequired) {
@@ -424,7 +510,10 @@ const ConnectionDetail = withStyles(styles)(
                                     this.setState({ editParameterIndex: index });
                                 },
                                 hideAction: () => (
-                                    !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                                    !this.isCreateConnectionRoute() && !checkAuthority(
+                                        state,
+                                        SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
+                                    )
                                 ),
                             }, {
                                 icon: <Delete />,
@@ -443,9 +532,12 @@ const ConnectionDetail = withStyles(styles)(
                                             )),
                                     });
                                 },
-                                hideAction: (item) => (
-                                    !checkAuthorityGeneral(SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
-                                    || !item.canBeDeleted
+                                hideAction: (item) => ((
+                                    !this.isCreateConnectionRoute() && !checkAuthority(
+                                        state,
+                                        SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
+                                    )
+                                ) || !item.canBeDeleted
                                 ),
                             }]}
                         />
@@ -491,8 +583,11 @@ const ConnectionDetail = withStyles(styles)(
                             newParameters = [...newConnectionDetail.environments[environmentIndex].parameters];
                             newParameters[editParameterIndex] = newParameter;
                         }
+
                         const orderedEnvironments = orderEnvironments(
-                            newConnectionDetail, matchingConnectionType, newParameters,
+                            newConnectionDetail, matchingConnectionType,
+                            newParameters,
+                            newConnectionDetail.environments[environmentIndex],
                         );
                         this.updateConnection({
                             environments: orderedEnvironments,
@@ -668,12 +763,19 @@ function orderConnectionParameters(items: IConnectionParameter[], connectionType
 }
 
 function orderEnvironments(
-    connection: IConnection, connectionType: IConnectionType, connectionParameter?: IConnectionParameter[],
+    connection: IConnection,
+    connectionType: IConnectionType,
+    connectionParameter?: IConnectionParameter[],
+    currentEnvironment?: IConnectionEnvironment,
 ) {
     const orderedEnvironments: IConnectionEnvironment[] = connection.environments
         .map((environmentDetail) => {
             const newOrderedParameters: IConnectionParameter[] = orderConnectionParameters(
-                connectionParameter || environmentDetail.parameters, connectionType,
+                connectionParameter && currentEnvironment.environment === environmentDetail.environment ? (
+                    connectionParameter
+                ) : (
+                    environmentDetail.parameters
+                ), connectionType,
             );
             return {
                 ...environmentDetail,

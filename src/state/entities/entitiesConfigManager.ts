@@ -14,6 +14,7 @@ import {
     IScriptByNameAndVersionPayload,
     IScriptBase,
     IFetchScriptsListPayload,
+    IScriptImport,
 } from 'models/state/scripts.models';
 import { IOpenAPI } from 'models/state/openapi.model';
 import {
@@ -26,6 +27,32 @@ import {
     IComponentByNameAndVersionPayload,
     IFetchComponentsListPayload,
 } from 'models/state/components.model';
+import {
+    IDataset,
+    IDatasetBase,
+    IDatasetImplementationsByUuidPayload,
+    IFetchDatasetsListPayload,
+    IDatasetByUuidPayload,
+    IDatasetByNamePayload,
+    IDatasetImportPayload,
+} from 'models/state/datasets.model';
+import { IFetchUsersListPayload, IUserByNamePayload } from 'models/state/user.model';
+import {
+    IFetchTeamsListPayload,
+    ITeamAssignUserRolePayload,
+    ITeamBase,
+    ITeamByIdPayload,
+    ITeamByNamePayload,
+    ITeamDeleteUserRole,
+} from 'models/state/team.model';
+import { IUserPost } from 'models/state/user.model';
+import {
+    IFetchSecurityGroupListPayload,
+    ISecurityGroupAssignTeamPayload,
+    ISecurityGroupBase,
+    ISecurityGroupByNamePayload,
+} from 'models/state/securityGroups.model';
+import { IImportPayload } from 'models/state/iesiGeneric.models';
 
 // eslint-disable-next-line max-len
 const entitiesConfigManager = initAsyncEntitiesConfigManager<IState, {}, ITraceableApiError, string, IExtraProcessInput>();
@@ -54,7 +81,7 @@ entitiesConfigManager.register({
             api: api.scripts.createScriptVersion,
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
-            apiInputSelector: ({ extraInput }) => extraInput as IScriptBase,
+            apiInputSelector: ({ extraInput }) => extraInput as IScriptBase | IScriptImport,
         },
         update: {
             // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
@@ -83,6 +110,16 @@ entitiesConfigManager.register({
         fetch: {
             api: api.scripts.fetchScriptByNameAndVersionDownload,
             apiInputSelector: ({ extraInput }) => extraInput as IScriptByNameAndVersionPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetailImport,
+    operationsConfig: {
+        create: {
+            api: api.scripts.createScriptVersionImport,
+            apiInputSelector: ({ extraInput }) => extraInput as IImportPayload,
         },
     },
 });
@@ -370,6 +407,214 @@ entitiesConfigManager.register({
         update: {
             api: api.connections.updateConnection,
             apiInputSelector: ({ extraInput }) => extraInput as IConnection,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.datasets,
+    operationsConfig: {
+        fetch: {
+            api: api.datasets.fetchDatasets,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchDatasetsListPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.datasetDetail,
+    operationsConfig: {
+        fetch: {
+            api: api.datasets.fetchDataset,
+            apiInputSelector: ({ extraInput }) => extraInput as IDataset,
+        },
+        create: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.datasets.createDataset,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IDatasetBase,
+        },
+        update: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.datasets.updateDataset,
+            apiInputSelector: ({ extraInput }) => extraInput as IDataset,
+        },
+        remove: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.datasets.deleteDataset,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IDatasetByUuidPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.datasetDetailImport,
+    operationsConfig: {
+        create: {
+            api: api.datasets.createDatasetImport,
+            apiInputSelector: ({ extraInput }) => extraInput as IDatasetImportPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.datasetDetailExport,
+    operationsConfig: {
+        fetch: {
+            api: api.datasets.fetchDatasetDownload,
+            apiInputSelector: ({ extraInput }) => extraInput as IDatasetByNamePayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.datasetImplementations,
+    operationsConfig: {
+        fetch: {
+            api: api.datasets.fetchDatasetImplementations,
+            apiInputSelector: ({ extraInput }) => extraInput as IDatasetImplementationsByUuidPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.users,
+    operationsConfig: {
+        fetch: {
+            api: api.users.fetchUsers,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchUsersListPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.userDetail,
+    operationsConfig: {
+        fetch: {
+            api: api.users.fetchUser,
+            apiInputSelector: ({ extraInput }) => extraInput as IUserByNamePayload,
+        },
+        create: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.users.createUser,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IUserPost,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.userDetailRole,
+    operationsConfig: {
+        create: {
+            api: api.teams.assignRoleToUser,
+            apiInputSelector: ({ extraInput }) => extraInput as ITeamAssignUserRolePayload,
+        },
+        remove: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.teams.deleteRoleFromUser,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ITeamDeleteUserRole,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.teams,
+    operationsConfig: {
+        fetch: {
+            api: api.teams.fetchTeams,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchTeamsListPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.teamDetail,
+    operationsConfig: {
+        fetch: {
+            api: api.teams.fetchTeam,
+            apiInputSelector: ({ extraInput }) => extraInput as ITeamByNamePayload,
+        },
+        create: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.teams.createTeam,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ITeamBase,
+        },
+        remove: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.teams.deleteTeam,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ITeamByIdPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.teamDetailSecurityGroup,
+    operationsConfig: {
+        create: {
+            api: api.securityGroups.assignTeam,
+            apiInputSelector: ({ extraInput }) => extraInput as ISecurityGroupAssignTeamPayload,
+            mapApiResponse: ({ response }) => response,
+        },
+        remove: {
+            api: api.securityGroups.unassignTeam,
+            apiInputSelector: ({ extraInput }) => extraInput as ISecurityGroupAssignTeamPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.securityGroups,
+    operationsConfig: {
+        fetch: {
+            api: api.securityGroups.fetchSecurityGroups,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchSecurityGroupListPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.securityGroupDetail,
+    operationsConfig: {
+        fetch: {
+            api: api.securityGroups.fetchSecurityGroup,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ISecurityGroupByNamePayload,
+        },
+        create: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.securityGroups.createSecurityGroup,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ISecurityGroupBase,
+        },
+        remove: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.securityGroups.deleteSecurityGroup,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ISecurityGroupByIdPayload,
         },
     },
 });

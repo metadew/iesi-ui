@@ -1,5 +1,6 @@
 import { IEnvironment } from 'models/state/environments.models';
 import { IListResponse } from 'models/state/iesiGeneric.models';
+// eslint-disable-next-line import/no-cycle
 import { get, post, put, remove } from 'api/requestWrapper';
 import API_URLS from '../apiUrls';
 

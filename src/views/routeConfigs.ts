@@ -1,3 +1,4 @@
+import React from 'react';
 import { IRoute } from 'models/router.models';
 import { triggerFetchScripts, triggerFetchScriptDetail } from 'state/entities/scripts/triggers';
 import {
@@ -10,6 +11,7 @@ import {
 } from 'state/entities/constants/triggers';
 import { triggerFetchComponentDetail, triggerFetchComponents } from 'state/entities/components/triggers';
 import { triggerFetchConnectionDetail, triggerFetchConnections } from 'state/entities/connections/triggers';
+import { triggerFetchDatasetDetail } from 'state/entities/datasets/triggers';
 import { SortType, SortOrder } from 'models/list.models';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
@@ -17,6 +19,9 @@ import { getStore } from 'state';
 import { getComponentsListFilter, getConnectionsListFilter, getScriptsListFilter } from 'state/ui/selectors';
 import { IFetchScriptsListPayload } from 'models/state/scripts.models';
 import { IFetchComponentsListPayload } from 'models/state/components.model';
+import { triggerFetchUserDetail } from 'state/entities/users/triggers';
+import { triggerFetchTeamDetail } from 'state/entities/teams/triggers';
+import { triggerFetchSecurityGroupDetail } from 'state/entities/securityGroups/triggers';
 import { ROUTE_KEYS, registerRoutes } from './routes';
 import NotFound from './appShell/NotFound';
 import Home from './Home';
@@ -26,7 +31,6 @@ import ScriptDetail from './design/ScriptDetail';
 import ScriptReportsTemplate from './report/ScriptReportsTemplate';
 import ScriptReportsOverview from './report/ScriptReportsOverview';
 import ScriptReportDetail from './report/ScriptReportDetail';
-import Login from './appShell/AppLogIn/LoginPage';
 import OpenAPI from './doc/OpenAPIOverview';
 import OpenAPITemplate from './doc/OpenAPITemplate';
 import ComponentsTemplate from './design/ComponentsTemplate';
@@ -35,17 +39,30 @@ import ComponentDetail from './design/ComponentDetail';
 import ConnectionTemplate from './connectivity/ConnectionTemplate';
 import ConnectionOverview from './connectivity/ConnectionOverview';
 import ConnectionDetail from './connectivity/ConnectionDetail';
+import LoginView from './appShell/AppLogIn/LoginPage';
+import DatasetsTemplate from './data/DatasetsTemplate';
+import DatasetDetail from './data/DatasetDetail';
+import DatasetOverview from './data/DatasetOverview';
+import UserTemplate from './iam/users/UserTemplate';
+import UserOverview from './iam/users/UserOverview';
+import UserDetail from './iam/users/UserDetail';
+import TeamTemplate from './iam/teams/TeamTemplate';
+import TeamsOverview from './iam/teams/TeamsOverview';
+import TeamDetail from './iam/teams/TeamDetail';
+import SecurityGroupTemplate from './iam/securityGroups/SecurityGroupTemplate';
+import SecurityGroupOverview from './iam/securityGroups/SecurityGroupOverview';
+import SecurityGroupDetail from './iam/securityGroups/SecurityGroupDetail';
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
     path: '/',
     exact: true,
-    component: Home,
+    component: Home as React.FunctionComponent<unknown>,
 }, {
     routeKey: ROUTE_KEYS.R_LOGIN,
     path: '/login',
     exact: true,
-    component: Login,
+    component: LoginView,
 }, {
     routeKey: ROUTE_KEYS.R_SCRIPTS,
     path: '/scripts',
@@ -253,6 +270,86 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
         execute: triggerFetchEnvironments,
     }],
 }, {
+    routeKey: ROUTE_KEYS.R_DATASETS,
+    path: '/datasets',
+    template: DatasetsTemplate,
+    component: DatasetOverview,
+    childRoutes: [{
+        routeKey: ROUTE_KEYS.R_DATASET_NEW,
+        path: '/new',
+        component: DatasetDetail as React.ComponentType<unknown>,
+    }, {
+        routeKey: ROUTE_KEYS.R_DATASET_DETAIL,
+        path: '/:name',
+        component: DatasetDetail as React.ComponentType<unknown>,
+        executeOnRoute: [{
+            execute: triggerFetchDatasetDetail as () => unknown,
+            executeInputSelector: ({ routeLocation }) => ({
+                name: routeLocation.params.name,
+            }),
+        }],
+    }],
+}, {
+    routeKey: ROUTE_KEYS.R_USERS,
+    path: '/users',
+    template: UserTemplate,
+    component: UserOverview,
+    childRoutes: [{
+        routeKey: ROUTE_KEYS.R_USER_NEW,
+        path: '/new',
+        component: UserDetail as React.ComponentType<unknown>,
+    }, {
+        routeKey: ROUTE_KEYS.R_USER_DETAIL,
+        path: '/:name',
+        component: UserDetail as React.ComponentType<unknown>,
+        executeOnRoute: [{
+            execute: triggerFetchUserDetail as () => unknown,
+            executeInputSelector: ({ routeLocation }) => ({
+                name: routeLocation.params.name,
+            }),
+        }],
+    }],
+}, {
+    routeKey: ROUTE_KEYS.R_TEAMS,
+    path: '/teams',
+    template: TeamTemplate,
+    component: TeamsOverview,
+    childRoutes: [{
+        routeKey: ROUTE_KEYS.R_TEAM_NEW,
+        path: '/new',
+        component: TeamDetail as React.ComponentType<unknown>,
+    }, {
+        routeKey: ROUTE_KEYS.R_TEAM_DETAIL,
+        path: '/:name',
+        component: TeamDetail as React.ComponentType<unknown>,
+        executeOnRoute: [{
+            execute: triggerFetchTeamDetail as () => unknown,
+            executeInputSelector: ({ routeLocation }) => ({
+                name: routeLocation.params.name,
+            }),
+        }],
+    }],
+}, {
+    routeKey: ROUTE_KEYS.R_SECURITY_GROUPS,
+    path: '/security-groups',
+    template: SecurityGroupTemplate,
+    component: SecurityGroupOverview,
+    childRoutes: [{
+        routeKey: ROUTE_KEYS.R_SECURITY_GROUP_NEW,
+        path: '/new',
+        component: SecurityGroupDetail as React.ComponentType<unknown>,
+    }, {
+        routeKey: ROUTE_KEYS.R_SECURITY_GROUP_DETAIL,
+        path: '/:name',
+        component: SecurityGroupDetail as React.ComponentType<unknown>,
+        executeOnRoute: [{
+            execute: triggerFetchSecurityGroupDetail as () => unknown,
+            executeInputSelector: ({ routeLocation }) => ({
+                name: routeLocation.params.name,
+            }),
+        }],
+    }],
+}, {
     routeKey: ROUTE_KEYS.R_OPENAPI,
     path: '/openapi',
     template: OpenAPITemplate,
@@ -264,7 +361,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     }],
 }, {
     routeKey: ROUTE_KEYS.R_NOT_FOUND,
-    path: '*',
+    path: '/not-found',
     component: NotFound,
 },
 ];

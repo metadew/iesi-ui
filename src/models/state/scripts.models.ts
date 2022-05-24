@@ -1,3 +1,4 @@
+import { ISecuredObject } from 'models/core.models';
 import { ReactText } from 'react';
 import { ILabel, IParameter, IPageFilter, IPageData } from './iesiGeneric.models';
 
@@ -35,14 +36,17 @@ export interface IScriptsEntity {
     page: IPageData;
 }
 
-export interface IScriptBase {
+export interface IScriptBase extends ISecuredObject {
     name: string;
     description: string;
-    securityGroupName: string;
     version: IScriptVersion;
     parameters: IParameter[];
     actions: IScriptAction[];
     labels: ILabel[];
+}
+
+export interface IScriptImport {
+    value: string | FormData;
 }
 
 export interface IScript extends IScriptBase {
