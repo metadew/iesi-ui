@@ -53,6 +53,12 @@ import {
     ISecurityGroupByNamePayload,
 } from 'models/state/securityGroups.model';
 import { IImportPayload } from 'models/state/iesiGeneric.models';
+import {
+    IFetchTemplatesListPayload,
+    ITemplateBase,
+    ITemplateByIdPayload,
+    ITemplateByNamePayload
+} from "models/state/templates.models";
 
 // eslint-disable-next-line max-len
 const entitiesConfigManager = initAsyncEntitiesConfigManager<IState, {}, ITraceableApiError, string, IExtraProcessInput>();
@@ -615,6 +621,64 @@ entitiesConfigManager.register({
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
             apiInputSelector: ({ extraInput }) => extraInput as ISecurityGroupByIdPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.templates,
+    operationsConfig: {
+        fetch: {
+            api: api.templates.fetchTemplates,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchTemplatesListPayload,
+        },
+        remove: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.templates.deleteTemplate,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ITemplateByNamePayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.templateDetail,
+    operationsConfig: {
+        fetch: {
+            api: api.templates.fetchTemplate,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ITemplateByNamePayload,
+        },
+        create: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.templates.createTemplate,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ITemplateBase,
+        },
+        update: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.templates.updateTemplate,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ITemplateBase,
+        },
+        remove: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.templates.deleteTemplate,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ITemplateByIdPayload,
         },
     },
 });

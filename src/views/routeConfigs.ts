@@ -52,6 +52,10 @@ import TeamDetail from './iam/teams/TeamDetail';
 import SecurityGroupTemplate from './iam/securityGroups/SecurityGroupTemplate';
 import SecurityGroupOverview from './iam/securityGroups/SecurityGroupOverview';
 import SecurityGroupDetail from './iam/securityGroups/SecurityGroupDetail';
+import TemplatesTemplate from "views/templates/TemplatesTemplate";
+import TemplatesOverview from "views/templates/TemplatesOverview";
+import TemplateDetail from "views/templates/TemplateDetail";
+import {triggerFetchTemplate} from "state/entities/templates/triggers";
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,
@@ -344,6 +348,26 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
         component: SecurityGroupDetail as React.ComponentType<unknown>,
         executeOnRoute: [{
             execute: triggerFetchSecurityGroupDetail as () => unknown,
+            executeInputSelector: ({ routeLocation }) => ({
+                name: routeLocation.params.name,
+            }),
+        }],
+    }],
+}, {
+    routeKey: ROUTE_KEYS.R_TEMPLATES,
+    path: '/templates',
+    template: TemplatesTemplate,
+    component: TemplatesOverview,
+    childRoutes: [{
+        routeKey: ROUTE_KEYS.R_TEMPLATE_NEW,
+        path: '/new',
+        component: TemplateDetail as React.ComponentType<unknown>,
+    }, {
+        routeKey: ROUTE_KEYS.R_TEMPLATE_DETAIL,
+        path: '/:name',
+        component: TemplateDetail as React.ComponentType<unknown>,
+        executeOnRoute: [{
+            execute: triggerFetchTemplate as () => unknown,
             executeInputSelector: ({ routeLocation }) => ({
                 name: routeLocation.params.name,
             }),

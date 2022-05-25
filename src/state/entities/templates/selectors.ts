@@ -1,5 +1,4 @@
 import { IState } from 'models/state.models';
-import { IEnvironment } from 'models/state/environments.models';
 import {ITemplate} from "models/state/templates.models";
 
 export const getAsyncTemplates = (state: IState) => state.entities.templates;
