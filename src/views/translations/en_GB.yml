@@ -7,6 +7,7 @@ app_shell:
       components: Components
       connections: Connections
       datasets: Datasets
+      environments: Environments
       users: Users
       teams: Teams
       security_groups: Security groups
@@ -59,7 +60,6 @@ flash_messages:
     responseError: '{message}'
   execution_request:
     run_finished: 'Script execution "{scriptName}" is finished!'
-    error: 'An error has occured'
   openapi:
     connection_successfully_created: 'The connection {connectionName} has been successfully created !'
     connections_successfully_created: 'The connections have been successfully created ! '
@@ -71,17 +71,21 @@ flash_messages:
     connections_unknown_error: 'Unknown error for the one or more connections'
     component_unknown_error: 'Unknown error for the component "{componentName}"'
     components_unknown_error: 'Unknown error for the one or more connections'
-  component: 
+  component:
     edit: 'The component has been updated'
     error: 'An error has occured : {error}'
   connection:
     create: 'The connection has been created successfully'
     edit: 'The connection has been updated successfully'
     error: 'An error has occured: {error}'
-  script: 
+  environment:
+    create: 'The environment has been created successfully'
+    edit: 'The environment has been updated successfully'
+    error: 'An error has occured: {error}'
+  script:
     create: 'The script has been successfully created !'
     edit: 'The script has been updated'
-    error: 'An error has occured'
+    error: 'Incorrect representation of the script'
     import: 'The script has been successfully imported !'
   user:
     create: The user has been created successfully !
@@ -102,7 +106,7 @@ flash_messages:
   datasets:
     import: 'The dataset has been successfully imported !'
     import_error: 'There is an error during the import of the dataset'
-    error: 'An error has occured'
+  error: 'An error has occured'
 scripts:
   overview:
     delete_script_dialog:
@@ -392,7 +396,7 @@ components:
         delete: Delete
         edit: Edit
       filter:
-       component_name: Component name
+        component_name: Component name
       sort:
         component_name: Component name
         version: Version
@@ -465,7 +469,7 @@ connections:
         delete: Delete
         edit: Edit
       filter:
-       connection_name: Connection name
+        connection_name: Connection name
       sort:
         connection_name: Connection name
         version: Version
@@ -519,6 +523,81 @@ connections:
       name: Name
       value: Value
       environment: Environment
+      footer:
+        cancel: Cancel
+        save: Save
+        update: Update
+    error:
+      save: Failed to save changes
+environments:
+  overview:
+    delete_environment_dialog:
+      text: Are you sure you want to delete this environment?
+      title: Delete environment
+    header:
+      amount: 'You have {amount} environments'
+      add_button: Create new environment
+      generate_button: "Load from OpenAPI documentation"
+    list:
+      labels:
+        name: Name
+        parameters: Parameters
+        description: Description
+      fetch_error: Something went wrong while loading the environments, please try again.
+      actions:
+        delete: Delete
+        edit: Edit
+      filter:
+        environment_name: Environment name
+      sort:
+        environment_name: Environment name
+  detail:
+    add_parameter: 'Add new parameter'
+    delete_environment_dialog:
+      text: Are you sure you want to delete this environment?
+      title: Delete environment
+    save_environment_dialog:
+      title: Save environment
+      text: Are you sure to create the environment {environmentName} ?
+      create: Create environment
+      update: Update environment
+    side:
+      environment_description: Description
+      environment_name: Name
+      environment_parameter: Parameter
+      toggle_button: Details
+      parameters:
+        title: Parameters
+        empty: No parameters
+        add_button: Add parameters
+        add_dialog:
+          title: Add a parameter
+          select_title: Choose a parameter
+          cancel: Cancel
+          add: Add
+    main:
+      no_parameters:
+        title: No parameters yet
+      actions:
+        delete: Delete environment
+        save: Save
+        export: Export environment
+        view: View
+      list:
+        labels:
+          name: Name
+          value: Value
+          mandatory: Mandatory
+          parameter: Parameter
+        actions:
+          edit: Edit
+          delete: Delete
+      alert:
+        save_changes: You made changes to this environment. Don't forget to save them.
+    edit:
+      name: Name
+      value: Value
+      parameter: Parameter
       footer:
         cancel: Cancel
         save: Save
@@ -646,7 +725,6 @@ datasets:
         save: Save
         delete: Delete
         export: Export
-        view: View
       list:
         labels:
           labels: 'Labels'
@@ -672,7 +750,6 @@ datasets:
           save: Save
           update: Update
           cancel: Cancel
-          close: Close
           discard: Discard changes
     flash_messages:
       create_success: The dataset {name} h as been created successfully !
@@ -728,8 +805,8 @@ users:
           cancel: Cancel
           save: Save
       delete_role_dialog:
-          title: Delete user role
-          text: Are you sure to delete the role {role} from this user ?
+        title: Delete user role
+        text: Are you sure to delete the role {role} from this user ?
       list:
         item:
           labels:

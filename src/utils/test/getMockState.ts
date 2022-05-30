@@ -44,6 +44,11 @@ export default function getMockState({
                     page: 1,
                     sortedColumn: null,
                 },
+                environments: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                },
                 executions: {
                     filters: null,
                     page: 1,
@@ -184,6 +189,13 @@ export default function getMockState({
                 },
             },
             environments: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            environmentDetail: {
                 data: null,
                 fetch: {
                     status: AsyncStatus.Initial,

@@ -16,6 +16,7 @@ import { IDatasetColumnNames, IDatasetImplementation } from 'models/state/datase
 import { IUserColumnName } from 'models/state/user.model';
 import { ITeamColumnNames } from 'models/state/team.model';
 import { ISecurityGroupColumnNames } from 'models/state/securityGroups.model';
+import { IEnvironmentColumnNamesBase } from 'models/state/environments.models';
 
 export const triggerFlashMessage = (payload: ITriggerFlashMessagePayload) => createAction<ITriggerFlashMessagePayload>({
     type: 'TRIGGER_FLASH_MESSAGE',
@@ -270,6 +271,32 @@ export const setDatasetsListFilter = (payload: {
                 };
             },
             notificationsToTrigger: [StateChangeNotification.LIST_FILTER_DATASETS],
+        });
+    },
+});
+
+export const setEnvironmentsListFilter = (payload: {
+    filters?: ListFilters<Partial<IEnvironmentColumnNamesBase>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<IEnvironmentColumnNamesBase>;
+}) => createAction<{
+    filters?: ListFilters<Partial<IEnvironmentColumnNamesBase>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<IEnvironmentColumnNamesBase>;
+}>({
+    type: 'UPDATE_ENVIRONMENTS_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.environments = {
+                    filters: payload.filters || draftState.ui.listFilters.environments.filters,
+                    page: payload.page || draftState.ui.listFilters.environments.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.environments.sortedColumn,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_ENVIRONMENTS],
         });
     },
 });

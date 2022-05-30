@@ -187,7 +187,7 @@ function ExecuteScriptDialog({
                                     });
                                 }}
                             >
-                                {environments && environments.map((env) => (
+                                {environments.environments && environments.environments.map((env) => (
                                     <MenuItem
                                         key={JSON.stringify(env.name)}
                                         value={env.name}

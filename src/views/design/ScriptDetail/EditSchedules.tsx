@@ -150,7 +150,7 @@ function EditSchedules({ schedules, onChange, state }: IPublicProps & IObservePr
                                 onOpen={() => setIsSelectOpen(true)}
                                 onClose={() => setIsSelectOpen(false)}
                             >
-                                {environments && environments.map((env) => (
+                                {environments.environments && environments.environments.map((env) => (
                                     <MenuItem
                                         key={JSON.stringify(env.name)}
                                         value={env.name}

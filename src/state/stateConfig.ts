@@ -42,6 +42,11 @@ export const initialState: IState = {
                 page: 1,
                 sortedColumn: null,
             },
+            environments: {
+                filters: null,
+                page: 1,
+                sortedColumn: null,
+            },
             datasets: {
                 filters: null,
                 page: 1,

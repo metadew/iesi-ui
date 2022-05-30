@@ -14,11 +14,17 @@ import { triggerFetchConnectionDetail, triggerFetchConnections } from 'state/ent
 import { triggerFetchDatasetDetail } from 'state/entities/datasets/triggers';
 import { SortType, SortOrder } from 'models/list.models';
 import { formatSortQueryParameter } from 'utils/core/string/format';
-import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
+import { triggerFetchEnvironment, triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { getStore } from 'state';
-import { getComponentsListFilter, getConnectionsListFilter, getScriptsListFilter } from 'state/ui/selectors';
+import {
+    getComponentsListFilter,
+    getConnectionsListFilter,
+    getScriptsListFilter,
+    // getEnvironmentsListFilter
+} from 'state/ui/selectors';
 import { IFetchScriptsListPayload } from 'models/state/scripts.models';
 import { IFetchComponentsListPayload } from 'models/state/components.model';
+// import { IFetchEnvironmentsListPayload } from 'models/state/environments.models';
 import { triggerFetchUserDetail } from 'state/entities/users/triggers';
 import { triggerFetchTeamDetail } from 'state/entities/teams/triggers';
 import { triggerFetchSecurityGroupDetail } from 'state/entities/securityGroups/triggers';
@@ -43,6 +49,9 @@ import LoginView from './appShell/AppLogIn/LoginPage';
 import DatasetsTemplate from './data/DatasetsTemplate';
 import DatasetDetail from './data/DatasetDetail';
 import DatasetOverview from './data/DatasetOverview';
+import EnvironmentOverview from './environment/EnvironmentOverview';
+import EnvironmentDetail from './environment/EnvironmentDetail';
+import EnvironmentTemplate from './environment/EnvironmentTemplate';
 import UserTemplate from './iam/users/UserTemplate';
 import UserOverview from './iam/users/UserOverview';
 import UserDetail from './iam/users/UserDetail';
@@ -246,6 +255,54 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             triggerFetchConnections(payload);
         },
     }],
+}, {
+    routeKey: ROUTE_KEYS.R_ENVIRONMENTS,
+    path: '/environments',
+    template: EnvironmentTemplate,
+    component: EnvironmentOverview,
+    childRoutes: [{
+        routeKey: ROUTE_KEYS.R_ENVIRONMENT_NEW,
+        path: '/new',
+        component: EnvironmentDetail as React.ComponentType<unknown>,
+    }, {
+        routeKey: ROUTE_KEYS.R_ENVIRONMENT_DETAIL,
+        path: '/:name',
+        component: EnvironmentDetail as React.ComponentType<unknown>,
+        executeOnRoute: [{
+            execute: triggerFetchEnvironment as () => unknown,
+            executeInputSelector: ({ routeLocation }) => ({
+                name: routeLocation.params.name,
+            }),
+        }],
+    }],
+    /* executeOnRoute: [{
+        execute: () => {
+            const { getState } = getStore();
+            const { filters, page, sortedColumn } = getEnvironmentsListFilter(getState());
+
+            const sort = sortedColumn || {
+                name: 'name',
+                sortOrder: SortOrder.Ascending,
+                sortType: SortType.String,
+            };
+
+            const payload: IFetchEnvironmentsListPayload = {
+                sort: formatSortQueryParameter(sort),
+                filter: {
+                    ...(filters && {
+                        name:
+                            filters.name.values.length > 0
+                            && filters.name.values[0].toString(),
+                    }),
+                },
+                pagination: {
+                    page,
+                },
+            };
+
+            triggerFetchEnvironments(payload);
+        },
+    }], */
 }, {
     routeKey: ROUTE_KEYS.R_REPORTS,
     path: '/reports',
