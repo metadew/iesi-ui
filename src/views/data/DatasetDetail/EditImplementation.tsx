@@ -76,7 +76,9 @@ function EditImplementation({
     const ref = useRef(null);
     const [isLabelsEmpty, setIsLabelsEmpty] = useState<boolean>(false);
     const [keyValues, setKeyValues] = useState<Array<IKeyValue>>(
-        implementation ? implementation.keyValues : [],
+        implementation
+            ? implementation.keyValues.sort((a, b) => (a.key.toLowerCase() > b.key.toLowerCase() ? 1 : -1))
+            : [],
     );
 
     const add = () => {
