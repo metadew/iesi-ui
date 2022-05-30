@@ -3,20 +3,11 @@ import API_URLS from 'api/apiUrls';
 import { get, post, put, remove } from 'api/requestWrapper';
 import { IPageData } from 'models/state/iesiGeneric.models';
 import {
-    IFetchSecurityGroupListPayload,
-    ISecurityGroup,
-    ISecurityGroupAssignTeamPayload,
-    ISecurityGroupBase,
-    ISecurityGroupByIdPayload,
-    ISecurityGroupByNamePayload,
-    ISecurityGroupEntity,
-} from 'models/state/securityGroups.model';
-import {
     IFetchTemplatesListPayload,
     ITemplate, ITemplateBase, ITemplateByIdPayload,
     ITemplateByNamePayload,
-    ITemplateEntity
-} from "models/state/templates.models";
+    ITemplateEntity,
+} from 'models/state/templates.models';
 
 interface ITemplatesResponse {
     _embedded: {

@@ -50,6 +50,11 @@ export const MAIN_NAV_ITEMS: IMenuItem[] = [
         translationKeySuffix: 'security_groups',
         securityPrivilege: SECURITY_PRIVILEGES.S_GROUPS_READ,
     }),
+    toMenuItem({
+        routeKey: ROUTE_KEYS.R_TEMPLATES,
+        translationKeySuffix: 'templates',
+        securityPrivilege: SECURITY_PRIVILEGES.S_TEMPLATES_READ,
+    }),
 ];
 
 function toMenuItem({

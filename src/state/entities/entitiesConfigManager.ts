@@ -57,8 +57,8 @@ import {
     IFetchTemplatesListPayload,
     ITemplateBase,
     ITemplateByIdPayload,
-    ITemplateByNamePayload
-} from "models/state/templates.models";
+    ITemplateByNamePayload,
+} from 'models/state/templates.models';
 
 // eslint-disable-next-line max-len
 const entitiesConfigManager = initAsyncEntitiesConfigManager<IState, {}, ITraceableApiError, string, IExtraProcessInput>();
