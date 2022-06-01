@@ -196,6 +196,7 @@ scripts:
       description: Action description
       name: Action name
       condition: Action condition
+      iteration: Action iteration name
       parameter:
         value: Value
       footer:
