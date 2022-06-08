@@ -7,7 +7,7 @@ import {
     ITemplate, ITemplateBase, ITemplateByIdPayload,
     ITemplateByNamePayload,
     ITemplateEntity,
-} from 'models/state/templates.models';
+} from 'models/state/templates.model';
 
 interface ITemplatesResponse {
     _embedded: {
@@ -63,7 +63,7 @@ export function updateTemplate(template: ITemplate) {
         url: API_URLS.TEMPLATE_BY_ID,
         body: template,
         pathParams: {
-            uuid: template.id,
+            uuid: template.uuid,
         },
         contentType: 'application/json',
     });

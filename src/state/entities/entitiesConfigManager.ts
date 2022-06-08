@@ -36,7 +36,7 @@ import {
     IDatasetByNamePayload,
     IDatasetImportPayload,
 } from 'models/state/datasets.model';
-import { IFetchUsersListPayload, IUserByNamePayload } from 'models/state/user.model';
+import { IFetchUsersListPayload, IUserByNamePayload, IUserPost } from 'models/state/user.model';
 import {
     IFetchTeamsListPayload,
     ITeamAssignUserRolePayload,
@@ -45,7 +45,7 @@ import {
     ITeamByNamePayload,
     ITeamDeleteUserRole,
 } from 'models/state/team.model';
-import { IUserPost } from 'models/state/user.model';
+
 import {
     IFetchSecurityGroupListPayload,
     ISecurityGroupAssignTeamPayload,
@@ -58,7 +58,7 @@ import {
     ITemplateBase,
     ITemplateByIdPayload,
     ITemplateByNamePayload,
-} from 'models/state/templates.models';
+} from 'models/state/templates.model';
 
 // eslint-disable-next-line max-len
 const entitiesConfigManager = initAsyncEntitiesConfigManager<IState, {}, ITraceableApiError, string, IExtraProcessInput>();

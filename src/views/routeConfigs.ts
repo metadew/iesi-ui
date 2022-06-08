@@ -22,6 +22,10 @@ import { IFetchComponentsListPayload } from 'models/state/components.model';
 import { triggerFetchUserDetail } from 'state/entities/users/triggers';
 import { triggerFetchTeamDetail } from 'state/entities/teams/triggers';
 import { triggerFetchSecurityGroupDetail } from 'state/entities/securityGroups/triggers';
+import TemplatesTemplate from 'views/design/templates/TemplatesTemplate';
+import TemplatesOverview from 'views/design/templates/TemplatesOverview';
+import TemplateDetail from 'views/design/templates/TemplateDetail';
+import { triggerFetchTemplate } from 'state/entities/templates/triggers';
 import { ROUTE_KEYS, registerRoutes } from './routes';
 import NotFound from './appShell/NotFound';
 import Home from './Home';
@@ -52,10 +56,6 @@ import TeamDetail from './iam/teams/TeamDetail';
 import SecurityGroupTemplate from './iam/securityGroups/SecurityGroupTemplate';
 import SecurityGroupOverview from './iam/securityGroups/SecurityGroupOverview';
 import SecurityGroupDetail from './iam/securityGroups/SecurityGroupDetail';
-import TemplatesTemplate from "views/templates/TemplatesTemplate";
-import TemplatesOverview from "views/templates/TemplatesOverview";
-import TemplateDetail from "views/templates/TemplateDetail";
-import {triggerFetchTemplate} from "state/entities/templates/triggers";
 
 const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     routeKey: ROUTE_KEYS.R_HOME,

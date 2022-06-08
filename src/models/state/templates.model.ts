@@ -1,7 +1,5 @@
+import { ISecuredObject } from 'models/core.models';
 import { IPageData, IPageFilter } from './iesiGeneric.models';
-import {ISecuredObject} from "models/core.models";
-import {IComponentAttribute, IComponentParameter, IComponentVersion} from "models/state/components.model";
-import {ISecurityGroupBase} from "models/state/securityGroups.model";
 
 export interface IFetchTemplatesListPayload {
     pagination?: IPageFilter;
@@ -20,27 +18,30 @@ export interface ITemplateByIdPayload {
     id: string;
 }
 export interface ITemplateMatcherValue {
-    type: string,
+    type: string;
+}
 
+export interface ITemplateFixedMatcherValue {
+    value: string;
+}
+
+export interface ITemplateTemplateMatcherValue {
+    templateName: string;
+    templateVersion: string;
 }
 
 export interface ITemplateMatchers {
     key: string;
-    matcherValue: ITemplateMatcherValue[],
+    matcherValue: ITemplateMatcherValue[];
 }
 export type ITemplate = ITemplateBase;
 
 export interface ITemplateBase extends ISecuredObject {
-    id?: string;
+    uuid?: string;
     name: string;
     description: string;
-    version: ITemplateVersion;
+    version: number;
     matchers: ITemplateMatchers[];
-}
-
-export interface ITemplateVersion {
-    number: number;
-    description: string;
 }
 
 export interface ITemplateEntity {
@@ -50,6 +51,7 @@ export interface ITemplateEntity {
 
 export interface ITemplateColumnNames {
     name: string;
-    securityGroupName: string;
-    implementations: number;
+    description: string;
+    version: number;
+    matchers: number;
 }

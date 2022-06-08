@@ -4,6 +4,7 @@ import { INavigateToRoute } from 'models/router.models';
 import { ListFilters, ISortedColumn } from 'models/list.models';
 import { IColumnNames as IScriptsColumnNames } from 'models/state/scripts.models';
 import { IColumnNames as IExecutionsColumnNames } from 'models/state/executionRequests.models';
+import { ITemplateColumnNames } from 'models/state/templates.model';
 import { IComponentColumnNames } from './components.model';
 import { IConnectionColumnNamesBase } from './connections.model';
 import { IDatasetColumnNames } from './datasets.model';
@@ -23,6 +24,7 @@ export interface IUiState {
         users: IListFilters<IUserColumnName>;
         teams: IListFilters<ITeamColumnNames>;
         securityGroups: IListFilters<ISecurityGroupColumnNames>;
+        templates: IListFilters<ITemplateColumnNames>;
     };
 }
 

@@ -2,7 +2,7 @@ import entitiesStateManager from 'state/entities/entitiesStateManager';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { StateChangeNotification } from 'models/state.models';
 import { triggerFlashMessage } from 'state/ui/actions';
-import { ITemplateBase, ITemplateByNamePayload } from 'models/state/templates.models';
+import { ITemplateBase, ITemplateByNamePayload } from 'models/state/templates.model';
 
 export const triggerFetchTemplates = (filter: object = {}) => entitiesStateManager.triggerAsyncEntityFetch<{}>({
     asyncEntityToFetch: {

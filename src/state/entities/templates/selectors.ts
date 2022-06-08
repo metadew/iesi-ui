@@ -1,10 +1,10 @@
 import { IState } from 'models/state.models';
-import {ITemplate} from "models/state/templates.models";
+import { ITemplate } from 'models/state/templates.model';
 
-export const getAsyncTemplates = (state: IState) => state.entities.templates;
+export const getAsyncTemplatesEntity = (state: IState) => state.entities.templates;
 
-export const getAsyncTemplatesEntity = (state: IState) => {
-    const templatesEntity = getAsyncTemplates(state);
+export const getAsyncTemplates = (state: IState) => {
+    const templatesEntity = getAsyncTemplatesEntity(state);
     return templatesEntity
         && templatesEntity.data
         && templatesEntity.data.templates
@@ -13,13 +13,13 @@ export const getAsyncTemplatesEntity = (state: IState) => {
 };
 
 export const getTemplatesForDropdown = (state: IState) => {
-    const asyncTemplates = getAsyncTemplates(state);
+    const asyncTemplates = getAsyncTemplatesEntity(state);
     const templates = asyncTemplates.data.templates || [] as ITemplate[];
     return templates.map((template) => template.name);
 };
 
 export const getAsyncTemplatesPageData = (state: IState) => {
-    const templatesEntity = getAsyncTemplates(state);
+    const templatesEntity = getAsyncTemplatesEntity(state);
     return templatesEntity && templatesEntity.data ? templatesEntity.data.page : null;
 };
 

@@ -62,6 +62,11 @@ export const initialState: IState = {
                 page: 1,
                 sortedColumn: null,
             },
+            templates: {
+                filters: null,
+                page: 1,
+                sortedColumn: null,
+            },
         },
     },
     auth: {

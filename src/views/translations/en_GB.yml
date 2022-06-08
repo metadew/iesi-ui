@@ -888,5 +888,19 @@ security_groups:
         button: Add teams
       alert:
         save_changes: You made changes to this security group. Don't forget to save it.
-
-
+templates:
+  overview:
+    header:
+      amount: You have {amount} templates
+      add_button: Create new template
+    list:
+      labels:
+        name: Name
+        description: Description
+        version: Version
+        matchers: Matcher
+      filter:
+        template_name: Template name
+      sort:
+        template_name: Template name
+      fetch_error: Something went wrong during the loading of the templates
