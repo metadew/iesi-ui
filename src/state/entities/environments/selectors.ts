@@ -11,7 +11,8 @@ export const getAsyncEnvironmentsEntity = (state: IState) => {
 
 export const getEnvironmentsForDropdown = (state: IState) => {
     const asyncEnvironments = getAsyncEnvironments(state);
-    const environments = asyncEnvironments.data.environments || [] as IEnvironment[];
+    const environments = asyncEnvironments && asyncEnvironments.data && asyncEnvironments.data.environments
+        ? asyncEnvironments.data.environments : [] as IEnvironment[];
     return environments.map((environment) => environment.name);
 };
 
