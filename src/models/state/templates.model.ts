@@ -1,4 +1,3 @@
-import { ISecuredObject } from 'models/core.models';
 import { IPageData, IPageFilter } from './iesiGeneric.models';
 
 export interface IFetchTemplatesListPayload {
@@ -19,29 +18,23 @@ export interface ITemplateByIdPayload {
 }
 export interface ITemplateMatcherValue {
     type: string;
+    value?: string;
+    templateName?: string;
+    templateVersion?: string;
 }
 
-export interface ITemplateFixedMatcherValue {
-    value: string;
-}
-
-export interface ITemplateTemplateMatcherValue {
-    templateName: string;
-    templateVersion: string;
-}
-
-export interface ITemplateMatchers {
+export interface ITemplateMatcher {
     key: string;
-    matcherValue: ITemplateMatcherValue[];
+    matcherValue: ITemplateMatcherValue;
 }
 export type ITemplate = ITemplateBase;
 
-export interface ITemplateBase extends ISecuredObject {
+export interface ITemplateBase {
     uuid?: string;
     name: string;
     description: string;
     version: number;
-    matchers: ITemplateMatchers[];
+    matchers: ITemplateMatcher[];
 }
 
 export interface ITemplateEntity {
@@ -54,4 +47,20 @@ export interface ITemplateColumnNames {
     description: string;
     version: number;
     matchers: number;
+}
+
+export interface ITemplateMatcherColumnNames {
+    type: string;
+    key: string;
+}
+
+export type ITemplateAnyMatcherColumnNames = ITemplateMatcherColumnNames;
+
+export interface ITemplateFixedMatcherColumnNames extends ITemplateMatcherColumnNames {
+    value: string;
+}
+
+export interface ITemplateTemplateMatcherColumnNames extends ITemplateMatcherColumnNames {
+    templateName: string;
+    templateVersion: string;
 }

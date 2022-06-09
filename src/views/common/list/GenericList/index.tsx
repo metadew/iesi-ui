@@ -46,6 +46,7 @@ interface IPublicProps<ColumnNames> {
         pageData: IPageData;
         onChange: ({ page }: { page: number }) => void;
     };
+    hideNoResultHelper?: boolean;
 }
 
 const useStyles = makeStyles(({ palette }: Theme) => ({
@@ -63,6 +64,7 @@ export default function GenericList<ColumnNames>({
     filters,
     isLoading,
     pagination,
+    hideNoResultHelper,
 }: IPublicProps<ColumnNames>) {
     const classes = useStyles();
     const listClasses = useListStyles();
@@ -114,7 +116,7 @@ export default function GenericList<ColumnNames>({
                             ))
                         ) : (
                             <>
-                                {itemsToDisplay.length === 0 && (
+                                {itemsToDisplay.length === 0 && !hideNoResultHelper && (
                                     <TableRow>
                                         <TableCell>
                                             <Typography>

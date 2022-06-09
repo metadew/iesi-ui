@@ -904,3 +904,16 @@ templates:
       sort:
         template_name: Template name
       fetch_error: Something went wrong during the loading of the templates
+  detail:
+    side:
+      template_name: Template name
+      template_description: Template description
+      template_version: Template version
+    main:
+      list:
+        labels:
+          type: Type
+          key: Key
+          value: Value
+          template_name: Template name
+          template_version: Template version
