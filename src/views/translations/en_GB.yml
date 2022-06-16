@@ -7,6 +7,7 @@ app_shell:
       components: Components
       connections: Connections
       datasets: Datasets
+      templates: Templates
       users: Users
       teams: Teams
       security_groups: Security groups
@@ -906,10 +907,14 @@ templates:
       fetch_error: Something went wrong during the loading of the templates
   detail:
     side:
+      toggle_button: Toggle
       template_name: Template name
       template_description: Template description
       template_version: Template version
     main:
+      no_matchers:
+        title: There are no matchers
+        button: Add a matcher
       list:
         labels:
           type: Type
@@ -917,3 +922,26 @@ templates:
           value: Value
           template_name: Template name
           template_version: Template version
+        actions:
+          edit: Edit
+          delete: Delete
+      actions:
+        add_matcher: Add a matcher
+        save: Save
+        delete: Delete
+    edit:
+      matcher:
+        title_create: Adding a new matcher
+        footer:
+          cancel: Cancel
+          save: Save
+    save_template_dialog:
+      title_create: Create template
+      text_create: Do you want to overwrite the current version or create a new version with the current changes ?
+      title_update: Create template
+      text_update: You are going to update the template "{templateName}"
+      update_current_version: Update current version
+      save_as_new_version: Save as new version
+    delete_template_dialog:
+      title: Delete template
+      text: Are you sure to delete the template "{templateName}"

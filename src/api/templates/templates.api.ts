@@ -4,8 +4,9 @@ import { get, post, put, remove } from 'api/requestWrapper';
 import { IPageData } from 'models/state/iesiGeneric.models';
 import {
     IFetchTemplatesListPayload,
-    ITemplate, ITemplateBase, ITemplateByIdPayload,
-    ITemplateByNamePayload,
+    ITemplate,
+    ITemplateBase,
+    ITemplateByNameAndVersionPayload,
     ITemplateEntity,
 } from 'models/state/templates.model';
 
@@ -34,13 +35,14 @@ export function fetchTemplates({ pagination, filter, sort }: IFetchTemplatesList
     });
 }
 
-export function fetchTemplate({ name }: ITemplateByNamePayload) {
+export function fetchTemplate({ name, version }: ITemplateByNameAndVersionPayload) {
     return get<ITemplateBase>({
         isIesiApi: true,
         needsAuthentication: true,
-        url: API_URLS.TEMPLATE_BY_NAME,
+        url: API_URLS.TEMPLATE_BY_NAME_AND_VERSION,
         pathParams: {
             name,
+            version,
         },
         mapResponse: ({ data }) => data,
     });
@@ -60,22 +62,24 @@ export function updateTemplate(template: ITemplate) {
     return put<ITemplate>({
         needsAuthentication: true,
         isIesiApi: true,
-        url: API_URLS.TEMPLATE_BY_ID,
+        url: API_URLS.TEMPLATE_BY_NAME_AND_VERSION,
         body: template,
         pathParams: {
-            uuid: template.uuid,
+            name: template.name,
+            version: template.version,
         },
         contentType: 'application/json',
     });
 }
 
-export function deleteTemplate({ id }: ITemplateByIdPayload) {
+export function deleteTemplate({ name, version }: ITemplateByNameAndVersionPayload) {
     return remove<{}>({
         needsAuthentication: true,
         isIesiApi: true,
-        url: API_URLS.TEMPLATE_BY_ID,
+        url: API_URLS.TEMPLATE_BY_NAME_AND_VERSION,
         pathParams: {
-            id,
+            name,
+            version,
         },
     });
 }

@@ -294,6 +294,27 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
         }],
     }],
 }, {
+    routeKey: ROUTE_KEYS.R_TEMPLATES,
+    path: '/templates',
+    template: TemplatesTemplate,
+    component: TemplatesOverview,
+    childRoutes: [{
+        routeKey: ROUTE_KEYS.R_TEMPLATE_NEW,
+        path: '/new',
+        component: TemplateDetail as React.ComponentType<unknown>,
+    }, {
+        routeKey: ROUTE_KEYS.R_TEMPLATE_DETAIL,
+        path: '/:name/:version',
+        component: TemplateDetail as React.ComponentType<unknown>,
+        executeOnRoute: [{
+            execute: triggerFetchTemplate as () => unknown,
+            executeInputSelector: ({ routeLocation }) => ({
+                name: routeLocation.params.name,
+                version: routeLocation.params.version,
+            }),
+        }],
+    }],
+}, {
     routeKey: ROUTE_KEYS.R_USERS,
     path: '/users',
     template: UserTemplate,
@@ -348,26 +369,6 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
         component: SecurityGroupDetail as React.ComponentType<unknown>,
         executeOnRoute: [{
             execute: triggerFetchSecurityGroupDetail as () => unknown,
-            executeInputSelector: ({ routeLocation }) => ({
-                name: routeLocation.params.name,
-            }),
-        }],
-    }],
-}, {
-    routeKey: ROUTE_KEYS.R_TEMPLATES,
-    path: '/templates',
-    template: TemplatesTemplate,
-    component: TemplatesOverview,
-    childRoutes: [{
-        routeKey: ROUTE_KEYS.R_TEMPLATE_NEW,
-        path: '/new',
-        component: TemplateDetail as React.ComponentType<unknown>,
-    }, {
-        routeKey: ROUTE_KEYS.R_TEMPLATE_DETAIL,
-        path: '/:name',
-        component: TemplateDetail as React.ComponentType<unknown>,
-        executeOnRoute: [{
-            execute: triggerFetchTemplate as () => unknown,
             executeInputSelector: ({ routeLocation }) => ({
                 name: routeLocation.params.name,
             }),

@@ -114,6 +114,8 @@ function EditMatcher({
         });
     };
 
+    console.log('MATCHER: ', matcher);
+
     return (
         <Box className={classes.dialog}>
             <Box

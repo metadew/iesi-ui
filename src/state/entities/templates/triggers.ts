@@ -2,7 +2,7 @@ import entitiesStateManager from 'state/entities/entitiesStateManager';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { StateChangeNotification } from 'models/state.models';
 import { triggerFlashMessage } from 'state/ui/actions';
-import { ITemplateBase, ITemplateByNamePayload } from 'models/state/templates.model';
+import { ITemplateBase, ITemplateByNameAndVersionPayload } from 'models/state/templates.model';
 
 export const triggerFetchTemplates = (filter: object = {}) => entitiesStateManager.triggerAsyncEntityFetch<{}>({
     asyncEntityToFetch: {
@@ -14,7 +14,7 @@ export const triggerFetchTemplates = (filter: object = {}) => entitiesStateManag
     notificationsToTrigger: [StateChangeNotification.TEMPLATES],
 });
 
-export const triggerFetchTemplate = (payload: ITemplateByNamePayload) =>
+export const triggerFetchTemplate = (payload: ITemplateByNameAndVersionPayload) =>
     entitiesStateManager.triggerAsyncEntityFetch<{}>({
         asyncEntityToFetch: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.templateDetail,
@@ -25,7 +25,7 @@ export const triggerFetchTemplate = (payload: ITemplateByNamePayload) =>
         notificationsToTrigger: [StateChangeNotification.TEMPLATE_DETAIL],
     });
 
-export const triggerDeleteTemplateDetail = (payload: ITemplateByNamePayload) =>
+export const triggerDeleteTemplateDetail = (payload: ITemplateByNameAndVersionPayload) =>
     entitiesStateManager.triggerAsyncEntityRemove<{}>({
         asyncEntityToRemove: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.templateDetail,
@@ -66,7 +66,7 @@ export const triggerCreateTemplateDetail = (payload: ITemplateBase) =>
         onSuccess: ({ dispatch, currentEntity }) => dispatch(
             triggerFlashMessage({
                 type: 'success',
-                translationKey: 'flash_messages.environment.create',
+                translationKey: 'flash_messages.templates.create',
                 translationPlaceholders: {
                     name: (currentEntity as ITemplateBase).name,
                 },

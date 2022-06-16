@@ -11,17 +11,13 @@ import {
     IFetchExecutionRequestListPayload,
 } from 'models/state/executionRequests.models';
 import {
-    IScriptByNameAndVersionPayload,
-    IScriptBase,
     IFetchScriptsListPayload,
+    IScriptBase,
+    IScriptByNameAndVersionPayload,
     IScriptImport,
 } from 'models/state/scripts.models';
 import { IOpenAPI } from 'models/state/openapi.model';
-import {
-    IConnection,
-    IConnectionByNamePayload,
-    IFetchConnectionsListPayload,
-} from 'models/state/connections.model';
+import { IConnection, IConnectionByNamePayload, IFetchConnectionsListPayload } from 'models/state/connections.model';
 import {
     IComponent,
     IComponentByNameAndVersionPayload,
@@ -30,11 +26,11 @@ import {
 import {
     IDataset,
     IDatasetBase,
-    IDatasetImplementationsByUuidPayload,
-    IFetchDatasetsListPayload,
-    IDatasetByUuidPayload,
     IDatasetByNamePayload,
+    IDatasetByUuidPayload,
+    IDatasetImplementationsByUuidPayload,
     IDatasetImportPayload,
+    IFetchDatasetsListPayload,
 } from 'models/state/datasets.model';
 import { IFetchUsersListPayload, IUserByNamePayload, IUserPost } from 'models/state/user.model';
 import {
@@ -56,8 +52,7 @@ import { IImportPayload } from 'models/state/iesiGeneric.models';
 import {
     IFetchTemplatesListPayload,
     ITemplateBase,
-    ITemplateByIdPayload,
-    ITemplateByNamePayload,
+    ITemplateByNameAndVersionPayload,
 } from 'models/state/templates.model';
 
 // eslint-disable-next-line max-len
@@ -639,7 +634,7 @@ entitiesConfigManager.register({
             api: api.templates.deleteTemplate,
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
-            apiInputSelector: ({ extraInput }) => extraInput as ITemplateByNamePayload,
+            apiInputSelector: ({ extraInput }) => extraInput as ITemplateByNameAndVersionPayload,
         },
     },
 });
@@ -678,7 +673,7 @@ entitiesConfigManager.register({
             api: api.templates.deleteTemplate,
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
-            apiInputSelector: ({ extraInput }) => extraInput as ITemplateByIdPayload,
+            apiInputSelector: ({ extraInput }) => extraInput as ITemplateByNameAndVersionPayload,
         },
     },
 });

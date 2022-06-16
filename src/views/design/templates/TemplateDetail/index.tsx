@@ -24,6 +24,19 @@ import { Alert } from '@material-ui/lab';
 import GenericList from 'views/common/list/GenericList';
 import EditMatcher from 'views/design/templates/TemplateDetail/EditMatcher';
 import DetailActions from 'views/design/templates/TemplateDetail/DetailActions';
+import ClosableDialog from 'views/common/layout/ClosableDialog';
+import {
+    triggerCreateTemplateDetail,
+    triggerDeleteTemplateDetail,
+    triggerUpdateTemplateDetail,
+} from 'state/entities/templates/triggers';
+import { getAsyncTemplateDetail } from 'state/entities/templates/selectors';
+import { getUniqueIdFromTemplate } from 'utils/templates/templateUtils';
+import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import Loader from 'views/common/waiting/Loader';
+import { clone } from 'lodash';
+import DeleteIcon from '@material-ui/icons/Delete';
+import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 
 const styles = () => createStyles({});
 
@@ -68,10 +81,41 @@ const TemplateDetail = withStyles(styles)(
                     },
                 },
             };
+
+            this.renderTemplateDetailPanel = this.renderTemplateDetailPanel.bind(this);
+            this.renderTemplateDetailContent = this.renderTemplateDetailContent.bind(this);
+            this.renderEditMatcher = this.renderEditMatcher.bind(this);
+            this.isCreateTemplateRoute = this.isCreateTemplateRoute.bind(this);
+            this.updateTemplate = this.updateTemplate.bind(this);
+            this.onDeleteMatcher = this.onDeleteMatcher.bind(this);
+            this.onDeleteTemplate = this.onDeleteTemplate.bind(this);
+
+            // eslint-disable-next-line max-len
+            this.updateTemplateInStateifNewTemplateWasLoaded = this.updateTemplateInStateifNewTemplateWasLoaded.bind(this);
+        }
+
+        public componentDidUpdate(prevProps: TProps & IObserveProps) {
+            this.updateTemplateInStateifNewTemplateWasLoaded(prevProps);
         }
 
         render() {
-            const { isAddOpen, matcherIndexToEdit } = this.state;
+            const { state } = this.props;
+            const {
+                isAddOpen,
+                matcherIndexToEdit,
+                isSaveDialogOpen,
+                newTemplateDetail,
+                matcherIndexToDelete,
+                isConfirmDeleteOpen,
+            } = this.state;
+            const translator = getTranslator(state);
+            const templateDetailAsyncFetchInfo = getAsyncTemplateDetail(state).fetch.status;
+            const templateDetailAsyncDeleteInfo = getAsyncTemplateDetail(state).remove.status;
+
+            if (!newTemplateDetail && templateDetailAsyncFetchInfo === AsyncStatus.Busy) {
+                return <Loader show />;
+            }
+
             return (
                 <>
                     <ContentWithSidePanel
@@ -82,6 +126,96 @@ const TemplateDetail = withStyles(styles)(
                         contentOverlayOpen={isAddOpen || matcherIndexToEdit !== null}
                         goBackTo={ROUTE_KEYS.R_TEMPLATES}
                     />
+                    <ConfirmationDialog
+                        title={translator('templates.detail.delete_matcher_dialog.title')}
+                        text={translator('templates.detail.delete_matcher_dialog.text')}
+                        open={matcherIndexToDelete !== null}
+                        onClose={() => this.setState({ matcherIndexToDelete: null })}
+                        onConfirm={this.onDeleteMatcher}
+                    />
+                    <ConfirmationDialog
+                        title={translator('templates.detail.delete_template_dialog.title')}
+                        text={translator({
+                            msg: 'templates.detail.delete_template_dialog.text',
+                            placeholders: {
+                                templateName: newTemplateDetail.name,
+                            },
+                        })}
+                        open={isConfirmDeleteOpen}
+                        onClose={() => this.setState({ isConfirmDeleteOpen: false })}
+                        onConfirm={this.onDeleteTemplate}
+                        showLoader={templateDetailAsyncDeleteInfo === AsyncStatus.Busy}
+                    />
+                    <ClosableDialog
+                        title={this.isCreateTemplateRoute() ? (
+                            translator('templates.detail.save_template_dialog.title_create')
+                        ) : translator('templates.detail.save_template_dialog.title_update')}
+                        open={isSaveDialogOpen}
+                        onClose={() => this.setState({ isSaveDialogOpen: false })}
+                    >
+                        <Typography>
+                            <Translate
+                                msg={this.isCreateTemplateRoute() ? (
+                                    'templates.detail.save_template_dialog.text_create'
+                                ) : 'templates.detail.save_template_dialog.text_update'}
+                                placeholders={{
+                                    templateName: newTemplateDetail.name,
+                                }}
+                            />
+                        </Typography>
+                        <Box
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                            marginTop={2}
+                        >
+                            <Box paddingLeft={1}>
+                                <Button
+                                    id="save-update-current-version"
+                                    onClick={() => {
+                                        triggerUpdateTemplateDetail(newTemplateDetail);
+                                        this.setState({ isSaveDialogOpen: false });
+                                    }}
+                                    color="secondary"
+                                    variant="contained"
+                                    disabled={this.isCreateTemplateRoute() || (newTemplateDetail && !checkAuthority(
+                                        state,
+                                        SECURITY_PRIVILEGES.S_TEMPLATES_WRITE,
+                                    ))}
+                                >
+                                    <Translate
+                                        msg="templates.detail.save_template_dialog.update_current_version"
+                                    />
+                                </Button>
+                            </Box>
+                            <Box paddingLeft={1}>
+                                <Button
+                                    id="save-save-as-new-version"
+                                    onClick={() => {
+                                        triggerCreateTemplateDetail({
+                                            ...newTemplateDetail,
+                                            version: this.isCreateTemplateRoute() ? (
+                                                newTemplateDetail.version
+                                            ) : (
+                                                newTemplateDetail.version + 1
+                                            ),
+                                        });
+                                        this.setState({ isSaveDialogOpen: false });
+                                    }}
+                                    color="secondary"
+                                    variant="outlined"
+                                    disabled={newTemplateDetail && !checkAuthority(
+                                        state,
+                                        SECURITY_PRIVILEGES.S_TEMPLATES_WRITE,
+                                    )}
+                                >
+                                    <Translate
+                                        msg="templates.detail.save_template_dialog.save_as_new_version"
+                                    />
+                                </Button>
+                            </Box>
+                        </Box>
+                    </ClosableDialog>
                 </>
             );
         }
@@ -102,7 +236,7 @@ const TemplateDetail = withStyles(styles)(
                                     readOnly: !this.isCreateTemplateRoute() && newTemplateDetail !== undefined,
                                     disableUnderline: true,
                                 }}
-                                value={newTemplateDetail?.name}
+                                value={newTemplateDetail.name}
                                 onChange={(e) => this.updateTemplate({ name: e.target.value })}
                                 required={this.isCreateTemplateRoute()}
                                 error={requiredFieldsState.name.showError}
@@ -268,7 +402,7 @@ const TemplateDetail = withStyles(styles)(
                             </Box>
                         </Collapse>
                         <DetailActions
-                            onSave={() => {}}
+                            onSave={() => { this.setState({ isSaveDialogOpen: true }); }}
                             onDelete={() => this.setState({ isConfirmDeleteOpen: true })}
                             onAdd={() => this.setState({ isAddOpen: true })}
                             isCreateRoute={this.isCreateTemplateRoute()}
@@ -281,7 +415,12 @@ const TemplateDetail = withStyles(styles)(
                             listActions={[{
                                 icon: <Edit />,
                                 label: translator('templates.detail.main.list.actions.edit'),
-                                onClick: (id, index) => this.setState({ matcherIndexToEdit: index }),
+                                onClick: (id) => this.setState({ matcherIndexToEdit: id as number }),
+                                hideAction: () => !checkAuthority(state, SECURITY_PRIVILEGES.S_TEMPLATES_WRITE),
+                            }, {
+                                icon: <DeleteIcon />,
+                                label: translator('templates.detail.main.list.actions.delete'),
+                                onClick: (id) => this.setState({ matcherIndexToDelete: id as number }),
                                 hideAction: () => !checkAuthority(state, SECURITY_PRIVILEGES.S_TEMPLATES_WRITE),
                             }]}
                             hideNoResultHelper
@@ -292,7 +431,12 @@ const TemplateDetail = withStyles(styles)(
                             listActions={[{
                                 icon: <Edit />,
                                 label: translator('templates.detail.main.list.actions.edit'),
-                                onClick: (id, index) => this.setState({ matcherIndexToEdit: index }),
+                                onClick: (id) => this.setState({ matcherIndexToEdit: id as number }),
+                                hideAction: () => !checkAuthority(state, SECURITY_PRIVILEGES.S_TEMPLATES_WRITE),
+                            }, {
+                                icon: <DeleteIcon />,
+                                label: translator('templates.detail.main.list.actions.delete'),
+                                onClick: (id) => this.setState({ matcherIndexToDelete: id as number }),
                                 hideAction: () => !checkAuthority(state, SECURITY_PRIVILEGES.S_TEMPLATES_WRITE),
                             }]}
                             hideNoResultHelper
@@ -303,7 +447,12 @@ const TemplateDetail = withStyles(styles)(
                             listActions={[{
                                 icon: <Edit />,
                                 label: translator('templates.detail.main.list.actions.edit'),
-                                onClick: (id, index) => this.setState({ matcherIndexToEdit: index }),
+                                onClick: (id) => this.setState({ matcherIndexToEdit: id as number }),
+                                hideAction: () => !checkAuthority(state, SECURITY_PRIVILEGES.S_TEMPLATES_WRITE),
+                            }, {
+                                icon: <DeleteIcon />,
+                                label: translator('templates.detail.main.list.actions.delete'),
+                                onClick: (id) => this.setState({ matcherIndexToDelete: id as number }),
                                 hideAction: () => !checkAuthority(state, SECURITY_PRIVILEGES.S_TEMPLATES_WRITE),
                             }]}
                             hideNoResultHelper
@@ -313,23 +462,62 @@ const TemplateDetail = withStyles(styles)(
             );
         }
 
+        private onDeleteTemplate() {
+            const { state } = this.props;
+            const detail = getAsyncTemplateDetail(state).data;
+
+            if (detail) {
+                triggerDeleteTemplateDetail(detail);
+            }
+        }
+
+        private onDeleteMatcher() {
+            const { newTemplateDetail, matcherIndexToDelete } = this.state;
+            const newMatchers = [...newTemplateDetail.matchers];
+
+            if (matcherIndexToDelete !== null) {
+                newMatchers.splice(matcherIndexToDelete, 1);
+                this.updateTemplate({ matchers: newMatchers });
+                this.setState({ matcherIndexToDelete: null });
+            }
+        }
+
         private renderEditMatcher() {
             const { newTemplateDetail, matcherIndexToEdit } = this.state;
             return (
                 <EditMatcher
                     onClose={() => this.setState({ isAddOpen: false, matcherIndexToEdit: null })}
                     onEdit={(matcher) => {
+                        const matchers = matcherIndexToEdit !== null ? (
+                            newTemplateDetail.matchers.map((matcherState, index) => {
+                                if (index !== matcherIndexToEdit) {
+                                    return matcherState;
+                                }
+                                return matcher;
+                            })
+                        ) : [...newTemplateDetail.matchers, matcher];
                         this.updateTemplate({
-                            matchers: [
-                                ...newTemplateDetail.matchers,
-                                matcher,
-                            ],
+                            matchers,
                         });
                         this.setState({ isAddOpen: false, matcherIndexToEdit: null });
                     }}
                     matcher={newTemplateDetail.matchers[matcherIndexToEdit]}
                 />
             );
+        }
+
+        private updateTemplateInStateifNewTemplateWasLoaded(prevProps: TProps & IObserveProps) {
+            const templateDetail = getAsyncTemplateDetail(this.props.state).data;
+            const prevTemplateDetail = getAsyncTemplateDetail(prevProps.state).data;
+
+            if (getUniqueIdFromTemplate(templateDetail) !== getUniqueIdFromTemplate(prevTemplateDetail)) {
+                if (templateDetail) {
+                    const templateDetailDeepClone = clone(templateDetail);
+                    this.setState({
+                        newTemplateDetail: templateDetailDeepClone,
+                    });
+                }
+            }
         }
 
         private updateTemplate(fieldsToUpdate: Partial<ITemplateBase>) {
@@ -392,5 +580,5 @@ function getMatchersFromTemplateDetail(template: ITemplateBase) {
 
 export default observe([
     StateChangeNotification.I18N_TRANSLATIONS,
-    StateChangeNotification.TEMPLATES,
+    StateChangeNotification.TEMPLATE_DETAIL,
 ], withRouter(TemplateDetail));

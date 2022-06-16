@@ -10,8 +10,9 @@ interface ITemplateListFilter {
     name?: string;
 }
 
-export interface ITemplateByNamePayload {
+export interface ITemplateByNameAndVersionPayload {
     name: string;
+    version: number;
 }
 export interface ITemplateByIdPayload {
     id: string;

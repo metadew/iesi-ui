@@ -57,7 +57,7 @@ const API_URLS = {
     DATASET_IMPLEMENTATIONS: '/datasets/{uuid}/implementations',
 
     TEMPLATES: '/templates',
-    TEMPLATE_BY_NAME: '/templates/{name}',
+    TEMPLATE_BY_NAME_AND_VERSION: '/templates/{name}/{version}',
     TEMPLATE_BY_ID: '/templates/{id}',
 
     /* eslint-enable max-len */
