@@ -508,7 +508,7 @@ const TemplateDetail = withStyles(styles)(
             );
         }
 
-        private navigateToTemplateOverviewAfterDeletion(prevProps: TProps & IObserveProps) {
+        private navigateToTemplateAfterCreation(prevProps: TProps & IObserveProps) {
             const { newTemplateDetail } = this.state;
             const { status } = getAsyncTemplateDetail(this.props.state).create;
             const { status: prevStatus } = getAsyncTemplateDetail(prevProps.state).create;
@@ -524,7 +524,7 @@ const TemplateDetail = withStyles(styles)(
             }
         }
 
-        private navigateToTemplateAfterDeletion(prevProps: TProps & IObserveProps) {
+        private navigateToTemplateOverviewAfterDeletion(prevProps: TProps & IObserveProps) {
             const { status } = getAsyncTemplateDetail(this.props.state).remove;
             const prevStatus = getAsyncTemplateDetail(prevProps.state).remove.status;
 
