@@ -43,18 +43,34 @@ export const triggerUpdateTemplateDetail = (payload: ITemplateBase) =>
         onSuccess: ({ dispatch, currentEntity }) => dispatch(
             triggerFlashMessage({
                 type: 'success',
-                translationKey: 'flash_messages.environment.edit',
+                translationKey: 'flash_messages.templates.update',
                 translationPlaceholders: {
                     name: (currentEntity as ITemplateBase).name,
                 },
             }),
         ),
-        onFail: ({ dispatch }) => dispatch(
-            triggerFlashMessage({
-                type: 'error',
-                translationKey: 'flash_messages.common.responseError',
-            }),
-        ),
+        onFail: ({ dispatch, error }) => {
+            if (error.status) {
+                dispatch(
+
+                    triggerFlashMessage({
+                        type: 'error',
+                        translationKey: 'flash_messages.common.responseError',
+                        translationPlaceholders: {
+                            message: error.response?.message,
+                        },
+                    }),
+                );
+            } else {
+                dispatch(
+
+                    triggerFlashMessage({
+                        type: 'error',
+                        translationKey: 'flash_messages.templates.error',
+                    }),
+                );
+            }
+        },
         notificationsToTrigger: [StateChangeNotification.TEMPLATE_DETAIL],
     });
 
@@ -72,12 +88,28 @@ export const triggerCreateTemplateDetail = (payload: ITemplateBase) =>
                 },
             }),
         ),
-        onFail: ({ dispatch }) => dispatch(
-            triggerFlashMessage({
-                type: 'error',
-                translationKey: 'flash_messages.common.responseError',
-            }),
-        ),
+        onFail: ({ dispatch, error }) => {
+            if (error.status) {
+                dispatch(
+
+                    triggerFlashMessage({
+                        type: 'error',
+                        translationKey: 'flash_messages.common.responseError',
+                        translationPlaceholders: {
+                            message: error.response?.message,
+                        },
+                    }),
+                );
+            } else {
+                dispatch(
+
+                    triggerFlashMessage({
+                        type: 'error',
+                        translationKey: 'flash_messages.templates.error',
+                    }),
+                );
+            }
+        },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.TEMPLATE_DETAIL],
     });

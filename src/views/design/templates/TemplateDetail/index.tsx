@@ -14,7 +14,7 @@ import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getTranslator } from 'state/i18n/selectors';
 import TextInput from 'views/common/input/TextInput';
-import { getRouteKeyByPath, ROUTE_KEYS } from 'views/routes';
+import { getRouteKeyByPath, redirectTo, ROUTE_KEYS } from 'views/routes';
 import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import DescriptionList from 'views/common/list/DescriptionList';
@@ -37,6 +37,7 @@ import Loader from 'views/common/waiting/Loader';
 import { clone } from 'lodash';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
+import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 
 const styles = () => createStyles({});
 
@@ -92,10 +93,14 @@ const TemplateDetail = withStyles(styles)(
 
             // eslint-disable-next-line max-len
             this.updateTemplateInStateifNewTemplateWasLoaded = this.updateTemplateInStateifNewTemplateWasLoaded.bind(this);
+            this.navigateToTemplateAfterCreation = this.navigateToTemplateAfterCreation.bind(this);
+            this.navigateToTemplateOverviewAfterDeletion = this.navigateToTemplateOverviewAfterDeletion.bind(this);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
             this.updateTemplateInStateifNewTemplateWasLoaded(prevProps);
+            this.navigateToTemplateAfterCreation(prevProps);
+            this.navigateToTemplateOverviewAfterDeletion(prevProps);
         }
 
         render() {
@@ -254,7 +259,6 @@ const TemplateDetail = withStyles(styles)(
                                 }}
                                 value={newTemplateDetail.description}
                                 onChange={(e) => this.updateTemplate({ description: e.target.value })}
-                                required={this.isCreateTemplateRoute()}
                                 rows={8}
                                 multiline
                             />
@@ -305,7 +309,6 @@ const TemplateDetail = withStyles(styles)(
             const [anyMatchers, fixedMatchers, templateMatchers] = getMatchersFromTemplateDetail(newTemplateDetail);
             const hasMatchers = newTemplateDetail.matchers.length;
 
-            /*
             const handleSaveAction = () => {
                 const { passed: passedRequired, requiredFieldsState } = requiredFieldsCheck({
                     data: newTemplateDetail,
@@ -318,7 +321,6 @@ const TemplateDetail = withStyles(styles)(
                     this.setState({ hasChangeToCheck: false, isSaveDialogOpen: true });
                 }
             };
-             */
 
             if (!hasMatchers) {
                 return (
@@ -402,7 +404,7 @@ const TemplateDetail = withStyles(styles)(
                             </Box>
                         </Collapse>
                         <DetailActions
-                            onSave={() => { this.setState({ isSaveDialogOpen: true }); }}
+                            onSave={handleSaveAction}
                             onDelete={() => this.setState({ isConfirmDeleteOpen: true })}
                             onAdd={() => this.setState({ isAddOpen: true })}
                             isCreateRoute={this.isCreateTemplateRoute()}
@@ -504,6 +506,33 @@ const TemplateDetail = withStyles(styles)(
                     matcher={newTemplateDetail.matchers[matcherIndexToEdit]}
                 />
             );
+        }
+
+        private navigateToTemplateOverviewAfterDeletion(prevProps: TProps & IObserveProps) {
+            const { newTemplateDetail } = this.state;
+            const { status } = getAsyncTemplateDetail(this.props.state).create;
+            const { status: prevStatus } = getAsyncTemplateDetail(prevProps.state).create;
+
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                redirectTo({
+                    routeKey: ROUTE_KEYS.R_TEMPLATE_DETAIL,
+                    params: {
+                        name: newTemplateDetail.name,
+                        version: newTemplateDetail.version,
+                    },
+                });
+            }
+        }
+
+        private navigateToTemplateAfterDeletion(prevProps: TProps & IObserveProps) {
+            const { status } = getAsyncTemplateDetail(this.props.state).remove;
+            const prevStatus = getAsyncTemplateDetail(prevProps.state).remove.status;
+
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                redirectTo({
+                    routeKey: ROUTE_KEYS.R_TEMPLATES,
+                });
+            }
         }
 
         private updateTemplateInStateifNewTemplateWasLoaded(prevProps: TProps & IObserveProps) {

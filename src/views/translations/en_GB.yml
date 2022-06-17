@@ -94,16 +94,21 @@ flash_messages:
     delete: The team has been deleted.
     add_security_group: The team has been assigned to the security group !
     remove_security_group: The team has been un-assigned to the security group.
-    error: 'An error has occured'
+    error: 'An error has occurred'
   security_group:
     create: The security group has been created successfully !
     delete: The security group has been deleted.
-    error: 'An error has occured'
+    error: 'An error has occurred'
     import_error: 'There is an error during the import of the script'
   datasets:
     import: 'The dataset has been successfully imported !'
     import_error: 'There is an error during the import of the dataset'
-    error: 'An error has occured'
+    error: 'An error has occurred'
+  templates:
+    create: The template {name} has been successfully created !
+    update: The template {name} has been successfully updated to a new version !
+    delete: The template {name} has been deleted.
+    error: 'An error has occurred'
 scripts:
   overview:
     delete_script_dialog:
@@ -904,7 +909,12 @@ templates:
         template_name: Template name
       sort:
         template_name: Template name
+      actions:
+        delete: Delete
       fetch_error: Something went wrong during the loading of the templates
+    delete_template_dialog:
+      title: Delete template
+      text: Are you sure you want to delete this template ?
   detail:
     side:
       toggle_button: Toggle

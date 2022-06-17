@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactText } from 'react';
 import { Box, Button, createStyles, Theme, Typography, withStyles, WithStyles } from '@material-ui/core';
 import { IObserveProps, observe } from 'views/observe';
 import { getTemplatesListFilter } from 'state/ui/selectors';
@@ -17,6 +17,7 @@ import {
 } from 'models/list.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import {
+    getAsyncTemplateDetail,
     getAsyncTemplates,
     getAsyncTemplatesEntity,
     getAsyncTemplatesPageData,
@@ -24,7 +25,7 @@ import {
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { setTemplatesListFilter } from 'state/ui/actions';
 import { StateChangeNotification } from 'models/state.models';
-import { triggerFetchTemplates } from 'state/entities/templates/triggers';
+import { triggerDeleteTemplateDetail, triggerFetchTemplates } from 'state/entities/templates/triggers';
 import { getTranslator } from 'state/i18n/selectors';
 import { getUniqueIdFromTemplate } from 'utils/templates/templateUtils';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
@@ -38,6 +39,8 @@ import GenericFilter from 'views/common/list/GenericFilter';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import GenericList from 'views/common/list/GenericList';
 import { Alert } from '@material-ui/lab';
+import DeleteIcon from '@material-ui/icons/Delete';
+import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 
 const styles = ({ palette, typography }: Theme) => createStyles({
     header: {
@@ -95,6 +98,19 @@ const TemplatesOverview = withStyles(styles)(
             this.state = {
                 templateIdToDelete: null,
             };
+
+            this.renderPanel = this.renderPanel.bind(this);
+            this.renderContent = this.renderContent.bind(this);
+
+            this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
+            this.fetchTemplatesWithFilterAndPagination = this.fetchTemplatesWithFilterAndPagination.bind(this);
+            this.onSort = this.onSort.bind(this);
+            this.onFilter = this.onFilter.bind(this);
+
+            this.onDeleteTemplate = this.onDeleteTemplate.bind(this);
+
+            // eslint-disable-next-line max-len
+            this.closeDeleteTemplateDialogAfterSuccessfulDelete = this.closeDeleteTemplateDialogAfterSuccessfulDelete.bind(this);
         }
 
         public componentDidMount() {
@@ -105,12 +121,34 @@ const TemplatesOverview = withStyles(styles)(
             dispatch(setTemplatesListFilter({ filters: initialFilters }));
         }
 
+        public componentDidUpdate(prevProps: TProps & IObserveProps) {
+            const { state, dispatch } = prevProps;
+            const filterFromState = getTemplatesListFilter(state);
+
+            if (filterFromState.filters === null || filterFromState.sortedColumn === null) {
+                dispatch(setTemplatesListFilter({
+                    filters: filterFromState.filters === null && getIntialFiltersFromFilterConfig(filterConfig),
+                    sortedColumn: filterFromState.sortedColumn === null && {
+                        name: 'name',
+                        sortOrder: SortOrder.Ascending,
+                        sortType: SortType.String,
+                    },
+                }));
+            }
+
+            this.closeDeleteTemplateDialogAfterSuccessfulDelete(prevProps);
+        }
+
         render() {
             const { classes, state } = this.props;
+            const { templateIdToDelete } = this.state;
             const pageData = getAsyncTemplatesPageData(state);
             const filterFromState = getTemplatesListFilter(state);
             const templates = getAsyncTemplates(state);
             const listItems = mapTemplatesToListItems(templates);
+            const translator = getTranslator(state);
+
+            const deleteStatus = getAsyncTemplateDetail(state).remove.status;
 
             return (
                 <>
@@ -167,6 +205,14 @@ const TemplatesOverview = withStyles(styles)(
                                 (filterFromState.filters
                                 ) && (filterFromState.filters.name.values.length > 0)
                             }
+                        />
+                        <ConfirmationDialog
+                            title={translator('templates.overview.delete_template_dialog.title')}
+                            text={translator('templates.overview.delete_template_dialog.text')}
+                            open={!!templateIdToDelete}
+                            onClose={() => this.setState({ templateIdToDelete: null })}
+                            onConfirm={this.onDeleteTemplate}
+                            showLoader={deleteStatus === AsyncStatus.Busy}
                         />
                     </Box>
                 </>
@@ -254,6 +300,11 @@ const TemplatesOverview = withStyles(styles)(
                                             });
                                         },
                                         hideAction: () => !checkAuthority(state, SECURITY_PRIVILEGES.S_TEMPLATES_WRITE),
+                                    }, {
+                                        icon: <DeleteIcon />,
+                                        label: translator('templates.overview.list.actions.delete'),
+                                        onClick: (id: ReactText) => this.setState({ templateIdToDelete: id as string }),
+                                        hideAction: () => !checkAuthority(state, SECURITY_PRIVILEGES.S_TEMPLATES_WRITE),
                                     })}
                                 />
                             ) : (
@@ -267,6 +318,30 @@ const TemplatesOverview = withStyles(styles)(
                     </Box>
                 </>
             );
+        }
+
+        private closeDeleteTemplateDialogAfterSuccessfulDelete(prevProps: TProps & IObserveProps) {
+            const { status } = getAsyncTemplateDetail(this.props.state).remove;
+            const prevStatus = getAsyncTemplateDetail(prevProps.state).remove.status;
+
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                this.setState({ templateIdToDelete: null });
+                this.fetchTemplatesWithFilterAndPagination({});
+            }
+        }
+
+        private onDeleteTemplate() {
+            const { state } = this.props;
+            const { templateIdToDelete } = this.state;
+            const templateToDelete = getAsyncTemplates(state).find((item) =>
+                getUniqueIdFromTemplate(item) === templateIdToDelete);
+
+            if (templateToDelete) {
+                triggerDeleteTemplateDetail({
+                    name: templateToDelete.name,
+                    version: templateToDelete.version,
+                });
+            }
         }
 
         private onFilter(listFilters: ListFilters<Partial<ITemplateColumnNames>>) {
@@ -351,4 +426,6 @@ function mapTemplatesToListItems(templates: ITemplate[]): IListItem<ITemplateCol
 
 export default observe<TProps>([
     StateChangeNotification.TEMPLATES,
+    StateChangeNotification.TEMPLATE_DETAIL,
+    StateChangeNotification.LIST_FILTER_TEMPLATES,
 ], TemplatesOverview);
