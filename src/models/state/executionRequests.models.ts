@@ -34,6 +34,7 @@ export interface ICreateExecutionRequestPayload {
     scope: string;
     context: string;
     email: string;
+    debugMode: boolean;
     // eslint-disable-next-line max-len
     scriptExecutionRequests: ICreateScriptExecutionRequestPayload[];
     executionRequestLabels: ILabel[];

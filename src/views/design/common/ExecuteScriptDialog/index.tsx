@@ -411,6 +411,7 @@ function ExecuteScriptDialog({
             context: '', // May be ignored for now
             description: formValues.description ? formValues.description.trim() : '',
             email: null, // May be ignored for now
+            debugMode: true,
             executionRequestLabels: formValues.executionRequestLabels,
             name: formValues.name.trim(),
             scope: '', // May be ignored for now
