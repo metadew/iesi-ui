@@ -9,7 +9,7 @@ import {
     Select,
     MenuItem,
     Paper,
-    Typography,
+    Typography, FormControlLabel, Checkbox,
 } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { observe, IObserveProps } from 'views/observe';
@@ -56,6 +56,7 @@ interface IFormValues {
     environment: string;
     parameters: IParameter[];
     executionRequestLabels: ILabel[];
+    debugMode: boolean;
 }
 
 interface IExecutionReportDetailRouteParams {
@@ -79,6 +80,7 @@ function ExecuteScriptDialog({
         environment: '',
         parameters: [],
         executionRequestLabels: [],
+        debugMode: false,
     });
 
     const [newParameter, setNewParameter] = useState<IParameter>({
@@ -384,7 +386,22 @@ function ExecuteScriptDialog({
                                 </Alert>
                             </Box>
                         )}
-                        <Box marginTop={2} textAlign="right">
+                        <Box marginTop={2} display="flex" alignItems="center" justifyContent="space-between">
+                            <FormControl>
+                                <FormControlLabel
+                                    control={(
+                                        <Checkbox
+                                            onChange={(e) => setFormValues({
+                                                ...formValues,
+                                                debugMode: e.target.checked,
+                                            })}
+                                            checked={formValues.debugMode}
+                                            name="checkbox-debug-mode"
+                                        />
+                                    )}
+                                    label="Debug mode"
+                                />
+                            </FormControl>
                             <Button
                                 variant="contained"
                                 color="secondary"
@@ -414,6 +431,7 @@ function ExecuteScriptDialog({
             executionRequestLabels: formValues.executionRequestLabels,
             name: formValues.name.trim(),
             scope: '', // May be ignored for now
+            debugMode: formValues.debugMode,
             scriptExecutionRequests: [
                 {
                     scriptName,
