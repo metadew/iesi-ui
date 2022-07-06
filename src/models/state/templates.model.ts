@@ -8,6 +8,7 @@ export interface IFetchTemplatesListPayload {
 
 interface ITemplateListFilter {
     name?: string;
+    version?: 'latest';
 }
 
 export interface ITemplateByNameAndVersionPayload {

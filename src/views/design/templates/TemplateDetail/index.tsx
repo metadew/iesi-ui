@@ -199,6 +199,7 @@ const TemplateDetail = withStyles(styles)(
                                     onClick={() => {
                                         triggerCreateTemplateDetail({
                                             ...newTemplateDetail,
+                                            description: newTemplateDetail.description || '',
                                             version: this.isCreateTemplateRoute() ? (
                                                 newTemplateDetail.version
                                             ) : (
@@ -291,7 +292,7 @@ const TemplateDetail = withStyles(styles)(
                                         noLineAfterListItem
                                         items={[{
                                             label: translator('templates.detail.side.template_version'),
-                                            value: (newTemplateDetail && newTemplateDetail.version) || '',
+                                            value: newTemplateDetail && newTemplateDetail.version,
                                         }]}
                                     />
                                 )

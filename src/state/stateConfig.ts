@@ -66,6 +66,7 @@ export const initialState: IState = {
                 filters: null,
                 page: 1,
                 sortedColumn: null,
+                onlyShowLatestVersion: true,
             },
         },
     },

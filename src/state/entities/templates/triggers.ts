@@ -2,15 +2,20 @@ import entitiesStateManager from 'state/entities/entitiesStateManager';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { StateChangeNotification } from 'models/state.models';
 import { triggerFlashMessage } from 'state/ui/actions';
-import { ITemplateBase, ITemplateByNameAndVersionPayload } from 'models/state/templates.model';
+import {
+    IFetchTemplatesListPayload,
+    ITemplateBase,
+    ITemplateByNameAndVersionPayload,
+} from 'models/state/templates.model';
 
-export const triggerFetchTemplates = (filter: object = {}) => entitiesStateManager.triggerAsyncEntityFetch<{}>({
+// eslint-disable-next-line max-len
+export const triggerFetchTemplates = (payload: IFetchTemplatesListPayload) => entitiesStateManager.triggerAsyncEntityFetch<{}>({
     asyncEntityToFetch: {
         asyncEntityKey: ASYNC_ENTITY_KEYS.templates,
         refreshMode: 'always',
         resetDataOnTrigger: false,
     },
-    extraInputSelector: () => filter,
+    extraInputSelector: () => payload,
     notificationsToTrigger: [StateChangeNotification.TEMPLATES],
 });
 

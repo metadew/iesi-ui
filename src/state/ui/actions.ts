@@ -357,10 +357,12 @@ export const setTemplatesListFilter = (payload: {
     filters?: ListFilters<Partial<ITemplateColumnNames>>;
     page?: number;
     sortedColumn?: ISortedColumn<ITemplateColumnNames>;
+    onlyShowLatestVersion?: boolean;
 }) => createAction<{
     filters?: ListFilters<Partial<ITemplateColumnNames>>;
     page?: number;
     sortedColumn?: ISortedColumn<ITemplateColumnNames>;
+    onlyShowLatestVersion?: boolean;
 }>({
     type: 'UPDATE_TEMPLATES_LIST_FILTER',
     payload,
@@ -372,6 +374,9 @@ export const setTemplatesListFilter = (payload: {
                     filters: payload.filters || draftState.ui.listFilters.templates.filters,
                     page: payload.page || draftState.ui.listFilters.templates.page,
                     sortedColumn: payload.sortedColumn || draftState.ui.listFilters.templates.sortedColumn,
+                    onlyShowLatestVersion: typeof payload.onlyShowLatestVersion !== 'undefined'
+                        ? payload.onlyShowLatestVersion
+                        : draftState.ui.listFilters.templates.onlyShowLatestVersion,
                 };
             },
             notificationsToTrigger: [StateChangeNotification.LIST_FILTER_TEMPLATES],

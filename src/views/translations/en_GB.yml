@@ -907,6 +907,7 @@ templates:
         matchers: Matcher
       filter:
         template_name: Template name
+        show_latest: Only show latest version
       sort:
         template_name: Template name
       actions:

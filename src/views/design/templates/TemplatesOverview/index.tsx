@@ -1,5 +1,14 @@
 import React, { ReactText } from 'react';
-import { Box, Button, createStyles, Theme, Typography, withStyles, WithStyles } from '@material-ui/core';
+import {
+    Box,
+    Button,
+    createStyles,
+    FormControlLabel, Switch,
+    Theme,
+    Typography,
+    withStyles,
+    WithStyles,
+} from '@material-ui/core';
 import { IObserveProps, observe } from 'views/observe';
 import { getTemplatesListFilter } from 'state/ui/selectors';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
@@ -41,6 +50,7 @@ import GenericList from 'views/common/list/GenericList';
 import { Alert } from '@material-ui/lab';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
+import isSet from '@snipsonian/core/es/is/isSet';
 
 const styles = ({ palette, typography }: Theme) => createStyles({
     header: {
@@ -220,8 +230,9 @@ const TemplatesOverview = withStyles(styles)(
         }
 
         private renderPanel({ listItems }: { listItems: IListItem<ITemplateColumnNames>[] }) {
-            const { state } = this.props;
+            const { state, dispatch } = this.props;
             const filterFromState = getTemplatesListFilter(state);
+            const translator = getTranslator(state);
 
             return (
                 <>
@@ -231,6 +242,25 @@ const TemplatesOverview = withStyles(styles)(
                         listItems={listItems}
                         initialFilters={filterFromState.filters}
                     />
+                    <Box paddingX={5} paddingY={3}>
+                        <FormControlLabel
+                            label={translator('templates.overview.list.filter.show_latest')}
+                            control={(
+                                <Switch
+                                    color="secondary"
+                                    checked={filterFromState.onlyShowLatestVersion}
+                                    onClick={() => {
+                                        this.fetchTemplatesWithFilterAndPagination({
+                                            newOnlyShowLatestVersion: !filterFromState.onlyShowLatestVersion,
+                                        });
+                                        dispatch(setTemplatesListFilter({
+                                            onlyShowLatestVersion: !filterFromState.onlyShowLatestVersion,
+                                        }));
+                                    }}
+                                />
+                            )}
+                        />
+                    </Box>
                 </>
             );
         }
@@ -359,6 +389,7 @@ const TemplatesOverview = withStyles(styles)(
         private fetchTemplatesWithFilterAndPagination({
             newPage,
             newListFilters,
+            newOnlyShowLatestVersion,
             newSortedColumn,
         }: {
             newPage?: number;
@@ -372,6 +403,8 @@ const TemplatesOverview = withStyles(styles)(
 
             const filters = newListFilters || filterFromState.filters;
             const page = newListFilters ? 1 : newPage || pageData.number;
+            const onlyShowLatestVersion = isSet(newOnlyShowLatestVersion)
+                ? newOnlyShowLatestVersion : filterFromState.onlyShowLatestVersion;
             const sortedColumn = newSortedColumn || filterFromState.sortedColumn || defaultSortedColumn;
 
             triggerFetchTemplates({
@@ -379,6 +412,7 @@ const TemplatesOverview = withStyles(styles)(
                 filter: {
                     name: filters.name.values.length > 0
                         && filters.name.values[0].toString(),
+                    version: onlyShowLatestVersion ? 'latest' : undefined,
                 },
                 sort: formatSortQueryParameter(sortedColumn),
             });

@@ -24,7 +24,7 @@ export interface IUiState {
         users: IListFilters<IUserColumnName>;
         teams: IListFilters<ITeamColumnNames>;
         securityGroups: IListFilters<ISecurityGroupColumnNames>;
-        templates: IListFilters<ITemplateColumnNames>;
+        templates: ITemplatesListFilters;
     };
 }
 
@@ -55,5 +55,9 @@ interface IScriptsListFilters extends IListFilters<IScriptsColumnNames> {
     onlyShowLatestVersion: boolean;
 }
 interface IComponentsListFilters extends IListFilters<IComponentColumnNames> {
+    onlyShowLatestVersion: boolean;
+}
+
+interface ITemplatesListFilters extends IListFilters<ITemplateColumnNames> {
     onlyShowLatestVersion: boolean;
 }

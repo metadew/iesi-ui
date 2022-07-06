@@ -73,6 +73,7 @@ export default function getMockState({
                     filters: null,
                     page: 1,
                     sortedColumn: null,
+                    onlyShowLatestVersion: true,
                 },
             },
         },
