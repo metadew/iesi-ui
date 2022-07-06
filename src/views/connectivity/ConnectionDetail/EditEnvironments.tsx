@@ -17,7 +17,7 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getTranslator } from 'state/i18n/selectors';
 import { IObserveProps, observe } from 'views/observe';
 import { IConnectionEnvironment } from 'models/state/connections.model';
-import { getAsyncEnvironments } from 'state/entities/environments/selectors';
+import { getAsyncEnvironments, getAsyncEnvironmentsEntity } from 'state/entities/environments/selectors';
 import Loader from 'views/common/waiting/Loader';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
@@ -82,6 +82,7 @@ function EditEnvironmentsDialog({
             showError: false,
         },
     });
+    const environmentsEntity = getAsyncEnvironmentsEntity(state);
     const environmentsAsync = getAsyncEnvironments(state);
 
     // Trigger Fetch envs on open dialog
@@ -106,11 +107,6 @@ function EditEnvironmentsDialog({
             setRequiredFieldsState(requireFields);
         }
     };
-
-    const getEnvironmentsItems = () => (environmentsAsync.data
-        // eslint-disable-next-line max-len
-        ? environmentsAsync.data.filter((env) => !environments.some((envExisting) => env.name === envExisting.environment))
-        : []);
 
     return (
         <>
@@ -173,7 +169,7 @@ function EditEnvironmentsDialog({
                                         <Translate msg="connections.detail.side.environments.add_dialog.select_title" />
                                     </MenuItem>
                                     {
-                                        getEnvironmentsItems().map((env) => (
+                                        environmentsEntity.map((env) => (
                                             <MenuItem
                                                 key={JSON.stringify(env.name)}
                                                 value={env.name}

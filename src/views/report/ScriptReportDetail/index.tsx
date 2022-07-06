@@ -212,14 +212,12 @@ function ExecutionDetail({ state }: IObserveProps) {
                 },
             };
 
-            const parentProcessId = scriptExecutionData.processId !== scriptExecutionData.parentProcessId
-                ? scriptExecutionData.parentProcessId
-                : undefined;
+            const { parentProcessId } = scriptExecutionData;
 
             return (
                 <Box marginY={1}>
                     <Box display="flex" alignItems="center" marginBottom={3}>
-                        {parentProcessId && (
+                        {parentProcessId >= -1 && scriptExecutionData.processId > -1 && (
                             <Button
                                 variant="contained"
                                 color="secondary"

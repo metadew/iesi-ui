@@ -11,6 +11,8 @@ const ENV_CONFIG_FILE_NAME = 'env-config.json';
 const DEFAULT_ENV_CONFIG_CONTENT = `{
   "iesi_api_base_url": "",
   "iesi_api_timeout_in_seconds": 10,
+  "iesi_api_client_id": "iesi",
+  "iesi_api_client_secret": "iesi",
   "translation_label_overrides": {
     "en_GB": {}
   }

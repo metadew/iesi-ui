@@ -78,6 +78,13 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
             background: palette.background.paper,
         },
     },
+    iterationTextField: {
+        width: '100%',
+        marginTop: 0,
+        '& .MuiFilledInput-root': {
+            background: palette.background.paper,
+        },
+    },
     footerAction: {
         fontSize: '.8rem',
         fontWeight: typography.fontWeightBold,
@@ -118,6 +125,8 @@ function EditAction({
     const [description, setDescription] = useState(action.description);
     const [name, setName] = useState(action.name);
     const [condition, setCondition] = useState(action.condition);
+    const [iteration, setIteration] = useState(action.iteration);
+
     const actionTypes = getAsyncActionTypes(state).data || [];
     const matchingActionType = actionTypes.find((item) => action.type === item.type);
     const orderedActionTypeParameters = orderActionTypeParameters(matchingActionType.parameters, matchingActionType);
@@ -245,6 +254,24 @@ function EditAction({
                         />
                     </Paper>
                 </Box>
+                <Box marginBottom={2}>
+                    <Paper>
+                        <TextInput
+                            id="action-iteration"
+                            label={translator(
+                                'scripts.detail.edit_action.iteration',
+                            )}
+                            className={classes.iterationTextField}
+                            defaultValue={iteration}
+                            onBlur={(e) => setIteration(e.target.value)}
+                            InputProps={{
+                                readOnly: !isCreateScriptRoute
+                                    && !checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE),
+                                disableUnderline: true,
+                            }}
+                        />
+                    </Paper>
+                </Box>
                 <Box>
                     {orderedActionTypeParameters.map((constantParameter) => {
                         const parameter = parameters.find((p) => p.name === constantParameter.name);
@@ -355,6 +382,7 @@ function EditAction({
             parameters,
             description,
             condition,
+            iteration,
             errorStop: errorStopChecked,
             errorExpected: errorExpectedChecked,
         });
