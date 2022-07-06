@@ -36,6 +36,11 @@ export const MAIN_NAV_ITEMS: IMenuItem[] = [
         securityPrivilege: SECURITY_PRIVILEGES.S_DATASETS_READ,
     }),
     toMenuItem({
+        routeKey: ROUTE_KEYS.R_TEMPLATES,
+        translationKeySuffix: 'templates',
+        securityPrivilege: SECURITY_PRIVILEGES.S_TEMPLATES_READ,
+    }),
+    toMenuItem({
         routeKey: ROUTE_KEYS.R_USERS,
         translationKeySuffix: 'users',
         securityPrivilege: SECURITY_PRIVILEGES.S_USERS_READ,

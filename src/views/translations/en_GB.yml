@@ -7,6 +7,7 @@ app_shell:
       components: Components
       connections: Connections
       datasets: Datasets
+      templates: Templates
       environments: Environments
       users: Users
       teams: Teams
@@ -97,16 +98,21 @@ flash_messages:
     delete: The team has been deleted.
     add_security_group: The team has been assigned to the security group !
     remove_security_group: The team has been un-assigned to the security group.
-    error: 'An error has occured'
+    error: 'An error has occurred'
   security_group:
     create: The security group has been created successfully !
     delete: The security group has been deleted.
-    error: 'An error has occured'
+    error: 'An error has occurred'
     import_error: 'There is an error during the import of the script'
   datasets:
     import: 'The dataset has been successfully imported !'
     import_error: 'There is an error during the import of the dataset'
-  error: 'An error has occured'
+    error: 'An error has occurred'
+  templates:
+    create: The template {name} has been successfully created !
+    update: The template {name} has been successfully updated to a new version !
+    delete: The template {name} has been deleted.
+    error: 'An error has occurred'
 scripts:
   overview:
     delete_script_dialog:
@@ -966,5 +972,65 @@ security_groups:
         button: Add teams
       alert:
         save_changes: You made changes to this security group. Don't forget to save it.
-
-
+templates:
+  overview:
+    header:
+      amount: You have {amount} templates
+      add_button: Create new template
+    list:
+      labels:
+        name: Name
+        description: Description
+        version: Version
+        matchers: Matcher
+      filter:
+        template_name: Template name
+        show_latest: Only show latest version
+      sort:
+        template_name: Template name
+      actions:
+        delete: Delete
+      fetch_error: Something went wrong during the loading of the templates
+    delete_template_dialog:
+      title: Delete template
+      text: Are you sure you want to delete this template ?
+  detail:
+    side:
+      toggle_button: Toggle
+      template_name: Template name
+      template_description: Template description
+      template_version: Template version
+    main:
+      no_matchers:
+        title: There are no matchers
+        button: Add a matcher
+      list:
+        labels:
+          type: Type
+          key: Key
+          value: Value
+          template_name: Template name
+          template_version: Template version
+        actions:
+          edit: Edit
+          delete: Delete
+      actions:
+        add_matcher: Add a matcher
+        save: Save
+        delete: Delete
+    edit:
+      matcher:
+        title_create: Adding a new matcher
+        footer:
+          cancel: Cancel
+          save: Save
+    save_template_dialog:
+      title_create: Create template
+      text_create: Do you want to overwrite the current version or create a new version with the current changes ?
+      title_update: Create template
+      text_update: You are going to update the template "{templateName}"
+      update_current_version: Update current version
+      save_as_new_version: Save as new version
+    delete_template_dialog:
+      title: Delete template
+      text: Are you sure to delete the template "{templateName}"

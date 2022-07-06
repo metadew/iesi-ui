@@ -12,6 +12,7 @@ import * as datasets from './datasets/datasets.api';
 import * as users from './users/users.api';
 import * as teams from './teams/teams.api';
 import * as securityGroups from './securityGroups/securityGroups.api';
+import * as templates from './templates/templates.api';
 
 export const api = {
     auth,
@@ -28,4 +29,5 @@ export const api = {
     users,
     teams,
     securityGroups,
+    templates,
 };

@@ -16,6 +16,7 @@ import { IDatasetColumnNames, IDatasetImplementation } from 'models/state/datase
 import { IUserColumnName } from 'models/state/user.model';
 import { ITeamColumnNames } from 'models/state/team.model';
 import { ISecurityGroupColumnNames } from 'models/state/securityGroups.model';
+import { ITemplateColumnNames } from 'models/state/templates.model';
 import { IEnvironmentColumnNamesBase } from 'models/state/environments.models';
 
 export const triggerFlashMessage = (payload: ITriggerFlashMessagePayload) => createAction<ITriggerFlashMessagePayload>({
@@ -375,6 +376,37 @@ export const setSecurityGroupsListFilter = (payload: {
                 };
             },
             notificationsToTrigger: [StateChangeNotification.LIST_FILTER_SECURITY_GROUPS],
+        });
+    },
+});
+
+export const setTemplatesListFilter = (payload: {
+    filters?: ListFilters<Partial<ITemplateColumnNames>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<ITemplateColumnNames>;
+    onlyShowLatestVersion?: boolean;
+}) => createAction<{
+    filters?: ListFilters<Partial<ITemplateColumnNames>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<ITemplateColumnNames>;
+    onlyShowLatestVersion?: boolean;
+}>({
+    type: 'UPDATE_TEMPLATES_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.templates = {
+                    filters: payload.filters || draftState.ui.listFilters.templates.filters,
+                    page: payload.page || draftState.ui.listFilters.templates.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.templates.sortedColumn,
+                    onlyShowLatestVersion: typeof payload.onlyShowLatestVersion !== 'undefined'
+                        ? payload.onlyShowLatestVersion
+                        : draftState.ui.listFilters.templates.onlyShowLatestVersion,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_TEMPLATES],
         });
     },
 });

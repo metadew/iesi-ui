@@ -74,6 +74,12 @@ export default function getMockState({
                     page: 1,
                     sortedColumn: null,
                 },
+                templates: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                    onlyShowLatestVersion: true,
+                },
             },
         },
         auth: {
@@ -294,6 +300,20 @@ export default function getMockState({
                 },
             },
             securityGroupDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            templates: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            templateDetail: {
                 data: null,
                 fetch: {
                     status: AsyncStatus.Initial,

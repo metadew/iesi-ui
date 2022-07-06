@@ -436,7 +436,6 @@ const DatasetDetail = withStyles(styles)(
 
             if (implementationIndexToDelete !== null) {
                 newImplementations.splice(implementationIndexToDelete, 1);
-                // sync action number with script design number after deleting action
                 this.updateDataset({ implementations: newImplementations });
                 this.setState({ implementationIndexToDelete: null });
             }
