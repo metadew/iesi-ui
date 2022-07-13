@@ -577,6 +577,14 @@ entitiesConfigManager.register({
             // @ts-ignore
             apiInputSelector: ({ extraInput }) => extraInput as IUserPost,
         },
+        update: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.users.updateUser,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IUserPost,
+        },
     },
 });
 

@@ -9,7 +9,7 @@ import {
     IUserBase,
     IUserByNamePayload,
     IUserByIdPayload,
-    IUserPost,
+    IUserPost, IUserPostPayload,
 } from 'models/state/user.model';
 import { getUsersWithDistinctTeams, getUserWithDistinctTeams } from 'utils/users/userUtils';
 
@@ -60,13 +60,16 @@ export function createUser(user: IUserPost) {
     });
 }
 
-export function updateUser(user: IUser) {
-    return put<IUser>({
+export function updateUser(payload: IUserPostPayload) {
+    return put<IUserPost>({
         needsAuthentication: true,
         isIesiApi: true,
         url: API_URLS.USER_BY_ID,
         pathParams: {
-            id: user.id,
+            id: payload.id,
+        },
+        body: {
+            username: payload.username,
         },
         contentType: 'application/json',
     });

@@ -1,7 +1,7 @@
 import { StateChangeNotification } from 'models/state.models';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { ITeamAssignUserRolePayload, ITeamDeleteUserRole } from 'models/state/team.model';
-import { IFetchUsersListPayload, IUserByNamePayload, IUserPost } from 'models/state/user.model';
+import { IFetchUsersListPayload, IUserByNamePayload, IUserPost, IUserPostPayload } from 'models/state/user.model';
 import { triggerFlashMessage } from 'state/ui/actions';
 import entitiesStateManager from '../entitiesStateManager';
 
@@ -36,6 +36,37 @@ export const triggerCreateUserDetail = (payload: IUserPost) =>
         onSuccess: ({ dispatch }) => {
             dispatch(triggerFlashMessage({
                 translationKey: 'flash_messages.user.create',
+                type: 'success',
+            }));
+        },
+        onFail: ({ dispatch, error }) => {
+            if (error.status) {
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.common.responseError',
+                    translationPlaceholders: {
+                        message: error.response?.message,
+                    },
+                    type: 'error',
+                }));
+            } else {
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.user.error',
+                    type: 'error',
+                }));
+            }
+        },
+        notificationsToTrigger: [StateChangeNotification.IAM_USERS_DETAIL],
+    });
+
+export const triggerUpdateUserDetail = (payload: IUserPostPayload) =>
+    entitiesStateManager.triggerAsyncEntityUpdate<{}>({
+        asyncEntityToUpdate: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.userDetail,
+        },
+        extraInputSelector: () => payload,
+        onSuccess: ({ dispatch }) => {
+            dispatch(triggerFlashMessage({
+                translationKey: 'flash_messages.user.update',
                 type: 'success',
             }));
         },

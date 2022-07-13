@@ -92,8 +92,7 @@ function DetailActions({
                     checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE) && (
                         <Paper elevation={0} className={classes.actions}>
                             <Box display="inline" marginRight={1}>
-                                {isCreateRoute
-                                    || checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
+                                {checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
                                     ? (
                                         <Button
                                             variant="contained"
@@ -101,7 +100,6 @@ function DetailActions({
                                             size="small"
                                             startIcon={<SaveIcon />}
                                             onClick={onSave}
-                                            disabled={!isCreateRoute}
                                         >
                                             <Translate msg="users.detail.main.actions.save" />
                                         </Button>

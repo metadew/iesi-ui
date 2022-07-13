@@ -1,5 +1,5 @@
 import React from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { IObserveProps, observe } from 'views/observe';
 import {
     Box,
@@ -13,8 +13,8 @@ import {
     withStyles,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
-import { Delete, Add, Visibility, VisibilityOff } from '@material-ui/icons';
-import { IUser, IUserBase, IUserPost, IUserTeam, IUserRole } from 'models/state/user.model';
+import { Add, Delete, Visibility, VisibilityOff } from '@material-ui/icons';
+import { IUser, IUserBase, IUserPost, IUserRole, IUserTeam } from 'models/state/user.model';
 import { getAsyncUserDetail, getAsyncUserDetailRole } from 'state/entities/users/selectors';
 import { ITeamRole } from 'models/state/team.model';
 import { getUniqueIdFromUser } from 'utils/users/userUtils';
@@ -22,7 +22,7 @@ import Loader from 'views/common/waiting/Loader';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
-import { triggerCreateUserDetail, triggerDeleteUserRole } from 'state/entities/users/triggers';
+import { triggerCreateUserDetail, triggerDeleteUserRole, triggerUpdateUserDetail } from 'state/entities/users/triggers';
 import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { clone } from 'ramda';
@@ -84,7 +84,7 @@ const UserDetail = withStyles(styles)(
             this.state = {
                 newUserDetail: this.isCreateUserRoute() ? initialUserPostDetail : initialUserDetail,
                 teams: [],
-                selectedTeamIndex: -1,
+                selectedTeamIndex: 0,
                 roleIndexToEdit: null,
                 roleIndexToDelete: null,
                 roleToAdd: null,
@@ -156,7 +156,7 @@ const UserDetail = withStyles(styles)(
                     <ContentWithSidePanel
                         panel={this.renderUserDetailPanel()}
                         content={this.renderUserDetailContent()}
-                        contentOverlay={selectedTeamIndex > -1 && this.renderAddRole()}
+                        contentOverlay={teams[selectedTeamIndex] && selectedTeamIndex > -1 && this.renderAddRole()}
                         contentOverlayOpen={isAddOpen}
                         toggleLabel={<Translate msg="users.detail.side.toggle_button" />}
                         goBackTo={ROUTE_KEYS.R_USERS}
@@ -183,26 +183,61 @@ const UserDetail = withStyles(styles)(
                         onClose={() => this.setState({ isSaveDialogOpen: false })}
                     >
                         <Typography>
-                            <Translate
-                                msg="users.detail.save_user_dialog.text"
-                                placeholders={{
-                                    username: newUserDetail.username,
-                                }}
-                            />
+                            {
+                                this.isCreateUserRoute() ? (
+                                    <Translate
+                                        msg="users.detail.save_user_dialog.text_save"
+                                        placeholders={{
+                                            username: newUserDetail.username,
+                                        }}
+                                    />
+                                ) : (
+                                    <Translate
+                                        msg="users.detail.save_user_dialog.text_update"
+                                        placeholders={{
+                                            username: newUserDetail.username,
+                                        }}
+                                    />
+                                )
+                            }
                         </Typography>
                         <Box display="flex" alignItems="center" justifyContent="center" marginTop={2}>
                             <Box paddingRight={1}>
-                                <Button
-                                    id="save-user"
-                                    variant="contained"
-                                    color="secondary"
-                                    onClick={() => {
-                                        triggerCreateUserDetail(newUserDetail as IUserPost);
-                                        this.setState({ isSaveDialogOpen: false });
-                                    }}
-                                >
-                                    <Translate msg="users.detail.save_user_dialog.create" />
-                                </Button>
+                                {
+                                    this.isCreateUserRoute() ? (
+                                        <Button
+                                            id="save-user"
+                                            variant="contained"
+                                            color="secondary"
+                                            onClick={() => {
+                                                triggerCreateUserDetail(newUserDetail as IUserPost);
+                                                this.setState({ isSaveDialogOpen: false });
+                                            }}
+                                        >
+                                            <Translate msg="users.detail.save_user_dialog.create" />
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            id="save-user"
+                                            variant="contained"
+                                            color="secondary"
+                                            onClick={() => {
+                                                triggerUpdateUserDetail({
+                                                    id: (newUserDetail as IUser).id,
+                                                    username: (newUserDetail as IUserPost).username,
+                                                    password: {
+                                                        password: (newUserDetail as IUserPost).password,
+                                                        repeatedPassword: (newUserDetail as IUserPost).repeatedPassword,
+                                                    },
+                                                });
+                                                this.setState({ isSaveDialogOpen: false });
+                                            }}
+                                        >
+                                            <Translate msg="users.detail.save_user_dialog.update" />
+                                        </Button>
+                                    )
+                                }
+
                             </Box>
                         </Box>
                     </ClosableDialog>
@@ -223,7 +258,6 @@ const UserDetail = withStyles(styles)(
                                 id="user-name"
                                 label={translator('users.detail.side.user_name')}
                                 InputProps={{
-                                    readOnly: !this.isCreateUserRoute() && newUserDetail !== undefined,
                                     disableUnderline: true,
                                 }}
                                 value={newUserDetail.username}
@@ -306,31 +340,38 @@ const UserDetail = withStyles(styles)(
                                         />
                                     </>
                                 ) : (
-                                    <DescriptionList
-                                        noLineAfterListItem
-                                        items={[].concat({
-                                            label: <Translate msg="users.detail.side.teams.title" />,
-                                            value: <EditTeams
-                                                userTeams={newUserDetail && teams}
-                                                selectedIndex={selectedTeamIndex}
-                                                // eslint-disable-next-line max-len
-                                                onTeamSelected={(index) => this.setState({ selectedTeamIndex: index })}
-                                                onSubmit={(newTeam) => {
-                                                    this.setState({
-                                                        teams: [
-                                                            ...teams, {
-                                                                id: newTeam.id,
-                                                                name: newTeam.teamName,
-                                                                securityGroups: newTeam.securityGroups,
-                                                            },
-                                                        ],
-                                                    });
-                                                }}
-                                                onDelete={() => { }}
-                                                isCreateUserRoute={this.isCreateUserRoute()}
-                                            />,
-                                        })}
-                                    />
+                                    <>
+                                        <Button>
+                                            <Typography>
+                                                <Translate msg="users.detail.side.update_password.button" />
+                                            </Typography>
+                                        </Button>
+                                        <DescriptionList
+                                            noLineAfterListItem
+                                            items={[].concat({
+                                                label: <Translate msg="users.detail.side.teams.title" />,
+                                                value: <EditTeams
+                                                    userTeams={newUserDetail && teams}
+                                                    selectedIndex={selectedTeamIndex}
+                                                    // eslint-disable-next-line max-len
+                                                    onTeamSelected={(index) => this.setState({ selectedTeamIndex: index })}
+                                                    onSubmit={(newTeam) => {
+                                                        this.setState({
+                                                            teams: [
+                                                                ...teams, {
+                                                                    id: newTeam.id,
+                                                                    name: newTeam.teamName,
+                                                                    securityGroups: newTeam.securityGroups,
+                                                                },
+                                                            ],
+                                                        });
+                                                    }}
+                                                    onDelete={() => { }}
+                                                    isCreateUserRoute={this.isCreateUserRoute()}
+                                                />,
+                                            })}
+                                        />
+                                    </>
                                 )
                             }
                         </form>
@@ -352,23 +393,20 @@ const UserDetail = withStyles(styles)(
             const hasRoles = roleItems.length > 0;
 
             const handleSaveAction = () => {
-                if (this.isCreateUserRoute()) {
-                    const { passed: passedRequired, requiredFieldsState } = requiredFieldsCheck<IUserPost>({
-                        data: (newUserDetail as IUserPost),
-                        requiredFields: ['username', 'password', 'repeatedPassword'],
+                const { passed: passedRequired, requiredFieldsState } = requiredFieldsCheck<IUserPost>({
+                    data: (newUserDetail as IUserPost),
+                    requiredFields: ['username', 'password', 'repeatedPassword'],
+                });
+                if (passedRequired) {
+                    this.setState({
+                        isSaveDialogOpen: true,
+                        requiredFieldsState,
+                        hasChangeToCheck: false,
                     });
-
-                    if (passedRequired) {
-                        this.setState({
-                            isSaveDialogOpen: true,
-                            requiredFieldsState,
-                            hasChangeToCheck: false,
-                        });
-                    } else {
-                        this.setState({
-                            requiredFieldsState,
-                        });
-                    }
+                } else {
+                    this.setState({
+                        requiredFieldsState,
+                    });
                 }
             };
 
@@ -580,23 +618,20 @@ const UserDetail = withStyles(styles)(
                     ...prevState.newUserDetail,
                     ...fieldsToUpdate,
                 },
-                hasChangeToCheck: this.isCreateUserRoute(),
+                hasChangeToCheck: true,
             }));
         }
 
         private updateUserInStateIfNewUserWasLoaded(prevProps: TProps & IObserveProps) {
             const userDetail = getAsyncUserDetail(this.props.state).data;
             const prevUserDetail = getAsyncUserDetail(prevProps.state).data;
-            const teamName = new URLSearchParams(window.location.search).get('teamName');
 
             if (getUniqueIdFromUser(userDetail) !== getUniqueIdFromUser(prevUserDetail) && userDetail) {
                 const userDetailDeepClone = clone(userDetail);
                 this.setState({
                     newUserDetail: userDetailDeepClone,
                     teams: userDetailDeepClone.teams,
-                    selectedTeamIndex: userDetailDeepClone.teams
-                        .indexOf(userDetailDeepClone.teams
-                            .find((team) => team.name === teamName)),
+                    selectedTeamIndex: 0,
                 });
             }
         }
@@ -653,7 +688,7 @@ const UserDetail = withStyles(styles)(
 );
 
 function getRolesFromTeam(team: IUserTeam, userRoles: IUserRole[]) {
-    const roles = team && userRoles.length
+    return team && userRoles.length
         ? userRoles.flatMap((role) => {
             if (role.team.name === team.name) {
                 return [role];
@@ -661,10 +696,12 @@ function getRolesFromTeam(team: IUserTeam, userRoles: IUserRole[]) {
             return [];
         })
         : [];
-    return roles;
 }
 
 function mapRoleToListItems(team: IUserTeam, userRoles: IUserRole[]) {
+    if (!team) {
+        return [];
+    }
     const roles = getRolesFromTeam(team, userRoles);
 
     const newListItems: IListItem<Partial<IUserRole>>[] = roles.map((role) => ({
