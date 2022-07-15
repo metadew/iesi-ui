@@ -36,10 +36,10 @@ export const checkAccessTokenExpiration = () => createAction<{}>({
 
         if (refreshToken.length > 0) {
             // Refresh the token 5 minutes before the expiration
-            const beforeExpireInSecond = new Date(new Date(expiresAt).getTime() - ONE_MINUTE_IN_MILLIS * 3);
+            const beforeExpireInSecond = new Date(new Date(expiresAt).getTime() - ONE_MINUTE_IN_MILLIS * 5);
             const currentTime = new Date();
 
-            if (currentTime > beforeExpireInSecond) {
+            if (currentTime >= beforeExpireInSecond) {
                 const response = await api.auth.refreshToken(refreshToken);
                 dispatch(triggerLogon(response));
             }

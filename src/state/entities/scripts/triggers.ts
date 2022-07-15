@@ -33,7 +33,6 @@ export const triggerFetchScriptDetail = (payload: IScriptByNameAndVersionPayload
         extraInputSelector: () => payload,
         onFail: ({ error }) => {
             if (error.status === 404 && redirectTo404) {
-                console.log(redirectTo404);
                 redirectTo({
                     routeKey: ROUTE_KEYS.R_NOT_FOUND,
                 });
