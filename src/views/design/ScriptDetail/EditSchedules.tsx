@@ -207,7 +207,9 @@ function EditSchedules({ schedules, onChange, state }: IPublicProps & IObservePr
 
     function onOpenAddScheduling() {
         setIsScheduleLabelFormOpen(true);
-        triggerFetchEnvironments();
+        triggerFetchEnvironments({
+            sort: 'name,asc',
+        });
     }
 }
 

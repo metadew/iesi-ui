@@ -1,9 +1,7 @@
 import React from 'react';
 import { IRoute } from 'models/router.models';
-import { triggerFetchScripts, triggerFetchScriptDetail } from 'state/entities/scripts/triggers';
-import {
-    triggerFetchExecutionRequestDetail,
-} from 'state/entities/executionRequests/triggers';
+import { triggerFetchScriptDetail, triggerFetchScripts } from 'state/entities/scripts/triggers';
+import { triggerFetchExecutionRequestDetail } from 'state/entities/executionRequests/triggers';
 import {
     triggerFetchActionTypes,
     triggerFetchComponentTypes,
@@ -12,16 +10,11 @@ import {
 import { triggerFetchComponentDetail, triggerFetchComponents } from 'state/entities/components/triggers';
 import { triggerFetchConnectionDetail, triggerFetchConnections } from 'state/entities/connections/triggers';
 import { triggerFetchDatasetDetail } from 'state/entities/datasets/triggers';
-import { SortType, SortOrder } from 'models/list.models';
+import { SortOrder, SortType } from 'models/list.models';
 import { formatSortQueryParameter } from 'utils/core/string/format';
-import { triggerFetchEnvironment, triggerFetchEnvironments } from 'state/entities/environments/triggers';
+import { triggerFetchEnvironment } from 'state/entities/environments/triggers';
 import { getStore } from 'state';
-import {
-    getComponentsListFilter,
-    getConnectionsListFilter,
-    getScriptsListFilter,
-    // getEnvironmentsListFilter
-} from 'state/ui/selectors';
+import { getComponentsListFilter, getConnectionsListFilter, getScriptsListFilter } from 'state/ui/selectors';
 import { IFetchScriptsListPayload } from 'models/state/scripts.models';
 import { IFetchComponentsListPayload } from 'models/state/components.model';
 // import { IFetchEnvironmentsListPayload } from 'models/state/environments.models';
@@ -32,7 +25,7 @@ import TemplatesTemplate from 'views/design/templates/TemplatesTemplate';
 import TemplatesOverview from 'views/design/templates/TemplatesOverview';
 import TemplateDetail from 'views/design/templates/TemplateDetail';
 import { triggerFetchTemplate } from 'state/entities/templates/triggers';
-import { ROUTE_KEYS, registerRoutes } from './routes';
+import { registerRoutes, ROUTE_KEYS } from './routes';
 import NotFound from './appShell/NotFound';
 import Home from './Home';
 import ScriptsTemplate from './design/ScriptsTemplate';
@@ -279,34 +272,6 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             }),
         }],
     }],
-    /* executeOnRoute: [{
-        execute: () => {
-            const { getState } = getStore();
-            const { filters, page, sortedColumn } = getEnvironmentsListFilter(getState());
-
-            const sort = sortedColumn || {
-                name: 'name',
-                sortOrder: SortOrder.Ascending,
-                sortType: SortType.String,
-            };
-
-            const payload: IFetchEnvironmentsListPayload = {
-                sort: formatSortQueryParameter(sort),
-                filter: {
-                    ...(filters && {
-                        name:
-                            filters.name.values.length > 0
-                            && filters.name.values[0].toString(),
-                    }),
-                },
-                pagination: {
-                    page,
-                },
-            };
-
-            triggerFetchEnvironments(payload);
-        },
-    }], */
 }, {
     routeKey: ROUTE_KEYS.R_REPORTS,
     path: '/reports',
@@ -324,11 +289,6 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
                 id: routeLocation.params.executionRequestId,
             }),
         }],
-    }],
-    executeOnRoute: [{
-        // Execution requests are being fetched in the ScriptReportsOverview component on mount.
-        // This way url query parameters can be used for the initial fetch.
-        execute: triggerFetchEnvironments,
     }],
 }, {
     routeKey: ROUTE_KEYS.R_DATASETS,

@@ -276,7 +276,6 @@ const ScriptReportsOverview = withStyles(styles)(
                                         environment: selectedExecutionRequest.scriptExecutionRequests[0].environment,
                                         parameters: selectedExecutionRequest.scriptExecutionRequests[0].parameters,
                                         executionRequestLabels: selectedExecutionRequest.executionRequestLabels,
-
                                     }}
                                 />
                             )
