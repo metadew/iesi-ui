@@ -21,6 +21,8 @@ export const triggerLogon = (payload: IAuthenticationResponse) => createAction<I
                 draftState.auth.expiresAt = new Date(currentTime + ONE_SECOND_IN_MILLIS * action.payload.expires_in);
                 // eslint-disable-next-line no-param-reassign
                 draftState.auth.permissions = accessToken.authorities.map((authority) => ({ privilege: authority }));
+                // eslint-disable-next-line no-param-reassign
+                draftState.auth.username = accessToken.username;
             },
             notificationsToTrigger: [StateChangeNotification.AUTH],
         });

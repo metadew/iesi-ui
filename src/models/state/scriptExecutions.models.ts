@@ -20,6 +20,7 @@ export interface IScriptExecutionDetail {
     output: ILabel[];
     actions: IScriptExecutionDetailAction[];
     username: string;
+    debugMode: boolean;
 }
 
 export interface IScriptExecutionDetailAction {

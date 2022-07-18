@@ -26,6 +26,7 @@ export interface IExecutionRequest {
     executionRequestStatus: ExecutionRequestStatus;
     scriptExecutionRequests: IScriptExecutionRequest[];
     executionRequestLabels: ILabel[];
+    debugMode: boolean;
 }
 
 export interface ICreateExecutionRequestPayload {
@@ -34,6 +35,7 @@ export interface ICreateExecutionRequestPayload {
     scope: string;
     context: string;
     email: string;
+    debugMode: boolean;
     // eslint-disable-next-line max-len
     scriptExecutionRequests: ICreateScriptExecutionRequestPayload[];
     executionRequestLabels: ILabel[];

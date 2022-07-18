@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-    Button,
     Box,
-    makeStyles,
+    Button,
+    Checkbox,
     FormControl,
-    TextField,
+    FormControlLabel,
     InputLabel,
-    Select,
+    makeStyles,
     MenuItem,
     Paper,
+    Select,
+    TextField,
     Typography,
 } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import { observe, IObserveProps } from 'views/observe';
-import {
-    triggerCreateExecutionRequest,
-} from 'state/entities/executionRequests/triggers';
+import { IObserveProps, observe } from 'views/observe';
+import { triggerCreateExecutionRequest } from 'state/entities/executionRequests/triggers';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
@@ -26,12 +26,13 @@ import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import { getAsyncEnvironments } from 'state/entities/environments/selectors';
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
-import { IParameter, ILabel } from 'models/state/iesiGeneric.models';
+import { ILabel, IParameter } from 'models/state/iesiGeneric.models';
 import OrderedList from 'views/common/list/OrderedList';
 import isSet from '@snipsonian/core/es/is/isSet';
 import { IExecutionRequest } from 'models/state/executionRequests.models';
 import { getAsyncExecutionRequestDetail } from 'state/entities/executionRequests/selectors';
 import { addPollingExecutionRequest } from 'state/ui/actions';
+import { checkUsername } from 'state/auth/selectors';
 
 const useStyles = makeStyles(({ spacing, typography }) => ({
     formControl: {
@@ -56,6 +57,7 @@ interface IFormValues {
     environment: string;
     parameters: IParameter[];
     executionRequestLabels: ILabel[];
+    debugMode: boolean;
 }
 
 interface IExecutionReportDetailRouteParams {
@@ -79,6 +81,7 @@ function ExecuteScriptDialog({
         environment: '',
         parameters: [],
         executionRequestLabels: [],
+        debugMode: false,
     });
 
     const [newParameter, setNewParameter] = useState<IParameter>({
@@ -386,7 +389,28 @@ function ExecuteScriptDialog({
                                 </Alert>
                             </Box>
                         )}
-                        <Box marginTop={2} textAlign="right">
+                        <Box marginTop={2} display="flex" alignItems="center" justifyContent="space-between">
+                            <Box>
+                                {
+                                    checkUsername(state, 'admin') && (
+                                        <FormControl>
+                                            <FormControlLabel
+                                                control={(
+                                                    <Checkbox
+                                                        onChange={(e) => setFormValues({
+                                                            ...formValues,
+                                                            debugMode: e.target.checked,
+                                                        })}
+                                                        checked={formValues.debugMode}
+                                                        name="checkbox-debug-mode"
+                                                    />
+                                                )}
+                                                label="Debug mode"
+                                            />
+                                        </FormControl>
+                                    )
+                                }
+                            </Box>
                             <Button
                                 variant="contained"
                                 color="secondary"
@@ -416,6 +440,7 @@ function ExecuteScriptDialog({
             executionRequestLabels: formValues.executionRequestLabels,
             name: formValues.name.trim(),
             scope: '', // May be ignored for now
+            debugMode: formValues.debugMode,
             scriptExecutionRequests: [
                 {
                     scriptName,
