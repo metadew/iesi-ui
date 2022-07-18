@@ -8,6 +8,7 @@ export interface IAuthState {
 
 export interface IAccessToken {
     authorities: SECURITY_PRIVILEGES[];
+    username: string;
 }
 
 // TODO once authentication mechanism
