@@ -21,6 +21,7 @@ export const getDecodedToken = (token: string): IAccessToken | null => {
     if (decoded !== undefined) {
         return {
             authorities: decoded.authorities,
+            username: decoded.user_name,
         };
     }
     return null;
@@ -28,6 +29,10 @@ export const getDecodedToken = (token: string): IAccessToken | null => {
 
 export function checkAuthority(state: IState, privilege: SECURITY_PRIVILEGES) {
     return state.auth.permissions.some((permission: IAccessLevel) => permission.privilege === privilege);
+}
+
+export function checkUsername(state: IState, username: string) {
+    return state.auth.username === username;
 }
 
 export function isAuthenticated(state: IState) {
