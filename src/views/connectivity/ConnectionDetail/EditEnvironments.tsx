@@ -88,7 +88,9 @@ function EditEnvironmentsDialog({
     // Trigger Fetch envs on open dialog
     useEffect(() => {
         if (open) {
-            triggerFetchEnvironments();
+            triggerFetchEnvironments({
+                sort: 'name, asc',
+            });
         } else {
             // Reset form & async status
         }

@@ -109,7 +109,9 @@ function ExecuteScriptDialog({
     // Trigger Fetch envs on open dialog
     useEffect(() => {
         if (environmentsAsyncInfo.status === AsyncStatus.Initial) {
-            triggerFetchEnvironments();
+            triggerFetchEnvironments({
+                sort: 'name,asc',
+            });
         }
         return () => { };
     }, [environmentsAsyncInfo]);
