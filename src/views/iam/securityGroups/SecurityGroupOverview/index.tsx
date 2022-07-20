@@ -415,7 +415,6 @@ const SecurityGroupsOverview = withStyles(styles)(
 );
 
 function mapSecurityGroupsToListItems(securityGroups: ISecurityGroup[]): IListItem<ISecurityGroupColumnNames>[] {
-    console.log(securityGroups[0]);
     return securityGroups.map((securityGroup) => ({
         id: getUniqueIdFromSecurityGroup(securityGroup),
         columns: {

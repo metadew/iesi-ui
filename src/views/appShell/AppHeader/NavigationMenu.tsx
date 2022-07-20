@@ -69,7 +69,6 @@ function NavigationMenu({ state }: IObserveProps) {
     );
 
     function renderNavItem(item: IMenuItem) {
-        console.log('ITEM: ', item.routeKey);
         const { routeKey, translationKey } = item;
         const { requiredAccessLevels } = getRoute({ routeKey });
         const { route: currentRoute } = getRouteMatchByPath(location.pathname);

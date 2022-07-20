@@ -155,6 +155,7 @@ function ExecutionDetail({ state }: IObserveProps) {
                             description: executionRequestDetail.description,
                             environment: scriptExecutionData.environment,
                             parameters: scriptExecutionData.inputParameters,
+                            debugMode: scriptExecutionData.debugMode,
                             executionRequestLabels: scriptExecutionData.executionLabels,
 
                         }}
