@@ -60,16 +60,18 @@ export function createUser(user: IUserPost) {
     });
 }
 
-export function updateUser(payload: IUserPostPayload) {
+export function updateUser({ id, username, password, repeatedPassword }: IUserPostPayload) {
     return put<IUserPost>({
         needsAuthentication: true,
         isIesiApi: true,
         url: API_URLS.USER_BY_ID,
         pathParams: {
-            id: payload.id,
+            id,
         },
         body: {
-            username: payload.username,
+            username,
+            password,
+            repeatedPassword,
         },
         contentType: 'application/json',
     });

@@ -22,7 +22,7 @@ import Loader from 'views/common/waiting/Loader';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
-import { triggerCreateUserDetail, triggerDeleteUserRole, triggerUpdateUserDetail } from 'state/entities/users/triggers';
+import { triggerCreateUserDetail, triggerDeleteUserRole } from 'state/entities/users/triggers';
 import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { clone } from 'ramda';
@@ -37,6 +37,7 @@ import TextInput from 'views/common/input/TextInput';
 import DescriptionList from 'views/common/list/DescriptionList';
 import GenericList from 'views/common/list/GenericList';
 import { IListItem, ListColumns } from 'models/list.models';
+import UpdatePasswordDialog from 'views/iam/users/UserDetail/UpdatePasswordDialog';
 import DetailActions from '../DetailActions';
 import EditTeams from './EditTeams';
 import AddRole from './AddRole';
@@ -57,6 +58,7 @@ interface IComponentState {
     isSaveDialogOpen: boolean;
     isConfirmDeleteUserOpen: boolean;
     isSaveTeamDialogOpen: boolean;
+    isUpdatePasswordDialogOpen: boolean;
     isShowPassword: boolean;
     requiredFieldsState: TRequiredFieldsState<IUserPost>;
 }
@@ -93,6 +95,7 @@ const UserDetail = withStyles(styles)(
                 isSaveDialogOpen: false,
                 isConfirmDeleteUserOpen: false,
                 isSaveTeamDialogOpen: false,
+                isUpdatePasswordDialogOpen: false,
                 isShowPassword: false,
                 requiredFieldsState: {
                     username: {
@@ -133,6 +136,7 @@ const UserDetail = withStyles(styles)(
             const {
                 newUserDetail,
                 isSaveDialogOpen,
+                isUpdatePasswordDialogOpen,
                 roleIndexToDelete,
                 teams,
                 selectedTeamIndex,
@@ -161,6 +165,15 @@ const UserDetail = withStyles(styles)(
                         toggleLabel={<Translate msg="users.detail.side.toggle_button" />}
                         goBackTo={ROUTE_KEYS.R_USERS}
                     />
+                    {
+                        isUpdatePasswordDialogOpen && (
+                            <UpdatePasswordDialog
+                                id={(newUserDetail as IUser).id}
+                                username={newUserDetail.username}
+                                onClose={() => this.setState({ isUpdatePasswordDialogOpen: false })}
+                            />
+                        )
+                    }
                     <ConfirmationDialog
                         title={translator('users.detail.main.delete_role_dialog.title')}
                         text={translator({
@@ -221,17 +234,7 @@ const UserDetail = withStyles(styles)(
                                             id="save-user"
                                             variant="contained"
                                             color="secondary"
-                                            onClick={() => {
-                                                triggerUpdateUserDetail({
-                                                    id: (newUserDetail as IUser).id,
-                                                    username: (newUserDetail as IUserPost).username,
-                                                    password: {
-                                                        password: (newUserDetail as IUserPost).password,
-                                                        repeatedPassword: (newUserDetail as IUserPost).repeatedPassword,
-                                                    },
-                                                });
-                                                this.setState({ isSaveDialogOpen: false });
-                                            }}
+                                            onClick={null}
                                         >
                                             <Translate msg="users.detail.save_user_dialog.update" />
                                         </Button>
@@ -341,7 +344,7 @@ const UserDetail = withStyles(styles)(
                                     </>
                                 ) : (
                                     <>
-                                        <Button>
+                                        <Button onClick={() => this.setState({ isUpdatePasswordDialogOpen: true })}>
                                             <Typography>
                                                 <Translate msg="users.detail.side.update_password.button" />
                                             </Typography>
