@@ -37,7 +37,12 @@ import {
     IDatasetImportPayload,
     IFetchDatasetsListPayload,
 } from 'models/state/datasets.model';
-import { IFetchUsersListPayload, IUserByNamePayload, IUserPost } from 'models/state/user.model';
+import {
+    IFetchUsersListPayload, IUserBase,
+    IUserByNamePayload,
+    IUserPasswordPostPayload,
+    IUserPost,
+} from 'models/state/user.model';
 import {
     IFetchTeamsListPayload,
     ITeamAssignUserRolePayload,
@@ -583,7 +588,7 @@ entitiesConfigManager.register({
             api: api.users.updateUser,
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
-            apiInputSelector: ({ extraInput }) => extraInput as IUserPost,
+            apiInputSelector: ({ extraInput }) => extraInput as IUserBase,
         },
     },
 });
@@ -602,6 +607,16 @@ entitiesConfigManager.register({
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
             apiInputSelector: ({ extraInput }) => extraInput as ITeamDeleteUserRole,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.userDetailPassword,
+    operationsConfig: {
+        update: {
+            api: api.users.updatePassword,
+            apiInputSelector: ({ extraInput }) => extraInput as IUserPasswordPostPayload,
         },
     },
 });

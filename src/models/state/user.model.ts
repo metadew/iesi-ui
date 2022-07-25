@@ -48,6 +48,11 @@ export interface IUserPasswordPost {
     repeatedPassword: string;
 }
 
+export interface IUserPasswordPostPayload {
+    password: IUserPasswordPost;
+    id: string;
+}
+
 export interface IUserPostPayload {
     id: string;
     username: string;

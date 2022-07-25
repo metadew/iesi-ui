@@ -32,6 +32,7 @@ const API_URLS = {
     USERS: '/users',
     USER_BY_NAME: '/users/{name}',
     USER_BY_ID: '/users/{id}',
+    USER_BY_ID_PASSWORD: '/users/{id}/password',
     USER_LOGON: '/oauth/token',
     USER_CREATE: '/users/create',
 

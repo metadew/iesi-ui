@@ -22,7 +22,7 @@ import Loader from 'views/common/waiting/Loader';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
-import { triggerCreateUserDetail, triggerDeleteUserRole } from 'state/entities/users/triggers';
+import { triggerCreateUserDetail, triggerDeleteUserRole, triggerUpdateUserDetail } from 'state/entities/users/triggers';
 import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { clone } from 'ramda';
@@ -116,6 +116,7 @@ const UserDetail = withStyles(styles)(
 
             this.updateUserInStateIfNewUserWasLoaded = this.updateUserInStateIfNewUserWasLoaded.bind(this);
             this.navigateToUserAfterCreation = this.navigateToUserAfterCreation.bind(this);
+            this.navigateToUserAfterUpdate = this.navigateToUserAfterUpdate.bind(this);
             this.navigateToUsersAfterDeletion = this.navigateToUsersAfterDeletion.bind(this);
             this.reloadPageAfterRoleAssignment = this.reloadPageAfterRoleAssignment.bind(this);
             this.reloadPageAfterRoleDeletion = this.reloadPageAfterRoleDeletion.bind(this);
@@ -127,6 +128,7 @@ const UserDetail = withStyles(styles)(
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
             this.updateUserInStateIfNewUserWasLoaded(prevProps);
             this.navigateToUserAfterCreation(prevProps);
+            this.navigateToUserAfterUpdate(prevProps);
             this.reloadPageAfterRoleAssignment(prevProps);
             this.reloadPageAfterRoleDeletion(prevProps);
         }
@@ -169,7 +171,6 @@ const UserDetail = withStyles(styles)(
                         isUpdatePasswordDialogOpen && (
                             <UpdatePasswordDialog
                                 id={(newUserDetail as IUser).id}
-                                username={newUserDetail.username}
                                 onClose={() => this.setState({ isUpdatePasswordDialogOpen: false })}
                             />
                         )
@@ -234,7 +235,8 @@ const UserDetail = withStyles(styles)(
                                             id="save-user"
                                             variant="contained"
                                             color="secondary"
-                                            onClick={null}
+                                            onClick={() => triggerUpdateUserDetail(newUserDetail as IUserBase)}
+
                                         >
                                             <Translate msg="users.detail.save_user_dialog.update" />
                                         </Button>
@@ -344,11 +346,17 @@ const UserDetail = withStyles(styles)(
                                     </>
                                 ) : (
                                     <>
-                                        <Button onClick={() => this.setState({ isUpdatePasswordDialogOpen: true })}>
-                                            <Typography>
-                                                <Translate msg="users.detail.side.update_password.button" />
-                                            </Typography>
-                                        </Button>
+                                        {
+                                            checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE) && (
+                                                <Button
+                                                    onClick={() => this.setState({ isUpdatePasswordDialogOpen: true })}
+                                                >
+                                                    <Typography>
+                                                        <Translate msg="users.detail.side.update_password.button" />
+                                                    </Typography>
+                                                </Button>
+                                            )
+                                        }
                                         <DescriptionList
                                             noLineAfterListItem
                                             items={[].concat({
@@ -643,6 +651,21 @@ const UserDetail = withStyles(styles)(
             const { newUserDetail } = this.state;
             const { status } = getAsyncUserDetail(this.props.state).create;
             const { status: prevStatus } = getAsyncUserDetail(prevProps.state).create;
+
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                redirectTo({
+                    routeKey: ROUTE_KEYS.R_USER_DETAIL,
+                    params: {
+                        name: newUserDetail.username,
+                    },
+                });
+            }
+        }
+
+        private navigateToUserAfterUpdate(prevProps: TProps & IObserveProps) {
+            const { newUserDetail } = this.state;
+            const { status } = getAsyncUserDetail(this.props.state).update;
+            const { status: prevStatus } = getAsyncUserDetail(prevProps.state).update;
 
             if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
                 redirectTo({

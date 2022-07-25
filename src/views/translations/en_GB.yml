@@ -93,6 +93,7 @@ flash_messages:
     update: The user has been updated successfully !
     add_role: The role has been assigned to the user
     delete_role: The role has been deleted from the user
+    update_password: The user password has been updated successfully !
     error: 'An error has occured'
   team:
     create: The team has been created successfully !
@@ -792,6 +793,9 @@ users:
       user_repeated_password: Confirm the password
       update_password:
         button: Change password
+        footer:
+          cancel: Cancel
+          update: Update
       teams:
         empty: No Teams
         title: Teams

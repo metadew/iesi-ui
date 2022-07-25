@@ -2,6 +2,7 @@ import { IState } from 'models/state.models';
 import { IUser } from 'models/state/user.model';
 
 export const getAsyncUsersEntity = (state: IState) => state.entities.users;
+export const getAsyncUserPasswordEntity = (state: IState) => state.entities.userDetailPassword;
 
 export const getAsyncUsers = (state: IState) => {
     const usersEntity = getAsyncUsersEntity(state);
