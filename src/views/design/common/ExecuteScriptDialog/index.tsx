@@ -32,7 +32,6 @@ import isSet from '@snipsonian/core/es/is/isSet';
 import { IExecutionRequest } from 'models/state/executionRequests.models';
 import { getAsyncExecutionRequestDetail } from 'state/entities/executionRequests/selectors';
 import { addPollingExecutionRequest } from 'state/ui/actions';
-import { checkUsername } from 'state/auth/selectors';
 
 const useStyles = makeStyles(({ spacing, typography }) => ({
     formControl: {
