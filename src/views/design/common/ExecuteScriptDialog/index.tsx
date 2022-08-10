@@ -391,25 +391,21 @@ function ExecuteScriptDialog({
                         )}
                         <Box marginTop={2} display="flex" alignItems="center" justifyContent="space-between">
                             <Box>
-                                {
-                                    checkUsername(state, 'admin') && (
-                                        <FormControl>
-                                            <FormControlLabel
-                                                control={(
-                                                    <Checkbox
-                                                        onChange={(e) => setFormValues({
-                                                            ...formValues,
-                                                            debugMode: e.target.checked,
-                                                        })}
-                                                        checked={formValues.debugMode}
-                                                        name="checkbox-debug-mode"
-                                                    />
-                                                )}
-                                                label="Debug mode"
+                                <FormControl>
+                                    <FormControlLabel
+                                        control={(
+                                            <Checkbox
+                                                onChange={(e) => setFormValues({
+                                                    ...formValues,
+                                                    debugMode: e.target.checked,
+                                                })}
+                                                checked={formValues.debugMode}
+                                                name="checkbox-debug-mode"
                                             />
-                                        </FormControl>
-                                    )
-                                }
+                                        )}
+                                        label="Debug mode"
+                                    />
+                                </FormControl>
                             </Box>
                             <Button
                                 variant="contained"
