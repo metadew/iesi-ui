@@ -1,4 +1,4 @@
-import React, { useState, ReactText, ChangeEvent } from 'react';
+import React, { useState, ReactText, ChangeEvent, useEffect } from 'react';
 import classnames from 'classnames';
 import {
     Box,
@@ -24,6 +24,7 @@ import { getAsyncActionTypes } from 'state/entities/constants/selectors';
 import { IActionType } from 'models/state/constants.models';
 import { IScriptAction } from 'models/state/scripts.models';
 import Tooltip from 'views/common/tooltips/Tooltip';
+import { triggerFetchActionTypes } from 'state/entities/constants/triggers';
 
 interface IPublicProps {
     onClose: () => void;
@@ -93,6 +94,10 @@ function AddAction({ state, onClose, onAdd }: IObserveProps & IPublicProps) {
         listItems,
         selectedCategory || (categories.length > 0 ? categories[0] : ''),
     );
+
+    useEffect(() => {
+        triggerFetchActionTypes();
+    }, []);
 
     return (
         <Box className={classes.dialog}>
@@ -302,6 +307,9 @@ function AddAction({ state, onClose, onAdd }: IObserveProps & IPublicProps) {
 }
 
 export default observe<IPublicProps>(
-    [StateChangeNotification.I18N_TRANSLATIONS],
+    [
+        StateChangeNotification.I18N_TRANSLATIONS,
+        StateChangeNotification.CONSTANTS_ACTION_TYPES,
+    ],
     AddAction,
 );

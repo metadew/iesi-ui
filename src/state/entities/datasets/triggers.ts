@@ -22,6 +22,7 @@ export const triggerFetchDatasets = (payload: IFetchDatasetsListPayload) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_LIST],
+        itself: triggerFetchDatasets,
     });
 
 export const triggerFetchDatasetDetail = (payload: IDatasetByNamePayload) =>
@@ -33,6 +34,7 @@ export const triggerFetchDatasetDetail = (payload: IDatasetByNamePayload) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_DETAIL],
+        itself: triggerFetchDatasetDetail,
     });
 
 export const triggerExportDatasetDetail = (payload: IDatasetByNamePayload) =>
@@ -42,6 +44,7 @@ export const triggerExportDatasetDetail = (payload: IDatasetByNamePayload) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_DETAIL],
+        itself: triggerExportDatasetDetail,
     });
 
 export const triggerImportDatasetDetail = (payload: IDatasetImportPayload) =>
@@ -72,6 +75,7 @@ export const triggerImportDatasetDetail = (payload: IDatasetImportPayload) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_DETAIL],
+        itself: triggerImportDatasetDetail,
     });
 
 export const triggerCreateDatasetDetail = (payload: IDatasetBase) =>
@@ -96,6 +100,7 @@ export const triggerCreateDatasetDetail = (payload: IDatasetBase) =>
         ),
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_DETAIL],
+        itself: triggerCreateDatasetDetail,
     });
 
 export const triggerUpdateDatasetDetail = (payload: IDataset) =>
@@ -120,6 +125,7 @@ export const triggerUpdateDatasetDetail = (payload: IDataset) =>
             }),
         ),
         notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_DETAIL],
+        itself: triggerUpdateDatasetDetail,
     });
 
 export const triggerFetchDatasetImplementations = (payload: IDatasetImplementationsByUuidPayload) =>
@@ -136,6 +142,7 @@ export const triggerFetchDatasetImplementations = (payload: IDatasetImplementati
             }),
         ),
         notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_IMPLEMENTATIONS],
+        itself: triggerFetchDatasetImplementations,
     });
 
 export const triggerDeleteDatasetDetail = (payload: IDatasetByUuidPayload) => {
@@ -145,5 +152,6 @@ export const triggerDeleteDatasetDetail = (payload: IDatasetByUuidPayload) => {
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_DETAIL],
+        itself: triggerDeleteDatasetDetail,
     });
 };

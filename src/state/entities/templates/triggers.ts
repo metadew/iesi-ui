@@ -17,6 +17,7 @@ export const triggerFetchTemplates = (payload: IFetchTemplatesListPayload) => en
     },
     extraInputSelector: () => payload,
     notificationsToTrigger: [StateChangeNotification.TEMPLATES],
+    itself: triggerFetchTemplates,
 });
 
 export const triggerFetchTemplate = (payload: ITemplateByNameAndVersionPayload) =>
@@ -28,6 +29,7 @@ export const triggerFetchTemplate = (payload: ITemplateByNameAndVersionPayload) 
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.TEMPLATE_DETAIL],
+        itself: triggerFetchTemplate,
     });
 
 export const triggerDeleteTemplateDetail = (payload: ITemplateByNameAndVersionPayload) =>
@@ -37,6 +39,7 @@ export const triggerDeleteTemplateDetail = (payload: ITemplateByNameAndVersionPa
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.TEMPLATE_DETAIL],
+        itself: triggerDeleteTemplateDetail,
     });
 
 export const triggerUpdateTemplateDetail = (payload: ITemplateBase) =>
@@ -77,6 +80,7 @@ export const triggerUpdateTemplateDetail = (payload: ITemplateBase) =>
             }
         },
         notificationsToTrigger: [StateChangeNotification.TEMPLATE_DETAIL],
+        itself: triggerUpdateTemplateDetail,
     });
 
 export const triggerCreateTemplateDetail = (payload: ITemplateBase) =>
@@ -117,4 +121,5 @@ export const triggerCreateTemplateDetail = (payload: ITemplateBase) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.TEMPLATE_DETAIL],
+        itself: triggerCreateTemplateDetail,
     });

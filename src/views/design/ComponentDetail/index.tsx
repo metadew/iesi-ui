@@ -44,6 +44,7 @@ import { getAsyncComponentDetail } from 'state/entities/components/selectors';
 import { getUniqueIdFromComponent } from 'utils/components/componentUtils';
 import DescriptionList from 'views/common/list/DescriptionList';
 import { clone } from 'lodash';
+import { triggerFetchComponentTypes } from 'state/entities/constants/triggers';
 import EditParameter from './EditParameter';
 import EditAttribute from './EditAttribute';
 import DetailActions from './DetailActions';
@@ -75,6 +76,7 @@ interface IComponentState {
     isConfirmDeleteComponentOpen: boolean;
     additionalParameters: IComponentParameter[];
     requiredFieldsState: TRequiredFieldsState<IComponent>;
+    isComponentTypeOptionsOpen: boolean;
 }
 
 interface IColumnNames {
@@ -128,6 +130,7 @@ const ComponentDetail = withStyles(styles)(
                         showError: false,
                     },
                 },
+                isComponentTypeOptionsOpen: false,
             };
 
             // eslint-disable-next-line max-len
@@ -162,7 +165,6 @@ const ComponentDetail = withStyles(styles)(
             } = this.state;
             const { state } = this.props;
             const componentDetailAsyncStatus = getAsyncScriptDetail(state).fetch.status;
-            const componentTypesAsyncStatus = getAsyncComponentTypes(state).fetch.status;
             const deleteStatus = getAsyncComponentDetail(state).remove.status;
             const parameter = this.getEditParameter();
             const attribute = this.getEditAttribute();
@@ -170,10 +172,7 @@ const ComponentDetail = withStyles(styles)(
             return (
                 <>
                     <Loader
-                        show={
-                            componentDetailAsyncStatus === AsyncStatus.Busy
-                            || componentTypesAsyncStatus === AsyncStatus.Busy
-                        }
+                        show={componentDetailAsyncStatus === AsyncStatus.Busy}
                     />
                     <ContentWithSidePanel
                         panel={this.renderComponentDetailPanel()}
@@ -275,28 +274,30 @@ const ComponentDetail = withStyles(styles)(
         }
 
         private renderComponentDetailPanel() {
-            const { newComponentDetail, requiredFieldsState } = this.state;
+            const {
+                newComponentDetail,
+                requiredFieldsState,
+            } = this.state;
             const { state } = this.props;
             const translator = getTranslator(state);
+            const componentTypesAsyncStatus = getAsyncComponentTypes(state).fetch.status;
             const asyncComponentTypes = getAsyncComponentTypes(state);
             const componentTypes = asyncComponentTypes.data || [];
-            const listItems = mapComponentTypeToListItems(componentTypes);
-            const autoCompleteValue = listItems
-                .find((item) => item.data.type === newComponentDetail.type);
+            const autoCompleteValue = componentTypes
+                .find((componentType) => componentType.type === newComponentDetail.type);
             return (
                 <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
                     <Box flex="1 1 auto">
                         <form noValidate autoComplete="off">
                             <Autocomplete
                                 id="combo-box-component-types"
-                                options={listItems}
-                                value={autoCompleteValue || null}
-                                getOptionLabel={(option) => option.data.type}
+                                options={componentTypes}
+                                value={autoCompleteValue
+                                    // eslint-disable-next-line max-len
+                                    || (newComponentDetail.type && { name: null, type: newComponentDetail.type, parameters: null, category: null })
+                                    || null}
+                                getOptionLabel={(option) => option.type}
                                 // disabled={!checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
-                                getOptionDisabled={() => !checkAuthority(
-                                    state,
-                                    SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
-                                )}
                                 renderInput={(params) => (
                                     <TextInput
                                         {...params}
@@ -311,25 +312,33 @@ const ComponentDetail = withStyles(styles)(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
                                             ),
-                                            disableUnderline: true,
+                                            disableUnderline: false,
                                         }}
                                     />
                                 )}
                                 onChange={(
                                     e: React.ChangeEvent<{}>,
-                                    newValue: IListItem<IColumnNames, IListData>,
+                                    newValue: IComponentType,
                                 ) => {
                                     this.updateComponent({
-                                        type: newValue ? newValue.data.type : null,
+                                        type: newValue ? newValue.type : null,
                                         parameters: newValue
                                             ? componentTypes
-                                                .find((item) => item.type === newValue?.data?.type)
+                                                .find((item) => item.type === newValue?.type)
                                                 .parameters?.filter((item) => item.mandatory)
                                                 .map((item) => ({ name: item.name, value: '' }))
                                             : [],
 
                                     });
                                 }}
+                                onOpen={() => {
+                                    triggerFetchComponentTypes();
+                                }}
+                                loading={componentTypesAsyncStatus === AsyncStatus.Busy}
+                                disabled={!checkAuthority(
+                                    state,
+                                    SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
+                                ) || !this.isCreateComponentRoute()}
                                 disableClearable
                             />
                             <TextInput
@@ -810,51 +819,6 @@ function getParametersFromComponentDetails(detail: IComponent, componentType: IC
         canBeDeleted: !parameter.mandatory,
     }));
     return newListItems;
-}
-
-/*
-function getAttributesFromComponentDetails(detail: IComponent) {
-    const attributes = detail
-        ? detail.attributes
-            .map((attribute) => ({
-                environment: attribute.environment,
-                name: attribute.name,
-                value: attribute.value,
-            }))
-        : [];
-    const newListItems: IListItem<IComponentAttribute>[] = attributes.map((atttribute, index) => ({
-        id: index,
-        columns: {
-            name: atttribute.name,
-            value: atttribute.value,
-            environment: atttribute.environment,
-        },
-        data: {
-            name: atttribute.name,
-            value: atttribute.value,
-            environment: atttribute.environment,
-        },
-    }));
-    return newListItems;
-}
-*/
-
-function mapComponentTypeToListItems(items: IComponentType[]) {
-    const listItems = items
-        ? items.map((item) => {
-            const listItem: IListItem<IColumnNames, IListData> = {
-                id: item.type,
-                columns: {
-                    name: item.name,
-                    type: item.type,
-                },
-                data: {
-                    type: item.type,
-                },
-            };
-            return listItem;
-        }) : [];
-    return listItems;
 }
 
 function orderComponentParameters(items: IComponentParameter[], componentType: IComponentType) {

@@ -4,6 +4,8 @@ import { createObservableStateAction } from '@snipsonian/observable-state/es/act
 import {
     TNrOfParentNotificationLevelsToTrigger,
 } from '@snipsonian/observable-state/es/observer/extendNotificationsToTrigger';
+import { IState } from 'models/state.models';
+import { api as staticApi } from 'api';
 import {
     AsyncOperation,
     IAsyncEntity,
@@ -60,6 +62,7 @@ interface ICreateAsyncEntityActionPropsBase
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onFail: (props: { dispatch: Dispatch<Action>; error: any; currentEntity?: unknown }) => void;
     bulk?: boolean;
+    itself?: Function;
 }
 
 interface ICreateFetchAsyncEntityActionProps
@@ -118,6 +121,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
             onFail,
             onSuccess,
             bulk,
+            itself,
             // eslint-disable-next-line max-len
         }: ICreateUpdateAsyncEntityActionProps<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse>) =>
             createAsyncEntityActionBase({
@@ -135,6 +139,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                 onFail,
                 onSuccess,
                 bulk,
+                itself,
             }),
 
         updateAsyncEntityAction: <ExtraInput extends object, ApiInput, ApiResult, ApiResponse = ApiResult>({
@@ -150,6 +155,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
             onFail,
             onSuccess,
             bulk,
+            itself,
             // eslint-disable-next-line max-len
         }: ICreateUpdateAsyncEntityActionProps<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse>) =>
             createAsyncEntityActionBase({
@@ -167,6 +173,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                 onFail,
                 onSuccess,
                 bulk,
+                itself,
             }),
 
         removeAsyncEntityAction: <ExtraInput extends object, ApiInput, ApiResult, ApiResponse = ApiResult>({
@@ -180,6 +187,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
             onFail,
             onSuccess,
             bulk,
+            itself,
             // eslint-disable-next-line max-len
         }: ICreateRemoveAsyncEntityActionProps<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse>) =>
             createAsyncEntityActionBase({
@@ -197,6 +205,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                 onFail,
                 onSuccess,
                 bulk,
+                itself,
             }),
 
         // TODO (but e.g. without always storing the response on success in the data)
@@ -212,6 +221,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
             dispatch,
             onFail,
             onSuccess,
+            itself,
             // eslint-disable-next-line max-len
         }: ICreateFetchAsyncEntityActionProps<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse>) =>
             createAsyncEntityActionBase({
@@ -228,6 +238,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                 dispatch,
                 onFail,
                 onSuccess,
+                itself,
             }),
 
         resetAsyncEntityAction: ({
@@ -313,6 +324,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
         onSuccess,
         onFail,
         bulk,
+        itself,
         // eslint-disable-next-line max-len
     }: ICreateAsyncEntityActionPropsBase<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse> & {
         operation: AsyncOperation;
@@ -337,6 +349,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                                 .triggerWithoutDataReset(entity);
                     });
 
+                    console.log('MEC');
                     const apiInput = isSet(apiInputSelector)
                         ? apiInputSelector({ state: getState(), extraInput })
                         : null;
@@ -379,6 +392,27 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                         });
                     }
                 } catch (error) {
+                    if (error.status === 401
+                        && error.response.error_description.includes('Access token expired')
+                        && typeof itself === 'function') {
+                        // Refresh the token
+                        const { refreshToken } = (getState() as unknown as IState).auth;
+                        const response = await staticApi.auth.refreshToken(refreshToken);
+                        setState({
+                            newState: (currentState) => ({
+                                ...(currentState as unknown as IState),
+                                auth: {
+                                    ...(currentState as unknown as IState).auth,
+                                    refreshToken: response.refresh_token,
+                                    accessToken: response.access_token,
+                                },
+                            }) as unknown as State,
+                        });
+
+                        itself(extraInput);
+                        return;
+                    }
+
                     if (typeof onFail === 'function') {
                         onFail({ dispatch, error });
                     }

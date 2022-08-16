@@ -791,7 +791,6 @@ function getSortedListItemsFromScriptDetail(detail: IScript) {
 export default observe([
     StateChangeNotification.I18N_TRANSLATIONS,
     StateChangeNotification.DESIGN_SCRIPTS_DETAIL,
-    StateChangeNotification.CONSTANTS_ACTION_TYPES,
     // This is a typign mismatch, but does not cause an actual problem
     // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
     // @ts-ignore

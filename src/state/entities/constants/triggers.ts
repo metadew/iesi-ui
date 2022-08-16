@@ -3,6 +3,7 @@ import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { StateChangeNotification } from 'models/state.models';
 
 export const triggerFetchActionTypes = () => entitiesStateManager.triggerAsyncEntityFetch<{}>({
+    itself: triggerFetchActionTypes,
     asyncEntityToFetch: {
         asyncEntityKey: ASYNC_ENTITY_KEYS.actionTypes,
         refreshMode: 'always',
@@ -20,6 +21,7 @@ export const triggerFetchConnectionTypes = () => entitiesStateManager.triggerAsy
     },
     extraInputSelector: () => ({}),
     notificationsToTrigger: [StateChangeNotification.CONSTANTS_CONNECTION_TYPES],
+    itself: triggerFetchConnectionTypes,
 });
 
 export const triggerFetchComponentTypes = () => entitiesStateManager.triggerAsyncEntityFetch<{}>({
@@ -30,4 +32,5 @@ export const triggerFetchComponentTypes = () => entitiesStateManager.triggerAsyn
     },
     extraInputSelector: () => ({}),
     notificationsToTrigger: [StateChangeNotification.CONSTANTS_COMPONENT_TYPES],
+    itself: triggerFetchComponentTypes,
 });

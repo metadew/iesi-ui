@@ -21,6 +21,7 @@ export const triggerFetchScripts = (payload: IFetchScriptsListPayload) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_LIST],
+        itself: triggerFetchScripts,
     });
 
 export const triggerFetchScriptDetail = (payload: IScriptByNameAndVersionPayload, redirectTo404?: boolean) =>
@@ -39,6 +40,7 @@ export const triggerFetchScriptDetail = (payload: IScriptByNameAndVersionPayload
             }
         },
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_DETAIL],
+        itself: triggerFetchScriptDetail,
     });
 
 export const triggerUpdateScriptDetail = (payload: IScriptBase) =>
@@ -52,10 +54,12 @@ export const triggerUpdateScriptDetail = (payload: IScriptBase) =>
             translationKey: 'scripts.detail.error.save',
             type: 'error',
         })),
+        itself: triggerUpdateScriptDetail,
     });
 
 export const triggerCreateScriptDetail = (payload: IScriptBase | IScriptImport) =>
     entitiesStateManager.triggerAsyncEntityCreate<{}>({
+        itself: triggerCreateScriptDetail,
         asyncEntityToCreate: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetail,
         },
@@ -102,6 +106,7 @@ export const triggerCreateScriptDetail = (payload: IScriptBase | IScriptImport) 
 
 export const triggerDeleteScriptDetail = (payload: IScriptByNameAndVersionPayload) =>
     entitiesStateManager.triggerAsyncEntityRemove<{}>({
+        itself: triggerDeleteScriptDetail,
         asyncEntityToRemove: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetail,
         },
@@ -111,6 +116,7 @@ export const triggerDeleteScriptDetail = (payload: IScriptByNameAndVersionPayloa
 
 export const triggerExportScriptDetail = (payload: IScriptByNameAndVersionPayload) =>
     entitiesStateManager.triggerAsyncEntityFetch<{}>({
+        itself: triggerExportScriptDetail,
         asyncEntityToFetch: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetailExport,
         },
@@ -126,6 +132,7 @@ export const triggerResetAsyncScriptDetail = ({
     operation: AsyncOperation;
 }) =>
     entitiesStateManager.triggerAsyncEntityReset({
+        itself: triggerResetAsyncScriptDetail,
         asyncEntityToReset: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetail,
             resetDataOnTrigger,
@@ -137,6 +144,7 @@ export const triggerResetAsyncScriptDetail = ({
 
 export const triggerImportScriptDetail = (payload: IImportPayload) =>
     entitiesStateManager.triggerAsyncEntityCreate<{}>({
+        itself: triggerImportScriptDetail,
         asyncEntityToCreate: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetailImport,
         },

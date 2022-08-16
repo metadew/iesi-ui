@@ -65,7 +65,7 @@ interface IComponentState {
 
 const defaultSortedColumn: ISortedColumn<ISecurityGroupColumnNames> = {
     name: 'name',
-    sortOrder: SortOrder.Descending,
+    sortOrder: SortOrder.Ascending,
     sortType: SortType.String,
 };
 

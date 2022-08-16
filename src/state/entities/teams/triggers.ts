@@ -13,6 +13,7 @@ export const triggerFetchTeams = (filter: IFetchTeamsListPayload) => entitiesSta
     },
     extraInputSelector: () => filter,
     notificationsToTrigger: [StateChangeNotification.IAM_TEAMS_LIST],
+    itself: triggerFetchTeams,
 });
 
 export const triggerFetchTeamDetail = (payload: ITeamByNamePayload) =>
@@ -24,6 +25,7 @@ export const triggerFetchTeamDetail = (payload: ITeamByNamePayload) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.IAM_TEAMS_DETAIL],
+        itself: triggerFetchTeamDetail,
     });
 
 export const triggerCreateTeamDetail = (payload: ITeamPost) =>
@@ -55,6 +57,7 @@ export const triggerCreateTeamDetail = (payload: ITeamPost) =>
             }
         },
         notificationsToTrigger: [StateChangeNotification.IAM_TEAMS_DETAIL],
+        itself: triggerCreateTeamDetail,
     });
 
 export const triggerDeleteTeamDetail = (payload: ITeamByIdPayload) =>
@@ -86,6 +89,7 @@ export const triggerDeleteTeamDetail = (payload: ITeamByIdPayload) =>
             }
         },
         notificationsToTrigger: [StateChangeNotification.IAM_TEAMS_DETAIL],
+        itself: triggerDeleteTeamDetail,
     });
 
 export const triggerAssignTeamToSecurityGroup = (payload: ISecurityGroupAssignTeamPayload) =>
@@ -118,6 +122,7 @@ export const triggerAssignTeamToSecurityGroup = (payload: ISecurityGroupAssignTe
             }
         },
         notificationsToTrigger: [StateChangeNotification.IAM_TEAM_DETAIL_SECURITY_GROUP],
+        itself: triggerAssignTeamToSecurityGroup,
     });
 
 export const triggerUnassignTeamToSecurityGroup = (payload: ISecurityGroupAssignTeamPayload) =>
@@ -149,4 +154,5 @@ export const triggerUnassignTeamToSecurityGroup = (payload: ISecurityGroupAssign
             }
         },
         notificationsToTrigger: [StateChangeNotification.IAM_TEAM_DETAIL_SECURITY_GROUP],
+        itself: triggerUnassignTeamToSecurityGroup,
     });

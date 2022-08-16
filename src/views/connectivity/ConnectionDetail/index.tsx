@@ -43,6 +43,7 @@ import { TRequiredFieldsState } from 'models/form.models';
 import GenericList from 'views/common/list/GenericList';
 import { Delete, Edit } from '@material-ui/icons';
 import DescriptionList from 'views/common/list/DescriptionList';
+import { triggerFetchConnectionTypes } from 'state/entities/constants/triggers';
 import EditEnvironments from './EditEnvironments';
 import EditParameter from '../EditParameter';
 import DetailActions from '../DetailActions';
@@ -138,17 +139,13 @@ const ConnectionDetail = withStyles(styles)(
             } = this.state;
             const { state } = this.props;
             const connectionDetailAsyncStatus = getAsyncConnectionDetail(state).fetch.status;
-            const connectionTypeAsyncStatus = getAsyncConnectionTypes(state).fetch.status;
             const deleteStatus = getAsyncConnectionDetail(state).remove.status;
             const parameter = this.getEditParameter();
             const translator = getTranslator(state);
             return (
                 <>
                     <Loader
-                        show={
-                            connectionDetailAsyncStatus === AsyncStatus.Busy
-                            || connectionTypeAsyncStatus === AsyncStatus.Busy
-                        }
+                        show={connectionDetailAsyncStatus === AsyncStatus.Busy}
                     />
                     <ContentWithSidePanel
                         panel={this.renderConnectionDetailPanel()}
@@ -224,6 +221,7 @@ const ConnectionDetail = withStyles(styles)(
             } = this.state;
             const { state } = this.props;
             const translator = getTranslator(state);
+            const connectionTypeAsyncStatus = getAsyncConnectionTypes(state).fetch.status;
             const connectionTypes = getAsyncConnectionTypes(state).data || [];
             const connectionTypeListItems = mapConnectionTypeToListItems(connectionTypes);
             const autoComplete = connectionTypeListItems
@@ -237,11 +235,6 @@ const ConnectionDetail = withStyles(styles)(
                                 options={connectionTypeListItems}
                                 value={autoComplete || null}
                                 getOptionLabel={(option) => option.data.type}
-                                getOptionDisabled={() =>
-                                    !checkAuthority(
-                                        state,
-                                        SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
-                                    )}
                                 renderInput={(params) => (
                                     <TextInput
                                         {...params}
@@ -281,6 +274,12 @@ const ConnectionDetail = withStyles(styles)(
                                             )),
                                     });
                                 }}
+                                onOpen={() => triggerFetchConnectionTypes()}
+                                loading={connectionTypeAsyncStatus === AsyncStatus.Busy}
+                                disabled={!checkAuthority(
+                                    state,
+                                    SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
+                                ) || !this.isCreateConnectionRoute()}
                             />
                             <TextInput
                                 id="connection-name"
