@@ -126,7 +126,7 @@ interface IScriptState {
 
 const defaultSortedColumn: ISortedColumn<IColumnNames> = {
     name: 'name',
-    sortOrder: SortOrder.Descending,
+    sortOrder: SortOrder.Ascending,
     sortType: SortType.String,
 };
 

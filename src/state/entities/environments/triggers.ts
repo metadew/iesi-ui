@@ -17,6 +17,7 @@ export const triggerFetchEnvironments = (payload: IFetchEnvironmentsListPayload)
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.ENVIRONMENTS],
+        itself: triggerFetchEnvironments,
     });
 
 export const triggerFetchEnvironment = (payload: IEnvironmentByNamePayload) =>
@@ -28,6 +29,7 @@ export const triggerFetchEnvironment = (payload: IEnvironmentByNamePayload) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.ENVIRONMENT_DETAIL],
+        itself: triggerFetchEnvironment,
     });
 
 export const triggerDeleteEnvironmentDetail = (payload: IEnvironmentByNamePayload) =>
@@ -37,6 +39,7 @@ export const triggerDeleteEnvironmentDetail = (payload: IEnvironmentByNamePayloa
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.ENVIRONMENT_DETAIL],
+        itself: triggerDeleteEnvironmentDetail,
     });
 
 export const triggerUpdateEnvironmentDetail = (payload: IEnvironment) =>
@@ -61,6 +64,7 @@ export const triggerUpdateEnvironmentDetail = (payload: IEnvironment) =>
             }),
         ),
         notificationsToTrigger: [StateChangeNotification.ENVIRONMENT_DETAIL],
+        itself: triggerUpdateEnvironmentDetail,
     });
 
 export const triggerCreateEnvironmentDetail = (payload: IEnvironment) =>
@@ -85,4 +89,5 @@ export const triggerCreateEnvironmentDetail = (payload: IEnvironment) =>
         ),
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.ENVIRONMENT_DETAIL],
+        itself: triggerCreateEnvironmentDetail,
     });

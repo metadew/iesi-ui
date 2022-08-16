@@ -18,6 +18,7 @@ export const triggerFetchExecutionRequests = (payload: IFetchExecutionRequestLis
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.EXECUTION_REQUESTS_LIST],
+        itself: triggerFetchExecutionRequests,
     });
 
 export const triggerFetchExecutionRequestDetail = (payload: IExecutionRequestByIdPayload) =>
@@ -29,6 +30,7 @@ export const triggerFetchExecutionRequestDetail = (payload: IExecutionRequestByI
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.EXECUTION_REQUESTS_DETAIL],
+        itself: triggerFetchExecutionRequestDetail,
     });
 
 export const triggerCreateExecutionRequest = (payload: ICreateExecutionRequestPayload) =>
@@ -67,6 +69,7 @@ export const triggerCreateExecutionRequest = (payload: ICreateExecutionRequestPa
             }
         },
         notificationsToTrigger: [StateChangeNotification.EXECUTION_REQUESTS_CREATE],
+        itself: triggerCreateExecutionRequest,
     });
 
 export const triggerResetAsyncExecutionRequest = ({
@@ -84,4 +87,5 @@ export const triggerResetAsyncExecutionRequest = ({
         extraInputSelector: () => ({}),
         notificationsToTrigger: [StateChangeNotification.EXECUTION_REQUESTS_CREATE],
         operation,
+        itself: triggerResetAsyncExecutionRequest,
     });

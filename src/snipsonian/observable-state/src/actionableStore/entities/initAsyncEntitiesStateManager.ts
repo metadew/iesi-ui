@@ -48,6 +48,7 @@ export default function initAsyncEntitiesStateManager
             onSuccess,
             onFail,
             bulk,
+            itself,
         }: ITriggerAsyncEntityCreateProps<State, ExtraInput, StateChangeNotificationKey>): boolean {
             const { asyncEntityKey, updateDataOnSuccess } = asyncEntityToCreate;
             const operation = AsyncOperation.create;
@@ -75,6 +76,7 @@ export default function initAsyncEntitiesStateManager
                 onSuccess,
                 onFail,
                 bulk,
+                itself,
             }));
 
             return true;
@@ -88,6 +90,7 @@ export default function initAsyncEntitiesStateManager
             onSuccess,
             onFail,
             bulk,
+            itself,
         }: ITriggerAsyncEntityUpdateProps<State, ExtraInput, StateChangeNotificationKey>): boolean {
             const { asyncEntityKey, updateDataOnSuccess } = asyncEntityToUpdate;
             const operation = AsyncOperation.update;
@@ -116,6 +119,7 @@ export default function initAsyncEntitiesStateManager
                 onSuccess,
                 onFail,
                 bulk,
+                itself,
             }));
 
             return true;
@@ -129,6 +133,7 @@ export default function initAsyncEntitiesStateManager
             onSuccess,
             onFail,
             bulk,
+            itself,
         }: ITriggerAsyncEntityRemoveProps<State, ExtraInput, StateChangeNotificationKey>): boolean {
             const { asyncEntityKey } = asyncEntityToRemove;
             const operation = AsyncOperation.remove;
@@ -156,6 +161,7 @@ export default function initAsyncEntitiesStateManager
                 onSuccess,
                 onFail,
                 bulk,
+                itself,
             }));
 
             return true;
@@ -168,6 +174,7 @@ export default function initAsyncEntitiesStateManager
             nrOfParentNotificationLevelsToTrigger,
             onSuccess,
             onFail,
+            itself,
         }: ITriggerAsyncEntityFetchProps<State, ExtraInput, StateChangeNotificationKey>): boolean {
             const { asyncEntityKey, resetDataOnTrigger } = asyncEntityToFetch;
             const operation = AsyncOperation.fetch;
@@ -199,6 +206,7 @@ export default function initAsyncEntitiesStateManager
                 dispatch: store.dispatch,
                 onSuccess,
                 onFail,
+                itself,
             }));
 
             return true;

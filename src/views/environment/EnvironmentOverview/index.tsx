@@ -77,7 +77,7 @@ const sortActions: SortActions<Partial<IEnvironmentColumnNamesBase>> = {
 
 const defaultSortedColumn: ISortedColumn<IEnvironmentColumnNamesBase> = {
     name: 'name',
-    sortOrder: SortOrder.Descending,
+    sortOrder: SortOrder.Ascending,
     sortType: SortType.String,
 };
 
