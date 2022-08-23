@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
-    Button,
     Box,
-    makeStyles,
-    Select,
-    MenuItem,
-    FormControl,
-    InputLabel,
+    Button,
     ButtonGroup,
+    FormControl,
+    FormHelperText,
+    InputLabel,
+    makeStyles,
+    MenuItem,
+    Select,
     Theme,
     Typography,
-    FormHelperText,
 } from '@material-ui/core';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -20,7 +20,6 @@ import { IConnectionEnvironment } from 'models/state/connections.model';
 import { getAsyncEnvironments, getAsyncEnvironmentsEntity } from 'state/entities/environments/selectors';
 import Loader from 'views/common/waiting/Loader';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
-import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { StateChangeNotification } from 'models/state.models';
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
@@ -84,18 +83,6 @@ function EditEnvironmentsDialog({
     });
     const environmentsEntity = getAsyncEnvironmentsEntity(state);
     const environmentsAsync = getAsyncEnvironments(state);
-
-    // Trigger Fetch envs on open dialog
-    useEffect(() => {
-        if (open) {
-            triggerFetchEnvironments({
-                sort: 'name, asc',
-            });
-        } else {
-            // Reset form & async status
-        }
-        return () => { };
-    }, [open]);
 
     const handleSubmit = () => {
         const { passed: passedRequired, requiredFieldsState: requireFields } = requiredFieldsCheck({

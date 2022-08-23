@@ -1,23 +1,23 @@
 import React from 'react';
 import {
     Box,
+    Button,
+    Collapse,
+    createStyles,
+    darken,
+    Theme,
+    Typography,
     WithStyles,
     withStyles,
-    createStyles,
-    Collapse,
-    Typography,
-    Button,
-    Theme,
-    darken,
 } from '@material-ui/core';
 import { THEME_COLORS } from 'config/themes/colors';
 import { Delete, Edit } from '@material-ui/icons';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { IComponent, IComponentAttribute, IComponentParameter } from 'models/state/components.model';
 import {
-    triggerUpdateComponentDetail,
     triggerCreateComponentDetail,
     triggerDeleteComponentDetail,
+    triggerUpdateComponentDetail,
 } from 'state/entities/components/triggers';
 import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
@@ -44,7 +44,6 @@ import { getAsyncComponentDetail } from 'state/entities/components/selectors';
 import { getUniqueIdFromComponent } from 'utils/components/componentUtils';
 import DescriptionList from 'views/common/list/DescriptionList';
 import { clone } from 'lodash';
-import { triggerFetchComponentTypes } from 'state/entities/constants/triggers';
 import EditParameter from './EditParameter';
 import EditAttribute from './EditAttribute';
 import DetailActions from './DetailActions';
@@ -165,6 +164,7 @@ const ComponentDetail = withStyles(styles)(
             } = this.state;
             const { state } = this.props;
             const componentDetailAsyncStatus = getAsyncScriptDetail(state).fetch.status;
+            const componentTypesAsyncStatus = getAsyncComponentTypes(state).fetch.status;
             const deleteStatus = getAsyncComponentDetail(state).remove.status;
             const parameter = this.getEditParameter();
             const attribute = this.getEditAttribute();
@@ -172,7 +172,8 @@ const ComponentDetail = withStyles(styles)(
             return (
                 <>
                     <Loader
-                        show={componentDetailAsyncStatus === AsyncStatus.Busy}
+                        show={componentDetailAsyncStatus === AsyncStatus.Busy
+                            || componentTypesAsyncStatus === AsyncStatus.Busy}
                     />
                     <ContentWithSidePanel
                         panel={this.renderComponentDetailPanel()}
@@ -331,9 +332,6 @@ const ComponentDetail = withStyles(styles)(
 
                                     });
                                 }}
-                                onOpen={() => {
-                                    triggerFetchComponentTypes();
-                                }}
                                 loading={componentTypesAsyncStatus === AsyncStatus.Busy}
                                 disabled={!checkAuthority(
                                     state,
@@ -473,23 +471,6 @@ const ComponentDetail = withStyles(styles)(
                     fixedWidth: '60%',
                 },
             };
-
-            /*
-            const attributeColumns: ListColumns<IComponentAttribute> = {
-                name: {
-                    label: <Translate msg="components.detail.main.list.labels.name" />,
-                    fixedWidth: '50%',
-                },
-                value: {
-                    label: <Translate msg="components.detail.main.list.labels.value" />,
-                    fixedWidth: '20%',
-                },
-                environment: {
-                    label: <Translate msg="components.detail.main.list.labels.environment" />,
-                    fixedWidth: '30%',
-                },
-            };
-            */
 
             if (!hasParameters) {
                 return (

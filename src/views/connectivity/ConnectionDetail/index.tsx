@@ -17,10 +17,9 @@ import { getAsyncConnectionDetail } from 'state/entities/connections/selectors';
 import { StateChangeNotification } from 'models/state.models';
 import { getUniqueIdFromConnection } from 'utils/connections/connectionUtils';
 import { clone } from 'lodash';
-import Loader from 'views/common/waiting/Loader';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { getAsyncConnectionTypes } from 'state/entities/constants/selectors';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel';
 import { getRouteKeyByPath, redirectTo, ROUTE_KEYS } from 'views/routes';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -43,7 +42,8 @@ import { TRequiredFieldsState } from 'models/form.models';
 import GenericList from 'views/common/list/GenericList';
 import { Delete, Edit } from '@material-ui/icons';
 import DescriptionList from 'views/common/list/DescriptionList';
-import { triggerFetchConnectionTypes } from 'state/entities/constants/triggers';
+import Loader from 'views/common/waiting/Loader';
+import { getAsyncEnvironments } from 'state/entities/environments/selectors';
 import EditEnvironments from './EditEnvironments';
 import EditParameter from '../EditParameter';
 import DetailActions from '../DetailActions';
@@ -131,6 +131,7 @@ const ConnectionDetail = withStyles(styles)(
         }
 
         public render() {
+            console.log('MEC');
             const {
                 newConnectionDetail,
                 isAddingParameter,
@@ -138,14 +139,19 @@ const ConnectionDetail = withStyles(styles)(
                 isSaveDialogOpen,
             } = this.state;
             const { state } = this.props;
-            const connectionDetailAsyncStatus = getAsyncConnectionDetail(state).fetch.status;
             const deleteStatus = getAsyncConnectionDetail(state).remove.status;
+            const connectionStatus = getAsyncConnectionDetail(state).fetch.status;
+            const connectionTypeStatus = getAsyncConnectionTypes(state).fetch.status;
+            const environmentStatus = getAsyncEnvironments(state).fetch.status;
             const parameter = this.getEditParameter();
             const translator = getTranslator(state);
             return (
                 <>
-                    <Loader
-                        show={connectionDetailAsyncStatus === AsyncStatus.Busy}
+                    <Loader show={
+                        connectionStatus === AsyncStatus.Busy
+                        || connectionTypeStatus === AsyncStatus.Busy
+                        || environmentStatus === AsyncStatus.Busy
+                    }
                     />
                     <ContentWithSidePanel
                         panel={this.renderConnectionDetailPanel()}
@@ -274,7 +280,6 @@ const ConnectionDetail = withStyles(styles)(
                                             )),
                                     });
                                 }}
-                                onOpen={() => triggerFetchConnectionTypes()}
                                 loading={connectionTypeAsyncStatus === AsyncStatus.Busy}
                                 disabled={!checkAuthority(
                                     state,
@@ -787,4 +792,5 @@ function orderEnvironments(
 export default observe([
     StateChangeNotification.CONNECTIVITY_CONNECTION_DETAIL,
     StateChangeNotification.CONSTANTS_CONNECTION_TYPES,
+    StateChangeNotification.ENVIRONMENTS,
 ], withRouter(ConnectionDetail));

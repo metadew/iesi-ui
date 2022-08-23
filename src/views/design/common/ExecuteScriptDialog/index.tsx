@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
     Box,
     Button,
@@ -25,7 +25,6 @@ import entitiesStateManager from 'state/entities/entitiesStateManager';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import { getAsyncEnvironments } from 'state/entities/environments/selectors';
-import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { ILabel, IParameter } from 'models/state/iesiGeneric.models';
 import OrderedList from 'views/common/list/OrderedList';
 import isSet from '@snipsonian/core/es/is/isSet';
@@ -104,16 +103,6 @@ function ExecuteScriptDialog({
     const executionRequestDetailAsyncInfo = entitiesStateManager.getAsyncEntity({
         asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequestDetail,
     }).fetch;
-
-    // Trigger Fetch envs on open dialog
-    useEffect(() => {
-        if (environmentsAsyncInfo.status === AsyncStatus.Initial) {
-            triggerFetchEnvironments({
-                sort: 'name,asc',
-            });
-        }
-        return () => { };
-    }, [environmentsAsyncInfo]);
 
     return (
         <ClosableDialog

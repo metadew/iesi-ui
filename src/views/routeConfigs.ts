@@ -2,11 +2,6 @@ import React from 'react';
 import { IRoute } from 'models/router.models';
 import { triggerFetchScriptDetail } from 'state/entities/scripts/triggers';
 import { triggerFetchExecutionRequestDetail } from 'state/entities/executionRequests/triggers';
-import {
-    triggerFetchActionTypes,
-    triggerFetchComponentTypes,
-    triggerFetchConnectionTypes,
-} from 'state/entities/constants/triggers';
 import { triggerFetchComponentDetail } from 'state/entities/components/triggers';
 import { triggerFetchConnectionDetail } from 'state/entities/connections/triggers';
 import { triggerFetchDatasetDetail } from 'state/entities/datasets/triggers';
@@ -73,9 +68,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             routeKey: ROUTE_KEYS.R_SCRIPT_NEW,
             path: '/new',
             component: ScriptDetail as React.ComponentType<unknown>,
-            executeOnRoute: [{
-                execute: triggerFetchActionTypes,
-            }],
+            executeOnRoute: [],
         },
         {
             routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
@@ -290,11 +283,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     path: '/openapi',
     template: OpenAPITemplate,
     component: OpenAPI,
-    executeOnRoute: [{
-        execute: () => triggerFetchConnectionTypes(),
-    }, {
-        execute: () => triggerFetchComponentTypes(),
-    }],
+    executeOnRoute: [],
 }, {
     routeKey: ROUTE_KEYS.R_NOT_FOUND,
     path: '/not-found',
