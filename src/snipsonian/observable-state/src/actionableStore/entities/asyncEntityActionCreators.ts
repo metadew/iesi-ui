@@ -4,7 +4,15 @@ import { createObservableStateAction } from '@snipsonian/observable-state/es/act
 import {
     TNrOfParentNotificationLevelsToTrigger,
 } from '@snipsonian/observable-state/es/observer/extendNotificationsToTrigger';
+import { IState } from 'models/state.models';
 import { api as staticApi } from 'api';
+import {
+    AsyncOperation,
+    IAsyncEntity,
+    TEntityKey,
+    IEntitiesInitialState,
+    IWithKeyIndex,
+} from './types';
 
 // eslint-disable-next-line max-len
 import Cookie from 'js-cookie';
