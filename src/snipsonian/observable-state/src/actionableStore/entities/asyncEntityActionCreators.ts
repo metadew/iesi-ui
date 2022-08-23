@@ -1,11 +1,14 @@
 import isSet from '@snipsonian/core/es/is/isSet';
-import { IObservableStateAction, Dispatch, Action } from '@snipsonian/observable-state/es/actionableStore/types';
+import { Action, Dispatch, IObservableStateAction } from '@snipsonian/observable-state/es/actionableStore/types';
 import { createObservableStateAction } from '@snipsonian/observable-state/es/actionableStore/actionCreators';
 import {
     TNrOfParentNotificationLevelsToTrigger,
 } from '@snipsonian/observable-state/es/observer/extendNotificationsToTrigger';
-import { IState } from 'models/state.models';
 import { api as staticApi } from 'api';
+// eslint-disable-next-line max-len
+import Cookie from 'js-cookie';
+import cryptoJS from 'crypto-js';
+import { triggerLogon } from 'state/auth/actions';
 import {
     AsyncOperation,
     IAsyncEntity,
@@ -13,9 +16,7 @@ import {
     IEntitiesInitialState,
     IWithKeyIndex,
 } from './types';
-
-// eslint-disable-next-line max-len
-import { asyncEntityFetch, asyncEntityCreate, asyncEntityRemove, asyncEntityUpdate } from './asyncEntityUpdaters';
+import { asyncEntityCreate, asyncEntityFetch, asyncEntityRemove, asyncEntityUpdate } from './asyncEntityUpdaters';
 
 export interface IAsyncEntityActionCreators<ActionType, State, ExtraProcessInput, StateChangeNotificationKey> {
     createAsyncEntityAction<ExtraInput extends object, ApiInput, ApiResult, ApiResponse = ApiResult>(
@@ -349,7 +350,6 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                                 .triggerWithoutDataReset(entity);
                     });
 
-                    console.log('MEC');
                     const apiInput = isSet(apiInputSelector)
                         ? apiInputSelector({ state: getState(), extraInput })
                         : null;
@@ -396,18 +396,15 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                         && error.response.error_description.includes('Access token expired')
                         && typeof itself === 'function') {
                         // Refresh the token
-                        const { refreshToken } = (getState() as unknown as IState).auth;
-                        const response = await staticApi.auth.refreshToken(refreshToken);
-                        setState({
-                            newState: (currentState) => ({
-                                ...(currentState as unknown as IState),
-                                auth: {
-                                    ...(currentState as unknown as IState).auth,
-                                    refreshToken: response.refresh_token,
-                                    accessToken: response.access_token,
-                                },
-                            }) as unknown as State,
-                        });
+                        const encryptedCookie = Cookie.get('app_session');
+                        const decryptedCookieData = cryptoJS.AES.decrypt(
+                            encryptedCookie,
+                            process.env.REACT_APP_COOKIE_SECRET_KEY,
+                        );
+                        const decryptedCookie = JSON.parse(decryptedCookieData.toString(cryptoJS.enc.Utf8));
+
+                        const response = await staticApi.auth.refreshToken(decryptedCookie.refresh_token);
+                        dispatch(triggerLogon(response));
 
                         itself(extraInput);
                         return;
