@@ -1,15 +1,7 @@
 import React from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { IObserveProps, observe } from 'views/observe';
-import {
-    Box,
-    Button,
-    Collapse,
-    createStyles,
-    Typography,
-    WithStyles,
-    withStyles,
-} from '@material-ui/core';
+import { Box, Button, Collapse, createStyles, Typography, WithStyles, withStyles } from '@material-ui/core';
 import { Add, Edit, Visibility } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import {

@@ -2,14 +2,10 @@
 import isSet from '@snipsonian/core/es/is/isSet';
 import { ONE_SECOND_IN_MILLIS } from '@snipsonian/core/es/time/periodsInMillis';
 import consoleGroupLogger from '@snipsonian/browser/es/logging/consoleGroupLogger';
-import { IGetRequestConfig, IBodyRequestConfig } from '@snipsonian/axios/es/request/types';
+import { IBodyRequestConfig, IGetRequestConfig } from '@snipsonian/axios/es/request/types';
 import getRequestWrapper from '@snipsonian/axios/es/request/getRequestWrapper';
 import getApiLogger from '@snipsonian/axios/es/logging/getApiLogger';
-import {
-    ITraceableApiError,
-    IErrorHandler,
-    ICustomApiConfig,
-} from 'models/api.models';
+import { ICustomApiConfig, IErrorHandler, ITraceableApiError } from 'models/api.models';
 import { DEFAULT_TIMEOUT_IN_MILLIS } from 'config/api.config';
 import { isApiLoggingEnabled } from 'config/develop.config';
 // eslint-disable-next-line import/no-cycle

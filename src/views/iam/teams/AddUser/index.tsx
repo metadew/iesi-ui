@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-    makeStyles,
-    Typography,
     Box,
-    Paper,
-    ButtonGroup,
     Button,
+    ButtonGroup,
     darken,
     FormControl,
+    makeStyles,
+    Paper,
     TextField,
+    Typography,
 } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { THEME_COLORS } from 'config/themes/colors';

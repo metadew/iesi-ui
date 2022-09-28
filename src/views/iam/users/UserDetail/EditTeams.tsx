@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { observe, IObserveProps } from 'views/observe';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { IObserveProps, observe } from 'views/observe';
 import { ITeam } from 'models/state/team.model';
 import { Box, Button, ButtonGroup, FormControl, makeStyles, TextField, Theme, Typography } from '@material-ui/core';
 import { StateChangeNotification } from 'models/state.models';

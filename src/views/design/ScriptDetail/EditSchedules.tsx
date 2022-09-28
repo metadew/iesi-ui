@@ -1,21 +1,21 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import {
+    Box,
+    Button,
+    ClickAwayListener,
     FormControl,
     InputLabel,
+    makeStyles,
     MenuItem,
     Select,
-    Button,
-    Box,
     Typography,
-    makeStyles,
-    ClickAwayListener,
 } from '@material-ui/core';
 import { IScriptSchedule } from 'models/state/scripts.models';
 import OrderedList from 'views/common/list/OrderedList';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import ButtonWithContent from 'views/common/input/ButtonWithContent';
 import TextInputWithSelect from 'views/common/input/TextInputWithSelect';
-import { observe, IObserveProps } from 'views/observe';
+import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAsyncEnvironments } from 'state/entities/environments/selectors';
 import { triggerFetchEnvironments } from 'state/entities/environments/triggers';

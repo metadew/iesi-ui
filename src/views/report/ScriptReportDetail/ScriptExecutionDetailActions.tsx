@@ -1,39 +1,32 @@
 import React from 'react';
 import classNames from 'classnames';
-import { parseISO, format as formatDate } from 'date-fns';
+import { format as formatDate, parseISO } from 'date-fns';
 import {
     Box,
-    makeStyles,
-    Theme,
+    Button,
     ExpansionPanel,
-    ExpansionPanelSummary,
     ExpansionPanelDetails,
+    ExpansionPanelSummary,
+    makeStyles,
+    Paper,
     Table,
+    TableBody,
+    TableCell,
+    TableContainer,
     TableHead,
     TableRow,
-    TableCell,
-    TableBody,
-    TableContainer,
-    Paper,
+    Theme,
     Typography,
-    Button,
 } from '@material-ui/core';
-import {
-    ExpandMore as ExpandMoreIcon,
-    ChevronRightRounded,
-} from '@material-ui/icons';
+import { ChevronRightRounded, ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getTranslator } from 'state/i18n/selectors';
-import {
-    IListItem,
-    ListColumns,
-    IColumn,
-} from 'models/list.models';
+import { IColumn, IListItem, ListColumns } from 'models/list.models';
 import { getListItemValueFromColumn } from 'utils/list/list';
 import { THEME_COLORS } from 'config/themes/colors';
 import { Alert, AlertTitle } from '@material-ui/lab';
-import { IParameterRawValue, IOutputValue } from 'models/state/iesiGeneric.models';
-import { observe, IObserveProps } from 'views/observe';
+import { IOutputValue, IParameterRawValue } from 'models/state/iesiGeneric.models';
+import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { useParams } from 'react-router-dom';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';

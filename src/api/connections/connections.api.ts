@@ -2,10 +2,10 @@ import API_URLS from 'api/apiUrls';
 // eslint-disable-next-line import/no-cycle
 import { get, post, put, remove } from 'api/requestWrapper';
 import {
-    IConnectionEntity,
     IConnection,
-    IFetchConnectionsListPayload,
     IConnectionByNamePayload,
+    IConnectionEntity,
+    IFetchConnectionsListPayload,
 } from 'models/state/connections.model';
 import { IPageData } from 'models/state/iesiGeneric.models';
 

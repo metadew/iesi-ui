@@ -1,10 +1,10 @@
 import entitiesStateManager from 'state/entities/entitiesStateManager';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import {
-    IScriptByNameAndVersionPayload,
-    IScriptBase,
-    IScriptImport,
     IFetchScriptsListPayload,
+    IScriptBase,
+    IScriptByNameAndVersionPayload,
+    IScriptImport,
 } from 'models/state/scripts.models';
 import { StateChangeNotification } from 'models/state.models';
 import { triggerFlashMessage } from 'state/ui/actions';

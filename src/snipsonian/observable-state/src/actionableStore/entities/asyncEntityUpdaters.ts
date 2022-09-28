@@ -1,9 +1,5 @@
 import { ITraceableApiErrorBase } from '@snipsonian/core/es/typings/apiErrors';
-import {
-    AsyncOperation,
-    AsyncStatus,
-    IAsyncEntity,
-} from './types';
+import { AsyncOperation, AsyncStatus, IAsyncEntity } from './types';
 
 interface IAsyncEntityUpdater {
     trigger<Data, Error>(entity: IAsyncEntity<Data, Error>, initialData: Data): IAsyncEntity<Data, Error>;

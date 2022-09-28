@@ -1,5 +1,5 @@
 import isFunction from '@snipsonian/core/es/is/isFunction';
-import { VISIBILITY_BROWSER_SPECIFICS, isSupported, IWithKeyIndex } from './visibilityBrowserSpecifics';
+import { isSupported, IWithKeyIndex, VISIBILITY_BROWSER_SPECIFICS } from './visibilityBrowserSpecifics';
 
 enum VISIBILITY_STATE {
     visible = 'visible',

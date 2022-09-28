@@ -1,24 +1,16 @@
 import React from 'react';
 import { IObserveProps, observe } from 'views/observe';
-import {
-    createStyles,
-    withStyles,
-    WithStyles,
-    Theme,
-    Box,
-    Typography,
-    Button,
-} from '@material-ui/core';
+import { Box, Button, createStyles, Theme, Typography, withStyles, WithStyles } from '@material-ui/core';
 import {
     FilterConfig,
     FilterType,
+    IListItem,
     ISortedColumn,
+    ListColumns,
     ListFilters,
+    SortActions,
     SortOrder,
     SortType,
-    SortActions,
-    IListItem,
-    ListColumns,
 } from 'models/list.models';
 import { IUser, IUserColumnName } from 'models/state/user.model';
 import { getAsyncUsers, getAsyncUsersEntity, getAsyncUsersPageData } from 'state/entities/users/selectors';

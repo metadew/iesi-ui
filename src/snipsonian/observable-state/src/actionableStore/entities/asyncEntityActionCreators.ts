@@ -1,19 +1,13 @@
 import isSet from '@snipsonian/core/es/is/isSet';
-import { IObservableStateAction, Dispatch, Action } from '@snipsonian/observable-state/es/actionableStore/types';
+import { Action, Dispatch, IObservableStateAction } from '@snipsonian/observable-state/es/actionableStore/types';
 import { createObservableStateAction } from '@snipsonian/observable-state/es/actionableStore/actionCreators';
 import {
     TNrOfParentNotificationLevelsToTrigger,
 } from '@snipsonian/observable-state/es/observer/extendNotificationsToTrigger';
-import {
-    AsyncOperation,
-    IAsyncEntity,
-    TEntityKey,
-    IEntitiesInitialState,
-    IWithKeyIndex,
-} from './types';
+import { AsyncOperation, IAsyncEntity, IEntitiesInitialState, IWithKeyIndex, TEntityKey } from './types';
 
 // eslint-disable-next-line max-len
-import { asyncEntityFetch, asyncEntityCreate, asyncEntityRemove, asyncEntityUpdate } from './asyncEntityUpdaters';
+import { asyncEntityCreate, asyncEntityFetch, asyncEntityRemove, asyncEntityUpdate } from './asyncEntityUpdaters';
 
 export interface IAsyncEntityActionCreators<ActionType, State, ExtraProcessInput, StateChangeNotificationKey> {
     createAsyncEntityAction<ExtraInput extends object, ApiInput, ApiResult, ApiResponse = ApiResult>(

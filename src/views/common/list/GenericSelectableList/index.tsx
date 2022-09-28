@@ -6,16 +6,8 @@ import TableBody from '@material-ui/core/TableBody';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import {
-    IListItem,
-    ListColumns,
-    ISortedColumn,
-    ListFilters,
-} from 'models/list.models';
-import {
-    TableCell,
-    Typography,
-} from '@material-ui/core';
+import { IListItem, ISortedColumn, ListColumns, ListFilters } from 'models/list.models';
+import { TableCell, Typography } from '@material-ui/core';
 import sortListItems from 'utils/list/sortListItems';
 import { THEME_COLORS } from 'config/themes/colors';
 import { filterListItems } from 'utils/list/filters';

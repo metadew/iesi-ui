@@ -1,7 +1,4 @@
-import {
-    ITemplateMatcher,
-    ITemplateMatcherValue,
-} from 'models/state/templates.model';
+import { ITemplateMatcher, ITemplateMatcherValue } from 'models/state/templates.model';
 import { IObserveProps, observe } from 'views/observe';
 import {
     Box,

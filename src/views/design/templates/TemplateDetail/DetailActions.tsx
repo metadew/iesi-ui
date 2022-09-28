@@ -1,10 +1,6 @@
 import React from 'react';
 import { Box, Button, darken, IconButton, makeStyles, Paper } from '@material-ui/core';
-import {
-    AddRounded as AddIcon,
-    Delete as DeleteIcon,
-    Save as SaveIcon,
-} from '@material-ui/icons';
+import { AddRounded as AddIcon, Delete as DeleteIcon, Save as SaveIcon } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { THEME_COLORS } from 'config/themes/colors';
 import Tooltip from 'views/common/tooltips/Tooltip';

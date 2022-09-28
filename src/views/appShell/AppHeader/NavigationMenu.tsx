@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-    IconButton,
-    Menu,
-    MenuItem,
-    makeStyles,
-} from '@material-ui/core';
+import { IconButton, makeStyles, Menu, MenuItem } from '@material-ui/core';
 import { MenuRounded as MenuIcon } from '@material-ui/icons';
 import { StateChangeNotification } from 'models/state.models';
 import { IMenuItem, MAIN_NAV_ITEMS } from 'config/menu.config';

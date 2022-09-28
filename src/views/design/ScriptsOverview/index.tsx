@@ -16,7 +16,7 @@ import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
 import { getTranslator } from 'state/i18n/selectors';
 
-import { Edit, PlayArrowRounded, AddRounded, Delete, Visibility, FileCopy } from '@material-ui/icons';
+import { AddRounded, Delete, Edit, FileCopy, PlayArrowRounded, Visibility } from '@material-ui/icons';
 import {
     FilterConfig,
     FilterType,

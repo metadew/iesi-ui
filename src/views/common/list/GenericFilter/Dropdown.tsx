@@ -1,16 +1,9 @@
 import React, { ChangeEvent } from 'react';
-import {
-    makeStyles,
-    FormControl,
-    Box,
-    InputLabel,
-    MenuItem,
-    Select,
-} from '@material-ui/core';
-import { IFilter, FilterType } from 'models/list.models';
+import { Box, FormControl, InputLabel, makeStyles, MenuItem, Select } from '@material-ui/core';
+import { FilterType, IFilter } from 'models/list.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import { observe, IObserveProps } from 'views/observe';
-import { StateChangeNotification, IState } from 'models/state.models';
+import { IObserveProps, observe } from 'views/observe';
+import { IState, StateChangeNotification } from 'models/state.models';
 
 interface IPublicProps {
     columnName: string;

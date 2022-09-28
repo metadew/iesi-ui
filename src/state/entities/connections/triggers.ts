@@ -1,11 +1,7 @@
 import entitiesStateManager from 'state/entities/entitiesStateManager';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
-import { triggerFlashMessage, handleConnection } from 'state/ui/actions';
-import {
-    IConnection,
-    IConnectionByNamePayload,
-    IFetchConnectionsListPayload,
-} from 'models/state/connections.model';
+import { handleConnection, triggerFlashMessage } from 'state/ui/actions';
+import { IConnection, IConnectionByNamePayload, IFetchConnectionsListPayload } from 'models/state/connections.model';
 import { StateChangeNotification } from 'models/state.models';
 
 export const triggerFetchConnections = (payload: IFetchConnectionsListPayload) =>

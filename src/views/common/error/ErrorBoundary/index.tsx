@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Paper, Typography, Box } from '@material-ui/core';
+import { Box, Button, Paper, Typography } from '@material-ui/core';
 import { ErrorOutlineRounded as ErrorIcon } from '@material-ui/icons';
 import ThemeProvider from 'views/appShell/ThemeProvider';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';

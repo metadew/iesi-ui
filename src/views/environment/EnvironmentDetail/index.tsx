@@ -15,7 +15,7 @@ import { THEME_COLORS } from 'config/themes/colors';
 import { IObserveProps, observe } from 'views/observe';
 import { IState, StateChangeNotification } from 'models/state.models';
 import Loader from 'views/common/waiting/Loader';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { TRequiredFieldsState } from 'models/form.models';
 import { getAsyncEnvironmentDetail, getAsyncEnvironments } from 'state/entities/environments/selectors';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
@@ -25,7 +25,7 @@ import { getRouteKeyByPath, redirectTo, ROUTE_KEYS } from 'views/routes';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import { IListItem, ListColumns } from 'models/list.models';
-import { Edit, Delete } from '@material-ui/icons';
+import { Delete, Edit } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import { clone } from 'lodash';
 import TextInput from 'views/common/input/TextInput';
@@ -36,7 +36,8 @@ import DetailActions from 'views/environment/DetailActions';
 import {
     triggerCreateEnvironmentDetail,
     triggerDeleteEnvironmentDetail,
-    triggerUpdateEnvironmentDetail } from 'state/entities/environments/triggers';
+    triggerUpdateEnvironmentDetail,
+} from 'state/entities/environments/triggers';
 import { getUniqueIdFromEnvironment } from 'utils/environments/environmentUtils';
 import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';

@@ -1,6 +1,6 @@
 import React, { ReactText } from 'react';
 import { IObserveProps, observe } from 'views/observe';
-import { Theme, Box, WithStyles, withStyles, Typography, Button } from '@material-ui/core';
+import { Box, Button, Theme, Typography, WithStyles, withStyles } from '@material-ui/core';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import {
     getAsyncEnvironmentDetail,

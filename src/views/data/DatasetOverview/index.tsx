@@ -1,14 +1,6 @@
 import React, { ReactText } from 'react';
-import {
-    Box,
-    Button,
-    createStyles,
-    Theme,
-    Typography,
-    withStyles,
-    WithStyles,
-} from '@material-ui/core';
-import { observe, IObserveProps } from 'views/observe';
+import { Box, Button, createStyles, Theme, Typography, withStyles, WithStyles } from '@material-ui/core';
+import { IObserveProps, observe } from 'views/observe';
 import { getDatasetsListFilter } from 'state/ui/selectors';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import {

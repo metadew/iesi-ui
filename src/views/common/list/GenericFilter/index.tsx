@@ -1,27 +1,20 @@
-import React, { useState, ReactText, useEffect } from 'react';
+import React, { ReactText, useEffect, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { TTranslatorComponent } from 'models/i18n.models';
 import {
     Box,
     ExpansionPanel,
-    ExpansionPanelSummary,
     ExpansionPanelDetails,
+    ExpansionPanelSummary,
+    IconButton,
     makeStyles,
     Typography,
-    IconButton,
 } from '@material-ui/core';
 import { AddRounded, RemoveRounded } from '@material-ui/icons';
-import {
-    IFilter,
-    FilterType,
-    FilterConfig,
-    ListFilters,
-    IListItem,
-    IFilterConfigItem,
-} from 'models/list.models';
+import { FilterConfig, FilterType, IFilter, IFilterConfigItem, IListItem, ListFilters } from 'models/list.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
-import { parseISO, format as formatDate } from 'date-fns';
+import { format as formatDate, parseISO } from 'date-fns';
 import isValidDate from 'utils/core/date/isValidDate';
 import Search from './Search';
 import Select from './Select';

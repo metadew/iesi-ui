@@ -20,7 +20,7 @@ import { clone } from 'lodash';
 import Loader from 'views/common/waiting/Loader';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { getAsyncConnectionTypes } from 'state/entities/constants/selectors';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel';
 import { getRouteKeyByPath, redirectTo, ROUTE_KEYS } from 'views/routes';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';

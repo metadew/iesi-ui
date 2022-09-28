@@ -1,7 +1,8 @@
 import { ITraceableApiErrorBase } from '@snipsonian/core/es/typings/apiErrors';
-import { TNrOfParentNotificationLevelsToTrigger }
-    from '@snipsonian/observable-state/es/observer/extendNotificationsToTrigger';
-import { Dispatch, Action } from '@snipsonian/observable-state/es/actionableStore/types';
+import {
+    TNrOfParentNotificationLevelsToTrigger,
+} from '@snipsonian/observable-state/es/observer/extendNotificationsToTrigger';
+import { Action, Dispatch } from '@snipsonian/observable-state/es/actionableStore/types';
 
 export type TEntityKey = string;
 

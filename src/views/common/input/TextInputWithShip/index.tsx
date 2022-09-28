@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField, Chip } from '@material-ui/core';
+import { Chip, TextField } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 
 function TextInputWithShip() {

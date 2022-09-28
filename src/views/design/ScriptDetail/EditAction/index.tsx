@@ -1,15 +1,7 @@
 import React, { useState } from 'react';
 import classnames from 'classnames';
 import { THEME_COLORS } from 'config/themes/colors';
-import {
-    Box,
-    makeStyles,
-    Typography,
-    Checkbox,
-    Button,
-    ButtonGroup,
-    Paper,
-} from '@material-ui/core';
+import { Box, Button, ButtonGroup, Checkbox, makeStyles, Paper, Typography } from '@material-ui/core';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { checkAuthority } from 'state/auth/selectors';
 import { IScriptAction } from 'models/state/scripts.models';
@@ -20,7 +12,7 @@ import { IObserveProps, observe } from 'views/observe';
 import { getAsyncActionTypes } from 'state/entities/constants/selectors';
 import { getTranslator } from 'state/i18n/selectors';
 import { StateChangeNotification } from 'models/state.models';
-import { IConstantParameter, IActionType } from 'models/state/constants.models';
+import { IActionType, IConstantParameter } from 'models/state/constants.models';
 import { ChevronRightRounded } from '@material-ui/icons';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import { IParameter } from 'models/state/iesiGeneric.models';

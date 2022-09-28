@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-    Button,
-    Box,
-    makeStyles,
-    ButtonGroup,
-    Paper,
-    Theme,
-} from '@material-ui/core';
+import { Box, Button, ButtonGroup, makeStyles, Paper, Theme } from '@material-ui/core';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getTranslator } from 'state/i18n/selectors';

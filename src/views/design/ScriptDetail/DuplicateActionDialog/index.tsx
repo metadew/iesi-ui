@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
-import {
-    Button,
-    Box,
-    makeStyles,
-    TextField,
-} from '@material-ui/core';
+import { Box, Button, makeStyles, TextField } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import { observe, IObserveProps } from 'views/observe';
+import { IObserveProps, observe } from 'views/observe';
 import { getTranslator } from 'state/i18n/selectors';
 import { Alert } from '@material-ui/lab';
 import ClosableDialog from 'views/common/layout/ClosableDialog';

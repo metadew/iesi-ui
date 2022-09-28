@@ -11,7 +11,6 @@ import {
     IUserEntity,
     IUserPasswordPostPayload,
     IUserPost,
-    IUserPostPayload,
 } from 'models/state/user.model';
 import { getUsersWithDistinctTeams, getUserWithDistinctTeams } from 'utils/users/userUtils';
 

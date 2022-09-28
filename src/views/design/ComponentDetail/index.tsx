@@ -1,23 +1,23 @@
 import React from 'react';
 import {
     Box,
+    Button,
+    Collapse,
+    createStyles,
+    darken,
+    Theme,
+    Typography,
     WithStyles,
     withStyles,
-    createStyles,
-    Collapse,
-    Typography,
-    Button,
-    Theme,
-    darken,
 } from '@material-ui/core';
 import { THEME_COLORS } from 'config/themes/colors';
 import { Delete, Edit } from '@material-ui/icons';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { IComponent, IComponentAttribute, IComponentParameter } from 'models/state/components.model';
 import {
-    triggerUpdateComponentDetail,
     triggerCreateComponentDetail,
     triggerDeleteComponentDetail,
+    triggerUpdateComponentDetail,
 } from 'state/entities/components/triggers';
 import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';

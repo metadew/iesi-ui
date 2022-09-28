@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Button, Box, makeStyles } from '@material-ui/core';
+import { Box, Button, makeStyles, Typography } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import Loader from 'views/common/waiting/Loader';
 import ClosableDialog from '../ClosableDialog';

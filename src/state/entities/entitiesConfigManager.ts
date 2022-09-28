@@ -38,7 +38,8 @@ import {
     IFetchDatasetsListPayload,
 } from 'models/state/datasets.model';
 import {
-    IFetchUsersListPayload, IUserBase,
+    IFetchUsersListPayload,
+    IUserBase,
     IUserByNamePayload,
     IUserPasswordPostPayload,
     IUserPost,

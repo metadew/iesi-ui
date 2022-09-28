@@ -1,7 +1,7 @@
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import React, { useEffect } from 'react';
 import { checkAuthority } from 'state/auth/selectors';
-import { ROUTE_KEYS, redirectTo } from 'views/routes';
+import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import { IObserveProps, observe } from './observe';
 
 function Home({ state }: IObserveProps) {
