@@ -96,6 +96,7 @@ export const triggerUpdateUserDetail = (payload: IUserBase) =>
             }
         },
         notificationsToTrigger: [StateChangeNotification.IAM_USERS_DETAIL],
+        itself: triggerCreateUserDetail,
     });
 
 export const triggerUpdateUserDetailPassword = (payload: IUserPasswordPostPayload) =>
@@ -127,6 +128,7 @@ export const triggerUpdateUserDetailPassword = (payload: IUserPasswordPostPayloa
             }
         },
         notificationsToTrigger: [StateChangeNotification.IAM_USER_DETAIL_PASSWORD],
+        itself: triggerUpdateUserDetailPassword,
     });
 
 export const triggerAssignUserRole = (payload: ITeamAssignUserRolePayload) =>
