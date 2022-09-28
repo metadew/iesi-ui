@@ -4,11 +4,11 @@ import { createObservableStateAction } from '@snipsonian/observable-state/es/act
 import {
     TNrOfParentNotificationLevelsToTrigger,
 } from '@snipsonian/observable-state/es/observer/extendNotificationsToTrigger';
-import { AsyncOperation, IAsyncEntity, IEntitiesInitialState, IWithKeyIndex, TEntityKey } from './types';
 import { api as staticApi } from 'api';
 import Cookie from 'js-cookie';
 import cryptoJS from 'crypto-js';
 import { triggerLogon } from 'state/auth/actions';
+import { AsyncOperation, IAsyncEntity, IEntitiesInitialState, IWithKeyIndex, TEntityKey } from './types';
 import { asyncEntityCreate, asyncEntityFetch, asyncEntityRemove, asyncEntityUpdate } from './asyncEntityUpdaters';
 
 export interface IAsyncEntityActionCreators<ActionType, State, ExtraProcessInput, StateChangeNotificationKey> {

@@ -4,10 +4,10 @@ name: AZURE-BUILD-IESIUI-PIPELINE
 on:
     push:
         branches:
-            - develop
+            - feature/dockerize
     pull_request:
         branches:
-            - develop
+            - feature/dockerize
 
 jobs:
     build:
