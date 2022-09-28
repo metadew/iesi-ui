@@ -68,7 +68,7 @@ interface IComponentState {
 
 const defaultSortedColumn: ISortedColumn<ITeamColumnNames> = {
     name: 'name',
-    sortOrder: SortOrder.Descending,
+    sortOrder: SortOrder.Ascending,
     sortType: SortType.String,
 };
 

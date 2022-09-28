@@ -11,6 +11,12 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { Alert } from '@material-ui/lab';
 import { triggerLogon } from 'state/auth/actions';
 import { redirectToPath } from 'views/routes';
+import {
+    triggerFetchActionTypes,
+    triggerFetchComponentTypes,
+    triggerFetchConnectionTypes,
+} from 'state/entities/constants/triggers';
+import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { logon } from '../../../api/security/security.api';
 import { ReactComponent as IesiLogo } from './logo.svg';
 
@@ -166,6 +172,12 @@ const LoginView = withStyles(styles)(
                 })
                     .then(async (response) => {
                         dispatch(triggerLogon(response));
+                        triggerFetchActionTypes();
+                        triggerFetchComponentTypes();
+                        triggerFetchConnectionTypes();
+                        triggerFetchEnvironments({
+                            sort: 'name,asc',
+                        });
                         redirectToPath(redirectUri.pathname, redirectUri.search);
                     })
                     .catch((error) => {

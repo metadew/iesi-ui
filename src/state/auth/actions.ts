@@ -2,8 +2,15 @@ import { createAction } from 'state';
 import { StateChangeNotification } from 'models/state.models';
 import { IAuthenticationResponse } from 'api/security/security.api';
 import { IAccessToken } from 'models/state/auth.models';
-import { ONE_MINUTE_IN_MILLIS, ONE_SECOND_IN_MILLIS } from '@snipsonian/core/es/time/periodsInMillis';
+import {
+    ONE_DAY_IN_MILLIS,
+    ONE_MINUTE_IN_MILLIS,
+    ONE_SECOND_IN_MILLIS,
+} from '@snipsonian/core/es/time/periodsInMillis';
+import cryptoJS from 'crypto-js';
+import Cookie from 'js-cookie';
 import { getDecodedToken } from './selectors';
+import 'dotenv/config';
 
 export const triggerLogon = (payload: IAuthenticationResponse) => createAction<IAuthenticationResponse>({
     type: 'LOGON',
@@ -23,6 +30,17 @@ export const triggerLogon = (payload: IAuthenticationResponse) => createAction<I
                 draftState.auth.permissions = accessToken.authorities.map((authority) => ({ privilege: authority }));
                 // eslint-disable-next-line no-param-reassign
                 draftState.auth.username = accessToken.username;
+
+                const encryptedCookie = cryptoJS.AES.encrypt(JSON.stringify({
+                    access_token: draftState.auth.accessToken,
+                    refresh_token: draftState.auth.refreshToken,
+                }), process.env.REACT_APP_COOKIE_SECRET_KEY).toString();
+
+                Cookie.set('app_session', encryptedCookie, {
+                    expires: new Date(currentTime + ONE_DAY_IN_MILLIS * 30),
+                    secure: true,
+                    sameSite: 'strict',
+                });
             },
             notificationsToTrigger: [StateChangeNotification.AUTH],
         });

@@ -3,7 +3,7 @@ import { Box, FormControl, InputLabel, makeStyles, MenuItem, Select } from '@mat
 import { FilterType, IFilter } from 'models/list.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { IObserveProps, observe } from 'views/observe';
-import { IState, StateChangeNotification } from 'models/state.models';
+import { IState } from 'models/state.models';
 
 interface IPublicProps {
     columnName: string;
@@ -69,6 +69,6 @@ function Dropdown({
 }
 
 export default observe<IPublicProps>(
-    [StateChangeNotification.ENVIRONMENTS],
+    [],
     Dropdown,
 );

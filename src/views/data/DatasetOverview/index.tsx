@@ -75,7 +75,7 @@ const filterConfig: FilterConfig<Partial<IDatasetColumnNames>> = {
 
 const defaultSortedColumn: ISortedColumn<IDatasetColumnNames> = {
     name: 'name',
-    sortOrder: SortOrder.Descending,
+    sortOrder: SortOrder.Ascending,
     sortType: SortType.String,
 };
 

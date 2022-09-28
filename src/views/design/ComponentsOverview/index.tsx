@@ -88,7 +88,7 @@ type TProps = WithStyles<typeof styles>;
 
 const defaultSortedColumn: ISortedColumn<IComponentColumnNamesBase> = {
     name: 'name',
-    sortOrder: SortOrder.Descending,
+    sortOrder: SortOrder.Ascending,
     sortType: SortType.String,
 };
 

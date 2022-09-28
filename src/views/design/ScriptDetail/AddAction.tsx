@@ -302,6 +302,8 @@ function AddAction({ state, onClose, onAdd }: IObserveProps & IPublicProps) {
 }
 
 export default observe<IPublicProps>(
-    [StateChangeNotification.I18N_TRANSLATIONS],
+    [
+        StateChangeNotification.I18N_TRANSLATIONS,
+    ],
     AddAction,
 );

@@ -20,6 +20,7 @@ export const triggerFetchUsers = (payload: IFetchUsersListPayload) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.IAM_USERS_LIST],
+        itself: triggerFetchUsers,
     });
 
 export const triggerFetchUserDetail = (payload: IUserByNamePayload) =>
@@ -31,6 +32,7 @@ export const triggerFetchUserDetail = (payload: IUserByNamePayload) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.IAM_USERS_DETAIL],
+        itself: triggerFetchUserDetail,
     });
 
 export const triggerCreateUserDetail = (payload: IUserPost) =>
@@ -62,6 +64,7 @@ export const triggerCreateUserDetail = (payload: IUserPost) =>
             }
         },
         notificationsToTrigger: [StateChangeNotification.IAM_USERS_DETAIL],
+        itself: triggerCreateUserDetail,
     });
 
 export const triggerUpdateUserDetail = (payload: IUserBase) =>
@@ -155,6 +158,7 @@ export const triggerAssignUserRole = (payload: ITeamAssignUserRolePayload) =>
             }
         },
         notificationsToTrigger: [StateChangeNotification.IAM_USER_DETAIL_ROLE],
+        itself: triggerAssignUserRole,
     });
 
 export const triggerDeleteUserRole = (payload: ITeamDeleteUserRole) =>
@@ -186,4 +190,5 @@ export const triggerDeleteUserRole = (payload: ITeamDeleteUserRole) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.IAM_USER_DETAIL_ROLE],
+        itself: triggerDeleteUserRole,
     });

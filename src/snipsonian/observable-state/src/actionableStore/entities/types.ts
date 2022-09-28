@@ -116,6 +116,7 @@ export interface ITriggerAsyncEntityOperationBaseProps<State, ExtraInput extends
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onFail?: (props: { dispatch: Dispatch<Action>; error: any }) => void;
     bulk?: boolean;
+    itself: Function;
 }
 
 export interface ITriggerAsyncEntityCreateProps<State, ExtraInput extends object, StateChangeNotificationKey>

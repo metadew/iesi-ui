@@ -18,7 +18,6 @@ import TextInputWithSelect from 'views/common/input/TextInputWithSelect';
 import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAsyncEnvironments } from 'state/entities/environments/selectors';
-import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import Loader from 'views/common/waiting/Loader';
 
@@ -207,9 +206,6 @@ function EditSchedules({ schedules, onChange, state }: IPublicProps & IObservePr
 
     function onOpenAddScheduling() {
         setIsScheduleLabelFormOpen(true);
-        triggerFetchEnvironments({
-            sort: 'name,asc',
-        });
     }
 }
 

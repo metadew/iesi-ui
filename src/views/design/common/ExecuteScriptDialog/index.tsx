@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
     Box,
     Button,
@@ -25,14 +25,12 @@ import entitiesStateManager from 'state/entities/entitiesStateManager';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import { getAsyncEnvironments } from 'state/entities/environments/selectors';
-import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { ILabel, IParameter } from 'models/state/iesiGeneric.models';
 import OrderedList from 'views/common/list/OrderedList';
 import isSet from '@snipsonian/core/es/is/isSet';
 import { IExecutionRequest } from 'models/state/executionRequests.models';
 import { getAsyncExecutionRequestDetail } from 'state/entities/executionRequests/selectors';
 import { addPollingExecutionRequest } from 'state/ui/actions';
-import { checkUsername } from 'state/auth/selectors';
 
 const useStyles = makeStyles(({ spacing, typography }) => ({
     formControl: {
@@ -105,16 +103,6 @@ function ExecuteScriptDialog({
     const executionRequestDetailAsyncInfo = entitiesStateManager.getAsyncEntity({
         asyncEntityKey: ASYNC_ENTITY_KEYS.executionRequestDetail,
     }).fetch;
-
-    // Trigger Fetch envs on open dialog
-    useEffect(() => {
-        if (environmentsAsyncInfo.status === AsyncStatus.Initial) {
-            triggerFetchEnvironments({
-                sort: 'name,asc',
-            });
-        }
-        return () => { };
-    }, [environmentsAsyncInfo]);
 
     return (
         <ClosableDialog
@@ -391,25 +379,21 @@ function ExecuteScriptDialog({
                         )}
                         <Box marginTop={2} display="flex" alignItems="center" justifyContent="space-between">
                             <Box>
-                                {
-                                    checkUsername(state, 'admin') && (
-                                        <FormControl>
-                                            <FormControlLabel
-                                                control={(
-                                                    <Checkbox
-                                                        onChange={(e) => setFormValues({
-                                                            ...formValues,
-                                                            debugMode: e.target.checked,
-                                                        })}
-                                                        checked={formValues.debugMode}
-                                                        name="checkbox-debug-mode"
-                                                    />
-                                                )}
-                                                label="Debug mode"
+                                <FormControl>
+                                    <FormControlLabel
+                                        control={(
+                                            <Checkbox
+                                                onChange={(e) => setFormValues({
+                                                    ...formValues,
+                                                    debugMode: e.target.checked,
+                                                })}
+                                                checked={formValues.debugMode}
+                                                name="checkbox-debug-mode"
                                             />
-                                        </FormControl>
-                                    )
-                                }
+                                        )}
+                                        label="Debug mode"
+                                    />
+                                </FormControl>
                             </Box>
                             <Button
                                 variant="contained"

@@ -20,6 +20,7 @@ export const triggerFetchSecurityGroups = (filter: IFetchSecurityGroupListPayloa
         notificationsToTrigger: [
             StateChangeNotification.IAM_SECURITY_GROUPS_LIST,
         ],
+        itself: triggerFetchSecurityGroups,
     });
 
 export const triggerFetchSecurityGroupDetail = (payload: ISecurityGroupByNamePayload) =>
@@ -33,6 +34,7 @@ export const triggerFetchSecurityGroupDetail = (payload: ISecurityGroupByNamePay
         notificationsToTrigger: [
             StateChangeNotification.IAM_SECURITY_GROUPS_DETAIL,
         ],
+        itself: triggerFetchSecurityGroupDetail,
     });
 
 export const triggerCreateSecurityGroupDetail = (payload: ISecurityGroupPost) =>
@@ -64,6 +66,7 @@ export const triggerCreateSecurityGroupDetail = (payload: ISecurityGroupPost) =>
             }
         },
         notificationsToTrigger: [StateChangeNotification.IAM_SECURITY_GROUPS_DETAIL],
+        itself: triggerCreateSecurityGroupDetail,
     });
 
 export const triggerDeleteSecurityGroupDetail = (payload: ISecurityGroupByIdPayload) =>
@@ -95,4 +98,5 @@ export const triggerDeleteSecurityGroupDetail = (payload: ISecurityGroupByIdPayl
             }
         },
         notificationsToTrigger: [StateChangeNotification.IAM_SECURITY_GROUPS_DETAIL],
+        itself: triggerDeleteSecurityGroupDetail,
     });

@@ -232,6 +232,5 @@ function EditConnectionDialog() {
 }
 
 export default observe<IPublicProps>([
-    StateChangeNotification.ENVIRONMENTS,
     StateChangeNotification.CONSTANTS_CONNECTION_TYPES,
 ], EditConnectionDialog);

@@ -17,6 +17,7 @@ export const triggerFetchComponents = (payload: IFetchComponentsListPayload) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENTS_LIST],
+        itself: triggerFetchComponents,
     });
 export const triggerFetchComponentDetail = (payload: IComponentByNameAndVersionPayload) =>
     entitiesStateManager.triggerAsyncEntityFetch<{}>({
@@ -36,6 +37,7 @@ export const triggerFetchComponentDetail = (payload: IComponentByNameAndVersionP
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENT_DETAIL],
+        itself: triggerFetchComponentDetail,
     });
 
 export const triggerCreateComponentDetail = (payload: IComponent) =>
@@ -45,6 +47,7 @@ export const triggerCreateComponentDetail = (payload: IComponent) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENT_DETAIL],
+        itself: triggerCreateComponentDetail,
     });
 
 export const triggerUpdateComponentDetail = (payload: IComponent) =>
@@ -54,6 +57,7 @@ export const triggerUpdateComponentDetail = (payload: IComponent) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENT_DETAIL],
+        itself: triggerUpdateComponentDetail,
         onSuccess: ({ dispatch }) => {
             dispatch(triggerFlashMessage({
                 translationKey: 'flash_messages.component.edit',
@@ -72,6 +76,7 @@ export const triggerDeleteComponentDetail = (payload: IComponentByNameAndVersion
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENT_DETAIL],
+        itself: triggerDeleteComponentDetail,
     });
 export const triggerUpdateComponent = (payload: IComponent | IComponent[], bulk?: boolean) =>
     entitiesStateManager.triggerAsyncEntityUpdate<{}>({
@@ -81,6 +86,7 @@ export const triggerUpdateComponent = (payload: IComponent | IComponent[], bulk?
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [],
+        itself: triggerUpdateComponent,
         bulk,
         onSuccess: ({ dispatch, currentEntity }) => {
             dispatch(triggerFlashMessage({
@@ -118,6 +124,7 @@ export const triggerCreateComponent = (payload: IComponent | IComponent[], bulk?
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [],
+        itself: triggerCreateComponent,
         bulk,
         onSuccess: ({ dispatch, currentEntity }) => {
             dispatch(triggerFlashMessage({
