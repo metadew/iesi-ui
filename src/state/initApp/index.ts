@@ -22,15 +22,6 @@ export default function initApp() {
         executeImmediatelyInActiveTab: true,
         onlyIfBrowserTabActive: true,
     });
-
-    /*
-    executePeriodically({
-        toBeExecuted: () => dispatch(checkAccessTokenExpiration()),
-        intervalInMillis: INTERVAL_IN_MILLIS.CHECK_ACCESS_TOKEN_VALIDITY,
-        executeImmediatelyInActiveTab: false,
-        onlyIfBrowserTabActive: false,
-    });
-     */
 }
 
 function initEnvConfig() {
