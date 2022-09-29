@@ -16,7 +16,7 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { IComponent, IComponentAttribute, IComponentParameter } from 'models/state/components.model';
 import {
     triggerCreateComponentDetail,
-    triggerDeleteComponentDetail,
+    triggerDeleteComponentDetail, triggerExportComponentDetail,
     triggerUpdateComponentDetail,
 } from 'state/entities/components/triggers';
 import { checkAuthority } from 'state/auth/selectors';
@@ -506,6 +506,7 @@ const ComponentDetail = withStyles(styles)(
                             onAdd={() => {
                                 this.setState({ isAddingParameter: true });
                             }}
+                            onExport={() => this.onExportComponent()}
                             isCreateRoute={this.isCreateComponentRoute()}
                         />
                     </Box>
@@ -542,79 +543,6 @@ const ComponentDetail = withStyles(styles)(
                         />
 
                     </Box>
-                    {
-                        /*
-                        <Box
-                        display="flex"
-                        flexDirection="column"
-                        alignItems="flex-start"
-                        marginX={2.2}
-                    >
-                        <Typography variant="h4">Attributes</Typography>
-                        <Box mt={2}>
-                            <Tooltip
-                                title={translator('components.detail.main.actions.add_attribute')}
-                                enterDelay={1000}
-                                enterNextDelay={1000}
-                            >
-                                <IconButton
-                                    aria-label={translator('components.detail.main.actions.add_attribute')}
-                                    className={classes.addButton}
-                                    color="default"
-                                    onClick={() => {
-                                        this.setState({ isAddingAttribute: true });
-                                    }}
-                                >
-                                    <Add />
-                                </IconButton>
-                            </Tooltip>
-                        </Box>
-                    </Box>
-
-                    <Box marginY={1}>
-                        {
-                            hasAttributes ? (
-                                <GenericList
-                                    listItems={attributeItems}
-                                    columns={attributeColumns}
-                                    listActions={[{
-                                        icon: <Edit />,
-                                        label: translator('components.detail.main.list.actions.edit'),
-                                        onClick: (_, index) => {
-                                            this.setState({ editAttributeIndex: index });
-                                        },
-                                    }, {
-                                        icon: <Delete />,
-                                        label: translator('components.detail.main.list.actions.delete'),
-                                        onClick: (_, index) => {
-                                            const newAttributes = [...newComponentDetail.attributes];
-                                            newAttributes.splice(index, 1);
-                                            this.updateComponent({
-                                                attributes: newAttributes,
-                                            });
-                                        },
-                                    }]}
-                                />
-                            ) : (
-                                <Box
-                                    display="flex"
-                                    flexDirection="column"
-                                    flex="1 1 auto"
-                                    justifyContent="center"
-                                    paddingBottom={5}
-                                >
-                                    <Box textAlign="center">
-                                        <Typography variant="h2" paragraph>
-                                            <Translate msg="components.detail.main.no_attributes.title" />
-                                        </Typography>
-                                    </Box>
-                                </Box>
-                            )
-                        }
-
-                    </Box>
-                    */
-                    }
                 </>
             );
         }
@@ -694,6 +622,18 @@ const ComponentDetail = withStyles(styles)(
             const detail = getAsyncComponentDetail(state).data;
             if (detail) {
                 triggerDeleteComponentDetail({ name: detail.name, version: detail.version.number });
+            }
+        }
+
+        private onExportComponent() {
+            const { state } = this.props;
+            const detail = getAsyncComponentDetail(state).data;
+
+            if (detail) {
+                triggerExportComponentDetail({
+                    name: detail.name,
+                    version: detail.version.number,
+                });
             }
         }
 

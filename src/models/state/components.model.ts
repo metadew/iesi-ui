@@ -66,3 +66,7 @@ export interface IComponentColumnNamesBase {
     type: string;
     securityGroupName: string;
 }
+
+export interface IComponentImportPayload {
+    value: string | FormData;
+}

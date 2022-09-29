@@ -179,6 +179,10 @@ function ImportDatasetDialog({
 }
 
 export default observe<IPublicProps>(
-    [StateChangeNotification.DATA_DATASETS_DETAIL],
+    [
+        StateChangeNotification.DESIGN_SCRIPTS_DETAIL,
+        StateChangeNotification.DESIGN_COMPONENT_DETAIL,
+        StateChangeNotification.DATA_DATASETS_DETAIL,
+    ],
     ImportDatasetDialog,
 );

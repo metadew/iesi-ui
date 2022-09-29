@@ -26,8 +26,10 @@ const API_URLS = {
     CONNECTION_BY_NAME: '/connections/{name}',
 
     COMPONENTS: '/components',
+    COMPONENT_IMPORT: '/components/import',
     COMPONENT_BY_NAME: '/components/{name}',
     COMPONENT_BY_NAME_VERSION: '/components/{name}/{version}',
+    COMPONENT_BY_NAME_VERSION_DOWNLOAD: '/components/{name}/{version}/download',
 
     USERS: '/users',
     USER_BY_NAME: '/users/{name}',

@@ -1,6 +1,11 @@
 import React from 'react';
 import { Box, Button, darken, IconButton, makeStyles, Paper } from '@material-ui/core';
-import { AddRounded as AddIcon, Delete as DeleteIcon, Save as SaveIcon } from '@material-ui/icons';
+import {
+    AddRounded as AddIcon,
+    Delete as DeleteIcon,
+    GetApp as ExportIcon,
+    Save as SaveIcon,
+} from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { THEME_COLORS } from 'config/themes/colors';
 import Tooltip from 'views/common/tooltips/Tooltip';
@@ -16,8 +21,8 @@ interface IPublicProps {
     onDelete?: () => void;
     onAdd?: () => void;
     onSave?: () => void;
-    onViewReport?: () => void;
     onExport?: () => void;
+    onViewReport?: () => void;
     isCreateRoute?: boolean;
     newComponentDetail?: IComponent;
 }
@@ -44,6 +49,7 @@ function DetailActions({
     onDelete,
     onAdd,
     onSave,
+    onExport,
     isCreateRoute,
     state,
 }: IPublicProps & IObserveProps) {
@@ -57,6 +63,16 @@ function DetailActions({
             onClick={onDelete}
         >
             <DeleteIcon />
+        </IconButton>
+    );
+
+    const ExportButton = (
+        <IconButton
+            disabled={isCreateRoute}
+            aria-label={translator('components.detail.main.actions.export')}
+            onClick={onExport}
+        >
+            <ExportIcon />
         </IconButton>
     );
 
@@ -105,19 +121,29 @@ function DetailActions({
                             {isCreateRoute ? (
                                 <>
                                     {DeleteButton}
+                                    {ExportButton}
                                 </>
                             ) : (
                                 <>
                                     {checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
-                                        ? (
-                                            <Tooltip
-                                                title={translator('components.detail.main.actions.delete')}
-                                                enterDelay={1000}
-                                                enterNextDelay={1000}
-                                            >
-                                                {DeleteButton}
-                                            </Tooltip>
-                                        ) : null}
+                                        && (
+                                            <>
+                                                <Tooltip
+                                                    title={translator('components.detail.main.actions.delete')}
+                                                    enterDelay={1000}
+                                                    enterNextDelay={1000}
+                                                >
+                                                    {DeleteButton}
+                                                </Tooltip>
+                                                <Tooltip
+                                                    title={translator('components.detail.main.actions.export')}
+                                                    enterDelay={1000}
+                                                    enterNextDelay={1000}
+                                                >
+                                                    {ExportButton}
+                                                </Tooltip>
+                                            </>
+                                        )}
                                 </>
                             )}
                         </Paper>
