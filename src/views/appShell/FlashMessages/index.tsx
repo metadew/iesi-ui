@@ -1,9 +1,6 @@
 import React from 'react';
 import { SnackbarProvider } from 'notistack';
-import {
-    makeStyles,
-    createStyles,
-} from '@material-ui/core';
+import { createStyles, makeStyles } from '@material-ui/core';
 import FlashMessageManager from './FlashMessageManager';
 
 const useSnackbarStyles = makeStyles(({ palette }) => createStyles({

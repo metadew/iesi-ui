@@ -1,16 +1,16 @@
 import {
     FilterConfig,
-    ListFilters,
-    IFilter,
     FilterType,
+    IFilter,
+    IFilterConfigItem,
     IListItem,
     IListItemValueWithSortValue,
-    IFilterConfigItem,
+    ListFilters,
 } from 'models/list.models';
 import { TObjectWithProps } from 'models/core.models';
 import { ReactText } from 'react';
 import { parseISO } from 'date-fns';
-import { isDateBeforeOrEqual, isDateAfterOrEqual } from 'utils/core/date/compare';
+import { isDateAfterOrEqual, isDateBeforeOrEqual } from 'utils/core/date/compare';
 import { getListItemSortValueFromColumn } from './list';
 
 export function getIntialFiltersFromFilterConfig<ColumnNames>(

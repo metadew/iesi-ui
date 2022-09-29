@@ -5,17 +5,10 @@ import {
     TNrOfParentNotificationLevelsToTrigger,
 } from '@snipsonian/observable-state/es/observer/extendNotificationsToTrigger';
 import { api as staticApi } from 'api';
-// eslint-disable-next-line max-len
 import Cookie from 'js-cookie';
 import cryptoJS from 'crypto-js';
 import { triggerLogon } from 'state/auth/actions';
-import {
-    AsyncOperation,
-    IAsyncEntity,
-    TEntityKey,
-    IEntitiesInitialState,
-    IWithKeyIndex,
-} from './types';
+import { AsyncOperation, IAsyncEntity, IEntitiesInitialState, IWithKeyIndex, TEntityKey } from './types';
 import { asyncEntityCreate, asyncEntityFetch, asyncEntityRemove, asyncEntityUpdate } from './asyncEntityUpdaters';
 
 export interface IAsyncEntityActionCreators<ActionType, State, ExtraProcessInput, StateChangeNotificationKey> {

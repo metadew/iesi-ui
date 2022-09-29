@@ -1,19 +1,19 @@
-import React, { useState, ReactText } from 'react';
+import React, { ReactText, useState } from 'react';
 import {
-    makeStyles,
+    Box,
+    Checkbox,
+    FilledInput,
+    FormControl,
+    Icon,
+    InputAdornment,
+    InputLabel,
     List,
     ListItem,
     ListItemSecondaryAction,
     ListItemText,
-    Checkbox,
-    FormControl,
-    Box,
-    InputLabel,
-    FilledInput,
-    InputAdornment,
-    Icon,
+    makeStyles,
 } from '@material-ui/core';
-import { IFilter, IListItem, FilterType } from 'models/list.models';
+import { FilterType, IFilter, IListItem } from 'models/list.models';
 import { Search as SearchIcon } from '@material-ui/icons';
 import { TObjectWithProps } from 'models/core.models';
 import { getUniqueValuesFromListItems } from 'utils/list/list';

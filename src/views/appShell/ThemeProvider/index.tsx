@@ -1,13 +1,13 @@
-import React, { ReactNode, useState, Dispatch, useEffect } from 'react';
-import {
-    CssBaseline,
-    useMediaQuery,
-    createMuiTheme,
-} from '@material-ui/core';
+import React, { Dispatch, ReactNode, useEffect, useState } from 'react';
+import { createMuiTheme, CssBaseline, useMediaQuery } from '@material-ui/core';
 import { ThemeProvider as MuiThemeProvider } from '@material-ui/core/styles';
 import localStorage from '@snipsonian/browser/es/storage/localStorage';
 import {
-    DEFAULT_THEME, THEME_STORAGE_KEY, THEMES, TThemeName, getThemeOptionsByName,
+    DEFAULT_THEME,
+    getThemeOptionsByName,
+    THEME_STORAGE_KEY,
+    THEMES,
+    TThemeName,
 } from '../../../config/theme.config';
 
 interface IThemeProviderRenderProps {

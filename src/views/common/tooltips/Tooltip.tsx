@@ -1,10 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import {
-    Tooltip as MuiTooltip,
-    TooltipProps,
-    makeStyles,
-} from '@material-ui/core';
+import { makeStyles, Tooltip as MuiTooltip, TooltipProps } from '@material-ui/core';
 
 const useTooltipStyles = makeStyles(({ palette, spacing, typography }) => ({
     // Theme specific adjustments in src/config/themes/*.theme.ts

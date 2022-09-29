@@ -1,15 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { observe, IObserveProps } from 'views/observe';
-import {
-    Box,
-    Button,
-    ButtonGroup,
-    FormControl,
-    makeStyles,
-    TextField,
-    Theme,
-    Typography,
-} from '@material-ui/core';
+import React, { useEffect, useRef, useState } from 'react';
+import { IObserveProps, observe } from 'views/observe';
+import { Box, Button, ButtonGroup, FormControl, makeStyles, TextField, Theme, Typography } from '@material-ui/core';
 import { StateChangeNotification } from 'models/state.models';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import { getTranslator } from 'state/i18n/selectors';

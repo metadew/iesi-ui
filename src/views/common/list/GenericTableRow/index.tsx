@@ -1,32 +1,24 @@
-import React, { ReactText, useState, useEffect } from 'react';
+import React, { ReactText, useEffect, useState } from 'react';
 import { THEME_COLORS } from 'config/themes/colors';
 import classNames from 'classnames';
-import { getListItemValueFromColumn, getListItemTooltipFromColumn } from 'utils/list/list';
+import { getListItemTooltipFromColumn, getListItemValueFromColumn } from 'utils/list/list';
 import {
-    TableCell,
-    Typography,
-    IconButton,
-    Theme,
     Box,
-    makeStyles,
-    TableRow,
     Checkbox,
+    darken,
+    IconButton,
+    ListItemIcon,
+    makeStyles,
     Menu,
     MenuItem,
-    ListItemIcon,
-    darken,
+    TableCell,
+    TableRow,
+    Theme,
+    Typography,
 } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import {
-    IListItem,
-    ListColumns,
-    IColumn,
-    IListAction,
-} from 'models/list.models';
-import {
-    DraggableProvidedDragHandleProps,
-    DraggableProvidedDraggableProps,
-} from 'react-beautiful-dnd';
+import { IColumn, IListAction, IListItem, ListColumns } from 'models/list.models';
+import { DraggableProvidedDraggableProps, DraggableProvidedDragHandleProps } from 'react-beautiful-dnd';
 import { formatNumberWithTwoDigits } from 'utils/number/format';
 import isSet from '@snipsonian/core/es/is/isSet';
 import Tooltip from 'views/common/tooltips/Tooltip';

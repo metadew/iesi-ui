@@ -4,11 +4,12 @@ import { get, post, put, remove } from 'api/requestWrapper';
 import { IPageData } from 'models/state/iesiGeneric.models';
 import {
     IFetchUsersListPayload,
-    IUserEntity,
     IUser,
     IUserBase,
-    IUserByNamePayload,
     IUserByIdPayload,
+    IUserByNamePayload,
+    IUserEntity,
+    IUserPasswordPostPayload,
     IUserPost,
 } from 'models/state/user.model';
 import { getUsersWithDistinctTeams, getUserWithDistinctTeams } from 'utils/users/userUtils';
@@ -60,14 +61,15 @@ export function createUser(user: IUserPost) {
     });
 }
 
-export function updateUser(user: IUser) {
-    return put<IUser>({
+export function updateUser(user: IUserBase) {
+    return put<IUserPost>({
         needsAuthentication: true,
         isIesiApi: true,
         url: API_URLS.USER_BY_ID,
         pathParams: {
             id: user.id,
         },
+        body: user,
         contentType: 'application/json',
     });
 }
@@ -81,5 +83,17 @@ export function deleteUser({ id }: IUserByIdPayload) {
             id,
         },
 
+    });
+}
+
+export function updatePassword({ id, password }: IUserPasswordPostPayload) {
+    return put<{}>({
+        isIesiApi: true,
+        needsAuthentication: true,
+        url: API_URLS.USER_BY_ID_PASSWORD,
+        pathParams: {
+            id,
+        },
+        body: password,
     });
 }

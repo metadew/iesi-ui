@@ -1,4 +1,4 @@
-import { ILabel, IParameter, IPageFilter, IPageData } from './iesiGeneric.models';
+import { ILabel, IPageData, IPageFilter, IParameter } from './iesiGeneric.models';
 import { ExecutionRequestStatus } from './executionRequestStatus.models';
 import { ExecutionActionStatus } from './executionActionStatus.models';
 

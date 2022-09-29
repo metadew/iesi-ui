@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-    Typography,
-    Box,
-    Theme,
-    createStyles,
-    withStyles,
-    WithStyles,
-} from '@material-ui/core';
+import { Box, createStyles, Theme, Typography, withStyles, WithStyles } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
@@ -15,32 +8,32 @@ import { PlayArrow, WatchLater } from '@material-ui/icons';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import ReportIcon from 'views/common/icons/Report';
 import {
-    ListColumns,
-    ISortedColumn,
-    SortActions,
-    SortType,
-    FilterType,
-    ListFilters,
     FilterConfig,
+    FilterType,
     IListItem,
+    ISortedColumn,
+    ListColumns,
+    ListFilters,
+    SortActions,
     SortOrder,
+    SortType,
 } from 'models/list.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
-import { observe, IObserveProps } from 'views/observe';
+import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { AsyncOperation, AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { IColumnNames, IExecutionRequest } from 'models/state/executionRequests.models';
 import { ExecutionRequestStatus } from 'models/state/executionRequestStatus.models';
 import { ExecutionActionStatus, getScriptExecutionStatusForDropdown } from 'models/state/executionActionStatus.models';
 import { Alert } from '@material-ui/lab';
-import { parseISO, format as formatDate } from 'date-fns';
+import { format as formatDate, parseISO } from 'date-fns';
 import OrderedList from 'views/common/list/OrderedList';
 import { statusColorAndIconMap, StatusColors } from 'config/statusColorsAndIcons.config';
 import {
-    getAsyncExecutionRequestsEntity,
     getAsyncExecutionRequests,
+    getAsyncExecutionRequestsEntity,
     getAsyncExecutionRequestsPageData,
 } from 'state/entities/executionRequests/selectors';
 import {

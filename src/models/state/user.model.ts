@@ -43,6 +43,29 @@ export interface IUserPost {
     repeatedPassword: string;
 }
 
+export interface IUserPasswordPost {
+    value: string;
+    repeatedPassword: string;
+}
+
+export interface IUserPasswordPostPayload {
+    password: IUserPasswordPost;
+    id: string;
+}
+
+export interface IUserPostPayload {
+    id: string;
+    username: string;
+    password: string;
+    repeatedPassword: string;
+}
+
+export interface IUserByIdPasswordPayload {
+    id: string;
+    password: string;
+    repeatedPassword: string;
+}
+
 export interface IUserRole {
     id: string;
     name: string;

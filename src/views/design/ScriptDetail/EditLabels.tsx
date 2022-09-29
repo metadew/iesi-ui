@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { ClickAwayListener, Box, Button, Typography } from '@material-ui/core';
+import { Box, Button, ClickAwayListener, Typography } from '@material-ui/core';
 import { getTranslator } from 'state/i18n/selectors';
 import { ILabel } from 'models/state/iesiGeneric.models';
 import OrderedList from 'views/common/list/OrderedList';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import ButtonWithContent from 'views/common/input/ButtonWithContent';
 import TextInput from 'views/common/input/TextInput';
-import { observe, IObserveProps } from 'views/observe';
+import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';

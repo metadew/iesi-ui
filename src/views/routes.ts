@@ -1,7 +1,7 @@
 import isSet from '@snipsonian/core/es/is/isSet';
 import createObserverManager from '@snipsonian/core/es/patterns/createObserverManager';
 import { History } from 'history';
-import { IRoute, IRoutesMap, INavigateToRoute, IRouteLocation } from 'models/router.models';
+import { INavigateToRoute, IRoute, IRouteLocation, IRoutesMap } from 'models/router.models';
 import replacePathPlaceholders from 'utils/navigation/replacePathPlaceholders';
 
 export enum ROUTE_KEYS {

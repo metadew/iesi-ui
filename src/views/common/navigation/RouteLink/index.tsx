@@ -1,4 +1,4 @@
-import React, { ReactNode, MutableRefObject } from 'react';
+import React, { MutableRefObject, ReactNode } from 'react';
 import classnames from 'classnames';
 import { NavLink as RouterNavLink, NavLinkProps } from 'react-router-dom';
 import isSet from '@snipsonian/core/es/is/isSet';

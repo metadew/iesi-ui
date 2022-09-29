@@ -1,6 +1,6 @@
 import { IListItem, IListItemValueWithSortValue } from 'models/list.models';
 import isObject from '@snipsonian/core/es/is/isObject';
-import { ReactText, ReactNode } from 'react';
+import { ReactNode, ReactText } from 'react';
 
 export function getListItemValueFromColumn<ColumnNames>(
     item: IListItem<ColumnNames>,

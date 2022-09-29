@@ -1,10 +1,6 @@
 import { IState } from 'models/state.models';
 import * as React from 'react';
-import {
-    Route,
-    Redirect,
-    RouteProps,
-} from 'react-router-dom';
+import { Redirect, Route, RouteProps } from 'react-router-dom';
 import { isAuthenticated } from 'state/auth/selectors';
 
 interface IPrivateRouteProps extends RouteProps {

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, makeStyles } from '@material-ui/core';
 import classNames from 'classnames';
 import InfoTooltip from '../tooltips/InfoTooltip';

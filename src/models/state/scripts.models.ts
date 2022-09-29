@@ -1,6 +1,6 @@
 import { ISecuredObject } from 'models/core.models';
 import { ReactText } from 'react';
-import { ILabel, IParameter, IPageFilter, IPageData } from './iesiGeneric.models';
+import { ILabel, IPageData, IPageFilter, IParameter } from './iesiGeneric.models';
 
 export interface IFetchScriptsOptions {
     expandResponseWith?: IExpandScriptsResponseWith;

@@ -3,11 +3,11 @@ import {
     IDataset,
     IDatasetBase,
     IDatasetByNamePayload,
+    IDatasetByUuidPayload,
     IDatasetImplementation,
     IDatasetImplementationsByUuidPayload,
-    IFetchDatasetsListPayload,
-    IDatasetByUuidPayload,
     IDatasetImportPayload,
+    IFetchDatasetsListPayload,
 } from 'models/state/datasets.model';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { StateChangeNotification } from 'models/state.models';

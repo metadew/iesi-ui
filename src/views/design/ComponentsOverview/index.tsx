@@ -1,7 +1,7 @@
 import React, { ReactText } from 'react';
 import { IObserveProps, observe } from 'views/observe';
 import GenericFilter from 'views/common/list/GenericFilter';
-import { Box, Button, Theme, Typography, WithStyles, withStyles, createStyles } from '@material-ui/core';
+import { Box, Button, createStyles, Theme, Typography, withStyles, WithStyles } from '@material-ui/core';
 import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
@@ -26,10 +26,10 @@ import GenericList from 'views/common/list/GenericList';
 import { getTranslator } from 'state/i18n/selectors';
 import { setComponentsListFilter } from 'state/ui/actions';
 import {
+    getAsyncComponentDetail,
     getAsyncComponents,
     getAsyncComponentsEntity,
     getAsyncComponentsPageData,
-    getAsyncComponentDetail,
 } from 'state/entities/components/selectors';
 import { getUniqueIdFromComponent } from 'utils/components/componentUtils';
 import { StateChangeNotification } from 'models/state.models';

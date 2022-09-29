@@ -1,25 +1,10 @@
 import React from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { IObserveProps, observe } from 'views/observe';
-import {
-    Box,
-    Button,
-    Collapse,
-    createStyles,
-    Typography,
-    WithStyles,
-    withStyles,
-} from '@material-ui/core';
+import { Box, Button, Collapse, createStyles, Typography, WithStyles, withStyles } from '@material-ui/core';
 import { Add, Edit, Visibility } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
-import {
-    ITeam,
-    ITeamBase,
-    ITeamPost,
-    ITeamRole,
-    ITeamRoleUser,
-    ITeamUserColumnNames,
-} from 'models/state/team.model';
+import { ITeam, ITeamBase, ITeamPost, ITeamRole, ITeamRoleUser, ITeamUserColumnNames } from 'models/state/team.model';
 import { getRouteKeyByPath, redirectTo, ROUTE_KEYS } from 'views/routes';
 import { StateChangeNotification } from 'models/state.models';
 import { getAsyncTeamDetail, getAsyncTeamDetailSecurityGroup } from 'state/entities/teams/selectors';

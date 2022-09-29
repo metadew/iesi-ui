@@ -1,4 +1,4 @@
-import { ReactElement, ReactText, ReactNode } from 'react';
+import { ReactElement, ReactNode, ReactText } from 'react';
 import { TTranslatorComponent } from './i18n.models';
 import { TObjectWithProps } from './core.models';
 

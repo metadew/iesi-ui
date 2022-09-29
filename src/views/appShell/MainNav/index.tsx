@@ -1,10 +1,10 @@
 import React from 'react';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import { StateChangeNotification, IState } from 'models/state.models';
-import { MAIN_NAV_ITEMS, IMenuItem } from 'config/menu.config';
+import { IState, StateChangeNotification } from 'models/state.models';
+import { IMenuItem, MAIN_NAV_ITEMS } from 'config/menu.config';
 import { hasRequiredAccessLevels } from 'state/auth/selectors';
 import { getRoute } from 'views/routes';
-import { observe, IObserveProps } from 'views/observe';
+import { IObserveProps, observe } from 'views/observe';
 import RouteLink from 'views/common/navigation/RouteLink';
 
 function MainNav({ state }: IObserveProps) {

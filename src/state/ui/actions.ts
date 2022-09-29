@@ -1,6 +1,6 @@
 import { createAction, getStore } from 'state';
 import { StateChangeNotification } from 'models/state.models';
-import { ListFilters, ISortedColumn } from 'models/list.models';
+import { ISortedColumn, ListFilters } from 'models/list.models';
 import { ITriggerFlashMessagePayload } from 'models/state/ui.models';
 import { SnackbarKey } from 'notistack';
 import { isExecutionRequestStatusPending } from 'utils/scripts/executionRequests';

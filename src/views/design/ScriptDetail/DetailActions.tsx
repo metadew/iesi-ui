@@ -1,17 +1,17 @@
 import React from 'react';
-import { Button, IconButton, Box, makeStyles, Paper, darken } from '@material-ui/core';
+import { Box, Button, darken, IconButton, makeStyles, Paper } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
-    Save as SaveIcon,
     Delete as DeleteIcon,
-    PlayArrowRounded as PlayIcon,
     GetApp as ExportIcon,
+    PlayArrowRounded as PlayIcon,
+    Save as SaveIcon,
 } from '@material-ui/icons';
 import ReportIcon from 'views/common/icons/Report';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { THEME_COLORS } from 'config/themes/colors';
 import Tooltip from 'views/common/tooltips/Tooltip';
-import { observe, IObserveProps } from 'views/observe';
+import { IObserveProps, observe } from 'views/observe';
 import { ISecuredObject } from 'models/core.models';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';

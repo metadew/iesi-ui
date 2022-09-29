@@ -1,13 +1,13 @@
 import React, { ReactElement } from 'react';
 import {
-    ErrorOutline as ErrorIcon,
+    CancelOutlined as DeclinedIcon,
     CheckOutlined as SuccessIcon,
-    ReportProblemOutlined as WarningIcon,
-    RedoOutlined as SkippedIcon,
+    ErrorOutline as ErrorIcon,
     FiberNewOutlined as NewIcon,
     PlaylistAddCheckOutlined as SubmittedIcon,
+    RedoOutlined as SkippedIcon,
+    ReportProblemOutlined as WarningIcon,
     TimerOutlined as AcceptedIcon,
-    CancelOutlined as DeclinedIcon,
 } from '@material-ui/icons';
 import { ExecutionActionStatus } from 'models/state/executionActionStatus.models';
 import { ExecutionRequestStatus } from 'models/state/executionRequestStatus.models';

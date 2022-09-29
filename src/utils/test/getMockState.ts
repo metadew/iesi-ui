@@ -264,6 +264,13 @@ export default function getMockState({
                     error: null,
                 },
             },
+            userDetailPassword: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
             userDetailRole: {
                 data: null,
                 fetch: {

@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import Dialog, { DialogProps } from '@material-ui/core/Dialog';
-import { Typography, Box, makeStyles, IconButton } from '@material-ui/core';
+import { Box, IconButton, makeStyles, Typography } from '@material-ui/core';
 import { Close } from '@material-ui/icons';
 
 const useStyles = makeStyles(({ palette, spacing }) => ({

@@ -1,15 +1,7 @@
-import React, { useState, Ref } from 'react';
+import React, { Ref, useState } from 'react';
 import classNames from 'classnames';
 import I18nContext from '@snipsonian/react/es/components/i18n/I18nContext';
-import {
-    Typography,
-    AppBar,
-    Toolbar,
-    IconButton,
-    Theme,
-    Box,
-    makeStyles,
-} from '@material-ui/core';
+import { AppBar, Box, IconButton, makeStyles, Theme, Toolbar, Typography } from '@material-ui/core';
 import { Brightness4 as BrightnessIcon } from '@material-ui/icons';
 import RouteLink from 'views/common/navigation/RouteLink';
 import { TThemeName } from 'config/theme.config';
