@@ -36,6 +36,8 @@ export enum ASYNC_ENTITY_KEYS {
 
     components = 'components',
     componentDetail = 'componentDetail',
+    componentDetailExport = 'componentDetailExport',
+    componentDetailImport = 'componentDetailImport',
 
     executionRequests = 'executionRequests',
     executionRequestDetail = 'executionRequestDetail',

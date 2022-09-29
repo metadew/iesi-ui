@@ -20,7 +20,7 @@ import { IOpenAPI } from 'models/state/openapi.model';
 import { IConnection, IConnectionByNamePayload, IFetchConnectionsListPayload } from 'models/state/connections.model';
 import {
     IComponent,
-    IComponentByNameAndVersionPayload,
+    IComponentByNameAndVersionPayload, IComponentImportPayload,
     IFetchComponentsListPayload,
 } from 'models/state/components.model';
 import {
@@ -438,6 +438,26 @@ entitiesConfigManager.register({
             api: api.components.deleteComponentVersion,
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IComponentByNameAndVersionPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.componentDetailImport,
+    operationsConfig: {
+        create: {
+            api: api.components.createComponentImport,
+            apiInputSelector: ({ extraInput }) => extraInput as IComponentImportPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.componentDetailExport,
+    operationsConfig: {
+        fetch: {
+            api: api.components.fetchComponentDownload,
             apiInputSelector: ({ extraInput }) => extraInput as IComponentByNameAndVersionPayload,
         },
     },

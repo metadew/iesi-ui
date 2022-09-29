@@ -34,11 +34,16 @@ import {
 import { getUniqueIdFromComponent } from 'utils/components/componentUtils';
 import { StateChangeNotification } from 'models/state.models';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
-import { triggerDeleteComponentDetail, triggerFetchComponents } from 'state/entities/components/triggers';
+import {
+    triggerDeleteComponentDetail,
+    triggerFetchComponents,
+    triggerImportComponentDetail,
+} from 'state/entities/components/triggers';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
+import TextFileInputDialog from 'views/common/layout/TextFileInputDialog';
 import TransformDocumentationDialog from '../common/TransformDocumentationDialog';
 
 const styles = ({ palette, typography }: Theme) =>
@@ -83,6 +88,7 @@ const sortActions: SortActions<Partial<IComponentColumnNamesBase>> = {
 interface IComponentState {
     componentIdToDelete: string;
     loadDocDialogOpen: boolean;
+    importComponentDialogOpen: boolean;
 }
 type TProps = WithStyles<typeof styles>;
 
@@ -100,6 +106,7 @@ const ComponentsOverview = withStyles(styles)(
             this.state = {
                 componentIdToDelete: null,
                 loadDocDialogOpen: false,
+                importComponentDialogOpen: false,
             };
 
             this.renderPanel = this.renderPanel.bind(this);
@@ -143,13 +150,15 @@ const ComponentsOverview = withStyles(styles)(
 
         public render() {
             const { classes, state } = this.props;
-            const { componentIdToDelete } = this.state;
+            const { componentIdToDelete, importComponentDialogOpen } = this.state;
             const filterFromState = getComponentsListFilter(state);
             const components = getAsyncComponents(this.props.state);
             const pageData = getAsyncComponentsPageData(this.props.state);
             const listItems = mapComponentsToListItems(components);
             const translator = getTranslator(state);
             const deleteStatus = getAsyncComponentDetail(state).remove.status;
+            const importStatus = getAsyncComponentDetail(state).create.status;
+
             return (
                 <>
                     <Box height="100%" display="flex" flexDirection="column" flex="1 0 auto">
@@ -174,9 +183,45 @@ const ComponentsOverview = withStyles(styles)(
                                         />
                                     </Box>
                                     {
-                                        checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
-                                        && (
-                                            <Box display="flex" alignItems="center">
+                                        checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE) && (
+                                            <Box display="flex" alignItems="center" flex="0 0 auto">
+                                                {
+                                                    importComponentDialogOpen && (
+                                                        <Box flex="0 0 auto" mr="16px">
+                                                            <TextFileInputDialog
+                                                                open={importComponentDialogOpen}
+                                                                onOpen={() => {
+                                                                    this.setState({ importComponentDialogOpen: true });
+                                                                }}
+                                                                onClose={() => {
+                                                                    this.setState({ importComponentDialogOpen: false });
+                                                                }}
+                                                                onImport={(component) => {
+                                                                    triggerImportComponentDetail(component);
+                                                                    console.log('COUCOU: ', importComponentDialogOpen);
+                                                                }}
+                                                                showLoader={importStatus === AsyncStatus.Busy}
+                                                                metadataName="component"
+                                                            />
+                                                        </Box>
+                                                    )
+                                                }
+                                                <Box flex="0 0 auto" mr="16px">
+                                                    <TextFileInputDialog
+                                                        open={importComponentDialogOpen}
+                                                        onOpen={() => {
+                                                            this.setState({ importComponentDialogOpen: true });
+                                                        }}
+                                                        onClose={() => {
+                                                            this.setState({ importComponentDialogOpen: false });
+                                                        }}
+                                                        onImport={(component) => {
+                                                            triggerImportComponentDetail(component);
+                                                        }}
+                                                        showLoader={null}
+                                                        metadataName="component"
+                                                    />
+                                                </Box>
                                                 <Box flex="0 0 auto" mr="8px" width="250px">
                                                     <TransformDocumentationDialog
                                                         open={this.state.loadDocDialogOpen}
