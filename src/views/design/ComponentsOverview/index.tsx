@@ -185,27 +185,6 @@ const ComponentsOverview = withStyles(styles)(
                                     {
                                         checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE) && (
                                             <Box display="flex" alignItems="center" flex="0 0 auto">
-                                                {
-                                                    importComponentDialogOpen && (
-                                                        <Box flex="0 0 auto" mr="16px">
-                                                            <TextFileInputDialog
-                                                                open={importComponentDialogOpen}
-                                                                onOpen={() => {
-                                                                    this.setState({ importComponentDialogOpen: true });
-                                                                }}
-                                                                onClose={() => {
-                                                                    this.setState({ importComponentDialogOpen: false });
-                                                                }}
-                                                                onImport={(component) => {
-                                                                    triggerImportComponentDetail(component);
-                                                                    console.log('COUCOU: ', importComponentDialogOpen);
-                                                                }}
-                                                                showLoader={importStatus === AsyncStatus.Busy}
-                                                                metadataName="component"
-                                                            />
-                                                        </Box>
-                                                    )
-                                                }
                                                 <Box flex="0 0 auto" mr="16px">
                                                     <TextFileInputDialog
                                                         open={importComponentDialogOpen}
@@ -218,7 +197,7 @@ const ComponentsOverview = withStyles(styles)(
                                                         onImport={(component) => {
                                                             triggerImportComponentDetail(component);
                                                         }}
-                                                        showLoader={null}
+                                                        showLoader={importStatus === AsyncStatus.Busy}
                                                         metadataName="component"
                                                     />
                                                 </Box>
