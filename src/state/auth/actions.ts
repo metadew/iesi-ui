@@ -34,6 +34,7 @@ export const triggerLogon = (payload: IAuthenticationResponse) => createAction<I
                 const encryptedCookie = cryptoJS.AES.encrypt(JSON.stringify({
                     access_token: draftState.auth.accessToken,
                     refresh_token: draftState.auth.refreshToken,
+                    permissions: draftState.auth.permissions.map((privilege) => privilege.privilege),
                 }), process.env.REACT_APP_COOKIE_SECRET_KEY).toString();
 
                 Cookie.set('app_session', encryptedCookie, {

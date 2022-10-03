@@ -2,6 +2,8 @@ import { IState } from 'models/state.models';
 import { IAccessLevel, IAccessToken, SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { getParentRouteKeys, getRoute, ROUTE_KEYS } from 'views/routes';
 import { decode } from 'jsonwebtoken';
+import Cookie from 'js-cookie';
+import cryptoJS from 'crypto-js';
 
 export const getUserPermissions = (state: IState) => state.auth.permissions;
 
@@ -28,7 +30,18 @@ export const getDecodedToken = (token: string): IAccessToken | null => {
 };
 
 export function checkAuthority(state: IState, privilege: SECURITY_PRIVILEGES) {
-    return state.auth.permissions.some((permission: IAccessLevel) => permission.privilege === privilege);
+    const encryptedCookie = Cookie.get('app_session');
+
+    if (encryptedCookie === undefined) {
+        return false;
+    }
+    const decryptedCookieData = cryptoJS.AES.decrypt(
+        encryptedCookie,
+        process.env.REACT_APP_COOKIE_SECRET_KEY,
+    );
+    const decryptedCookie = JSON.parse(decryptedCookieData.toString(cryptoJS.enc.Utf8));
+
+    return decryptedCookie.permissions.includes(privilege);
 }
 
 export function checkUsername(state: IState, username: string) {

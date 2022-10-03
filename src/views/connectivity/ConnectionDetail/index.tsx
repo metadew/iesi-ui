@@ -131,7 +131,6 @@ const ConnectionDetail = withStyles(styles)(
         }
 
         public render() {
-            console.log('MEC');
             const {
                 newConnectionDetail,
                 isAddingParameter,

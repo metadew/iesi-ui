@@ -3,7 +3,7 @@ import { getAsyncEnvConfig } from 'state/envConfig/selectors';
 // eslint-disable-next-line import/no-cycle
 import { getStore } from 'state';
 // eslint-disable-next-line import/no-cycle
-import { post } from '../requestWrapper';
+import { get, post } from '../requestWrapper';
 import API_URLS from '../apiUrls';
 
 export interface IAuthenticationRequest {
@@ -78,5 +78,21 @@ export function refreshToken(refresh_token: string) {
             client_secret: envConfig.iesi_api_client_secret,
             refresh_token,
         }),
+    });
+}
+
+// eslint-disable-next-line camelcase, @typescript-eslint/camelcase
+export function checkAccessToken(access_token: string) {
+    // eslint-disable-next-line camelcase
+    return get<{ error: string; error_description: string}, { error: string; error_description: string}>({
+        isIesiApi: true,
+        needsAuthentication: false,
+        // eslint-disable-next-line camelcase, @typescript-eslint/camelcase
+        url: `${API_URLS.USER_CHECK_TOKEN}?token=${access_token}`,
+        mapResponse: ({ data }) => data,
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+
     });
 }
