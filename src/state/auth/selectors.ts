@@ -1,5 +1,5 @@
 import { IState } from 'models/state.models';
-import { IAccessLevel, IAccessToken, SECURITY_PRIVILEGES } from 'models/state/auth.models';
+import { IAccessLevel, IAccessToken, IRefreshToken, SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { getParentRouteKeys, getRoute, ROUTE_KEYS } from 'views/routes';
 import { decode } from 'jsonwebtoken';
 import Cookie from 'js-cookie';
@@ -18,12 +18,22 @@ export const hasRequiredAccessLevels = (
 export const getAllowedParentRouteKeys = (state: IState): ROUTE_KEYS[] => getParentRouteKeys()
     .filter((routeKey) => hasRequiredAccessLevels(state, getRoute({ routeKey }).requiredAccessLevels));
 
-export const getDecodedToken = (token: string): IAccessToken | null => {
+export const getDecodedAccessToken = (token: string): IAccessToken | null => {
     const decoded: null | { [key: string]: any } = decode(token, { json: true });
     if (decoded !== undefined) {
         return {
             authorities: decoded.authorities,
             username: decoded.user_name,
+        };
+    }
+    return null;
+};
+
+export const getDecodedRefreshToken = (token: string): IRefreshToken | null => {
+    const decoded: null | { [key: string]: any } = decode(token, { json: true });
+    if (decoded !== undefined) {
+        return {
+            exp: decoded.exp,
         };
     }
     return null;

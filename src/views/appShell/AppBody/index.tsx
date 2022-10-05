@@ -8,8 +8,6 @@ import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAllowedParentRouteKeys } from 'state/auth/selectors';
 import Cookie from 'js-cookie';
-import cryptoJS from 'crypto-js';
-import { api } from 'api';
 import LoginView from '../AppLogIn/LoginPage';
 import PrivateRoute from '../AppLogIn/components/PrivateRoute';
 
@@ -43,20 +41,10 @@ function AppBody({ state, offsetTop }: IObserveProps & IPublicProps) {
 
     useEffect(() => {
         const checkToken = async () => {
-            if (encryptedCookie === undefined) {
-                setIsAuthenticated(false);
+            if (encryptedCookie) {
+                setIsAuthenticated(true);
             } else {
-                const decryptedCookieData = cryptoJS.AES.decrypt(
-                    encryptedCookie,
-                    process.env.REACT_APP_COOKIE_SECRET_KEY,
-                );
-                const decryptedCookie = JSON.parse(decryptedCookieData.toString(cryptoJS.enc.Utf8));
-                setIsLoading(true);
-                await api.auth.checkAccessToken(decryptedCookie.access_token).then(() => {
-                    setIsAuthenticated(true);
-                }).catch(() => {
-                    setIsAuthenticated(false);
-                });
+                setIsAuthenticated(false);
             }
             setIsLoading(false);
         };
