@@ -11,6 +11,10 @@ export interface IAccessToken {
     username: string;
 }
 
+export interface IRefreshToken {
+    exp: number;
+}
+
 // TODO once authentication mechanism
 export interface IAccessLevel {
     privilege: SECURITY_PRIVILEGES;

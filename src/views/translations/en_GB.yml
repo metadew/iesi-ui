@@ -59,6 +59,7 @@ error:
 flash_messages:
   common:
     responseError: '{message}'
+    expired_session: 'Your session has expired, please authenticate'
   execution_request:
     run_finished: 'Script execution "{scriptName}" is finished!'
   openapi:

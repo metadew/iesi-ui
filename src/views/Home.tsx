@@ -5,16 +5,22 @@ import { redirectTo, ROUTE_KEYS } from 'views/routes';
 import { IObserveProps, observe } from './observe';
 
 function Home({ state }: IObserveProps) {
+    // eslint-disable-next-line max-len
+    const isNotSysAdmin = checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_READ) && checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_READ);
+    const isSysAdmin = checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_READ);
+
     useEffect(() => {
         redirectTo({
             // eslint-disable-next-line max-len
-            routeKey: checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_READ) && checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_READ) ? (
+            routeKey: isNotSysAdmin ? (
                 ROUTE_KEYS.R_SCRIPTS
-            ) : checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_READ) && (
+            ) : isSysAdmin ? (
                 ROUTE_KEYS.R_USERS
+            ) : (
+                ROUTE_KEYS.R_LOGIN
             ),
         });
-    }, [state]);
+    }, [isNotSysAdmin, isSysAdmin, state]);
 
     return (
         <div />

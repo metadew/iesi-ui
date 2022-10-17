@@ -37,6 +37,7 @@ const API_URLS = {
     USER_BY_ID_PASSWORD: '/users/{id}/password',
     USER_LOGON: '/oauth/token',
     USER_CREATE: '/users/create',
+    USER_CHECK_TOKEN: '/oauth/check_token',
 
     TEAMS: '/teams',
     TEAMS_NAMES: '/teams/names',
