@@ -2,7 +2,7 @@ import { createAction } from 'state';
 import { StateChangeNotification } from 'models/state.models';
 import { IAuthenticationResponse } from 'api/security/security.api';
 import { IAccessToken, IRefreshToken } from 'models/state/auth.models';
-import { ONE_MINUTE_IN_MILLIS, ONE_SECOND_IN_MILLIS } from '@snipsonian/core/es/time/periodsInMillis';
+import { ONE_SECOND_IN_MILLIS } from '@snipsonian/core/es/time/periodsInMillis';
 import cryptoJS from 'crypto-js';
 import Cookie from 'js-cookie';
 import { getDecodedAccessToken, getDecodedRefreshToken } from './selectors';
@@ -43,25 +43,5 @@ export const triggerLogon = (payload: IAuthenticationResponse) => createAction<I
             },
             notificationsToTrigger: [StateChangeNotification.AUTH],
         });
-    },
-});
-
-export const checkAccessTokenExpiration = () => createAction<{}>({
-    type: 'CHECK_ACCESS_TOKEN_EXPIRATION',
-    payload: {},
-    async process({ getState, api, dispatch }) {
-        const state = getState();
-        const { expiresAt, refreshToken } = state.auth;
-
-        if (refreshToken.length > 0) {
-            // Refresh the token 5 minutes before the expiration
-            const beforeExpireInSecond = new Date(new Date(expiresAt).getTime() - ONE_MINUTE_IN_MILLIS * 5);
-            const currentTime = new Date();
-
-            if (currentTime >= beforeExpireInSecond) {
-                const response = await api.auth.refreshToken(refreshToken);
-                dispatch(triggerLogon(response));
-            }
-        }
     },
 });

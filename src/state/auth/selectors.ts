@@ -51,6 +51,10 @@ export function checkAuthority(state: IState, privilege: SECURITY_PRIVILEGES) {
     );
     const decryptedCookie = JSON.parse(decryptedCookieData.toString(cryptoJS.enc.Utf8));
 
+    if (!decryptedCookie.permissions) {
+        return false;
+    }
+
     return decryptedCookie.permissions.includes(privilege);
 }
 

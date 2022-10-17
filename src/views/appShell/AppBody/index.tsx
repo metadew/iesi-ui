@@ -40,16 +40,12 @@ function AppBody({ state, offsetTop }: IObserveProps & IPublicProps) {
     const encryptedCookie = Cookie.get('app_session');
 
     useEffect(() => {
-        const checkToken = async () => {
-            if (encryptedCookie) {
-                setIsAuthenticated(true);
-            } else {
-                setIsAuthenticated(false);
-            }
-            setIsLoading(false);
-        };
-
-        checkToken();
+        if (encryptedCookie) {
+            setIsAuthenticated(true);
+        } else {
+            setIsAuthenticated(false);
+        }
+        setIsLoading(false);
     }, [encryptedCookie, location.pathname]);
 
     if (isLoading) {

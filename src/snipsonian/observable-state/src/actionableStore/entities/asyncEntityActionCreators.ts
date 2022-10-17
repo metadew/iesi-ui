@@ -8,6 +8,7 @@ import { api as staticApi } from 'api';
 import Cookie from 'js-cookie';
 import cryptoJS from 'crypto-js';
 import { triggerLogon } from 'state/auth/actions';
+import { redirectToPath } from 'views/routes';
 import { AsyncOperation, IAsyncEntity, IEntitiesInitialState, IWithKeyIndex, TEntityKey } from './types';
 import { asyncEntityCreate, asyncEntityFetch, asyncEntityRemove, asyncEntityUpdate } from './asyncEntityUpdaters';
 
@@ -385,22 +386,26 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                         });
                     }
                 } catch (error) {
-                    if (error.status === 401
-                        && error.response.error_description.includes('Access token expired')
-                        && typeof itself === 'function') {
-                        // Refresh the token
-                        const encryptedCookie = Cookie.get('app_session');
-                        const decryptedCookieData = cryptoJS.AES.decrypt(
-                            encryptedCookie,
-                            process.env.REACT_APP_COOKIE_SECRET_KEY,
-                        );
-                        const decryptedCookie = JSON.parse(decryptedCookieData.toString(cryptoJS.enc.Utf8));
+                    if (error.status === 401) {
+                        if (error.response.error_description.includes('Access token expired')
+                            && typeof itself === 'function') {
+                            // Refresh the token
+                            const encryptedCookie = Cookie.get('app_session');
+                            const decryptedCookieData = cryptoJS.AES.decrypt(
+                                encryptedCookie,
+                                process.env.REACT_APP_COOKIE_SECRET_KEY,
+                            );
+                            const decryptedCookie = JSON.parse(decryptedCookieData.toString(cryptoJS.enc.Utf8));
 
-                        const response = await staticApi.auth.refreshToken(decryptedCookie.refresh_token);
-                        dispatch(triggerLogon(response));
+                            const response = await staticApi.auth.refreshToken(decryptedCookie.refresh_token);
+                            dispatch(triggerLogon(response));
 
-                        itself(extraInput);
-                        return;
+                            itself(extraInput);
+                            return;
+                        }
+
+                        console.log('error: ', error);
+                        redirectToPath('/login', '');
                     }
 
                     if (typeof onFail === 'function') {
