@@ -404,7 +404,6 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                             return;
                         }
 
-                        console.log('error: ', error);
                         redirectToPath('/login', '');
                     }
 

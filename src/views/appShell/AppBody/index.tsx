@@ -8,6 +8,12 @@ import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAllowedParentRouteKeys } from 'state/auth/selectors';
 import Cookie from 'js-cookie';
+import {
+    triggerFetchActionTypes,
+    triggerFetchComponentTypes,
+    triggerFetchConnectionTypes,
+} from 'state/entities/constants/triggers';
+import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import LoginView from '../AppLogIn/LoginPage';
 import PrivateRoute from '../AppLogIn/components/PrivateRoute';
 
@@ -42,6 +48,12 @@ function AppBody({ state, offsetTop }: IObserveProps & IPublicProps) {
     useEffect(() => {
         if (encryptedCookie) {
             setIsAuthenticated(true);
+            triggerFetchActionTypes();
+            triggerFetchComponentTypes();
+            triggerFetchConnectionTypes();
+            triggerFetchEnvironments({
+                sort: 'name,asc',
+            });
         } else {
             setIsAuthenticated(false);
         }
