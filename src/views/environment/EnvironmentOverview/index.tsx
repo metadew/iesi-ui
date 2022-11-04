@@ -27,7 +27,7 @@ import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { setEnvironmentsListFilter } from 'state/ui/actions';
 import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
-import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { ROUTE_KEYS } from 'views/routes';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import { getUniqueIdFromEnvironment } from 'utils/environments/environmentUtils';
 import GenericFilter from 'views/common/list/GenericFilter';
@@ -41,6 +41,7 @@ import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { triggerDeleteEnvironmentDetail, triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import OrderedList from 'views/common/list/OrderedList';
+import RouteLink from 'views/common/navigation/RouteLink';
 
 const styles = (({ palette, typography }: Theme) => ({
     header: {
@@ -170,17 +171,16 @@ const EnvironmentOverview = withStyles(styles)(
                                     checkAuthority(state, SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE) && (
                                         <Box display="flex" alignItems="center">
                                             <Box flex="0 0 auto">
-                                                <Button
-                                                    variant="contained"
-                                                    color="secondary"
-                                                    size="small"
-                                                    startIcon={<AddRounded />}
-                                                    onClick={() => {
-                                                        redirectTo({ routeKey: ROUTE_KEYS.R_ENVIRONMENT_NEW });
-                                                    }}
-                                                >
-                                                    <Translate msg="environments.overview.header.add_button" />
-                                                </Button>
+                                                <RouteLink to={ROUTE_KEYS.R_ENVIRONMENT_NEW}>
+                                                    <Button
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        size="small"
+                                                        startIcon={<AddRounded />}
+                                                    >
+                                                        <Translate msg="environments.overview.header.add_button" />
+                                                    </Button>
+                                                </RouteLink>
                                             </Box>
                                         </Box>
                                     )
@@ -272,36 +272,45 @@ const EnvironmentOverview = withStyles(styles)(
                                     }}
                                     listActions={[].concat(
                                         {
-                                            icon: <Edit />,
                                             label: translator('environments.overview.list.actions.edit'),
-                                            onClick: (id: string) => {
+                                            icon: (id: string) => {
                                                 const environments = getAsyncEnvironmentsEntity(state);
                                                 const selectedEnvironment = environments.find((item) =>
                                                     getUniqueIdFromEnvironment(item) === id);
-                                                redirectTo({
-                                                    routeKey: ROUTE_KEYS.R_ENVIRONMENT_DETAIL,
-                                                    params: {
-                                                        name: selectedEnvironment.name,
-                                                    },
-                                                });
+                                                return (
+                                                    <RouteLink
+                                                        to={ROUTE_KEYS.R_ENVIRONMENT_DETAIL}
+                                                        params={{
+                                                            name: selectedEnvironment.name,
+                                                        }}
+                                                    >
+                                                        <Edit />
+                                                    </RouteLink>
+                                                );
                                             },
+                                            onClick: () => {},
                                             hideAction: () => (
                                                 !checkAuthority(state, SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE)
                                             ),
                                         }, {
-                                            icon: <Visibility />,
-                                            label: translator('security_groups.overview.list.actions.view'),
-                                            onClick: (id: string) => {
+                                            icon: (id: string) => {
                                                 const environments = getAsyncEnvironmentsEntity(state);
                                                 const selectedEnvironment = environments.find((item) =>
                                                     getUniqueIdFromEnvironment(item) === id);
-                                                redirectTo({
-                                                    routeKey: ROUTE_KEYS.R_ENVIRONMENT_DETAIL,
-                                                    params: {
-                                                        name: selectedEnvironment.name,
-                                                    },
-                                                });
+
+                                                return (
+                                                    <RouteLink
+                                                        to={ROUTE_KEYS.R_ENVIRONMENT_DETAIL}
+                                                        params={{
+                                                            name: selectedEnvironment.name,
+                                                        }}
+                                                    >
+                                                        <Visibility />
+                                                    </RouteLink>
+                                                );
                                             },
+                                            label: translator('security_groups.overview.list.actions.view'),
+                                            onClick: () => {},
                                             hideAction: () =>
                                                 checkAuthority(state, SECURITY_PRIVILEGES.S_ENVIRONMENTS_WRITE),
                                         }, {

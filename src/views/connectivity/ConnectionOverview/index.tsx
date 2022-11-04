@@ -29,7 +29,7 @@ import { formatSortQueryParameter } from 'utils/core/string/format';
 import { setConnectionsListFilter } from 'state/ui/actions';
 import TransformDocumentationDialog from 'views/design/common/TransformDocumentationDialog';
 import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
-import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { ROUTE_KEYS } from 'views/routes';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import { getUniqueIdFromConnection } from 'utils/connections/connectionUtils';
 import GenericFilter from 'views/common/list/GenericFilter';
@@ -41,6 +41,7 @@ import { StateChangeNotification } from 'models/state.models';
 import OrderedList from 'views/common/list/OrderedList';
 import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
+import RouteLink from 'views/common/navigation/RouteLink';
 
 const styles = (({ palette, typography }: Theme) => ({
     header: {
@@ -187,17 +188,16 @@ const ConnectionOverview = withStyles(styles)(
                                                 />
                                             </Box>
                                             <Box flex="0 0 auto">
-                                                <Button
-                                                    variant="contained"
-                                                    color="secondary"
-                                                    size="small"
-                                                    startIcon={<AddRounded />}
-                                                    onClick={() => {
-                                                        redirectTo({ routeKey: ROUTE_KEYS.R_CONNECTION_NEW });
-                                                    }}
-                                                >
-                                                    <Translate msg="connections.overview.header.add_button" />
-                                                </Button>
+                                                <RouteLink to={ROUTE_KEYS.R_CONNECTION_NEW}>
+                                                    <Button
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        size="small"
+                                                        startIcon={<AddRounded />}
+                                                    >
+                                                        <Translate msg="connections.overview.header.add_button" />
+                                                    </Button>
+                                                </RouteLink>
                                             </Box>
                                         </Box>
                                     )
@@ -291,19 +291,23 @@ const ConnectionOverview = withStyles(styles)(
                                 <GenericList
                                     listActions={[].concat(
                                         {
-                                            icon: <Edit />,
                                             label: translator('connections.overview.list.actions.edit'),
-                                            onClick: (id: string) => {
+                                            icon: (id: string) => {
                                                 const connections = getAsyncConnections(state);
                                                 const selectedConnection = connections.find((item) =>
                                                     getUniqueIdFromConnection(item) === id);
-                                                redirectTo({
-                                                    routeKey: ROUTE_KEYS.R_CONNECTION_DETAIL,
-                                                    params: {
-                                                        name: selectedConnection.name,
-                                                    },
-                                                });
+                                                return (
+                                                    <RouteLink
+                                                        to={ROUTE_KEYS.R_CONNECTION_DETAIL}
+                                                        params={{
+                                                            name: selectedConnection.name,
+                                                        }}
+                                                    >
+                                                        <Edit />
+                                                    </RouteLink>
+                                                );
                                             },
+                                            onClick: () => { },
                                             hideAction: () => (
                                                 !checkAuthority(
                                                     state,
@@ -311,19 +315,23 @@ const ConnectionOverview = withStyles(styles)(
                                                 )
                                             ),
                                         }, {
-                                            icon: <Visibility />,
                                             label: translator('connections.overview.list.actions.view'),
-                                            onClick: (id: string) => {
+                                            icon: (id: string) => {
                                                 const connections = getAsyncConnections(state);
                                                 const selectedConnection = connections.find((item) =>
                                                     getUniqueIdFromConnection(item) === id);
-                                                redirectTo({
-                                                    routeKey: ROUTE_KEYS.R_CONNECTION_DETAIL,
-                                                    params: {
-                                                        name: selectedConnection.name,
-                                                    },
-                                                });
+                                                return (
+                                                    <RouteLink
+                                                        to={ROUTE_KEYS.R_CONNECTION_DETAIL}
+                                                        params={{
+                                                            name: selectedConnection.name,
+                                                        }}
+                                                    >
+                                                        <Visibility />
+                                                    </RouteLink>
+                                                );
                                             },
+                                            onClick: () => {},
                                             hideAction: () => (
                                                 checkAuthority(
                                                     state,

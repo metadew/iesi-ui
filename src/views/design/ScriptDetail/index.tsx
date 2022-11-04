@@ -525,16 +525,6 @@ const ScriptDetail = withStyles(styles)(
                             onAdd={() => this.setState({ isAddOpen: true })}
                             onPlay={() => this.setState({ isExecuteDialogOpen: true })}
                             onExport={() => this.onExportScript()}
-                            onViewReport={() => {
-                                redirectTo({
-                                    routeKey: ROUTE_KEYS.R_REPORTS,
-                                    queryParams: {
-                                        script: newScriptDetail && newScriptDetail.name,
-                                        version: newScriptDetail && newScriptDetail.version
-                                            ? newScriptDetail.version.number : null,
-                                    },
-                                });
-                            }}
                             isCreateRoute={this.isCreateScriptRoute()}
                             newScriptDetail={newScriptDetail}
                         />

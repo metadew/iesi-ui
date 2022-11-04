@@ -32,7 +32,7 @@ import { IColumnNames, IExpandScriptsResponseWith, IScript, IScriptBase } from '
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
-import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { ROUTE_KEYS } from 'views/routes';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
@@ -60,6 +60,7 @@ import { setScriptsListFilter } from 'state/ui/actions';
 import ReportIcon from 'views/common/icons/Report';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { checkAuthority } from 'state/auth/selectors';
+import RouteLink from 'views/common/navigation/RouteLink';
 import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
 import TextFileInputDialog from 'views/common/layout/TextFileInputDialog';
 import DuplicateScriptDialog from '../common/DuplicateScriptDialog';
@@ -252,17 +253,17 @@ const ScriptsOverview = withStyles(styles)(
                                                     />
                                                 </Box>
                                                 <Box flex="0 0 auto">
-                                                    <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        size="small"
-                                                        startIcon={<AddRounded />}
-                                                        onClick={() => {
-                                                            redirectTo({ routeKey: ROUTE_KEYS.R_SCRIPT_NEW });
-                                                        }}
-                                                    >
-                                                        <Translate msg="scripts.overview.header.add_button" />
-                                                    </Button>
+                                                    <RouteLink to={ROUTE_KEYS.R_SCRIPT_NEW}>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="secondary"
+                                                            size="small"
+                                                            startIcon={<AddRounded />}
+                                                        >
+                                                            <Translate msg="scripts.overview.header.add_button" />
+
+                                                        </Button>
+                                                    </RouteLink>
                                                 </Box>
                                             </Box>
                                         ) : null}
@@ -400,21 +401,24 @@ const ScriptsOverview = withStyles(styles)(
                                             ),
                                     },
                                     {
-                                        icon: <Edit />,
-                                        label: translator('scripts.overview.list.actions.edit'),
-                                        onClick: (id: string) => {
+                                        icon: (id: string) => {
                                             const scripts = getAsyncScripts(this.props.state);
                                             const selectedScript = scripts.find((item) =>
                                                 getUniqueIdFromScript(item) === id);
-
-                                            redirectTo({
-                                                routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                                params: {
-                                                    name: selectedScript.name,
-                                                    version: selectedScript.version.number,
-                                                },
-                                            });
+                                            return (
+                                                <RouteLink
+                                                    to={ROUTE_KEYS.R_SCRIPT_DETAIL}
+                                                    params={{
+                                                        name: selectedScript.name,
+                                                        version: selectedScript.version.number,
+                                                    }}
+                                                >
+                                                    <Edit />
+                                                </RouteLink>
+                                            );
                                         },
+                                        onClick: () => {},
+                                        label: translator('scripts.overview.list.actions.edit'),
                                         hideAction: () =>
                                             !checkAuthority(
                                                 state,
@@ -422,21 +426,25 @@ const ScriptsOverview = withStyles(styles)(
                                             ),
                                     },
                                     {
-                                        icon: <Visibility />,
-                                        label: translator('scripts.overview.list.actions.view'),
-                                        onClick: (id: string) => {
+                                        icon: (id: string) => {
                                             const scripts = getAsyncScripts(this.props.state);
                                             const selectedScript = scripts.find((item) =>
                                                 getUniqueIdFromScript(item) === id);
 
-                                            redirectTo({
-                                                routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                                params: {
-                                                    name: selectedScript.name,
-                                                    version: selectedScript.version.number,
-                                                },
-                                            });
+                                            return (
+                                                <RouteLink
+                                                    to={ROUTE_KEYS.R_SCRIPT_DETAIL}
+                                                    params={{
+                                                        name: selectedScript.name,
+                                                        version: selectedScript.version.number,
+                                                    }}
+                                                >
+                                                    <Visibility />
+                                                </RouteLink>
+                                            );
                                         },
+                                        label: translator('scripts.overview.list.actions.view'),
+                                        onClick: () => {},
                                         hideAction: () =>
                                             checkAuthority(
                                                 state,
@@ -445,21 +453,25 @@ const ScriptsOverview = withStyles(styles)(
                                             ) || !checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_READ),
                                     },
                                     {
-                                        icon: <ReportIcon />,
                                         label: translator('scripts.overview.list.actions.report'),
-                                        onClick: (id: string) => {
+                                        icon: (id: string) => {
                                             const scripts = getAsyncScripts(this.props.state);
                                             const selectedScript = scripts.find((item) =>
                                                 getUniqueIdFromScript(item) === id);
 
-                                            redirectTo({
-                                                routeKey: ROUTE_KEYS.R_REPORTS,
-                                                queryParams: {
-                                                    script: selectedScript.name,
-                                                    version: selectedScript.version.number,
-                                                },
-                                            });
+                                            return (
+                                                <RouteLink
+                                                    to={ROUTE_KEYS.R_REPORTS}
+                                                    queryParams={{
+                                                        script: selectedScript.name,
+                                                        version: selectedScript.version.number,
+                                                    }}
+                                                >
+                                                    <ReportIcon />
+                                                </RouteLink>
+                                            );
                                         },
+                                        onClick: () => {},
                                         hideAction: () =>
                                             !checkAuthority(
                                                 state,

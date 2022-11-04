@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import classnames from 'classnames';
 import { THEME_COLORS } from 'config/themes/colors';
 import { Box, Button, ButtonGroup, Checkbox, makeStyles, Paper, Typography } from '@material-ui/core';
+import RouteLink from 'views/common/navigation/RouteLink';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { checkAuthority } from 'state/auth/selectors';
 import { IScriptAction } from 'models/state/scripts.models';
@@ -14,7 +15,7 @@ import { getTranslator } from 'state/i18n/selectors';
 import { StateChangeNotification } from 'models/state.models';
 import { IActionType, IConstantParameter } from 'models/state/constants.models';
 import { ChevronRightRounded } from '@material-ui/icons';
-import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { ROUTE_KEYS } from 'views/routes';
 import { IParameter } from 'models/state/iesiGeneric.models';
 import ExpandableParameter from './ExpandableParameter';
 
@@ -160,25 +161,26 @@ function EditAction({
                         matchingActionType.type === 'fwk.executeScript'
                         && (
                             <Box paddingX={2} className={classes.buttonContainer}>
-                                <Button
-                                    variant="contained"
-                                    color="secondary"
-                                    disabled={
-                                        !(parameterScript.value && parameterScript.value.length
-                                            && parameterVersion.value && parameterVersion.value.length)
-                                    }
-                                    size="small"
-                                    onClick={() => redirectTo({
-                                        routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                        params: {
-                                            name: parameterScript.value,
-                                            version: parameterVersion.value,
-                                        },
-                                        newTab: true,
-                                    })}
+                                <RouteLink
+                                    to={ROUTE_KEYS.R_SCRIPT_DETAIL}
+                                    params={{
+                                        name: parameterScript.value,
+                                        version: parameterVersion.value,
+                                    }}
                                 >
-                                    <ChevronRightRounded />
-                                </Button>
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        disabled={
+                                            !(parameterScript.value && parameterScript.value.length
+                                                && parameterVersion.value && parameterVersion.value.length)
+                                        }
+                                        size="small"
+                                    >
+                                        <ChevronRightRounded />
+                                    </Button>
+                                </RouteLink>
+
                                 {
                                     !(parameterScript.value && parameterScript.value.length
                                     && parameterVersion.value && parameterVersion.value.length)

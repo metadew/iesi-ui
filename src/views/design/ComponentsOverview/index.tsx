@@ -39,11 +39,12 @@ import {
     triggerFetchComponents,
     triggerImportComponentDetail,
 } from 'state/entities/components/triggers';
-import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { ROUTE_KEYS } from 'views/routes';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import TextFileInputDialog from 'views/common/layout/TextFileInputDialog';
+import RouteLink from 'views/common/navigation/RouteLink';
 import TransformDocumentationDialog from '../common/TransformDocumentationDialog';
 
 const styles = ({ palette, typography }: Theme) =>
@@ -209,17 +210,16 @@ const ComponentsOverview = withStyles(styles)(
                                                     />
                                                 </Box>
                                                 <Box flex="0 0 auto">
-                                                    <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        size="small"
-                                                        startIcon={<AddRounded />}
-                                                        onClick={() => {
-                                                            redirectTo({ routeKey: ROUTE_KEYS.R_COMPONENT_NEW });
-                                                        }}
-                                                    >
-                                                        <Translate msg="components.overview.header.add_button" />
-                                                    </Button>
+                                                    <RouteLink to={ROUTE_KEYS.R_COMPONENT_NEW}>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="secondary"
+                                                            size="small"
+                                                            startIcon={<AddRounded />}
+                                                        >
+                                                            <Translate msg="components.overview.header.add_button" />
+                                                        </Button>
+                                                    </RouteLink>
                                                 </Box>
                                             </Box>
                                         )
@@ -314,20 +314,25 @@ const ComponentsOverview = withStyles(styles)(
                                 <GenericList
                                     listActions={[].concat(
                                         {
-                                            icon: <Edit />,
                                             label: translator('components.overview.list.actions.edit'),
-                                            onClick: (id: string) => {
+                                            icon: (id: string) => {
                                                 const components = getAsyncComponents(this.props.state);
                                                 const selectedComponent = components.find((item) =>
                                                     getUniqueIdFromComponent(item) === id);
-                                                redirectTo({
-                                                    routeKey: ROUTE_KEYS.R_COMPONENT_DETAIL,
-                                                    params: {
-                                                        name: selectedComponent.name,
-                                                        version: selectedComponent.version.number,
-                                                    },
-                                                });
+
+                                                return (
+                                                    <RouteLink
+                                                        to={ROUTE_KEYS.R_COMPONENT_DETAIL}
+                                                        params={{
+                                                            name: selectedComponent.name,
+                                                            version: selectedComponent.version.number,
+                                                        }}
+                                                    >
+                                                        <Edit />
+                                                    </RouteLink>
+                                                );
                                             },
+                                            onClick: () => {},
                                             hideAction: () => (
                                                 !checkAuthority(
                                                     state,
@@ -335,20 +340,25 @@ const ComponentsOverview = withStyles(styles)(
                                                 )
                                             ),
                                         }, {
-                                            icon: <Visibility />,
                                             label: translator('components.overview.list.actions.view'),
-                                            onClick: (id: string) => {
+                                            icon: (id: string) => {
                                                 const components = getAsyncComponents(this.props.state);
                                                 const selectedComponent = components.find((item) =>
                                                     getUniqueIdFromComponent(item) === id);
-                                                redirectTo({
-                                                    routeKey: ROUTE_KEYS.R_COMPONENT_DETAIL,
-                                                    params: {
-                                                        name: selectedComponent.name,
-                                                        version: selectedComponent.version.number,
-                                                    },
-                                                });
+
+                                                return (
+                                                    <RouteLink
+                                                        to={ROUTE_KEYS.R_COMPONENT_DETAIL}
+                                                        params={{
+                                                            name: selectedComponent.name,
+                                                            version: selectedComponent.version.number,
+                                                        }}
+                                                    >
+                                                        <Visibility />
+                                                    </RouteLink>
+                                                );
                                             },
+                                            onClick: () => {},
                                             hideAction: () => (
                                                 checkAuthority(
                                                     state,
