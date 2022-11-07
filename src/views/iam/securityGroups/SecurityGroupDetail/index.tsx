@@ -2,7 +2,7 @@ import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { IObserveProps, observe } from 'views/observe';
 import { Box, Button, Collapse, createStyles, Typography, WithStyles, withStyles } from '@material-ui/core';
-import { Add, Edit, Visibility } from '@material-ui/icons';
+import { Add, Edit } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import {
     ISecurityGroup,
@@ -18,8 +18,6 @@ import { getAsyncSecurityGroupDetail } from 'state/entities/securityGroups/selec
 import { getAsyncTeamDetailSecurityGroup } from 'state/entities/teams/selectors';
 import { clone } from 'lodash';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
-import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
-import { checkAuthority } from 'state/auth/selectors';
 import Loader from 'views/common/waiting/Loader';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import { TRequiredFieldsState } from 'models/form.models';
@@ -36,6 +34,10 @@ import GenericList from 'views/common/list/GenericList';
 import { IListItem, ListColumns } from 'models/list.models';
 import { getUniqueIdFromSecurityGroup } from 'utils/securityGroups/securityGroupUtils';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
+import RouteLink from 'views/common/navigation/RouteLink';
+import { checkAuthority } from 'state/auth/selectors';
+import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
+import Visibility from '@material-ui/icons/Visibility';
 import DetailActions from '../DetailActions';
 import AddTeam from '../AddTeam';
 
@@ -310,30 +312,38 @@ const SecurityGroupDetail = withStyles(styles)(
                                     listItems={teamItems}
                                     columns={teamColums}
                                     listActions={[{
-                                        icon: <Edit />,
                                         label: translator('security_groups.detail.main.list.item.actions.edit'),
-                                        onClick: (id, index) => redirectTo({
-                                            routeKey: ROUTE_KEYS.R_TEAM_DETAIL,
-                                            params: {
-                                                name: (newSecurityGroupDetail as ISecurityGroupBase)
-                                                    .teams[index].teamName,
-                                            },
-                                        }),
+                                        icon: (id, index) => (
+                                            <RouteLink
+                                                to={ROUTE_KEYS.R_TEAM_DETAIL}
+                                                queryParams={{
+                                                    name: (newSecurityGroupDetail as ISecurityGroupBase)
+                                                        .teams[index].teamName,
+                                                }}
+                                            >
+                                                <Edit />
+                                            </RouteLink>
+                                        ),
+                                        onClick: () => {},
                                         hideAction: () =>
                                             !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_TEAMS_WRITE,
                                             ),
                                     }, {
-                                        icon: <Visibility />,
                                         label: translator('security_groups.detail.main.list.item.actions.view'),
-                                        onClick: (id, index) => redirectTo({
-                                            routeKey: ROUTE_KEYS.R_TEAM_DETAIL,
-                                            params: {
-                                                name: (newSecurityGroupDetail as ISecurityGroupBase)
-                                                    .teams[index].teamName,
-                                            },
-                                        }),
+                                        icon: (id, index) => (
+                                            <RouteLink
+                                                to={ROUTE_KEYS.R_TEAM_DETAIL}
+                                                queryParams={{
+                                                    name: (newSecurityGroupDetail as ISecurityGroupBase)
+                                                        .teams[index].teamName,
+                                                }}
+                                            >
+                                                <Visibility />
+                                            </RouteLink>
+                                        ),
+                                        onClick: () => {},
                                         hideAction: () =>
                                             checkAuthority(
                                                 state,

@@ -38,9 +38,10 @@ import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/ent
 import { getTranslator } from 'state/i18n/selectors';
 import GenericList from 'views/common/list/GenericList';
 import { Alert } from '@material-ui/lab';
-import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { ROUTE_KEYS } from 'views/routes';
 import { StateChangeNotification } from 'models/state.models';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
+import RouteLink from 'views/common/navigation/RouteLink';
 
 const styles = ({ palette, typography }: Theme) => createStyles({
     header: {
@@ -168,19 +169,20 @@ const SecurityGroupsOverview = withStyles(styles)(
                                         checkAuthority(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE) && (
                                             <Box display="flex" alignItems="center">
                                                 <Box flex="0 0 auto">
-                                                    <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        size="small"
-                                                        startIcon={<AddRounded />}
-                                                        onClick={() => {
-                                                            redirectTo({
-                                                                routeKey: ROUTE_KEYS.R_SECURITY_GROUP_NEW,
-                                                            });
-                                                        }}
+                                                    <RouteLink
+                                                        to={ROUTE_KEYS.R_SECURITY_GROUP_NEW}
                                                     >
-                                                        <Translate msg="security_groups.overview.header.add_button" />
-                                                    </Button>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="secondary"
+                                                            size="small"
+                                                            startIcon={<AddRounded />}
+                                                        >
+                                                            {/* eslint-disable-next-line max-len */}
+                                                            <Translate msg="security_groups.overview.header.add_button" />
+                                                        </Button>
+                                                    </RouteLink>
+
                                                 </Box>
                                             </Box>
                                         )
@@ -266,40 +268,49 @@ const SecurityGroupsOverview = withStyles(styles)(
                                         },
                                     }}
                                     listActions={[].concat({
-                                        icon: <Edit />,
                                         label: translator('security_groups.overview.list.actions.edit'),
-                                        onClick: (id: string) => {
+                                        icon: (id: string) => {
                                             const securityGroups = getAsyncSecurityGroups(state);
                                             const selectedSecurityGroup = securityGroups
                                                 .find((securityGroup: ISecurityGroup) => (
                                                     getUniqueIdFromSecurityGroup(securityGroup) === id
                                                 ));
 
-                                            redirectTo({
-                                                routeKey: ROUTE_KEYS.R_SECURITY_GROUP_DETAIL,
-                                                params: {
-                                                    name: selectedSecurityGroup.name,
-                                                },
-                                            });
+                                            return (
+                                                <RouteLink
+                                                    to={ROUTE_KEYS.R_SECURITY_GROUP_DETAIL}
+                                                    params={{
+                                                        name: selectedSecurityGroup.name,
+                                                    }}
+                                                >
+                                                    <Edit />
+                                                </RouteLink>
+                                            );
                                         },
+                                        onClick: () => { },
                                         hideAction: () =>
                                             !checkAuthority(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE),
                                     }, {
-                                        icon: <Visibility />,
                                         label: translator('security_groups.overview.list.actions.view'),
-                                        onClick: (id: string) => {
+                                        icon: (id: string) => {
                                             const securityGroups = getAsyncSecurityGroups(state);
                                             const selectedSecurityGroup = securityGroups
                                                 .find((securityGroup: ISecurityGroup) => (
                                                     getUniqueIdFromSecurityGroup(securityGroup) === id
                                                 ));
-                                            redirectTo({
-                                                routeKey: ROUTE_KEYS.R_SECURITY_GROUP_DETAIL,
-                                                params: {
-                                                    name: selectedSecurityGroup.name,
-                                                },
-                                            });
+
+                                            return (
+                                                <RouteLink
+                                                    to={ROUTE_KEYS.R_SECURITY_GROUP_DETAIL}
+                                                    params={{
+                                                        name: selectedSecurityGroup.name,
+                                                    }}
+                                                >
+                                                    <Visibility />
+                                                </RouteLink>
+                                            );
                                         },
+                                        onClick: () => {},
                                         hideAction: () =>
                                             checkAuthority(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE),
                                     }, {

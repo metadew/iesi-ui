@@ -35,7 +35,7 @@ import GenericSort from 'views/common/list/GenericSort';
 import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
-import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { ROUTE_KEYS } from 'views/routes';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { getTranslator } from 'state/i18n/selectors';
@@ -45,6 +45,7 @@ import { getUniqueIdFromDataset } from 'utils/datasets/datasetUtils';
 import { StateChangeNotification } from 'models/state.models';
 import { Alert } from '@material-ui/lab';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
+import RouteLink from 'views/common/navigation/RouteLink';
 import TextFileInputDialog from '../../common/layout/TextFileInputDialog';
 
 const styles = ({ palette, typography }: Theme) => createStyles({
@@ -194,17 +195,18 @@ const DatasetOverview = withStyles(styles)(
                                                     />
                                                 </Box>
                                                 <Box flex="0 0 auto">
-                                                    <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        size="small"
-                                                        startIcon={<AddRounded />}
-                                                        onClick={() => {
-                                                            redirectTo({ routeKey: ROUTE_KEYS.R_DATASET_NEW });
-                                                        }}
+                                                    <RouteLink
+                                                        to={ROUTE_KEYS.R_DATASET_NEW}
                                                     >
-                                                        <Translate msg="datasets.overview.header.add_button" />
-                                                    </Button>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="secondary"
+                                                            size="small"
+                                                            startIcon={<AddRounded />}
+                                                        >
+                                                            <Translate msg="datasets.overview.header.add_button" />
+                                                        </Button>
+                                                    </RouteLink>
                                                 </Box>
                                             </Box>
                                         )
@@ -297,19 +299,24 @@ const DatasetOverview = withStyles(styles)(
                                         },
                                     }}
                                     listActions={[].concat({
-                                        icon: <Edit />,
-                                        label: translator('datasets.overview.list.actions.edit'),
-                                        onClick: (id: string) => {
+                                        icon: (id: string) => {
                                             const datasets = getAsyncDatasets(state);
                                             const selectedDataset = datasets.find((item) =>
                                                 getUniqueIdFromDataset(item) === id);
-                                            redirectTo({
-                                                routeKey: ROUTE_KEYS.R_DATASET_DETAIL,
-                                                params: {
-                                                    name: selectedDataset.name,
-                                                },
-                                            });
+
+                                            return (
+                                                <RouteLink
+                                                    to={ROUTE_KEYS.R_DATASET_DETAIL}
+                                                    params={{
+                                                        name: selectedDataset.name,
+                                                    }}
+                                                >
+                                                    <Edit />
+                                                </RouteLink>
+                                            );
                                         },
+                                        label: translator('datasets.overview.list.actions.edit'),
+                                        onClick: () => {},
                                         hideAction: () => (
                                             !checkAuthority(
                                                 state,
@@ -317,19 +324,23 @@ const DatasetOverview = withStyles(styles)(
                                             )
                                         ),
                                     }, {
-                                        icon: <Visibility />,
-                                        label: translator('datasets.overview.list.actions.view'),
-                                        onClick: (id: string) => {
+                                        icon: (id: string) => {
                                             const datasets = getAsyncDatasets(state);
                                             const selectedDataset = datasets.find((item) =>
                                                 getUniqueIdFromDataset(item) === id);
-                                            redirectTo({
-                                                routeKey: ROUTE_KEYS.R_DATASET_DETAIL,
-                                                params: {
-                                                    name: selectedDataset.name,
-                                                },
-                                            });
+                                            return (
+                                                <RouteLink
+                                                    to={ROUTE_KEYS.R_DATASET_DETAIL}
+                                                    params={{
+                                                        name: selectedDataset.name,
+                                                    }}
+                                                >
+                                                    <Visibility />
+                                                </RouteLink>
+                                            );
                                         },
+                                        label: translator('datasets.overview.list.actions.view'),
+                                        onClick: () => {},
                                         hideAction: () => (
                                             checkAuthority(
                                                 state,

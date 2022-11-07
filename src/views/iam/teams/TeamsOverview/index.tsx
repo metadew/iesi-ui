@@ -41,6 +41,7 @@ import { getTranslator } from 'state/i18n/selectors';
 import GenericList from 'views/common/list/GenericList';
 import { Alert } from '@material-ui/lab';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import RouteLink from 'views/common/navigation/RouteLink';
 
 const styles = ({ palette, typography }: Theme) => createStyles({
     header: {
@@ -171,19 +172,18 @@ const TeamsOverview = withStyles(styles)(
                                         checkAuthority(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE) && (
                                             <Box display="flex" alignItems="center">
                                                 <Box flex="0 0 auto">
-                                                    <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        size="small"
-                                                        startIcon={<AddRounded />}
-                                                        onClick={() => {
-                                                            redirectTo({
-                                                                routeKey: ROUTE_KEYS.R_TEAM_NEW,
-                                                            });
-                                                        }}
+                                                    <RouteLink
+                                                        to={ROUTE_KEYS.R_TEAM_NEW}
                                                     >
-                                                        <Translate msg="teams.overview.header.add_button" />
-                                                    </Button>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="secondary"
+                                                            size="small"
+                                                            startIcon={<AddRounded />}
+                                                        >
+                                                            <Translate msg="teams.overview.header.add_button" />
+                                                        </Button>
+                                                    </RouteLink>
                                                 </Box>
                                             </Box>
                                         )
