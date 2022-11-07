@@ -28,7 +28,7 @@ import { IOutputValue, IParameterRawValue } from 'models/state/iesiGeneric.model
 import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { useParams } from 'react-router-dom';
-import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { ROUTE_KEYS } from 'views/routes';
 import StatusIcon from 'views/common/icons/StatusIcon';
 import RouteLink from 'views/common/navigation/RouteLink';
 import { format as formatDate, parseISO } from 'date-fns';
