@@ -19,6 +19,7 @@ import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import RouteLink from 'views/common/navigation/RouteLink';
 import { ROUTE_KEYS } from 'views/routes';
 import { IScript } from 'models/state/scripts.models';
+import { getDecodedToken } from 'utils/users/userUtils';
 
 interface IPublicProps {
     onPlay?: () => void;
@@ -78,6 +79,7 @@ function DetailActions({
                 script: newScriptDetail && newScriptDetail.name,
                 version: newScriptDetail && newScriptDetail.version
                     ? newScriptDetail.version.number : null,
+                requester: getDecodedToken().username,
             }}
         >
             <IconButton

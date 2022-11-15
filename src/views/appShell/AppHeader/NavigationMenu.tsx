@@ -73,7 +73,7 @@ function NavigationMenu({ state }: IObserveProps) {
 
         return isAllowedToRoute
             && (
-                <RouteLink to={item.routeKey}>
+                <RouteLink to={item.routeKey} queryParams={item.queryParams}>
                     <MenuItem
                         className={currentRoute.routeKey === routeKey ? classes.selected : ''}
                         onClick={() => handleNavigation(routeKey)}

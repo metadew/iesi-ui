@@ -1,4 +1,20 @@
 import { IUser } from 'models/state/user.model';
+import Cookie from 'js-cookie';
+import cryptoJS from 'crypto-js';
+import { getDecodedAccessToken } from 'state/auth/selectors';
+
+export function getDecodedToken() {
+    const encryptedCookie = Cookie.get('app_session');
+    if (!encryptedCookie) {
+        return {
+            authorities: [],
+            username: '',
+        };
+    }
+    const decryptedCookieData = cryptoJS.AES.decrypt(encryptedCookie, process.env.REACT_APP_COOKIE_SECRET_KEY);
+    const decryptedCookie = JSON.parse(decryptedCookieData.toString(cryptoJS.enc.Utf8));
+    return getDecodedAccessToken(decryptedCookie.access_token);
+}
 
 export function getUniqueIdFromUser(user: IUser) {
     return user ? user.id : null;

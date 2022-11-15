@@ -20,7 +20,7 @@ export function getIntialFiltersFromFilterConfig<ColumnNames>(
         const columnName = (untypedColumnName as unknown) as keyof ColumnNames;
         const filterAction = filterConfig[columnName] as IFilterConfigItem;
         acc[columnName] = {
-            values: [],
+            values: filterAction.value ? [filterAction.value] : [],
             name: columnName,
             filterType: filterAction.filterType,
         };
