@@ -208,7 +208,7 @@ export default function GenericTableRow<ColumnNames>({
                 </TableCell>
             )}
             { isPlaceholder ? renderPlaceholderCells() : renderDataCells()}
-            {listActions && (
+            {listActions && !isPlaceholder && (
                 <>
                     <TableCell
                         align="right"
@@ -217,26 +217,35 @@ export default function GenericTableRow<ColumnNames>({
                         })}
                     >
                         <div className={classes.actionsWrapper}>
-                            {listActions.map((action, listActionIndex) => (
-                                !isPlaceholder ? (
-                                    (!action.hideAction || !action.hideAction(item, rowIndex)) && (
-                                        // eslint-disable-next-line react/no-array-index-key
-                                        <div key={listActionIndex} className={classes.actionsItem}>
+                            {listActions.map((action, listActionIndex) => {
+                                let icon;
+                                if (typeof action.icon === 'function') {
+                                    icon = action.icon(item.id, rowIndex);
+                                } else {
+                                    icon = action.icon;
+                                }
 
-                                            <Tooltip title={action.label} enterDelay={1000} enterNextDelay={1000}>
-                                                <IconButton
-                                                    area-label={action.label}
-                                                    onClick={() => action.onClick(item.id, rowIndex)}
-                                                    className={classes.actionIcon}
-                                                >
-                                                    {action.icon}
-                                                </IconButton>
-                                            </Tooltip>
+                                return (
+                                    !isPlaceholder ? (
+                                        (!action.hideAction || !action.hideAction(item, rowIndex)) && (
+                                            // eslint-disable-next-line react/no-array-index-key
+                                            <div key={listActionIndex} className={classes.actionsItem}>
 
-                                        </div>
-                                    )
-                                ) : renderPlaceholderCellContent(listActionIndex)
-                            ))}
+                                                <Tooltip title={action.label} enterDelay={1000} enterNextDelay={1000}>
+                                                    <IconButton
+                                                        area-label={action.label}
+                                                        onClick={() => action.onClick(item.id, rowIndex)}
+                                                        className={classes.actionIcon}
+                                                    >
+                                                        {icon}
+                                                    </IconButton>
+                                                </Tooltip>
+
+                                            </div>
+                                        )
+                                    ) : renderPlaceholderCellContent(listActionIndex)
+                                );
+                            })}
                         </div>
                     </TableCell>
                     {listActions.length > 1 && (
@@ -264,25 +273,34 @@ export default function GenericTableRow<ColumnNames>({
                                     className: classes.actionsMenu,
                                 }}
                             >
-                                {listActions.map((action, listActionIndex) => (
-                                    !isPlaceholder && (!action.hideAction || !action.hideAction(item, rowIndex)) && (
-                                        <MenuItem
-                                            // eslint-disable-next-line react/no-array-index-key
-                                            key={listActionIndex}
-                                            onClick={() => {
-                                                handleClose();
-                                                action.onClick(item.id, rowIndex);
-                                            }}
-                                            dense
-                                            className={classes.actionsMenuItem}
-                                        >
-                                            <ListItemIcon>
-                                                {action.icon}
-                                            </ListItemIcon>
-                                            <Typography variant="inherit" noWrap>{action.label}</Typography>
-                                        </MenuItem>
-                                    )
-                                ))}
+                                {listActions.map((action, listActionIndex) => {
+                                    let icon;
+                                    if (typeof action.icon === 'function') {
+                                        icon = action.icon(item.id, rowIndex);
+                                    } else {
+                                        icon = action.icon;
+                                    }
+                                    return (
+                                        // eslint-disable-next-line max-len
+                                        !isPlaceholder && (!action.hideAction || !action.hideAction(item, rowIndex)) && (
+                                            <MenuItem
+                                                // eslint-disable-next-line react/no-array-index-key
+                                                key={listActionIndex}
+                                                onClick={() => {
+                                                    handleClose();
+                                                    action.onClick(item.id, rowIndex);
+                                                }}
+                                                dense
+                                                className={classes.actionsMenuItem}
+                                            >
+                                                <ListItemIcon>
+                                                    {icon}
+                                                </ListItemIcon>
+                                                <Typography variant="inherit" noWrap>{action.label}</Typography>
+                                            </MenuItem>
+                                        )
+                                    );
+                                })}
                             </Menu>
                         </TableCell>
                     )}

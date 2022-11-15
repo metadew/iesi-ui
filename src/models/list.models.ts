@@ -19,7 +19,7 @@ export type ListColumns<ColumnNames> = {
 };
 
 export interface IListAction<ColumnNames> {
-    icon: ReactElement;
+    icon: ((id?: ReactText, index?: number) => ReactElement) | ReactElement;
     label: TTranslatorComponent | string;
     onClick: (id: ReactText, index: number) => void;
     hideAction?: (item: IListItem<ColumnNames>, index: number) => boolean;

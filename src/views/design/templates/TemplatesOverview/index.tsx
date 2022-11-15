@@ -41,7 +41,7 @@ import { getUniqueIdFromTemplate } from 'utils/templates/templateUtils';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericSort from 'views/common/list/GenericSort';
 import { AddRounded, Edit } from '@material-ui/icons';
-import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { ROUTE_KEYS } from 'views/routes';
 import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
@@ -52,6 +52,7 @@ import { Alert } from '@material-ui/lab';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import isSet from '@snipsonian/core/es/is/isSet';
+import RouteLink from 'views/common/navigation/RouteLink';
 
 const styles = ({ palette, typography }: Theme) => createStyles({
     header: {
@@ -188,17 +189,19 @@ const TemplatesOverview = withStyles(styles)(
                                         checkAuthority(state, SECURITY_PRIVILEGES.S_TEMPLATES_WRITE) && (
                                             <Box display="flex" alignItems="center" flex="0 0 auto">
                                                 <Box flex="0 0 auto">
-                                                    <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        size="small"
-                                                        startIcon={<AddRounded />}
-                                                        onClick={() => {
-                                                            redirectTo({ routeKey: ROUTE_KEYS.R_TEMPLATE_NEW });
-                                                        }}
+                                                    <RouteLink
+                                                        to={ROUTE_KEYS.R_TEMPLATE_NEW}
                                                     >
-                                                        <Translate msg="templates.overview.header.add_button" />
-                                                    </Button>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="secondary"
+                                                            size="small"
+                                                            startIcon={<AddRounded />}
+                                                        >
+                                                            <Translate msg="templates.overview.header.add_button" />
+                                                        </Button>
+                                                    </RouteLink>
+
                                                 </Box>
                                             </Box>
                                         )
@@ -316,20 +319,25 @@ const TemplatesOverview = withStyles(styles)(
                                         },
                                     }}
                                     listActions={[].concat({
-                                        icon: <Edit />,
                                         label: translator('templates.overview.list.actions.edit'),
-                                        onClick: (id: string) => {
+                                        icon: (id: string) => {
                                             const templates = getAsyncTemplates(state);
                                             const selectedTemplate = templates.find((item) =>
                                                 getUniqueIdFromTemplate(item) === id);
-                                            redirectTo({
-                                                routeKey: ROUTE_KEYS.R_TEMPLATE_DETAIL,
-                                                params: {
-                                                    name: selectedTemplate.name,
-                                                    version: selectedTemplate.version,
-                                                },
-                                            });
+
+                                            return (
+                                                <RouteLink
+                                                    to={ROUTE_KEYS.R_TEMPLATE_DETAIL}
+                                                    queryParams={{
+                                                        name: selectedTemplate.name,
+                                                        version: selectedTemplate.version,
+                                                    }}
+                                                >
+                                                    <Edit />
+                                                </RouteLink>
+                                            );
                                         },
+                                        onClick: () => { },
                                         hideAction: () => !checkAuthority(state, SECURITY_PRIVILEGES.S_TEMPLATES_WRITE),
                                     }, {
                                         icon: <DeleteIcon />,

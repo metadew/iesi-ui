@@ -34,6 +34,7 @@ import OrderedList from 'views/common/list/OrderedList';
 import { IUser } from 'models/state/user.model';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
+import RouteLink from 'views/common/navigation/RouteLink';
 import AddUser from '../AddUser';
 import EditSecurityGroups from './EditSecurityGroups';
 import DetailActions from './DetailActions';
@@ -387,36 +388,42 @@ const TeamDetail = withStyles(styles)(
                                 columns={userColumns}
                                 listActions={[
                                     {
-                                        icon: <Edit />,
-                                        label: translator(
-                                            'teams.detail.main.list.item.actions.edit',
+                                        icon: (id, index) => (
+                                            <RouteLink
+                                                to={ROUTE_KEYS.R_USER_DETAIL}
+                                                params={{
+                                                    name: users[index].username,
+                                                }}
+                                                queryParams={{
+                                                    teamName: (newTeamDetail as ITeamBase).teamName,
+                                                }}
+                                            >
+                                                <Edit />
+                                            </RouteLink>
                                         ),
-                                        onClick: (id, index) => redirectTo({
-                                            routeKey: ROUTE_KEYS.R_USER_DETAIL,
-                                            params: {
-                                                name: users[index].username,
-                                            },
-                                            queryParams: {
-                                                teamName: (newTeamDetail as ITeamBase).teamName,
-                                            },
-                                        }),
+                                        label: translator('teams.detail.main.list.item.actions.edit'),
+                                        onClick: () => {},
                                         hideAction: () =>
                                             !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_USERS_WRITE,
                                             ),
                                     }, {
-                                        icon: <Visibility />,
+                                        icon: (id, index) => (
+                                            <RouteLink
+                                                params={{
+                                                    name: users[index].username,
+                                                }}
+                                                queryParams={{
+                                                    teamName: (newTeamDetail as ITeamBase).teamName,
+                                                }}
+                                                to={ROUTE_KEYS.R_USER_DETAIL}
+                                            >
+                                                <Visibility />
+                                            </RouteLink>
+                                        ),
                                         label: translator('teams.detail.main.list.item.actions.view'),
-                                        onClick: (id, index) => redirectTo({
-                                            routeKey: ROUTE_KEYS.R_USER_DETAIL,
-                                            params: {
-                                                name: users[index].username,
-                                            },
-                                            queryParams: {
-                                                teamName: (newTeamDetail as ITeamBase).teamName,
-                                            },
-                                        }),
+                                        onClick: () => {},
                                         hideAction: () =>
                                             checkAuthority(
                                                 state,

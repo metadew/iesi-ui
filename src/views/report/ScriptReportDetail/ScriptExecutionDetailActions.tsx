@@ -1,6 +1,5 @@
 import React from 'react';
 import classNames from 'classnames';
-import { format as formatDate, parseISO } from 'date-fns';
 import {
     Box,
     Button,
@@ -29,8 +28,10 @@ import { IOutputValue, IParameterRawValue } from 'models/state/iesiGeneric.model
 import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { useParams } from 'react-router-dom';
-import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { ROUTE_KEYS } from 'views/routes';
 import StatusIcon from 'views/common/icons/StatusIcon';
+import RouteLink from 'views/common/navigation/RouteLink';
+import { format as formatDate, parseISO } from 'date-fns';
 import { IExecutionDetailPathParams } from './shared';
 
 const ACTION_TYPE_NAME_WITH_CHILD_SCRIPTS = 'fwk.executeScript';
@@ -219,22 +220,25 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                 </Box>
                                 {(item.data.type === ACTION_TYPE_NAME_WITH_CHILD_SCRIPTS) && (
                                     <Box flex="0 0 auto" paddingX={1}>
-                                        <Button
-                                            variant="contained"
-                                            color="secondary"
-                                            size="small"
-                                            endIcon={<ChevronRightRounded />}
-                                            onClick={() => redirectTo({
-                                                routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
-                                                params: {
-                                                    executionRequestId,
-                                                    runId: item.data.runId,
-                                                    processId: item.data.processId,
-                                                },
-                                            })}
+                                        <RouteLink
+                                            to={ROUTE_KEYS.R_REPORT_DETAIL}
+                                            params={{
+                                                executionRequestId,
+                                                runId: item.data.runId,
+                                                processId: item.data.processId,
+                                            }}
                                         >
-                                            <Translate msg="script_reports.detail.main.action.go_to_script_detail" />
-                                        </Button>
+                                            <Button
+                                                variant="contained"
+                                                color="secondary"
+                                                size="small"
+                                                endIcon={<ChevronRightRounded />}
+                                            >
+                                                {/* eslint-disable-next-line max-len */}
+                                                <Translate msg="script_reports.detail.main.action.go_to_script_detail" />
+                                            </Button>
+                                        </RouteLink>
+
                                     </Box>
                                 )}
                             </Box>
@@ -289,74 +293,72 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                                     {parameter.rawValue}
                                                     {
                                                         (parameter.name === 'request') && (
-                                                            <Button
-                                                                variant="contained"
-                                                                color="secondary"
-                                                                size="small"
-                                                                onClick={() =>
-                                                                    redirectTo({
-                                                                        routeKey: ROUTE_KEYS.R_COMPONENT_DETAIL,
-                                                                        params: {
-                                                                            name: parameter.resolvedValue
-                                                                            || parameter.rawValue,
-                                                                            version: (
-                                                                                getRequestVersion(
-                                                                                    item.data.inputParameters,
-                                                                                )
-                                                                            ),
-                                                                        },
-                                                                        newTab: true,
-                                                                    })}
+                                                            <RouteLink
+                                                                to={ROUTE_KEYS.R_COMPONENT_DETAIL}
+                                                                params={{
+                                                                    name: parameter.resolvedValue
+                                                                        || parameter.rawValue,
+                                                                    version: (
+                                                                        getRequestVersion(
+                                                                            item.data.inputParameters,
+                                                                        )
+                                                                    ),
+                                                                }}
                                                             >
-                                                                <ChevronRightRounded />
-                                                            </Button>
+                                                                <Button
+                                                                    variant="contained"
+                                                                    color="secondary"
+                                                                    size="small"
+                                                                >
+                                                                    <ChevronRightRounded />
+                                                                </Button>
+                                                            </RouteLink>
                                                         )
                                                     }
                                                     {
                                                         (parameter.name === 'dataset') && (
                                                             <Box>
-                                                                <Button
-                                                                    variant="contained"
-                                                                    color="secondary"
-                                                                    size="small"
-                                                                    onClick={() =>
-                                                                        redirectTo({
-                                                                            routeKey: ROUTE_KEYS.R_DATASET_DETAIL,
-                                                                            params: {
-                                                                                name: parameter.resolvedValue
-                                                                                || parameter.rawValue,
-                                                                            },
-                                                                            newTab: true,
-                                                                        })}
+                                                                <RouteLink
+                                                                    to={ROUTE_KEYS.R_DATASET_DETAIL}
+                                                                    params={{
+                                                                        name: parameter.resolvedValue
+                                                                            || parameter.rawValue,
+                                                                    }}
                                                                 >
-                                                                    <ChevronRightRounded />
-                                                                </Button>
+                                                                    <Button
+                                                                        variant="contained"
+                                                                        color="secondary"
+                                                                        size="small"
+                                                                    >
+                                                                        <ChevronRightRounded />
+                                                                    </Button>
+                                                                </RouteLink>
+
                                                             </Box>
                                                         )
                                                     }
                                                     {
                                                         (parameter.name === 'script') && (
-                                                            <Button
-                                                                variant="contained"
-                                                                color="secondary"
-                                                                size="small"
-                                                                onClick={() =>
-                                                                    redirectTo({
-                                                                        routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                                                        params: {
-                                                                            name: parameter.resolvedValue
-                                                                            || parameter.rawValue,
-                                                                            version: (
-                                                                                getRequestVersionScript(
-                                                                                    item.data.inputParameters,
-                                                                                )
-                                                                            ),
-                                                                        },
-                                                                        newTab: true,
-                                                                    })}
+                                                            <RouteLink
+                                                                to={ROUTE_KEYS.R_SCRIPT_DETAIL}
+                                                                params={{
+                                                                    name: parameter.resolvedValue
+                                                                        || parameter.rawValue,
+                                                                    version: (
+                                                                        getRequestVersionScript(
+                                                                            item.data.inputParameters,
+                                                                        )
+                                                                    ),
+                                                                }}
                                                             >
-                                                                <ChevronRightRounded />
-                                                            </Button>
+                                                                <Button
+                                                                    variant="contained"
+                                                                    color="secondary"
+                                                                    size="small"
+                                                                >
+                                                                    <ChevronRightRounded />
+                                                                </Button>
+                                                            </RouteLink>
                                                         )
                                                     }
                                                 </Box>

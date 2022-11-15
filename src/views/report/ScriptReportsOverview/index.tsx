@@ -5,8 +5,7 @@ import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
 import { PlayArrow, WatchLater } from '@material-ui/icons';
-import { redirectTo, ROUTE_KEYS } from 'views/routes';
-import ReportIcon from 'views/common/icons/Report';
+import { ROUTE_KEYS } from 'views/routes';
 import {
     FilterConfig,
     FilterType,
@@ -48,6 +47,8 @@ import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { checkAuthority } from 'state/auth/selectors';
 import { getEnvironmentsForDropdown } from 'state/entities/environments/selectors';
 import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
+import RouteLink from 'views/common/navigation/RouteLink';
+import ReportIcon from 'views/common/icons/Report';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -418,19 +419,23 @@ const ScriptReportsOverview = withStyles(styles)(
                 <Box paddingBottom={5} marginX={2.8}>
                     <GenericList
                         listActions={[].concat({
-                            icon: <ReportIcon />,
                             label: translator('script_reports.overview.list.actions.report'),
-                            onClick: (id: number) => {
+                            icon: (id: string) => {
                                 const execution = listItems.find((listItem) => listItem.id === id);
 
-                                redirectTo({
-                                    routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
-                                    params: {
-                                        executionRequestId: id,
-                                        runId: execution && execution.data.runId,
-                                    },
-                                });
+                                return (
+                                    <RouteLink
+                                        to={ROUTE_KEYS.R_REPORT_DETAIL}
+                                        params={{
+                                            executionRequestId: id,
+                                            runId: execution && execution.data.runId,
+                                        }}
+                                    >
+                                        <ReportIcon />
+                                    </RouteLink>
+                                );
                             },
+                            onClick: () => { },
                             hideAction: (item: IListItem<IColumnNames>) => {
                                 const execution = listItems.find((listItem) =>
                                     listItem.id === item.id);

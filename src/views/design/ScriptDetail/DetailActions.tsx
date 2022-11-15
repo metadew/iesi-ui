@@ -12,21 +12,22 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { THEME_COLORS } from 'config/themes/colors';
 import Tooltip from 'views/common/tooltips/Tooltip';
 import { IObserveProps, observe } from 'views/observe';
-import { ISecuredObject } from 'models/core.models';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
 import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
+import RouteLink from 'views/common/navigation/RouteLink';
+import { ROUTE_KEYS } from 'views/routes';
+import { IScript } from 'models/state/scripts.models';
 
 interface IPublicProps {
     onPlay?: () => void;
     onDelete?: () => void;
     onAdd?: () => void;
     onSave?: () => void;
-    onViewReport?: () => void;
     onExport?: () => void;
     isCreateRoute?: boolean;
-    newScriptDetail?: ISecuredObject;
+    newScriptDetail?: IScript;
 }
 
 const useStyles = makeStyles(({ palette, spacing }) => ({
@@ -52,10 +53,10 @@ function DetailActions({
     onDelete,
     onAdd,
     onSave,
-    onViewReport,
     onExport,
     isCreateRoute,
     state,
+    newScriptDetail,
 }: IPublicProps & IObserveProps) {
     const classes = useStyles();
     const translator = getTranslator(state);
@@ -71,13 +72,21 @@ function DetailActions({
     );
 
     const ReportButton = (
-        <IconButton
-            disabled={isCreateRoute}
-            aria-label={translator('scripts.detail.main.actions.report')}
-            onClick={onViewReport}
+        <RouteLink
+            to={ROUTE_KEYS.R_REPORTS}
+            queryParams={{
+                script: newScriptDetail && newScriptDetail.name,
+                version: newScriptDetail && newScriptDetail.version
+                    ? newScriptDetail.version.number : null,
+            }}
         >
-            <ReportIcon />
-        </IconButton>
+            <IconButton
+                disabled={isCreateRoute}
+                aria-label={translator('scripts.detail.main.actions.report')}
+            >
+                <ReportIcon />
+            </IconButton>
+        </RouteLink>
     );
 
     const ExecuteButton = (

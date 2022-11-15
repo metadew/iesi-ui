@@ -9,6 +9,7 @@ import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { IObserveProps, observe } from 'views/observe';
 import { useLocation } from 'react-router-dom';
 import getRouteMatchByPath from 'utils/navigation/getRouteMatchByPath';
+import RouteLink from 'views/common/navigation/RouteLink';
 
 const useStyles = makeStyles(({ palette }) => ({
     selected: {
@@ -71,16 +72,18 @@ function NavigationMenu({ state }: IObserveProps) {
         const isAllowedToRoute = hasRequiredAccessLevels(state, requiredAccessLevels);
 
         return isAllowedToRoute
-            ? (
-                <MenuItem
-                    className={currentRoute.routeKey === routeKey ? classes.selected : ''}
-                    onClick={() => handleNavigation(routeKey)}
-                    key={`main-nav_${routeKey}`}
-                >
-                    <Translate msg={translationKey} />
-                </MenuItem>
-            )
-            : null;
+            && (
+                <RouteLink to={item.routeKey}>
+                    <MenuItem
+                        className={currentRoute.routeKey === routeKey ? classes.selected : ''}
+                        onClick={() => handleNavigation(routeKey)}
+                        key={`main-nav_${routeKey}`}
+                    >
+                        <Translate msg={translationKey} />
+                    </MenuItem>
+                </RouteLink>
+
+            );
     }
 }
 

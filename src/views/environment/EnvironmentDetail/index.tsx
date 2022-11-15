@@ -123,6 +123,7 @@ const EnvironmentDetail = withStyles(styles)(
             const deleteStatus = getAsyncEnvironmentDetail(state).remove.status;
             const parameter = this.getEditParameter();
             const translator = getTranslator(state);
+
             return (
                 <>
                     <Loader
@@ -515,4 +516,5 @@ function matchEnvironment(state: IState, env: IEnvironment) {
 
 export default observe([
     StateChangeNotification.ENVIRONMENT_DETAIL,
+    StateChangeNotification.ENVIRONMENTS,
 ], withRouter(EnvironmentDetail));

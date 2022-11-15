@@ -35,6 +35,7 @@ import GenericList from 'views/common/list/GenericList';
 import { getTranslator } from 'state/i18n/selectors';
 import { Alert } from '@material-ui/lab';
 import OrderedList from 'views/common/list/OrderedList';
+import RouteLink from 'views/common/navigation/RouteLink';
 
 const styles = ({ palette, typography }: Theme) => createStyles({
     header: {
@@ -160,17 +161,19 @@ const UsersOverview = withStyles(styles)(
                                         checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE) && (
                                             <Box display="flex" alignItems="center">
                                                 <Box flex="0 0 auto">
-                                                    <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        size="small"
-                                                        startIcon={<AddRounded />}
-                                                        onClick={() => {
-                                                            redirectTo({ routeKey: ROUTE_KEYS.R_USER_NEW });
-                                                        }}
+                                                    <RouteLink
+                                                        to={ROUTE_KEYS.R_USER_NEW}
                                                     >
-                                                        <Translate msg="users.overview.header.add_button" />
-                                                    </Button>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="secondary"
+                                                            size="small"
+                                                            startIcon={<AddRounded />}
+                                                        >
+                                                            <Translate msg="users.overview.header.add_button" />
+                                                        </Button>
+                                                    </RouteLink>
+
                                                 </Box>
                                             </Box>
                                         )
