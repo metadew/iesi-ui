@@ -1,10 +1,14 @@
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { ROUTE_KEYS } from 'views/routes';
+import { getDecodedToken } from 'utils/users/userUtils';
 
 const TRANSLATION_PREFIX = 'app_shell.header.menu';
 
 export interface IMenuItem {
     routeKey: ROUTE_KEYS;
+    queryParams?: {
+        [key: string]: string;
+    };
     translationKey: string;
     securityPrivilege: SECURITY_PRIVILEGES;
 }
@@ -17,6 +21,9 @@ export const MAIN_NAV_ITEMS: IMenuItem[] = [
     }),
     toMenuItem({
         routeKey: ROUTE_KEYS.R_REPORTS,
+        queryParams: {
+            requester: getDecodedToken().username,
+        },
         translationKeySuffix: 'reports',
         securityPrivilege: SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_READ,
     }),
@@ -64,15 +71,20 @@ export const MAIN_NAV_ITEMS: IMenuItem[] = [
 
 function toMenuItem({
     routeKey,
+    queryParams = {},
     translationKeySuffix,
     securityPrivilege,
 }: {
     routeKey: ROUTE_KEYS;
+    queryParams?: {
+        [key: string]: string;
+    };
     translationKeySuffix: string;
     securityPrivilege: SECURITY_PRIVILEGES;
 }): IMenuItem {
     return {
         routeKey,
+        queryParams,
         translationKey: `${TRANSLATION_PREFIX}.${translationKeySuffix}`,
         securityPrivilege,
     };

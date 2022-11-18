@@ -12,6 +12,7 @@ import {
     IUserPasswordPostPayload,
     IUserPost,
 } from 'models/state/user.model';
+// eslint-disable-next-line import/no-cycle
 import { getUsersWithDistinctTeams, getUserWithDistinctTeams } from 'utils/users/userUtils';
 
 interface IUserResponse {

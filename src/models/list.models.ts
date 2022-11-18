@@ -94,6 +94,7 @@ export interface IFilterConfigItem {
     // You can get auto-completion by typing 'state: IState' in the selector passed to getDropdownOptions
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getDropdownOptions?: (state: any) => string[];
+    value?: string;
 }
 
 export type FilterConfig<ColumnNames> = {

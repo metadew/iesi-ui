@@ -13,6 +13,7 @@ export interface IColumnNames {
     labels: number;
     parameters: number;
     runId: string;
+    requester?: string;
 }
 
 export interface IExecutionRequest {
@@ -80,6 +81,7 @@ interface IFetchExecutionRequestListFilter {
     environment?: string;
     'run-id'?: string;
     'run-status'?: string;
+    requester?: string;
 }
 
 export interface IExecutionRequestsEntity {

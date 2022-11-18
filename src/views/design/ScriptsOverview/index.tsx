@@ -63,6 +63,7 @@ import { checkAuthority } from 'state/auth/selectors';
 import RouteLink from 'views/common/navigation/RouteLink';
 import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
 import TextFileInputDialog from 'views/common/layout/TextFileInputDialog';
+import { getDecodedToken } from 'utils/users/userUtils';
 import DuplicateScriptDialog from '../common/DuplicateScriptDialog';
 
 const styles = ({ palette, typography }: Theme) =>
@@ -465,6 +466,7 @@ const ScriptsOverview = withStyles(styles)(
                                                     queryParams={{
                                                         script: selectedScript.name,
                                                         version: selectedScript.version.number,
+                                                        requester: getDecodedToken().username,
                                                     }}
                                                 >
                                                     <ReportIcon />
