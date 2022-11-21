@@ -1,28 +1,13 @@
 import { IState } from 'models/state.models';
-import {
-    IAccessLevel,
-    IAccessToken,
-    IPrivilege,
-    ITeamSecurityGroup,
-    IUser,
-    IUserRole,
-    SECURITY_PRIVILEGES,
-} from 'models/state/auth.models';
+import { IAccessLevel, IAccessToken, IRefreshToken, SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { getParentRouteKeys, getRoute, ROUTE_KEYS } from 'views/routes';
 import { decode } from 'jsonwebtoken';
+import Cookie from 'js-cookie';
+import cryptoJS from 'crypto-js';
 
 export const getUserPermissions = (state: IState) => state.auth.permissions;
-export const getAuth = (state: IState) => state.auth;
 
 export const hasRequiredAccessLevels = (
-    state: IState,
-    requiredAccessLevels: IAccessLevel[] = [],
-): boolean => {
-    const userPermissions = getUserPermissions(state);
-    return requiredAccessLevels.every((requiredAccessLevel) => userPermissions.includes(requiredAccessLevel));
-};
-
-export const hasConceptAccessLevels = (
     state: IState,
     requiredAccessLevels: IAccessLevel[] = [],
 ): boolean => {
@@ -33,60 +18,48 @@ export const hasConceptAccessLevels = (
 export const getAllowedParentRouteKeys = (state: IState): ROUTE_KEYS[] => getParentRouteKeys()
     .filter((routeKey) => hasRequiredAccessLevels(state, getRoute({ routeKey }).requiredAccessLevels));
 
-export const getUserUuidFromToken = (token: string): IAccessToken | null => {
+export const getDecodedAccessToken = (token: string): IAccessToken | null => {
     const decoded: null | { [key: string]: any } = decode(token, { json: true });
     if (decoded !== undefined) {
         return {
-            sub: decoded.sub,
-            iss: decoded.iss,
-            exp: decoded.exp,
-            iat: decoded.iat,
-            uuid: decoded.uuid,
+            authorities: decoded.authorities,
+            username: decoded.user_name,
         };
     }
     return null;
 };
 
-export const extractAccessLevelFromUser = (user: IUser): IAccessLevel[] =>
-    user.roles
-        .map((role: IUserRole) => {
-            const { securityGroups } = role.team;
-            const { privileges } = role;
-            return securityGroups.map((securityGroup: ITeamSecurityGroup) =>
-                privileges.map((privilege: IPrivilege) => (
-                    {
-                        group: securityGroup.name,
-                        privilege: SECURITY_PRIVILEGES[privilege.privilege as keyof typeof SECURITY_PRIVILEGES],
-                    }
-                )))
-                .flat();
-        }).flat();
+export const getDecodedRefreshToken = (token: string): IRefreshToken | null => {
+    const decoded: null | { [key: string]: any } = decode(token, { json: true });
+    if (decoded !== undefined) {
+        return {
+            exp: decoded.exp,
+        };
+    }
+    return null;
+};
 
-export const extractAccessLevelFromUserRoles = (userRoles: IUserRole[]): IAccessLevel[] =>
-    userRoles
-        .map((role: IUserRole) => {
-            const { securityGroups } = role.team;
-            const { privileges } = role;
-            return securityGroups.map((securityGroup: ITeamSecurityGroup) =>
-                privileges.map((privilege: IPrivilege) => (
-                    {
-                        group: securityGroup.name,
-                        privilege: SECURITY_PRIVILEGES[`S_${privilege.privilege}` as keyof typeof SECURITY_PRIVILEGES],
-                    }
-                )))
-                .flat();
-        }).flat();
+export function checkAuthority(state: IState, privilege: SECURITY_PRIVILEGES) {
+    const encryptedCookie = Cookie.get('app_session');
 
-export function checkAuthority(state: IState, privilege: SECURITY_PRIVILEGES, securityGroupName: string) {
-    if (securityGroupName == null || privilege == null) {
+    if (encryptedCookie === undefined) {
         return false;
     }
-    return state.auth.permissions.some((permission: IAccessLevel) => permission.group === securityGroupName
-        && permission.privilege === privilege);
+    const decryptedCookieData = cryptoJS.AES.decrypt(
+        encryptedCookie,
+        process.env.REACT_APP_COOKIE_SECRET_KEY,
+    );
+    const decryptedCookie = JSON.parse(decryptedCookieData.toString(cryptoJS.enc.Utf8));
+
+    if (!decryptedCookie.permissions) {
+        return false;
+    }
+
+    return decryptedCookie.permissions.includes(privilege);
 }
 
-export function checkAuthorityGeneral(state: IState, privilege: SECURITY_PRIVILEGES) {
-    return state.auth.permissions.some((permission: IAccessLevel) => permission.privilege === privilege);
+export function checkUsername(state: IState, username: string) {
+    return state.auth.username === username;
 }
 
 export function isAuthenticated(state: IState) {

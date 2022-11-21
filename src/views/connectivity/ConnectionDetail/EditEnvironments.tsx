@@ -1,31 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
-    Button,
     Box,
-    makeStyles,
-    Select,
-    MenuItem,
-    FormControl,
-    InputLabel,
+    Button,
     ButtonGroup,
+    FormControl,
+    FormHelperText,
+    InputLabel,
+    makeStyles,
+    MenuItem,
+    Select,
     Theme,
     Typography,
-    FormHelperText,
 } from '@material-ui/core';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getTranslator } from 'state/i18n/selectors';
 import { IObserveProps, observe } from 'views/observe';
 import { IConnectionEnvironment } from 'models/state/connections.model';
-import { getAsyncEnvironments } from 'state/entities/environments/selectors';
+import { getAsyncEnvironments, getAsyncEnvironmentsEntity } from 'state/entities/environments/selectors';
 import Loader from 'views/common/waiting/Loader';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
-import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import { StateChangeNotification } from 'models/state.models';
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import OrderedList from 'views/common/list/OrderedList';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 const useStyles = makeStyles(({ palette }: Theme) => ({
@@ -82,17 +81,8 @@ function EditEnvironmentsDialog({
             showError: false,
         },
     });
+    const environmentsEntity = getAsyncEnvironmentsEntity(state);
     const environmentsAsync = getAsyncEnvironments(state);
-
-    // Trigger Fetch envs on open dialog
-    useEffect(() => {
-        if (open) {
-            triggerFetchEnvironments();
-        } else {
-            // Reset form & async status
-        }
-        return () => { };
-    }, [open]);
 
     const handleSubmit = () => {
         const { passed: passedRequired, requiredFieldsState: requireFields } = requiredFieldsCheck({
@@ -107,11 +97,6 @@ function EditEnvironmentsDialog({
         }
     };
 
-    const getEnvironmentsItems = () => (environmentsAsync.data
-        // eslint-disable-next-line max-len
-        ? environmentsAsync.data.filter((env) => !environments.some((envExisting) => env.name === envExisting.environment))
-        : []);
-
     return (
         <>
             {environments.length > 0
@@ -123,7 +108,7 @@ function EditEnvironmentsDialog({
                             button: true,
                             onSelect: () => onEnvironmentSelected(index),
                             onDelete: isCreateConnectionRoute
-                            || checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                            || checkAuthority(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                                 ? () => onDelete(index) : null,
                         }))}
                     />
@@ -132,7 +117,7 @@ function EditEnvironmentsDialog({
                         <Translate msg="connections.detail.side.environments.empty" />
                     </Typography>
                 )}
-            { checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+            { checkAuthority(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                 && (
                     <Button
                         variant="outlined"
@@ -173,7 +158,7 @@ function EditEnvironmentsDialog({
                                         <Translate msg="connections.detail.side.environments.add_dialog.select_title" />
                                     </MenuItem>
                                     {
-                                        getEnvironmentsItems().map((env) => (
+                                        environmentsEntity.map((env) => (
                                             <MenuItem
                                                 key={JSON.stringify(env.name)}
                                                 value={env.name}

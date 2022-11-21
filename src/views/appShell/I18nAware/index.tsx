@@ -4,7 +4,7 @@ import { SHOW_MSG_KEY_TRANSLATOR } from '@snipsonian/react/es/components/i18n/tr
 import { StateChangeNotification } from 'models/state.models';
 import { DEFAULT_LOCALE } from 'config/i18n.config';
 import { getLocale, getTranslator } from 'state/i18n/selectors';
-import { observe, IObserveProps, IPublicPropsWithChildren } from 'views/observe';
+import { IObserveProps, IPublicPropsWithChildren, observe } from 'views/observe';
 
 function I18nAware({
     state,

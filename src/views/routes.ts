@@ -1,7 +1,7 @@
 import isSet from '@snipsonian/core/es/is/isSet';
 import createObserverManager from '@snipsonian/core/es/patterns/createObserverManager';
 import { History } from 'history';
-import { IRoute, IRoutesMap, INavigateToRoute, IRouteLocation } from 'models/router.models';
+import { INavigateToRoute, IRoute, IRouteLocation, IRoutesMap } from 'models/router.models';
 import replacePathPlaceholders from 'utils/navigation/replacePathPlaceholders';
 
 export enum ROUTE_KEYS {
@@ -17,6 +17,10 @@ export enum ROUTE_KEYS {
     R_CONNECTIONS = 'R_CONNECTIONS',
     R_CONNECTION_DETAIL = 'R_CONNECTION_DETAIL',
     R_CONNECTION_NEW = 'R_CONNECTION_NEW',
+    R_ENVIRONMENTS = 'R_ENVIRONMENTS',
+    R_ENVIRONMENT_DETAIL = 'R_ENVIRONMENT_DETAIL',
+    R_ENVIRONMENT_NEW = 'R_ENVIRONMENT_NEW',
+
     /* reporting */
     R_REPORTS = 'R_REPORTS',
     R_REPORT_DETAIL = 'R_REPORT_DETAIL',
@@ -25,6 +29,22 @@ export enum ROUTE_KEYS {
     R_DATASETS = 'R_DATASETS',
     R_DATASET_DETAIL = 'R_DATASET_DETAIL',
     R_DATASET_NEW = 'R_DATASET_NEW',
+    /* Security groups */
+    R_SECURITY_GROUPS = 'R_SECURITY_GROUPS',
+    R_SECURITY_GROUP_DETAIL = 'R_SECURITY_GROUP_DETAIL',
+    R_SECURITY_GROUP_NEW = 'R_SECURITY_GROUP_NEW',
+    /* User */
+    R_USERS = 'R_USERS',
+    R_USER_DETAIL = 'R_USER_DETAIL',
+    R_USER_NEW = 'R_USER_NEW',
+    /* TEAM */
+    R_TEAMS = 'R_TEAMS',
+    R_TEAM_DETAIL = 'R_TEAM_DETAIL',
+    R_TEAM_NEW = 'R_TEAM_NEW',
+    /* TEMPLATES */
+    R_TEMPLATES = 'R_TEMPLATES',
+    R_TEMPLATE_DETAIL = 'R_TEMPLATE_DETAIL',
+    R_TEMPLATE_NEW = 'R_TEMPLATE_NEW',
     /* OpenAPI */
     R_OPENAPI = 'R_OPENAPI'
 }
@@ -120,19 +140,25 @@ export function setBrowserHistory(history: History) {
     }
 }
 
-export function redirectTo({ routeKey, params, queryParams }: INavigateToRoute) {
+export function redirectTo({ routeKey, params, queryParams, newTab = false }: INavigateToRoute) {
     if (browserHistory) {
         // Do this on the next frame to make sure everything routeObserverManager has been registered
         window.requestAnimationFrame(() => {
-            browserHistory.push({
-                pathname: replacePathPlaceholders({
-                    path: getRoutePath({ routeKey }),
-                    placeholders: params,
-                }),
-                search: queryParams
-                    ? Object.keys(queryParams).map((key) => `${key}=${queryParams[key]}`).join('&')
-                    : '',
+            const pathname = replacePathPlaceholders({
+                path: getRoutePath({ routeKey }),
+                placeholders: params,
             });
+            const search = queryParams
+                ? Object.keys(queryParams).map((key) => `${key}=${queryParams[key]}`).join('&')
+                : '';
+            if (newTab) {
+                window.open(pathname + search);
+            } else {
+                browserHistory.push({
+                    pathname,
+                    search,
+                });
+            }
         });
     }
 }

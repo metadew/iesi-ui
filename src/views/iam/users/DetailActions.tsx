@@ -1,26 +1,23 @@
 import React from 'react';
-import { Button, IconButton, Box, makeStyles, Paper, darken } from '@material-ui/core';
-import {
-    AddRounded as AddIcon,
-    Save as SaveIcon,
-    Delete as DeleteIcon,
-} from '@material-ui/icons';
+import { Box, Button, darken, IconButton, makeStyles, Paper } from '@material-ui/core';
+import { AddRounded as AddIcon, Delete as DeleteIcon, Save as SaveIcon } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { THEME_COLORS } from 'config/themes/colors';
 import Tooltip from 'views/common/tooltips/Tooltip';
-import { observe, IObserveProps } from 'views/observe';
+import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
-import { IDatasetBase } from 'models/state/datasets.model';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 interface IPublicProps {
+    onPlay?: () => void;
     onDelete?: () => void;
     onAdd?: () => void;
     onSave?: () => void;
+    onViewReport?: () => void;
+    onExport?: () => void;
     isCreateRoute?: boolean;
-    newDatasetDetail?: IDatasetBase;
 }
 
 const useStyles = makeStyles(({ palette, spacing }) => ({
@@ -53,8 +50,8 @@ function DetailActions({
 
     const DeleteButton = (
         <IconButton
-            disabled={isCreateRoute}
-            aria-label={translator('datasets.details.main.actions.delete')}
+            disabled
+            aria-label={translator('users.details.main.actions.delete')}
             onClick={onDelete}
         >
             <DeleteIcon />
@@ -65,15 +62,17 @@ function DetailActions({
 
         <Box display="flex" alignItems="center" justifyContent="space-between" width="100%" paddingX={2.2}>
             <Box flex="0 0 auto">
-                {isCreateRoute || checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE)
+                {!isCreateRoute
+                    && typeof onAdd === 'function'
+                    && checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
                     ? (
                         <Tooltip
-                            title={translator('datasets.detail.main.actions.add_implementation')}
+                            title={translator('users.detail.main.actions.add_roles')}
                             enterDelay={1000}
                             enterNextDelay={1000}
                         >
                             <IconButton
-                                aria-label={translator('datasets.detail.main.actions.add_implementation')}
+                                aria-label={translator('users.detail.main.actions.add_roles')}
                                 className={classes.addButton}
                                 onClick={onAdd}
                                 color="default"
@@ -86,11 +85,10 @@ function DetailActions({
             </Box>
             <Box flex="0 0 auto">
                 {
-                    checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE) && (
+                    checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE) && (
                         <Paper elevation={0} className={classes.actions}>
                             <Box display="inline" marginRight={1}>
-                                {isCreateRoute
-                                    || checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE)
+                                {checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
                                     ? (
                                         <Button
                                             variant="contained"
@@ -99,21 +97,17 @@ function DetailActions({
                                             startIcon={<SaveIcon />}
                                             onClick={onSave}
                                         >
-                                            <Translate msg="datasets.detail.main.actions.save" />
+                                            <Translate msg="users.detail.main.actions.save" />
                                         </Button>
                                     )
                                     : null}
                             </Box>
-                            {isCreateRoute ? (
+                            {isCreateRoute ? DeleteButton : (
                                 <>
-                                    {DeleteButton}
-                                </>
-                            ) : (
-                                <>
-                                    {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE)
+                                    {checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
                                         ? (
                                             <Tooltip
-                                                title={translator('datasets.detail.main.actions.delete')}
+                                                title={translator('users.detail.main.actions.delete')}
                                                 enterDelay={1000}
                                                 enterNextDelay={1000}
                                             >

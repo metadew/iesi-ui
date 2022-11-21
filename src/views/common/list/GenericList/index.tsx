@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import debounce from 'lodash/debounce';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -6,22 +6,9 @@ import TableBody from '@material-ui/core/TableBody';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import {
-    IListItem,
-    ListColumns,
-    IListAction,
-    ISortedColumn,
-    ListFilters,
-} from 'models/list.models';
-import {
-    TableCell,
-    Typography,
-    Theme,
-} from '@material-ui/core';
-import {
-    Pagination,
-    PaginationItem,
-} from '@material-ui/lab';
+import { IListAction, IListItem, ISortedColumn, ListColumns, ListFilters } from 'models/list.models';
+import { TableCell, Theme, Typography } from '@material-ui/core';
+import { Pagination, PaginationItem } from '@material-ui/lab';
 import sortListItems from 'utils/list/sortListItems';
 import { filterListItems } from 'utils/list/filters';
 import { TObjectWithProps } from 'models/core.models';
@@ -46,6 +33,7 @@ interface IPublicProps<ColumnNames> {
         pageData: IPageData;
         onChange: ({ page }: { page: number }) => void;
     };
+    hideNoResultHelper?: boolean;
 }
 
 const useStyles = makeStyles(({ palette }: Theme) => ({
@@ -63,6 +51,7 @@ export default function GenericList<ColumnNames>({
     filters,
     isLoading,
     pagination,
+    hideNoResultHelper,
 }: IPublicProps<ColumnNames>) {
     const classes = useStyles();
     const listClasses = useListStyles();
@@ -114,7 +103,7 @@ export default function GenericList<ColumnNames>({
                             ))
                         ) : (
                             <>
-                                {itemsToDisplay.length === 0 && (
+                                {itemsToDisplay.length === 0 && !hideNoResultHelper && (
                                     <TableRow>
                                         <TableCell>
                                             <Typography>

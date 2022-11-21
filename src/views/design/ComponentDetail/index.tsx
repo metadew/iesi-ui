@@ -1,25 +1,25 @@
 import React from 'react';
 import {
     Box,
+    Button,
+    Collapse,
+    createStyles,
+    darken,
+    Theme,
+    Typography,
     WithStyles,
     withStyles,
-    createStyles,
-    Collapse,
-    Typography,
-    Button,
-    Theme,
-    darken,
 } from '@material-ui/core';
 import { THEME_COLORS } from 'config/themes/colors';
 import { Delete, Edit } from '@material-ui/icons';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { IComponent, IComponentAttribute, IComponentParameter } from 'models/state/components.model';
 import {
-    triggerUpdateComponentDetail,
     triggerCreateComponentDetail,
-    triggerDeleteComponentDetail,
+    triggerDeleteComponentDetail, triggerExportComponentDetail,
+    triggerUpdateComponentDetail,
 } from 'state/entities/components/triggers';
-import { checkAuthorityGeneral, checkAuthority } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { IObserveProps, observe } from 'views/observe';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel';
@@ -75,6 +75,7 @@ interface IComponentState {
     isConfirmDeleteComponentOpen: boolean;
     additionalParameters: IComponentParameter[];
     requiredFieldsState: TRequiredFieldsState<IComponent>;
+    isComponentTypeOptionsOpen: boolean;
 }
 
 interface IColumnNames {
@@ -128,6 +129,7 @@ const ComponentDetail = withStyles(styles)(
                         showError: false,
                     },
                 },
+                isComponentTypeOptionsOpen: false,
             };
 
             // eslint-disable-next-line max-len
@@ -170,10 +172,8 @@ const ComponentDetail = withStyles(styles)(
             return (
                 <>
                     <Loader
-                        show={
-                            componentDetailAsyncStatus === AsyncStatus.Busy
-                            || componentTypesAsyncStatus === AsyncStatus.Busy
-                        }
+                        show={componentDetailAsyncStatus === AsyncStatus.Busy
+                            || componentTypesAsyncStatus === AsyncStatus.Busy}
                     />
                     <ContentWithSidePanel
                         panel={this.renderComponentDetailPanel()}
@@ -210,7 +210,6 @@ const ComponentDetail = withStyles(styles)(
                                 checkAuthority(
                                     state,
                                     SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
-                                    newComponentDetail.securityGroupName,
                                 )
                                     ? (
                                         <Translate msg="components.detail.save_component_dialog.text" />
@@ -238,7 +237,6 @@ const ComponentDetail = withStyles(styles)(
                                         || !checkAuthority(
                                             state,
                                             SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
-                                            newComponentDetail.securityGroupName,
                                         )}
                                 >
                                     <Translate msg="components.detail.save_component_dialog.update_current_version" />
@@ -265,7 +263,6 @@ const ComponentDetail = withStyles(styles)(
                                         && !checkAuthority(
                                             state,
                                             SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
-                                            newComponentDetail.securityGroupName,
                                         )}
                                 >
                                     <Translate msg="components.detail.save_component_dialog.save_as_new_version" />
@@ -278,28 +275,30 @@ const ComponentDetail = withStyles(styles)(
         }
 
         private renderComponentDetailPanel() {
-            const { newComponentDetail, requiredFieldsState } = this.state;
+            const {
+                newComponentDetail,
+                requiredFieldsState,
+            } = this.state;
             const { state } = this.props;
             const translator = getTranslator(state);
+            const componentTypesAsyncStatus = getAsyncComponentTypes(state).fetch.status;
             const asyncComponentTypes = getAsyncComponentTypes(state);
             const componentTypes = asyncComponentTypes.data || [];
-            const listItems = mapComponentTypeToListItems(componentTypes);
-            const autoCompleteValue = listItems
-                .find((item) => item.data.type === newComponentDetail.type);
+            const autoCompleteValue = componentTypes
+                .find((componentType) => componentType.type === newComponentDetail.type);
             return (
                 <Box mt={1} display="flex" flexDirection="column" flex="1 1 auto">
                     <Box flex="1 1 auto">
                         <form noValidate autoComplete="off">
                             <Autocomplete
                                 id="combo-box-component-types"
-                                options={listItems}
-                                value={autoCompleteValue || null}
-                                getOptionLabel={(option) => option.data.type}
+                                options={componentTypes}
+                                value={autoCompleteValue
+                                    // eslint-disable-next-line max-len
+                                    || (newComponentDetail.type && { name: null, type: newComponentDetail.type, parameters: null, category: null })
+                                    || null}
+                                getOptionLabel={(option) => option.type}
                                 // disabled={!checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
-                                getOptionDisabled={() => !checkAuthorityGeneral(
-                                    state,
-                                    SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
-                                )}
                                 renderInput={(params) => (
                                     <TextInput
                                         {...params}
@@ -310,29 +309,34 @@ const ComponentDetail = withStyles(styles)(
                                         helperText={requiredFieldsState.type.showError && 'Component type is a required field'}
                                         InputProps={{
                                             ...params.InputProps,
-                                            readOnly: !checkAuthorityGeneral(
+                                            readOnly: !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
                                             ),
-                                            disableUnderline: true,
+                                            disableUnderline: false,
                                         }}
                                     />
                                 )}
                                 onChange={(
                                     e: React.ChangeEvent<{}>,
-                                    newValue: IListItem<IColumnNames, IListData>,
+                                    newValue: IComponentType,
                                 ) => {
                                     this.updateComponent({
-                                        type: newValue ? newValue.data.type : null,
+                                        type: newValue ? newValue.type : null,
                                         parameters: newValue
                                             ? componentTypes
-                                                .find((item) => item.type === newValue?.data?.type)
+                                                .find((item) => item.type === newValue?.type)
                                                 .parameters?.filter((item) => item.mandatory)
                                                 .map((item) => ({ name: item.name, value: '' }))
                                             : [],
 
                                     });
                                 }}
+                                loading={componentTypesAsyncStatus === AsyncStatus.Busy}
+                                disabled={!checkAuthority(
+                                    state,
+                                    SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
+                                ) || !this.isCreateComponentRoute()}
                                 disableClearable
                             />
                             <TextInput
@@ -355,7 +359,7 @@ const ComponentDetail = withStyles(styles)(
                                 rows={8}
                                 InputProps={{
                                     readOnly: (!this.isCreateComponentRoute && newComponentDetail !== undefined)
-                                        || !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
+                                        || !checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE),
                                     disableUnderline: true,
                                 }}
                                 value={newComponentDetail.version.description}
@@ -468,23 +472,6 @@ const ComponentDetail = withStyles(styles)(
                 },
             };
 
-            /*
-            const attributeColumns: ListColumns<IComponentAttribute> = {
-                name: {
-                    label: <Translate msg="components.detail.main.list.labels.name" />,
-                    fixedWidth: '50%',
-                },
-                value: {
-                    label: <Translate msg="components.detail.main.list.labels.value" />,
-                    fixedWidth: '20%',
-                },
-                environment: {
-                    label: <Translate msg="components.detail.main.list.labels.environment" />,
-                    fixedWidth: '30%',
-                },
-            };
-            */
-
             if (!hasParameters) {
                 return (
                     <Box
@@ -519,6 +506,7 @@ const ComponentDetail = withStyles(styles)(
                             onAdd={() => {
                                 this.setState({ isAddingParameter: true });
                             }}
+                            onExport={() => this.onExportComponent()}
                             isCreateRoute={this.isCreateComponentRoute()}
                         />
                     </Box>
@@ -533,7 +521,7 @@ const ComponentDetail = withStyles(styles)(
                                     this.setState({ editParameterIndex: index });
                                 },
                                 hideAction: () => (
-                                    !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                    !checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
                                 ),
                             }, {
                                 icon: <Delete />,
@@ -548,86 +536,13 @@ const ComponentDetail = withStyles(styles)(
                                     }
                                 },
                                 hideAction: (item) => (
-                                    !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
+                                    !checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
                                     || !item.canBeDeleted
                                 ),
                             }]}
                         />
 
                     </Box>
-                    {
-                        /*
-                        <Box
-                        display="flex"
-                        flexDirection="column"
-                        alignItems="flex-start"
-                        marginX={2.2}
-                    >
-                        <Typography variant="h4">Attributes</Typography>
-                        <Box mt={2}>
-                            <Tooltip
-                                title={translator('components.detail.main.actions.add_attribute')}
-                                enterDelay={1000}
-                                enterNextDelay={1000}
-                            >
-                                <IconButton
-                                    aria-label={translator('components.detail.main.actions.add_attribute')}
-                                    className={classes.addButton}
-                                    color="default"
-                                    onClick={() => {
-                                        this.setState({ isAddingAttribute: true });
-                                    }}
-                                >
-                                    <Add />
-                                </IconButton>
-                            </Tooltip>
-                        </Box>
-                    </Box>
-
-                    <Box marginY={1}>
-                        {
-                            hasAttributes ? (
-                                <GenericList
-                                    listItems={attributeItems}
-                                    columns={attributeColumns}
-                                    listActions={[{
-                                        icon: <Edit />,
-                                        label: translator('components.detail.main.list.actions.edit'),
-                                        onClick: (_, index) => {
-                                            this.setState({ editAttributeIndex: index });
-                                        },
-                                    }, {
-                                        icon: <Delete />,
-                                        label: translator('components.detail.main.list.actions.delete'),
-                                        onClick: (_, index) => {
-                                            const newAttributes = [...newComponentDetail.attributes];
-                                            newAttributes.splice(index, 1);
-                                            this.updateComponent({
-                                                attributes: newAttributes,
-                                            });
-                                        },
-                                    }]}
-                                />
-                            ) : (
-                                <Box
-                                    display="flex"
-                                    flexDirection="column"
-                                    flex="1 1 auto"
-                                    justifyContent="center"
-                                    paddingBottom={5}
-                                >
-                                    <Box textAlign="center">
-                                        <Typography variant="h2" paragraph>
-                                            <Translate msg="components.detail.main.no_attributes.title" />
-                                        </Typography>
-                                    </Box>
-                                </Box>
-                            )
-                        }
-
-                    </Box>
-                    */
-                    }
                 </>
             );
         }
@@ -707,6 +622,18 @@ const ComponentDetail = withStyles(styles)(
             const detail = getAsyncComponentDetail(state).data;
             if (detail) {
                 triggerDeleteComponentDetail({ name: detail.name, version: detail.version.number });
+            }
+        }
+
+        private onExportComponent() {
+            const { state } = this.props;
+            const detail = getAsyncComponentDetail(state).data;
+
+            if (detail) {
+                triggerExportComponentDetail({
+                    name: detail.name,
+                    version: detail.version.number,
+                });
             }
         }
 
@@ -813,51 +740,6 @@ function getParametersFromComponentDetails(detail: IComponent, componentType: IC
         canBeDeleted: !parameter.mandatory,
     }));
     return newListItems;
-}
-
-/*
-function getAttributesFromComponentDetails(detail: IComponent) {
-    const attributes = detail
-        ? detail.attributes
-            .map((attribute) => ({
-                environment: attribute.environment,
-                name: attribute.name,
-                value: attribute.value,
-            }))
-        : [];
-    const newListItems: IListItem<IComponentAttribute>[] = attributes.map((atttribute, index) => ({
-        id: index,
-        columns: {
-            name: atttribute.name,
-            value: atttribute.value,
-            environment: atttribute.environment,
-        },
-        data: {
-            name: atttribute.name,
-            value: atttribute.value,
-            environment: atttribute.environment,
-        },
-    }));
-    return newListItems;
-}
-*/
-
-function mapComponentTypeToListItems(items: IComponentType[]) {
-    const listItems = items
-        ? items.map((item) => {
-            const listItem: IListItem<IColumnNames, IListData> = {
-                id: item.type,
-                columns: {
-                    name: item.name,
-                    type: item.type,
-                },
-                data: {
-                    type: item.type,
-                },
-            };
-            return listItem;
-        }) : [];
-    return listItems;
 }
 
 function orderComponentParameters(items: IComponentParameter[], componentType: IComponentType) {

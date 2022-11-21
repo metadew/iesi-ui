@@ -1,14 +1,7 @@
 import React from 'react';
 import classnames from 'classnames';
-import {
-    Typography,
-    Box,
-    Button,
-    ButtonGroup,
-    Theme,
-    makeStyles,
-} from '@material-ui/core';
-import { ISortedColumn, ISortAction, SortOrder, SortActions } from 'models/list.models';
+import { Box, Button, ButtonGroup, makeStyles, Theme, Typography } from '@material-ui/core';
+import { ISortAction, ISortedColumn, SortActions, SortOrder } from 'models/list.models';
 import { TObjectWithProps } from 'models/core.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { ReactComponent as SortIcon } from 'views/assets/img/icon-sort.svg';

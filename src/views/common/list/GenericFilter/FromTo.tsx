@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Box, makeStyles, InputAdornment, Icon } from '@material-ui/core';
+import { Box, Icon, InputAdornment, makeStyles } from '@material-ui/core';
 import { EventRounded, TodayRounded } from '@material-ui/icons';
 import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { IFilter, FilterType } from 'models/list.models';
+import { FilterType, IFilter } from 'models/list.models';
 import DateFnsUtils from '@date-io/date-fns';
 import { TObjectWithProps } from 'models/core.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';

@@ -3,10 +3,11 @@ import {
     IDataset,
     IDatasetBase,
     IDatasetByNamePayload,
+    IDatasetByUuidPayload,
     IDatasetImplementation,
     IDatasetImplementationsByUuidPayload,
+    IDatasetImportPayload,
     IFetchDatasetsListPayload,
-    IDatasetByUuidPayload,
 } from 'models/state/datasets.model';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { StateChangeNotification } from 'models/state.models';
@@ -21,6 +22,7 @@ export const triggerFetchDatasets = (payload: IFetchDatasetsListPayload) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_LIST],
+        itself: triggerFetchDatasets,
     });
 
 export const triggerFetchDatasetDetail = (payload: IDatasetByNamePayload) =>
@@ -32,6 +34,48 @@ export const triggerFetchDatasetDetail = (payload: IDatasetByNamePayload) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_DETAIL],
+        itself: triggerFetchDatasetDetail,
+    });
+
+export const triggerExportDatasetDetail = (payload: IDatasetByNamePayload) =>
+    entitiesStateManager.triggerAsyncEntityFetch<{}>({
+        asyncEntityToFetch: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.datasetDetailExport,
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_DETAIL],
+        itself: triggerExportDatasetDetail,
+    });
+
+export const triggerImportDatasetDetail = (payload: IDatasetImportPayload) =>
+    entitiesStateManager.triggerAsyncEntityCreate<{}>({
+        asyncEntityToCreate: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.datasetDetailImport,
+        },
+        onSuccess: ({ dispatch }) => dispatch(
+            triggerFlashMessage({
+                type: 'success',
+                translationKey: 'flash_messages.datasets.import',
+            }),
+        ),
+        onFail: ({ dispatch, error }) => {
+            if (error.status) {
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.common.responseError',
+                    translationPlaceholders: {
+                        message: error.response?.message,
+                    },
+                    type: 'error',
+                }));
+            } else {
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.datasets.import_error',
+                }));
+            }
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_DETAIL],
+        itself: triggerImportDatasetDetail,
     });
 
 export const triggerCreateDatasetDetail = (payload: IDatasetBase) =>
@@ -56,6 +100,7 @@ export const triggerCreateDatasetDetail = (payload: IDatasetBase) =>
         ),
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_DETAIL],
+        itself: triggerCreateDatasetDetail,
     });
 
 export const triggerUpdateDatasetDetail = (payload: IDataset) =>
@@ -80,6 +125,7 @@ export const triggerUpdateDatasetDetail = (payload: IDataset) =>
             }),
         ),
         notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_DETAIL],
+        itself: triggerUpdateDatasetDetail,
     });
 
 export const triggerFetchDatasetImplementations = (payload: IDatasetImplementationsByUuidPayload) =>
@@ -96,6 +142,7 @@ export const triggerFetchDatasetImplementations = (payload: IDatasetImplementati
             }),
         ),
         notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_IMPLEMENTATIONS],
+        itself: triggerFetchDatasetImplementations,
     });
 
 export const triggerDeleteDatasetDetail = (payload: IDatasetByUuidPayload) => {
@@ -105,5 +152,6 @@ export const triggerDeleteDatasetDetail = (payload: IDatasetByUuidPayload) => {
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DATA_DATASETS_DETAIL],
+        itself: triggerDeleteDatasetDetail,
     });
 };

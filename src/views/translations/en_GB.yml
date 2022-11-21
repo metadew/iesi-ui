@@ -7,6 +7,11 @@ app_shell:
       components: Components
       connections: Connections
       datasets: Datasets
+      templates: Templates
+      environments: Environments
+      users: Users
+      teams: Teams
+      security_groups: Security groups
     title: iesi
 common:
   yes: Yes
@@ -37,6 +42,12 @@ common:
     no_results: No results
     sort:
       sort_by: Sort by
+  import:
+    dialog:
+      title: Import {metadataName}
+      input_placeholder: Please provide the file content
+      import_button: Import
+      import_file_button: Or use the file instead
 error:
   default:
     title: OOPS! Something went wrong
@@ -48,6 +59,7 @@ error:
 flash_messages:
   common:
     responseError: '{message}'
+    expired_session: 'Your session has expired, please authenticate'
   execution_request:
     run_finished: 'Script execution "{scriptName}" is finished!'
   openapi:
@@ -61,19 +73,51 @@ flash_messages:
     connections_unknown_error: 'Unknown error for the one or more connections'
     component_unknown_error: 'Unknown error for the component "{componentName}"'
     components_unknown_error: 'Unknown error for the one or more connections'
-  component: 
+  component:
     edit: 'The component has been updated'
     error: 'An error has occured : {error}'
+    import: 'The component has been successfully imported !'
+    import_error: 'There is an error during the import of the component'
   connection:
     create: 'The connection has been created successfully'
     edit: 'The connection has been updated successfully'
     error: 'An error has occured: {error}'
-  script: 
+  environment:
+    create: 'The environment has been created successfully'
+    edit: 'The environment has been updated successfully'
+    error: 'An error has occured: {error}'
+  script:
     create: 'The script has been successfully created !'
     edit: 'The script has been updated'
     error: 'Incorrect representation of the script'
     import: 'The script has been successfully imported !'
-  error: 'An error has occured'
+  user:
+    create: The user has been created successfully !
+    update: The user has been updated successfully !
+    add_role: The role has been assigned to the user
+    delete_role: The role has been deleted from the user
+    update_password: The user password has been updated successfully !
+    error: 'An error has occured'
+  team:
+    create: The team has been created successfully !
+    delete: The team has been deleted.
+    add_security_group: The team has been assigned to the security group !
+    remove_security_group: The team has been un-assigned to the security group.
+    error: 'An error has occurred'
+  security_group:
+    create: The security group has been created successfully !
+    delete: The security group has been deleted.
+    error: 'An error has occurred'
+    import_error: 'There is an error during the import of the script'
+  datasets:
+    import: 'The dataset has been successfully imported !'
+    import_error: 'There is an error during the import of the dataset'
+    error: 'An error has occurred'
+  templates:
+    create: The template {name} has been successfully created !
+    update: The template {name} has been successfully updated to a new version !
+    delete: The template {name} has been deleted.
+    error: 'An error has occurred'
 scripts:
   overview:
     delete_script_dialog:
@@ -107,6 +151,16 @@ scripts:
           empty: No labels defined yet.
           title: Execution request labels
       text: Please specify a name and description for your execution request.
+    duplicate_script_dialog:
+      confirm: Duplicate script
+      init_error: Can't duplicate current script at this time. Please try again later.
+      error: Something went wrong during the creation of your duplicated script.
+      success:
+        text: Script is duplicated.
+        close_button: Back to overview
+      form:
+        name: Name
+      text: Please specify a name different from the current script
     header:
       amount: 'You have {amount} scripts'
       add_button: Create new script
@@ -122,6 +176,7 @@ scripts:
         view: View
         execute: Run script
         report: Reporting
+        duplicate: Duplicate
       filter:
         last_run_status: Last run status
         script_name: Script name
@@ -152,6 +207,7 @@ scripts:
       description: Action description
       name: Action name
       condition: Action condition
+      iteration: Action iteration name
       parameter:
         value: Value
       footer:
@@ -352,7 +408,7 @@ components:
         delete: Delete
         edit: Edit
       filter:
-       component_name: Component name
+        component_name: Component name
       sort:
         component_name: Component name
         version: Version
@@ -425,7 +481,7 @@ connections:
         delete: Delete
         edit: Edit
       filter:
-       connection_name: Connection name
+        connection_name: Connection name
       sort:
         connection_name: Connection name
         version: Version
@@ -479,6 +535,81 @@ connections:
       name: Name
       value: Value
       environment: Environment
+      footer:
+        cancel: Cancel
+        save: Save
+        update: Update
+    error:
+      save: Failed to save changes
+environments:
+  overview:
+    delete_environment_dialog:
+      text: Are you sure you want to delete this environment?
+      title: Delete environment
+    header:
+      amount: 'You have {amount} environments'
+      add_button: Create new environment
+      generate_button: "Load from OpenAPI documentation"
+    list:
+      labels:
+        name: Name
+        parameters: Parameters
+        description: Description
+      fetch_error: Something went wrong while loading the environments, please try again.
+      actions:
+        delete: Delete
+        edit: Edit
+      filter:
+        environment_name: Environment name
+      sort:
+        environment_name: Environment name
+  detail:
+    add_parameter: 'Add new parameter'
+    delete_environment_dialog:
+      text: Are you sure you want to delete this environment?
+      title: Delete environment
+    save_environment_dialog:
+      title: Save environment
+      text: Are you sure to create the environment {environmentName} ?
+      create: Create environment
+      update: Update environment
+    side:
+      environment_description: Description
+      environment_name: Name
+      environment_parameter: Parameter
+      toggle_button: Details
+      parameters:
+        title: Parameters
+        empty: No parameters
+        add_button: Add parameters
+        add_dialog:
+          title: Add a parameter
+          select_title: Choose a parameter
+          cancel: Cancel
+          add: Add
+    main:
+      no_parameters:
+        title: No parameters yet
+      actions:
+        delete: Delete environment
+        save: Save
+        export: Export environment
+        view: View
+      list:
+        labels:
+          name: Name
+          value: Value
+          mandatory: Mandatory
+          parameter: Parameter
+        actions:
+          edit: Edit
+          delete: Delete
+      alert:
+        save_changes: You made changes to this environment. Don't forget to save them.
+    edit:
+      name: Name
+      value: Value
+      parameter: Parameter
       footer:
         cancel: Cancel
         save: Save
@@ -553,6 +684,7 @@ datasets:
     header:
       amount: You have {amount} datasets
       add_button: Create new dataset
+      import_dataset_button: Import dataset
     list:
       fetch_error: Something went wrong while loading the datasets, please try again.
       sort:
@@ -604,6 +736,7 @@ datasets:
         add_implementation: Add implementation
         save: Save
         delete: Delete
+        export: Export
       list:
         labels:
           labels: 'Labels'
@@ -631,7 +764,284 @@ datasets:
           cancel: Cancel
           discard: Discard changes
     flash_messages:
-      create_success: The dataset {name} has been created successfully !
+      create_success: The dataset {name} h as been created successfully !
       update_success: The dataset {name} has been updated successfully !
       create_error: 'An error has occured when creating the dataset'
       update_error: 'An error has occured when updating the dataset'
+users:
+  overview:
+    header:
+      add_button: Create new user
+      amount: There are {amount} users registered
+    list:
+      fetch_error: Something went wrong while loading the users, please try again.
+      filter:
+        username: Username
+      sort:
+        username: Username
+      labels:
+        username: Username
+        enabled: Enabled
+        expired: Expired
+        locked: Locked
+        teams: Teams
+      actions:
+        edit: Edit
+        view: View
+  detail:
+    side:
+      toggle_button: Details
+      user_name: Username
+      user_password: Password
+      user_repeated_password: Confirm the password
+      update_password:
+        button: Change password
+        footer:
+          cancel: Cancel
+          update: Update
+      teams:
+        empty: No Teams
+        title: Teams
+        add_button: Add team
+        add_dialog:
+          select_title: Add a team
+          cancel: Cancel
+          add: Add
+    main:
+      actions:
+        add_roles: Add roles
+        delete: Delete user
+        save: Save
+        view: View
+      alert:
+        save_changes: You made changes to this user. Don't forget to save it.
+      add_roles:
+        header: Choose the role you like to add
+        select_role: Select a role
+        footer:
+          cancel: Cancel
+          save: Save
+      delete_role_dialog:
+        title: Delete user role
+        text: Are you sure to delete the role {role} from this user ?
+      list:
+        item:
+          labels:
+            name: Name
+            privileges: Privileges
+          actions:
+            delete: Delete
+      no_teams:
+        title: Please add a team
+      no_chosen_team:
+        title: Please choose a team
+      no_roles:
+        title: No roles yet
+        button: Add roles
+    save_user_dialog:
+      title: Save user
+      text_save: Are you sure to create the user {username} ?
+      text_update: Are you sure to update the user {username} ?
+      text_securityGroup: Sorry, you don't have the permission to create the user because your don't belong to the group {securityGroup}
+      create: Create user
+      update: Update user
+    delete_user_dialog:
+      text: Are you sure you want to delete this user?
+      title: Delete user
+teams:
+  overview:
+    header:
+      amount: There are {amount} teams
+      add_button:  Create new team
+    list:
+      fetch_error: Something went wrong while loading the teams, please try again.
+      filter:
+        team_name: Team name
+      sort:
+        team_name: Team name
+      labels:
+        team_name: Team name
+        securityGroups: Security groups
+        users: Users
+      actions:
+        edit: Edit
+        view: View
+        delete: Delete
+    delete_team_dialog:
+      title: Delete team
+      text: Are you sure you want to delete this team ?
+  detail:
+    actions:
+      add_users: Add users
+      delete: Delete team
+      save: Save
+      view: View
+    save_team_dialog:
+      title: Save team
+      text: Are you sure to create the team {name} ?
+      text_securityGroup: Sorry, you don't have the permission to create the user because your don't belong to the group {securityGroup}
+      create: Create team
+    delete_team_dialog:
+      title: Delete team
+      text: Are you sure you want to delete this team ?
+    side:
+      toggle_button: Details
+      team_name: Team name
+      security_groups:
+        empty: No security groups
+        title: Security groups
+        add_button: Add security group
+        add_dialog:
+          select_title: Add a security group
+          cancel: Cancel
+          add: Add
+    main:
+      actions:
+        save: Save
+        delete: Delete team
+        add_users: Add users
+      list:
+        item:
+          labels:
+            username: Username
+            enabled: Enabled
+            credentialsExpired: Credentials expired
+            expired: Expired
+            locked: Locked
+            roles: Roles
+          actions:
+            edit: Edit
+            delete: Delete
+            view: View
+      no_users:
+        title: Please add users
+        button: Add users
+      add_users:
+        header: Choose a user
+        footer:
+          cancel: Cancel
+          save: Save
+      alert:
+        save_changes: You made changes to this team. Don't forget to save it.
+security_groups:
+  overview:
+    header:
+      amount: There are {amount} security groups
+      add_button:  Create new security group
+    list:
+      fetch_error: Something went wrong while loading the security groups, please try again.
+      filter:
+        name: Security group name
+      sort:
+        name: Security group name
+      labels:
+        name: Security group name
+        teams: Teams
+      actions:
+        edit: Edit
+        view: View
+        delete: Delete
+    delete_security_group_dialog:
+      title: Delete security group
+      text: Are you sure you want to delete this security group ?
+  detail:
+    delete_security_group_dialog:
+      title: Delete security group
+      text: Are you sure you want to delete this security group ?
+    actions:
+      add_team: Add teams
+      delete: Delete security group
+      save: Save
+      view: View
+    side:
+      toggle_button: Details
+      name: Security group name
+    save_security_group_dialog:
+      title: Save security group
+      text: Are you sure to create the securityGroup {name} ?
+      create: Create securityGroup
+    main:
+      actions:
+        save: Save
+        delete: Delete security group
+        add_teams: Add Teams
+      add_teams:
+        header: Choose a team
+        footer:
+          cancel: Cancel
+          save: Save
+      list:
+        item:
+          labels:
+            team_name: Team name
+          actions:
+            edit: Edit
+            delete: Delete
+            view: View
+      no_teams:
+        title: Please add teams
+        button: Add teams
+      alert:
+        save_changes: You made changes to this security group. Don't forget to save it.
+templates:
+  overview:
+    header:
+      amount: You have {amount} templates
+      add_button: Create new template
+    list:
+      labels:
+        name: Name
+        description: Description
+        version: Version
+        matchers: Matcher
+      filter:
+        template_name: Template name
+        show_latest: Only show latest version
+      sort:
+        template_name: Template name
+      actions:
+        delete: Delete
+      fetch_error: Something went wrong during the loading of the templates
+    delete_template_dialog:
+      title: Delete template
+      text: Are you sure you want to delete this template ?
+  detail:
+    side:
+      toggle_button: Toggle
+      template_name: Template name
+      template_description: Template description
+      template_version: Template version
+    main:
+      no_matchers:
+        title: There are no matchers
+        button: Add a matcher
+      list:
+        labels:
+          type: Type
+          key: Key
+          value: Value
+          template_name: Template name
+          template_version: Template version
+        actions:
+          edit: Edit
+          delete: Delete
+      actions:
+        add_matcher: Add a matcher
+        save: Save
+        delete: Delete
+    edit:
+      matcher:
+        title_create: Adding a new matcher
+        footer:
+          cancel: Cancel
+          save: Save
+    save_template_dialog:
+      title_create: Create template
+      text_create: Do you want to overwrite the current version or create a new version with the current changes ?
+      title_update: Create template
+      text_update: You are going to update the template "{templateName}"
+      update_current_version: Update current version
+      save_as_new_version: Save as new version
+    delete_template_dialog:
+      title: Delete template
+      text: Are you sure to delete the template "{templateName}"

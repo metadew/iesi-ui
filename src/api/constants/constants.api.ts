@@ -1,4 +1,5 @@
 import { IActionType, IComponentType, IConnectionType, IConstantParameter } from 'models/state/constants.models';
+// eslint-disable-next-line import/no-cycle
 import { get } from 'api/requestWrapper';
 import API_URLS from '../apiUrls';
 

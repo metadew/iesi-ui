@@ -2,6 +2,7 @@ import React from 'react';
 import { IConnection } from 'models/state/connections.model';
 import { observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
+
 /*
 import React, { useEffect, useState } from 'react';
 import {
@@ -231,6 +232,5 @@ function EditConnectionDialog() {
 }
 
 export default observe<IPublicProps>([
-    StateChangeNotification.ENVIRONMENTS,
     StateChangeNotification.CONSTANTS_CONNECTION_TYPES,
 ], EditConnectionDialog);

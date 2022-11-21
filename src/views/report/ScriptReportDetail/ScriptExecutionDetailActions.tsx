@@ -1,43 +1,37 @@
 import React from 'react';
 import classNames from 'classnames';
-import { parseISO, format as formatDate } from 'date-fns';
 import {
     Box,
-    makeStyles,
-    Theme,
+    Button,
     ExpansionPanel,
-    ExpansionPanelSummary,
     ExpansionPanelDetails,
+    ExpansionPanelSummary,
+    makeStyles,
+    Paper,
     Table,
+    TableBody,
+    TableCell,
+    TableContainer,
     TableHead,
     TableRow,
-    TableCell,
-    TableBody,
-    TableContainer,
-    Paper,
+    Theme,
     Typography,
-    Button,
 } from '@material-ui/core';
-import {
-    ExpandMore as ExpandMoreIcon,
-    ChevronRightRounded,
-} from '@material-ui/icons';
+import { ChevronRightRounded, ExpandMore as ExpandMoreIcon } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getTranslator } from 'state/i18n/selectors';
-import {
-    IListItem,
-    ListColumns,
-    IColumn,
-} from 'models/list.models';
+import { IColumn, IListItem, ListColumns } from 'models/list.models';
 import { getListItemValueFromColumn } from 'utils/list/list';
 import { THEME_COLORS } from 'config/themes/colors';
 import { Alert, AlertTitle } from '@material-ui/lab';
-import { IParameterRawValue, IOutputValue } from 'models/state/iesiGeneric.models';
-import { observe, IObserveProps } from 'views/observe';
+import { IOutputValue, IParameterRawValue } from 'models/state/iesiGeneric.models';
+import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { useParams } from 'react-router-dom';
-import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { ROUTE_KEYS } from 'views/routes';
 import StatusIcon from 'views/common/icons/StatusIcon';
+import RouteLink from 'views/common/navigation/RouteLink';
+import { format as formatDate, parseISO } from 'date-fns';
 import { IExecutionDetailPathParams } from './shared';
 
 const ACTION_TYPE_NAME_WITH_CHILD_SCRIPTS = 'fwk.executeScript';
@@ -95,10 +89,13 @@ const useStyles = makeStyles(({ typography, palette, shape, spacing }: Theme) =>
     },
     thCell: {
         wordBreak: 'normal',
-        verticalAlign: 'top',
+        verticalAlign: 'center',
     },
     valueCell: {
         whiteSpace: 'pre-wrap',
+    },
+    btnRequest: {
+        marginLeft: 0,
     },
 }));
 
@@ -113,7 +110,7 @@ function ScriptExecutionDetailActions<ColumnNames>({
 
     return (
         <>
-            {listItems.map((item: IListItem<ColumnNames>) => (
+            { listItems.map((item: IListItem<ColumnNames>) => (
                 <ExpansionPanel key={item.id as string} className={classes.expandableItem}>
                     <ExpansionPanelSummary
                         className={classes.summary}
@@ -168,7 +165,6 @@ function ScriptExecutionDetailActions<ColumnNames>({
             const column = columns[columnName] as IColumn<ColumnNames>;
 
             const value = getListItemValueFromColumn(item, columnName).toString();
-
             const colClassName = typeof column.className === 'function'
                 ? column.className(value)
                 : column.className;
@@ -224,22 +220,25 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                 </Box>
                                 {(item.data.type === ACTION_TYPE_NAME_WITH_CHILD_SCRIPTS) && (
                                     <Box flex="0 0 auto" paddingX={1}>
-                                        <Button
-                                            variant="contained"
-                                            color="secondary"
-                                            size="small"
-                                            endIcon={<ChevronRightRounded />}
-                                            onClick={() => redirectTo({
-                                                routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
-                                                params: {
-                                                    executionRequestId,
-                                                    runId: item.data.runId,
-                                                    processId: item.data.processId,
-                                                },
-                                            })}
+                                        <RouteLink
+                                            to={ROUTE_KEYS.R_REPORT_DETAIL}
+                                            params={{
+                                                executionRequestId,
+                                                runId: item.data.runId,
+                                                processId: item.data.processId,
+                                            }}
                                         >
-                                            <Translate msg="script_reports.detail.main.action.go_to_script_detail" />
-                                        </Button>
+                                            <Button
+                                                variant="contained"
+                                                color="secondary"
+                                                size="small"
+                                                endIcon={<ChevronRightRounded />}
+                                            >
+                                                {/* eslint-disable-next-line max-len */}
+                                                <Translate msg="script_reports.detail.main.action.go_to_script_detail" />
+                                            </Button>
+                                        </RouteLink>
+
                                     </Box>
                                 )}
                             </Box>
@@ -285,7 +284,84 @@ function ScriptExecutionDetailActions<ColumnNames>({
                                                 {parameter.name}
                                             </TableCell>
                                             <TableCell className={classes.valueCell}>
-                                                {parameter.rawValue}
+                                                <Box
+                                                    display="flex"
+                                                    justifyContent="space-between"
+                                                    alignItems="center"
+                                                    width="100%"
+                                                >
+                                                    {parameter.rawValue}
+                                                    {
+                                                        (parameter.name === 'request') && (
+                                                            <RouteLink
+                                                                to={ROUTE_KEYS.R_COMPONENT_DETAIL}
+                                                                params={{
+                                                                    name: parameter.resolvedValue
+                                                                        || parameter.rawValue,
+                                                                    version: (
+                                                                        getRequestVersion(
+                                                                            item.data.inputParameters,
+                                                                        )
+                                                                    ),
+                                                                }}
+                                                            >
+                                                                <Button
+                                                                    variant="contained"
+                                                                    color="secondary"
+                                                                    size="small"
+                                                                >
+                                                                    <ChevronRightRounded />
+                                                                </Button>
+                                                            </RouteLink>
+                                                        )
+                                                    }
+                                                    {
+                                                        (parameter.name === 'dataset') && (
+                                                            <Box>
+                                                                <RouteLink
+                                                                    to={ROUTE_KEYS.R_DATASET_DETAIL}
+                                                                    params={{
+                                                                        name: parameter.resolvedValue
+                                                                            || parameter.rawValue,
+                                                                    }}
+                                                                >
+                                                                    <Button
+                                                                        variant="contained"
+                                                                        color="secondary"
+                                                                        size="small"
+                                                                    >
+                                                                        <ChevronRightRounded />
+                                                                    </Button>
+                                                                </RouteLink>
+
+                                                            </Box>
+                                                        )
+                                                    }
+                                                    {
+                                                        (parameter.name === 'script') && (
+                                                            <RouteLink
+                                                                to={ROUTE_KEYS.R_SCRIPT_DETAIL}
+                                                                params={{
+                                                                    name: parameter.resolvedValue
+                                                                        || parameter.rawValue,
+                                                                    version: (
+                                                                        getRequestVersionScript(
+                                                                            item.data.inputParameters,
+                                                                        )
+                                                                    ),
+                                                                }}
+                                                            >
+                                                                <Button
+                                                                    variant="contained"
+                                                                    color="secondary"
+                                                                    size="small"
+                                                                >
+                                                                    <ChevronRightRounded />
+                                                                </Button>
+                                                            </RouteLink>
+                                                        )
+                                                    }
+                                                </Box>
                                             </TableCell>
                                             <TableCell className={classes.valueCell}>
                                                 {parameter.resolvedValue}
@@ -411,6 +487,25 @@ function ScriptExecutionDetailActions<ColumnNames>({
             </>
         );
     }
+}
+
+function getRequestVersion(inputParameters: IParameterRawValue[]) {
+    const inputParameter = inputParameters.find((ip: IParameterRawValue) =>
+        ip.name === 'requestVersion');
+
+    if (inputParameter === undefined) {
+        return 0;
+    }
+    return inputParameter.resolvedValue || inputParameter.rawValue;
+}
+
+function getRequestVersionScript(inputParameters: IParameterRawValue[]) {
+    const inputParameter = inputParameters.find((ip: IParameterRawValue) =>
+        ip.name === 'version');
+    if (inputParameter === undefined || inputParameter.rawValue === '') {
+        return 0;
+    }
+    return inputParameter.resolvedValue || inputParameter.rawValue;
 }
 
 export default observe<IPublicProps<{}>>(

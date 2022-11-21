@@ -1,4 +1,4 @@
-import { ILabel, IParameter, IPageFilter, IPageData } from './iesiGeneric.models';
+import { ILabel, IPageData, IPageFilter, IParameter } from './iesiGeneric.models';
 import { ExecutionRequestStatus } from './executionRequestStatus.models';
 import { ExecutionActionStatus } from './executionActionStatus.models';
 
@@ -13,6 +13,7 @@ export interface IColumnNames {
     labels: number;
     parameters: number;
     runId: string;
+    requester?: string;
 }
 
 export interface IExecutionRequest {
@@ -26,6 +27,7 @@ export interface IExecutionRequest {
     executionRequestStatus: ExecutionRequestStatus;
     scriptExecutionRequests: IScriptExecutionRequest[];
     executionRequestLabels: ILabel[];
+    debugMode: boolean;
 }
 
 export interface ICreateExecutionRequestPayload {
@@ -34,6 +36,7 @@ export interface ICreateExecutionRequestPayload {
     scope: string;
     context: string;
     email: string;
+    debugMode: boolean;
     // eslint-disable-next-line max-len
     scriptExecutionRequests: ICreateScriptExecutionRequestPayload[];
     executionRequestLabels: ILabel[];
@@ -78,6 +81,7 @@ interface IFetchExecutionRequestListFilter {
     environment?: string;
     'run-id'?: string;
     'run-status'?: string;
+    requester?: string;
 }
 
 export interface IExecutionRequestsEntity {

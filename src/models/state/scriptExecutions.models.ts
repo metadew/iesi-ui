@@ -1,6 +1,6 @@
 import { ExecutionRequestStatus } from './executionRequestStatus.models';
 import { ExecutionActionStatus } from './executionActionStatus.models';
-import { IParameter, IParameterRawValue, ILabel, IOutputValue } from './iesiGeneric.models';
+import { ILabel, IOutputValue, IParameter, IParameterRawValue } from './iesiGeneric.models';
 
 export interface IScriptExecutionDetail {
     runId: string;
@@ -20,6 +20,7 @@ export interface IScriptExecutionDetail {
     output: ILabel[];
     actions: IScriptExecutionDetailAction[];
     username: string;
+    debugMode: boolean;
 }
 
 export interface IScriptExecutionDetailAction {

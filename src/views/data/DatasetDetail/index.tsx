@@ -1,14 +1,14 @@
 import React from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { clone } from 'ramda';
 import { getUniqueIdFromDataset } from 'utils/datasets/datasetUtils';
 import { IObserveProps, observe } from 'views/observe';
-import { Box, Collapse, createStyles, Typography, WithStyles, withStyles, Button } from '@material-ui/core';
+import { Box, Button, Collapse, createStyles, Typography, withStyles, WithStyles } from '@material-ui/core';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel';
 import { IDatasetBase, IDatasetImplementation, IDatasetImplementationColumn } from 'models/state/datasets.model';
 import TextInput from 'views/common/input/TextInput';
 import { getTranslator } from 'state/i18n/selectors';
-import { getRouteKeyByPath, ROUTE_KEYS, redirectTo } from 'views/routes';
+import { getRouteKeyByPath, redirectTo, ROUTE_KEYS } from 'views/routes';
 import { TRequiredFieldsState } from 'models/form.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { Alert } from '@material-ui/lab';
@@ -16,7 +16,7 @@ import GenericList from 'views/common/list/GenericList';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import Loader from 'views/common/waiting/Loader';
 import { IListItem, ListColumns } from 'models/list.models';
-import { Add, Edit, Delete, FileCopy } from '@material-ui/icons';
+import { Add, Delete, Edit, FileCopy, Visibility } from '@material-ui/icons';
 import { getAsyncDatasetDetail } from 'state/entities/datasets/selectors';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
@@ -24,6 +24,7 @@ import entitiesStateManager from 'state/entities/entitiesStateManager';
 import {
     triggerCreateDatasetDetail,
     triggerDeleteDatasetDetail,
+    triggerExportDatasetDetail,
     triggerFetchDatasetImplementations,
     triggerUpdateDatasetDetail,
 } from 'state/entities/datasets/triggers';
@@ -35,7 +36,7 @@ import DescriptionList from 'views/common/list/DescriptionList';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import DuplicateImplementationDialog from './DuplicateImplementationDialog';
 import EditImplementation from './EditImplementation';
-import DetailActions from '../DetailActions';
+import DetailActions from './DetailActions';
 
 const styles = () => createStyles({});
 
@@ -95,6 +96,7 @@ const DatasetDetail = withStyles(styles)(
             this.navigateToDatasetsAfterDeletion = this.navigateToDatasetsAfterDeletion.bind(this);
 
             this.onDeleteDataset = this.onDeleteDataset.bind(this);
+            this.onExportDataset = this.onExportDataset.bind(this);
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
@@ -195,7 +197,6 @@ const DatasetDetail = withStyles(styles)(
                                     disabled={newDatasetDetail && !checkAuthority(
                                         state,
                                         SECURITY_PRIVILEGES.S_DATASETS_WRITE,
-                                        newDatasetDetail.securityGroupName,
                                     )}
                                 >
                                     <Translate
@@ -339,6 +340,7 @@ const DatasetDetail = withStyles(styles)(
                             onSave={handleSaveAction}
                             onDelete={() => this.setState({ isConfirmDeleteComponentOpen: true })}
                             onAdd={() => this.setState({ isAddOpen: true })}
+                            onExport={() => this.onExportDataset()}
                             isCreateRoute={this.isCreateDatasetRoute()}
                         />
                     </Box>
@@ -350,17 +352,22 @@ const DatasetDetail = withStyles(styles)(
                                 icon: <Edit />,
                                 label: translator('datasets.detail.main.list.actions.edit'),
                                 onClick: (id, index) => this.setState({ implementationIndexToEdit: index }),
-                                hideAction: () => null,
+                                hideAction: () => !checkAuthority(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE),
                             }, {
                                 icon: <Delete />,
                                 label: translator('datasets.detail.main.list.actions.delete'),
                                 onClick: (id, index) => this.setState({ implementationIndexToDelete: index }),
-                                hideAction: () => null,
+                                hideAction: () => !checkAuthority(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE),
                             }, {
                                 icon: <FileCopy />,
                                 label: translator('datasets.detail.main.list.actions.duplicate'),
                                 onClick: (id, index) => this.setState({ implementationIndexToDuplicate: index }),
-                                hideAction: () => null,
+                                hideAction: () => !checkAuthority(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE),
+                            }, {
+                                icon: <Visibility />,
+                                label: translator('datasets.detail.main.list.actions.view'),
+                                onClick: (id, index) => this.setState({ implementationIndexToEdit: index }),
+                                hideAction: () => checkAuthority(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE),
                             }]}
                         />
                     </Box>
@@ -407,6 +414,14 @@ const DatasetDetail = withStyles(styles)(
             }
         }
 
+        private onExportDataset() {
+            const { state } = this.props;
+            const detail = getAsyncDatasetDetail(state).data;
+            if (detail) {
+                triggerExportDatasetDetail({ name: detail.name });
+            }
+        }
+
         private onAddImplementation(implementation: IDatasetImplementation) {
             const { newDatasetDetail } = this.state;
             this.updateDataset({
@@ -421,7 +436,6 @@ const DatasetDetail = withStyles(styles)(
 
             if (implementationIndexToDelete !== null) {
                 newImplementations.splice(implementationIndexToDelete, 1);
-                // sync action number with script design number after deleting action
                 this.updateDataset({ implementations: newImplementations });
                 this.setState({ implementationIndexToDelete: null });
             }

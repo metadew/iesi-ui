@@ -1,19 +1,15 @@
 import React from 'react';
-import {
-    IconButton,
-    Menu,
-    MenuItem,
-    makeStyles,
-} from '@material-ui/core';
+import { IconButton, makeStyles, Menu, MenuItem } from '@material-ui/core';
 import { MenuRounded as MenuIcon } from '@material-ui/icons';
 import { StateChangeNotification } from 'models/state.models';
 import { IMenuItem, MAIN_NAV_ITEMS } from 'config/menu.config';
 import { getRoute, redirectTo, ROUTE_KEYS } from 'views/routes';
-import { hasRequiredAccessLevels } from 'state/auth/selectors';
+import { checkAuthority, hasRequiredAccessLevels } from 'state/auth/selectors';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { IObserveProps, observe } from 'views/observe';
 import { useLocation } from 'react-router-dom';
 import getRouteMatchByPath from 'utils/navigation/getRouteMatchByPath';
+import RouteLink from 'views/common/navigation/RouteLink';
 
 const useStyles = makeStyles(({ palette }) => ({
     selected: {
@@ -38,7 +34,6 @@ function NavigationMenu({ state }: IObserveProps) {
         redirectTo({ routeKey });
         handleClose();
     };
-
     return (
         <div>
             <IconButton
@@ -60,7 +55,9 @@ function NavigationMenu({ state }: IObserveProps) {
                         disableAutoFocus
                         disableAutoFocusItem
                     >
-                        {MAIN_NAV_ITEMS.map(renderNavItem)}
+                        {MAIN_NAV_ITEMS.flatMap((item) => (
+                            checkAuthority(state, item.securityPrivilege) ? [renderNavItem(item)] : []
+                        ))}
                     </Menu>
                 )
                 : null }
@@ -75,16 +72,18 @@ function NavigationMenu({ state }: IObserveProps) {
         const isAllowedToRoute = hasRequiredAccessLevels(state, requiredAccessLevels);
 
         return isAllowedToRoute
-            ? (
-                <MenuItem
-                    className={currentRoute.routeKey === routeKey ? classes.selected : ''}
-                    onClick={() => handleNavigation(routeKey)}
-                    key={`main-nav_${routeKey}`}
-                >
-                    <Translate msg={translationKey} />
-                </MenuItem>
-            )
-            : null;
+            && (
+                <RouteLink to={item.routeKey} queryParams={item.queryParams}>
+                    <MenuItem
+                        className={currentRoute.routeKey === routeKey ? classes.selected : ''}
+                        onClick={() => handleNavigation(routeKey)}
+                        key={`main-nav_${routeKey}`}
+                    >
+                        <Translate msg={translationKey} />
+                    </MenuItem>
+                </RouteLink>
+
+            );
     }
 }
 

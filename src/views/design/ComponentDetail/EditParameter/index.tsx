@@ -8,7 +8,7 @@ import { getTranslator } from 'state/i18n/selectors';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { THEME_COLORS } from 'config/themes/colors';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 interface IPublicProps {
@@ -145,7 +145,7 @@ function EditParameter({
                                 <Translate msg="components.detail.edit.footer.cancel" />
                             </Button>
                             {
-                                checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE) && (
+                                checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE) && (
                                     <Button
                                         variant="contained"
                                         color="secondary"

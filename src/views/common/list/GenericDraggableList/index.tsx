@@ -1,23 +1,16 @@
 import React from 'react';
 import classNames from 'classnames';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import {
-    IListItem,
-    ListColumns,
-    IListAction,
-} from 'models/list.models';
+import { IListAction, IListItem, ListColumns } from 'models/list.models';
 import { IState } from 'models/state.models';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
-import {
-    TableCell,
-    Typography,
-} from '@material-ui/core';
+import { TableCell, Typography } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { useListStyles } from '../common';
 import GenericTableRow from '../GenericTableRow';
@@ -43,7 +36,7 @@ export default function GenericDraggableList<ColumnNames>({
         <DragDropContext onDragEnd={onDragEnd}>
             <Droppable
                 droppableId="droppable"
-                isDropDisabled={!checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)}
+                isDropDisabled={!checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)}
             >
                 {(droppableProvided, droppableSnapshot) => (
                     <TableContainer

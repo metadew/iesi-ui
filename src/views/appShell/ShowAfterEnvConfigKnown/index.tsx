@@ -1,7 +1,7 @@
 import React from 'react';
 import isSet from '@snipsonian/core/es/is/isSet';
 import ShowAfterDelay from '@snipsonian/react/es/components/waiting/ShowAfterDelay';
-import { observe, IObserveProps, IPublicPropsWithChildren } from 'views/observe';
+import { IObserveProps, IPublicPropsWithChildren, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAsyncEnvConfig } from 'state/envConfig/selectors';
 import Loader from 'views/common/waiting/Loader';

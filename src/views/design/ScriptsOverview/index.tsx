@@ -1,61 +1,70 @@
 import React, { ReactText } from 'react';
 import {
-    Typography,
     Box,
-    Theme,
-    createStyles,
-    withStyles,
-    WithStyles,
     Button,
+    createStyles,
     FormControlLabel,
     Switch,
+    Theme,
+    Typography,
+    WithStyles,
+    withStyles,
 } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
 import { getTranslator } from 'state/i18n/selectors';
-import { Edit, PlayArrowRounded, AddRounded, Delete, Visibility } from '@material-ui/icons';
+
+import { AddRounded, Delete, Edit, FileCopy, PlayArrowRounded, Visibility } from '@material-ui/icons';
 import {
-    ListColumns,
-    ISortedColumn,
-    SortActions,
-    SortType,
-    FilterType,
-    ListFilters,
     FilterConfig,
+    FilterType,
     IListItem,
+    ISortedColumn,
+    ListColumns,
+    ListFilters,
+    SortActions,
     SortOrder,
+    SortType,
 } from 'models/list.models';
-import { IScript, IExpandScriptsResponseWith, IColumnNames, IScriptBase } from 'models/state/scripts.models';
+import { IColumnNames, IExpandScriptsResponseWith, IScript, IScriptBase } from 'models/state/scripts.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
-import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { ROUTE_KEYS } from 'views/routes';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
-import { observe, IObserveProps } from 'views/observe';
+import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import {
-    getAsyncScriptsEntity,
     getAsyncScriptDetail,
+    getAsyncScriptDetailImport,
     getAsyncScripts,
+    getAsyncScriptsEntity,
     getAsyncScriptsPageData,
 } from 'state/entities/scripts/selectors';
-import { AsyncStatus, AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
+import { AsyncOperation, AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import OrderedList from 'views/common/list/OrderedList';
 import { Alert } from '@material-ui/lab';
-import { triggerDeleteScriptDetail, triggerFetchScripts } from 'state/entities/scripts/triggers';
-import { getUniqueIdFromScript, getLatestVersionsFromScripts } from 'utils/scripts/scriptUtils';
+import {
+    triggerDeleteScriptDetail,
+    triggerFetchScripts,
+    triggerImportScriptDetail,
+} from 'state/entities/scripts/triggers';
+import { getLatestVersionsFromScripts, getUniqueIdFromScript } from 'utils/scripts/scriptUtils';
 import { triggerResetAsyncExecutionRequest } from 'state/entities/executionRequests/triggers';
 import isSet from '@snipsonian/core/es/is/isSet';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { getScriptsListFilter } from 'state/ui/selectors';
-import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
 import { setScriptsListFilter } from 'state/ui/actions';
 import ReportIcon from 'views/common/icons/Report';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
-import { checkAuthorityGeneral, checkAuthority } from 'state/auth/selectors';
-import TransformDocumentationDialogScript from '../common/TransformDocumentationDialogScript';
+import { checkAuthority } from 'state/auth/selectors';
+import RouteLink from 'views/common/navigation/RouteLink';
+import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
+import TextFileInputDialog from 'views/common/layout/TextFileInputDialog';
+import { getDecodedToken } from 'utils/users/userUtils';
+import DuplicateScriptDialog from '../common/DuplicateScriptDialog';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -112,13 +121,14 @@ const sortActions: SortActions<Partial<IColumnNames>> = {
 
 interface IScriptState {
     scriptIdToDelete: string;
+    scriptIdToDuplicate: string;
     selectedScript: IScriptBase;
     importScriptDialogOpen: boolean;
 }
 
 const defaultSortedColumn: ISortedColumn<IColumnNames> = {
     name: 'name',
-    sortOrder: SortOrder.Descending,
+    sortOrder: SortOrder.Ascending,
     sortType: SortType.String,
 };
 
@@ -131,6 +141,7 @@ const ScriptsOverview = withStyles(styles)(
 
             this.state = {
                 scriptIdToDelete: null,
+                scriptIdToDuplicate: null,
                 selectedScript: null,
                 importScriptDialogOpen: false,
             };
@@ -141,8 +152,11 @@ const ScriptsOverview = withStyles(styles)(
             this.onFilter = this.onFilter.bind(this);
 
             this.clearScriptToDelete = this.clearScriptToDelete.bind(this);
+            this.clearScriptToDuplicate = this.clearScriptToDuplicate.bind(this);
             this.setScriptToDelete = this.setScriptToDelete.bind(this);
+            this.setScriptToDuplicate = this.setScriptToDuplicate.bind(this);
             this.onCloseExecuteDialog = this.onCloseExecuteDialog.bind(this);
+            this.onCloseDuplicateDialog = this.onCloseDuplicateDialog.bind(this);
             this.setExecuteScriptDialogOpen = this.setExecuteScriptDialogOpen.bind(this);
             this.onImportScriptDialogOpen = this.onImportScriptDialogOpen.bind(this);
             this.onImportScriptDialogClose = this.onImportScriptDialogClose.bind(this);
@@ -150,6 +164,9 @@ const ScriptsOverview = withStyles(styles)(
             this.onDeleteScript = this.onDeleteScript.bind(this);
             // eslint-disable-next-line max-len
             this.closeDeleteScriptDialogAfterSuccessfulDelete = this.closeDeleteScriptDialogAfterSuccessfulDelete.bind(this);
+            this.refreshListAfterSuccessfullDuplicate = this.refreshListAfterSuccessfullDuplicate.bind(this);
+            // eslint-disable-next-line max-len
+            this.closeImportDatasetDialogAfterSuccessfulCreate = this.closeImportDatasetDialogAfterSuccessfulCreate.bind(this);
 
             this.fetchScriptsWithFilterAndPagination = this.fetchScriptsWithFilterAndPagination.bind(this);
             this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
@@ -178,15 +195,22 @@ const ScriptsOverview = withStyles(styles)(
             }
 
             this.closeDeleteScriptDialogAfterSuccessfulDelete(prevProps);
+            this.refreshListAfterSuccessfullDuplicate(prevProps);
+            this.closeImportDatasetDialogAfterSuccessfulCreate(prevProps);
         }
 
         public render() {
             const { classes, state } = this.props;
-            const { scriptIdToDelete, selectedScript } = this.state;
+            const {
+                scriptIdToDelete,
+                selectedScript,
+                importScriptDialogOpen,
+                scriptIdToDuplicate,
+            } = this.state;
             const filterFromState = getScriptsListFilter(state);
-
             const scripts = getAsyncScripts(this.props.state);
             const deleteStatus = getAsyncScriptDetail(this.props.state).remove.status;
+            const importStatus = getAsyncScriptDetail(this.props.state).create.status;
             const pageData = getAsyncScriptsPageData(this.props.state);
 
             const listItems = mapScriptsToListItems(filterFromState.onlyShowLatestVersion
@@ -216,28 +240,31 @@ const ScriptsOverview = withStyles(styles)(
                                             sortedColumn={filterFromState.sortedColumn as ISortedColumn<{}>}
                                         />
                                     </Box>
-                                    {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)
+                                    {checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)
                                         ? (
                                             <Box display="flex" alignItems="center" flex="0 0 auto">
-                                                <Box flex="0 0 auto" mr="8px" width="250px">
-                                                    <TransformDocumentationDialogScript
-                                                        open={this.state.importScriptDialogOpen}
+                                                <Box flex="0 0 auto" mr="16px">
+                                                    <TextFileInputDialog
+                                                        open={importScriptDialogOpen}
                                                         onOpen={this.onImportScriptDialogOpen}
                                                         onClose={this.onImportScriptDialogClose}
+                                                        onImport={(script) => triggerImportScriptDetail(script)}
+                                                        showLoader={importStatus === AsyncStatus.Busy}
+                                                        metadataName="script"
                                                     />
                                                 </Box>
                                                 <Box flex="0 0 auto">
-                                                    <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        size="small"
-                                                        startIcon={<AddRounded />}
-                                                        onClick={() => {
-                                                            redirectTo({ routeKey: ROUTE_KEYS.R_SCRIPT_NEW });
-                                                        }}
-                                                    >
-                                                        <Translate msg="scripts.overview.header.add_button" />
-                                                    </Button>
+                                                    <RouteLink to={ROUTE_KEYS.R_SCRIPT_NEW}>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="secondary"
+                                                            size="small"
+                                                            startIcon={<AddRounded />}
+                                                        >
+                                                            <Translate msg="scripts.overview.header.add_button" />
+
+                                                        </Button>
+                                                    </RouteLink>
                                                 </Box>
                                             </Box>
                                         ) : null}
@@ -267,6 +294,11 @@ const ScriptsOverview = withStyles(styles)(
                         onConfirm={this.onDeleteScript}
                         showLoader={deleteStatus === AsyncStatus.Busy}
                     />
+                    <DuplicateScriptDialog
+                        scriptUniqueId={scriptIdToDuplicate}
+                        open={!!scriptIdToDuplicate}
+                        onClose={this.onCloseDuplicateDialog}
+                    />
                     {
                         selectedScript && (
                             <ExecuteScriptDialog
@@ -276,7 +308,6 @@ const ScriptsOverview = withStyles(styles)(
                             />
                         )
                     }
-
                 </>
             );
         }
@@ -285,7 +316,6 @@ const ScriptsOverview = withStyles(styles)(
             const { state, dispatch } = this.props;
             const translator = getTranslator(state);
             const filterFromState = getScriptsListFilter(state);
-
             return (
                 <>
                     <GenericFilter
@@ -365,92 +395,109 @@ const ScriptsOverview = withStyles(styles)(
                                         icon: <PlayArrowRounded />,
                                         label: translator('scripts.overview.list.actions.execute'),
                                         onClick: this.setExecuteScriptDialogOpen,
-                                        hideAction: (item: IListItem<IColumnNames>) =>
+                                        hideAction: () =>
                                             !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_WRITE,
-                                                item.columns.securityGroupName.toString(),
                                             ),
                                     },
                                     {
-                                        icon: <Edit />,
-                                        label: translator('scripts.overview.list.actions.edit'),
-                                        onClick: (id: string) => {
+                                        icon: (id: string) => {
                                             const scripts = getAsyncScripts(this.props.state);
                                             const selectedScript = scripts.find((item) =>
                                                 getUniqueIdFromScript(item) === id);
-
-                                            redirectTo({
-                                                routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                                params: {
-                                                    name: selectedScript.name,
-                                                    version: selectedScript.version.number,
-                                                },
-                                            });
+                                            return (
+                                                <RouteLink
+                                                    to={ROUTE_KEYS.R_SCRIPT_DETAIL}
+                                                    params={{
+                                                        name: selectedScript.name,
+                                                        version: selectedScript.version.number,
+                                                    }}
+                                                >
+                                                    <Edit />
+                                                </RouteLink>
+                                            );
                                         },
-                                        hideAction: (item: IListItem<IColumnNames>) =>
+                                        onClick: () => {},
+                                        label: translator('scripts.overview.list.actions.edit'),
+                                        hideAction: () =>
                                             !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                                item.columns.securityGroupName.toString(),
                                             ),
                                     },
                                     {
-                                        icon: <Visibility />,
-                                        label: translator('scripts.overview.list.actions.view'),
-                                        onClick: (id: string) => {
+                                        icon: (id: string) => {
                                             const scripts = getAsyncScripts(this.props.state);
                                             const selectedScript = scripts.find((item) =>
                                                 getUniqueIdFromScript(item) === id);
 
-                                            redirectTo({
-                                                routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                                params: {
-                                                    name: selectedScript.name,
-                                                    version: selectedScript.version.number,
-                                                },
-                                            });
+                                            return (
+                                                <RouteLink
+                                                    to={ROUTE_KEYS.R_SCRIPT_DETAIL}
+                                                    params={{
+                                                        name: selectedScript.name,
+                                                        version: selectedScript.version.number,
+                                                    }}
+                                                >
+                                                    <Visibility />
+                                                </RouteLink>
+                                            );
                                         },
-                                        hideAction: (item: IListItem<IColumnNames>) =>
+                                        label: translator('scripts.overview.list.actions.view'),
+                                        onClick: () => {},
+                                        hideAction: () =>
                                             checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                                item.columns.securityGroupName.toString(),
                                                 // eslint-disable-next-line max-len
-                                            ) || !checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_READ, item.columns.securityGroupName.toString()),
+                                            ) || !checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_READ),
                                     },
                                     {
-                                        icon: <ReportIcon />,
                                         label: translator('scripts.overview.list.actions.report'),
-                                        onClick: (id: string) => {
+                                        icon: (id: string) => {
                                             const scripts = getAsyncScripts(this.props.state);
                                             const selectedScript = scripts.find((item) =>
                                                 getUniqueIdFromScript(item) === id);
 
-                                            redirectTo({
-                                                routeKey: ROUTE_KEYS.R_REPORTS,
-                                                queryParams: {
-                                                    script: selectedScript.name,
-                                                    version: selectedScript.version.number,
-                                                },
-                                            });
+                                            return (
+                                                <RouteLink
+                                                    to={ROUTE_KEYS.R_REPORTS}
+                                                    queryParams={{
+                                                        script: selectedScript.name,
+                                                        version: selectedScript.version.number,
+                                                        requester: getDecodedToken().username,
+                                                    }}
+                                                >
+                                                    <ReportIcon />
+                                                </RouteLink>
+                                            );
                                         },
-                                        hideAction: (item: IListItem<IColumnNames>) =>
+                                        onClick: () => {},
+                                        hideAction: () =>
                                             !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_READ,
-                                                item.columns.securityGroupName.toString(),
                                             ),
                                     },
                                     {
                                         icon: <Delete />,
                                         label: translator('scripts.overview.list.actions.delete'),
                                         onClick: this.setScriptToDelete,
-                                        hideAction: (item: IListItem<IColumnNames>) =>
+                                        hideAction: () =>
                                             !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                                item.columns.securityGroupName.toString(),
+                                            ),
+                                    },
+                                    {
+                                        icon: <FileCopy />,
+                                        label: translator('scripts.overview.list.actions.duplicate'),
+                                        onClick: this.setScriptToDuplicate,
+                                        hideAction: () =>
+                                            !checkAuthority(
+                                                state,
+                                                SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
                                             ),
                                     },
                                 )}
@@ -480,6 +527,24 @@ const ScriptsOverview = withStyles(styles)(
             );
         }
 
+        private closeImportDatasetDialogAfterSuccessfulCreate(prevProps: TProps & IObserveProps) {
+            const { status } = getAsyncScriptDetailImport(this.props.state).create;
+            const prevStatus = getAsyncScriptDetailImport(prevProps.state).create.status;
+
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                this.setState({ importScriptDialogOpen: false });
+                this.fetchScriptsWithFilterAndPagination({});
+            }
+        }
+
+        private onImportScriptDialogOpen() {
+            this.setState((state) => ({ ...state, importScriptDialogOpen: true }));
+        }
+
+        private onImportScriptDialogClose() {
+            this.setState((state) => ({ ...state, importScriptDialogOpen: false }));
+        }
+
         private onDeleteScript() {
             const { state } = this.props;
             const { scriptIdToDelete } = this.state;
@@ -497,6 +562,16 @@ const ScriptsOverview = withStyles(styles)(
 
             if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
                 this.clearScriptToDelete();
+                this.fetchScriptsWithFilterAndPagination({ expandResponseWith: { scheduling: false } });
+            }
+        }
+
+        private refreshListAfterSuccessfullDuplicate(prevProps: TProps & IObserveProps) {
+            const currentStatus = getAsyncScriptDetail(this.props.state).create.status;
+            const prevStatus = getAsyncScriptDetail(prevProps.state).create.status;
+
+            if (currentStatus === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                this.clearScriptToDuplicate();
                 this.fetchScriptsWithFilterAndPagination({ expandResponseWith: { scheduling: false } });
             }
         }
@@ -585,15 +660,16 @@ const ScriptsOverview = withStyles(styles)(
             this.setState({ scriptIdToDelete: null });
         }
 
+        private clearScriptToDuplicate() {
+            this.setState({ scriptIdToDuplicate: null });
+        }
+
         private setScriptToDelete(id: ReactText) {
             this.setState({ scriptIdToDelete: id as string });
         }
 
-        private setExecuteScriptDialogOpen(id: ReactText) {
-            const scripts = getAsyncScripts(this.props.state);
-            const selectedScript = scripts.find((item) =>
-                getUniqueIdFromScript(item) === id);
-            this.setState({ selectedScript });
+        private setScriptToDuplicate(id: ReactText) {
+            this.setState({ scriptIdToDuplicate: id as string });
         }
 
         private onCloseExecuteDialog() {
@@ -601,12 +677,15 @@ const ScriptsOverview = withStyles(styles)(
             this.setState({ selectedScript: null });
         }
 
-        private onImportScriptDialogOpen() {
-            this.setState((state) => ({ ...state, importScriptDialogOpen: true }));
+        private onCloseDuplicateDialog() {
+            this.setState({ scriptIdToDuplicate: null });
         }
 
-        private onImportScriptDialogClose() {
-            this.setState((state) => ({ ...state, importScriptDialogOpen: false }));
+        private setExecuteScriptDialogOpen(id: ReactText) {
+            const scripts = getAsyncScripts(this.props.state);
+            const selectedScript = scripts.find((item) =>
+                getUniqueIdFromScript(item) === id);
+            this.setState({ selectedScript });
         }
     },
 );

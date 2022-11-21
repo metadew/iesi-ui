@@ -1,13 +1,5 @@
-import React, { ReactNode, useState, ChangeEvent } from 'react';
-import {
-    makeStyles,
-    Box,
-    Button,
-    FormControl,
-    FormHelperText,
-    InputBaseProps,
-    FilledInput,
-} from '@material-ui/core';
+import React, { ChangeEvent, ReactNode, useState } from 'react';
+import { Box, Button, FilledInput, FormControl, FormHelperText, InputBaseProps, makeStyles } from '@material-ui/core';
 
 interface IPublicProps {
     inputProps: Omit<InputBaseProps, 'id'> & { id: string };

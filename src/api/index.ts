@@ -9,6 +9,10 @@ import * as connections from './connections/connections.api';
 import * as components from './components/components.api';
 import * as openapi from './openapi/openapi.api';
 import * as datasets from './datasets/datasets.api';
+import * as users from './users/users.api';
+import * as teams from './teams/teams.api';
+import * as securityGroups from './securityGroups/securityGroups.api';
+import * as templates from './templates/templates.api';
 
 export const api = {
     auth,
@@ -22,4 +26,8 @@ export const api = {
     components,
     openapi,
     datasets,
+    users,
+    teams,
+    securityGroups,
+    templates,
 };

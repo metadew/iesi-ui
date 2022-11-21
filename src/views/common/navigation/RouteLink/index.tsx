@@ -1,4 +1,4 @@
-import React, { ReactNode, MutableRefObject } from 'react';
+import React, { MutableRefObject, ReactNode } from 'react';
 import classnames from 'classnames';
 import { NavLink as RouterNavLink, NavLinkProps } from 'react-router-dom';
 import isSet from '@snipsonian/core/es/is/isSet';
@@ -10,6 +10,7 @@ import replacePathPlaceholders from 'utils/navigation/replacePathPlaceholders';
 export interface IPublicProps extends Pick<NavLinkProps, 'exact'> {
     to: ROUTE_KEYS;
     params?: IPathParams;
+    queryParams?: IPathParams;
     flashMessageLink?: boolean;
     children: ReactNode;
     className?: string;
@@ -34,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 function RouteLink(props: IPublicProps) {
-    const { to: routeKey, params, exact, flashMessageLink, children, className } = props;
+    const { to: routeKey, params, queryParams, exact, flashMessageLink, children, className } = props;
     const classes = useStyles();
 
     const route = getRoute({ routeKey });
@@ -46,6 +47,7 @@ function RouteLink(props: IPublicProps) {
     const urlTo = replacePathPlaceholders({
         path: route.path,
         placeholders: params,
+        queryParams,
     });
 
     return (

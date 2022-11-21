@@ -1,32 +1,34 @@
 import React from 'react';
-import { Button, IconButton, Box, makeStyles, Paper, darken } from '@material-ui/core';
+import { Box, Button, darken, IconButton, makeStyles, Paper } from '@material-ui/core';
 import {
     AddRounded as AddIcon,
-    Save as SaveIcon,
     Delete as DeleteIcon,
-    PlayArrowRounded as PlayIcon,
     GetApp as ExportIcon,
+    PlayArrowRounded as PlayIcon,
+    Save as SaveIcon,
 } from '@material-ui/icons';
 import ReportIcon from 'views/common/icons/Report';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { THEME_COLORS } from 'config/themes/colors';
 import Tooltip from 'views/common/tooltips/Tooltip';
-import { observe, IObserveProps } from 'views/observe';
-import { ISecuredObject } from 'models/core.models';
+import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
 import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
+import RouteLink from 'views/common/navigation/RouteLink';
+import { ROUTE_KEYS } from 'views/routes';
+import { IScript } from 'models/state/scripts.models';
+import { getDecodedToken } from 'utils/users/userUtils';
 
 interface IPublicProps {
     onPlay?: () => void;
     onDelete?: () => void;
     onAdd?: () => void;
     onSave?: () => void;
-    onViewReport?: () => void;
     onExport?: () => void;
     isCreateRoute?: boolean;
-    newScriptDetail?: ISecuredObject;
+    newScriptDetail?: IScript;
 }
 
 const useStyles = makeStyles(({ palette, spacing }) => ({
@@ -52,11 +54,10 @@ function DetailActions({
     onDelete,
     onAdd,
     onSave,
-    onViewReport,
     onExport,
     isCreateRoute,
-    newScriptDetail,
     state,
+    newScriptDetail,
 }: IPublicProps & IObserveProps) {
     const classes = useStyles();
     const translator = getTranslator(state);
@@ -72,13 +73,22 @@ function DetailActions({
     );
 
     const ReportButton = (
-        <IconButton
-            disabled={isCreateRoute}
-            aria-label={translator('scripts.detail.main.actions.report')}
-            onClick={onViewReport}
+        <RouteLink
+            to={ROUTE_KEYS.R_REPORTS}
+            queryParams={{
+                script: newScriptDetail && newScriptDetail.name,
+                version: newScriptDetail && newScriptDetail.version
+                    ? newScriptDetail.version.number : null,
+                requester: getDecodedToken().username,
+            }}
         >
-            <ReportIcon />
-        </IconButton>
+            <IconButton
+                disabled={isCreateRoute}
+                aria-label={translator('scripts.detail.main.actions.report')}
+            >
+                <ReportIcon />
+            </IconButton>
+        </RouteLink>
     );
 
     const ExecuteButton = (
@@ -107,7 +117,6 @@ function DetailActions({
                 {isCreateRoute || checkAuthority(
                     state,
                     SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                    newScriptDetail.securityGroupName,
                 )
                     ? (
                         <Tooltip
@@ -133,7 +142,6 @@ function DetailActions({
                         {isCreateRoute || checkAuthority(
                             state,
                             SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                            newScriptDetail.securityGroupName,
                         )
                             ? (
                                 <Button
@@ -160,7 +168,6 @@ function DetailActions({
                             {checkAuthority(
                                 state,
                                 SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_WRITE,
-                                newScriptDetail.securityGroupName,
                             )
                                 ? (
                                     <Tooltip
@@ -174,7 +181,6 @@ function DetailActions({
                             {checkAuthority(
                                 state,
                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                newScriptDetail.securityGroupName,
                             )
                                 ? (
                                     <Tooltip
@@ -188,7 +194,6 @@ function DetailActions({
                             {checkAuthority(
                                 state,
                                 SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_READ,
-                                newScriptDetail.securityGroupName,
                             )
                                 ? (
                                     <Tooltip
@@ -202,7 +207,6 @@ function DetailActions({
                             {checkAuthority(
                                 state,
                                 SECURITY_PRIVILEGES.S_SCRIPTS_READ,
-                                newScriptDetail.securityGroupName,
                             )
                                 ? (
                                     <Tooltip

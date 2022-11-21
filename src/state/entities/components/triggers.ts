@@ -4,6 +4,7 @@ import { handleComponent, triggerFlashMessage } from 'state/ui/actions';
 import {
     IComponent,
     IComponentByNameAndVersionPayload,
+    IComponentImportPayload,
     IFetchComponentsListPayload,
 } from 'models/state/components.model';
 import { StateChangeNotification } from 'models/state.models';
@@ -17,6 +18,7 @@ export const triggerFetchComponents = (payload: IFetchComponentsListPayload) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENTS_LIST],
+        itself: triggerFetchComponents,
     });
 export const triggerFetchComponentDetail = (payload: IComponentByNameAndVersionPayload) =>
     entitiesStateManager.triggerAsyncEntityFetch<{}>({
@@ -25,8 +27,59 @@ export const triggerFetchComponentDetail = (payload: IComponentByNameAndVersionP
             refreshMode: 'always',
             resetDataOnTrigger: true,
         },
+        onFail: ({ dispatch, error }) => {
+            dispatch(triggerFlashMessage({
+                translationKey: 'flash_messages.common.error',
+                translationPlaceholders: {
+                    error: error?.messsage,
+                },
+                type: 'error',
+            }));
+        },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENT_DETAIL],
+        itself: triggerFetchComponentDetail,
+    });
+
+export const triggerExportComponentDetail = (payload: IComponentByNameAndVersionPayload) =>
+    entitiesStateManager.triggerAsyncEntityFetch<{}>({
+        asyncEntityToFetch: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.componentDetailExport,
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENT_DETAIL],
+        itself: triggerExportComponentDetail,
+    });
+
+export const triggerImportComponentDetail = (payload: IComponentImportPayload) =>
+    entitiesStateManager.triggerAsyncEntityCreate<{}>({
+        asyncEntityToCreate: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.componentDetailImport,
+        },
+        onSuccess: ({ dispatch }) => dispatch(
+            triggerFlashMessage({
+                type: 'success',
+                translationKey: 'flash_messages.component.import',
+            }),
+        ),
+        onFail: ({ dispatch, error }) => {
+            if (error.status) {
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.common.responseError',
+                    translationPlaceholders: {
+                        message: error.response?.message,
+                    },
+                    type: 'error',
+                }));
+            } else {
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.component.import_error',
+                }));
+            }
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENT_DETAIL],
+        itself: triggerImportComponentDetail,
     });
 
 export const triggerCreateComponentDetail = (payload: IComponent) =>
@@ -36,6 +89,7 @@ export const triggerCreateComponentDetail = (payload: IComponent) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENT_DETAIL],
+        itself: triggerCreateComponentDetail,
     });
 
 export const triggerUpdateComponentDetail = (payload: IComponent) =>
@@ -45,6 +99,7 @@ export const triggerUpdateComponentDetail = (payload: IComponent) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENT_DETAIL],
+        itself: triggerUpdateComponentDetail,
         onSuccess: ({ dispatch }) => {
             dispatch(triggerFlashMessage({
                 translationKey: 'flash_messages.component.edit',
@@ -63,6 +118,7 @@ export const triggerDeleteComponentDetail = (payload: IComponentByNameAndVersion
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENT_DETAIL],
+        itself: triggerDeleteComponentDetail,
     });
 export const triggerUpdateComponent = (payload: IComponent | IComponent[], bulk?: boolean) =>
     entitiesStateManager.triggerAsyncEntityUpdate<{}>({
@@ -72,6 +128,7 @@ export const triggerUpdateComponent = (payload: IComponent | IComponent[], bulk?
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [],
+        itself: triggerUpdateComponent,
         bulk,
         onSuccess: ({ dispatch, currentEntity }) => {
             dispatch(triggerFlashMessage({
@@ -109,6 +166,7 @@ export const triggerCreateComponent = (payload: IComponent | IComponent[], bulk?
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [],
+        itself: triggerCreateComponent,
         bulk,
         onSuccess: ({ dispatch, currentEntity }) => {
             dispatch(triggerFlashMessage({

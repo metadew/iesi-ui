@@ -44,6 +44,11 @@ export default function getMockState({
                     page: 1,
                     sortedColumn: null,
                 },
+                environments: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                },
                 executions: {
                     filters: null,
                     page: 1,
@@ -54,15 +59,37 @@ export default function getMockState({
                     page: 1,
                     sortedColumn: null,
                 },
+                users: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                },
+                teams: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                },
+                securityGroups: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                },
+                templates: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                    onlyShowLatestVersion: true,
+                },
             },
         },
         auth: {
             username: 'mocked-test-user',
             permissions: [{
-                group: 'PUBLIC',
                 privilege: SECURITY_PRIVILEGES.S_CONNECTIONS_READ,
             }],
             accessToken: '',
+            refreshToken: '',
+            expiresAt: new Date(),
         },
         entities: {
             actionTypes: {
@@ -101,6 +128,13 @@ export default function getMockState({
                 },
             },
             scriptDetailExport: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            scriptDetailImport: {
                 data: null,
                 fetch: {
                     status: AsyncStatus.Initial,
@@ -167,6 +201,13 @@ export default function getMockState({
                     error: null,
                 },
             },
+            environmentDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
             openapi: {
                 data: null,
                 fetch: {
@@ -188,7 +229,98 @@ export default function getMockState({
                     error: null,
                 },
             },
+            datasetDetailExport: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            datasetDetailImport: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
             datasetImplementations: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            users: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            userDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            userDetailPassword: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            userDetailRole: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            teams: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            teamDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            teamDetailSecurityGroup: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            securityGroups: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            securityGroupDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            templates: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            templateDetail: {
                 data: null,
                 fetch: {
                     status: AsyncStatus.Initial,
@@ -204,6 +336,8 @@ function getDefaultEnvConfig(): ICustomAsyncEntity<IEnvConfig> {
         data: {
             iesi_api_base_url: 'https://some.iesi-api.be',
             iesi_api_timeout_in_seconds: 1,
+            iesi_api_client_id: 'iesi-client',
+            iesi_api_client_secret: 'iesi',
             translation_label_overrides: {
                 en_GB: {},
             },

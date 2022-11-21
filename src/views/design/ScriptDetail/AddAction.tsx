@@ -1,25 +1,25 @@
-import React, { useState, ReactText, ChangeEvent } from 'react';
+import React, { ChangeEvent, ReactText, useState } from 'react';
 import classnames from 'classnames';
 import {
     Box,
-    makeStyles,
-    IconButton,
-    Typography,
-    Input,
     Button,
     ButtonGroup,
     FormControl,
+    IconButton,
+    Input,
     InputLabel,
-    Select,
+    makeStyles,
     MenuItem,
+    Select,
+    Typography,
 } from '@material-ui/core';
-import { Search, Close } from '@material-ui/icons';
+import { Close, Search } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import { observe, IObserveProps } from 'views/observe';
+import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';
 import GenericSelectableList from 'views/common/list/GenericSelectableList';
-import { FilterType, SortOrder, SortType, IListItem } from 'models/list.models';
+import { FilterType, IListItem, SortOrder, SortType } from 'models/list.models';
 import { getAsyncActionTypes } from 'state/entities/constants/selectors';
 import { IActionType } from 'models/state/constants.models';
 import { IScriptAction } from 'models/state/scripts.models';
@@ -302,6 +302,8 @@ function AddAction({ state, onClose, onAdd }: IObserveProps & IPublicProps) {
 }
 
 export default observe<IPublicProps>(
-    [StateChangeNotification.I18N_TRANSLATIONS],
+    [
+        StateChangeNotification.I18N_TRANSLATIONS,
+    ],
     AddAction,
 );

@@ -13,6 +13,7 @@ export const triggerFetchScriptExecutionDetail = (payload: IScriptExecutionByRun
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.SCRIPT_EXECUTION_DETAIL],
+        itself: triggerFetchScriptExecutionDetail,
     });
 
 export const triggerResetScriptExecutionDetail = ({
@@ -30,4 +31,5 @@ export const triggerResetScriptExecutionDetail = ({
         extraInputSelector: () => ({}),
         notificationsToTrigger: [StateChangeNotification.SCRIPT_EXECUTION_DETAIL],
         operation,
+        itself: triggerResetScriptExecutionDetail,
     });

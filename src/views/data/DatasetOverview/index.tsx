@@ -1,14 +1,6 @@
 import React, { ReactText } from 'react';
-import {
-    Box,
-    Button,
-    createStyles,
-    Theme,
-    Typography,
-    withStyles,
-    WithStyles,
-} from '@material-ui/core';
-import { observe, IObserveProps } from 'views/observe';
+import { Box, Button, createStyles, Theme, Typography, withStyles, WithStyles } from '@material-ui/core';
+import { IObserveProps, observe } from 'views/observe';
 import { getDatasetsListFilter } from 'state/ui/selectors';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import {
@@ -26,19 +18,24 @@ import { IDataset, IDatasetColumnNames } from 'models/state/datasets.model';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import {
     getAsyncDatasetDetail,
+    getAsyncDatasetDetailImport,
     getAsyncDatasets,
     getAsyncDatasetsEntitty,
     getAsyncDatasetsPageData,
 } from 'state/entities/datasets/selectors';
-import { triggerDeleteDatasetDetail, triggerFetchDatasets } from 'state/entities/datasets/triggers';
+import {
+    triggerDeleteDatasetDetail,
+    triggerFetchDatasets,
+    triggerImportDatasetDetail,
+} from 'state/entities/datasets/triggers';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { setDatasetsListFilter } from 'state/ui/actions';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericSort from 'views/common/list/GenericSort';
-import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
-import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { ROUTE_KEYS } from 'views/routes';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { getTranslator } from 'state/i18n/selectors';
@@ -48,6 +45,8 @@ import { getUniqueIdFromDataset } from 'utils/datasets/datasetUtils';
 import { StateChangeNotification } from 'models/state.models';
 import { Alert } from '@material-ui/lab';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
+import RouteLink from 'views/common/navigation/RouteLink';
+import TextFileInputDialog from '../../common/layout/TextFileInputDialog';
 
 const styles = ({ palette, typography }: Theme) => createStyles({
     header: {
@@ -77,7 +76,7 @@ const filterConfig: FilterConfig<Partial<IDatasetColumnNames>> = {
 
 const defaultSortedColumn: ISortedColumn<IDatasetColumnNames> = {
     name: 'name',
-    sortOrder: SortOrder.Descending,
+    sortOrder: SortOrder.Ascending,
     sortType: SortType.String,
 };
 
@@ -90,6 +89,7 @@ const sortActions: SortActions<Partial<IDatasetColumnNames>> = {
 
 interface IDatasetState {
     datasetIdToDelete: string;
+    importDatasetDialogOpen: boolean;
 }
 
 type TProps = WithStyles<typeof styles>;
@@ -101,6 +101,7 @@ const DatasetOverview = withStyles(styles)(
 
             this.state = {
                 datasetIdToDelete: null,
+                importDatasetDialogOpen: false,
             };
 
             this.renderPanel = this.renderPanel.bind(this);
@@ -112,8 +113,12 @@ const DatasetOverview = withStyles(styles)(
 
             this.setDatasetToDelete = this.setDatasetToDelete.bind(this);
             this.onDeleteDataset = this.onDeleteDataset.bind(this);
+            this.onImportDatasetDialogClose = this.onImportDatasetDialogClose.bind(this);
+            this.onImportDatasetDialogOpen = this.onImportDatasetDialogOpen.bind(this);
             // eslint-disable-next-line max-len
             this.closeDeleteDeleteDialogAfterSuccessfulDelete = this.closeDeleteDeleteDialogAfterSuccessfulDelete.bind(this);
+            // eslint-disable-next-line max-len
+            this.closeImportDatasetDIalogAfterSuccessfulCreate = this.closeImportDatasetDIalogAfterSuccessfulCreate.bind(this);
         }
 
         public componentDidMount() {
@@ -139,17 +144,20 @@ const DatasetOverview = withStyles(styles)(
                 }));
             }
             this.closeDeleteDeleteDialogAfterSuccessfulDelete(prevProps);
+            this.closeImportDatasetDIalogAfterSuccessfulCreate(prevProps);
         }
 
         public render() {
             const { classes, state } = this.props;
-            const { datasetIdToDelete } = this.state;
+            const { datasetIdToDelete, importDatasetDialogOpen } = this.state;
             const translator = getTranslator(state);
             const pageData = getAsyncDatasetsPageData(this.props.state);
             const filterFromState = getDatasetsListFilter(state);
             const datasets = getAsyncDatasets(state);
             const listItems = mapDatasetsToListItems(datasets);
             const deleteStatus = getAsyncDatasetDetail(this.props.state).remove.status;
+            const importStatus = getAsyncDatasetDetailImport(this.props.state).create.status;
+
             return (
                 <>
                     <Box height="100%" display="flex" flexDirection="column" flex="1 0 auto">
@@ -174,20 +182,31 @@ const DatasetOverview = withStyles(styles)(
                                         />
                                     </Box>
                                     {
-                                        checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE) && (
-                                            <Box display="flex" alignItems="center">
+                                        checkAuthority(state, SECURITY_PRIVILEGES.S_DATASETS_WRITE) && (
+                                            <Box display="flex" alignItems="center" flex="0 0 auto">
+                                                <Box flex="0 0 auto" mr="16px">
+                                                    <TextFileInputDialog
+                                                        open={importDatasetDialogOpen}
+                                                        onOpen={this.onImportDatasetDialogOpen}
+                                                        onClose={this.onImportDatasetDialogClose}
+                                                        onImport={(dataset) => triggerImportDatasetDetail(dataset)}
+                                                        showLoader={importStatus === AsyncStatus.Busy}
+                                                        metadataName="dataset"
+                                                    />
+                                                </Box>
                                                 <Box flex="0 0 auto">
-                                                    <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        size="small"
-                                                        startIcon={<AddRounded />}
-                                                        onClick={() => {
-                                                            redirectTo({ routeKey: ROUTE_KEYS.R_DATASET_NEW });
-                                                        }}
+                                                    <RouteLink
+                                                        to={ROUTE_KEYS.R_DATASET_NEW}
                                                     >
-                                                        <Translate msg="datasets.overview.header.add_button" />
-                                                    </Button>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="secondary"
+                                                            size="small"
+                                                            startIcon={<AddRounded />}
+                                                        >
+                                                            <Translate msg="datasets.overview.header.add_button" />
+                                                        </Button>
+                                                    </RouteLink>
                                                 </Box>
                                             </Box>
                                         )
@@ -280,56 +299,62 @@ const DatasetOverview = withStyles(styles)(
                                         },
                                     }}
                                     listActions={[].concat({
-                                        icon: <Edit />,
-                                        label: translator('datasets.overview.list.actions.edit'),
-                                        onClick: (id: string) => {
+                                        icon: (id: string) => {
                                             const datasets = getAsyncDatasets(state);
                                             const selectedDataset = datasets.find((item) =>
                                                 getUniqueIdFromDataset(item) === id);
-                                            redirectTo({
-                                                routeKey: ROUTE_KEYS.R_DATASET_DETAIL,
-                                                params: {
-                                                    name: selectedDataset.name,
-                                                },
-                                            });
+
+                                            return (
+                                                <RouteLink
+                                                    to={ROUTE_KEYS.R_DATASET_DETAIL}
+                                                    params={{
+                                                        name: selectedDataset.name,
+                                                    }}
+                                                >
+                                                    <Edit />
+                                                </RouteLink>
+                                            );
                                         },
-                                        hideAction: (item: IListItem<IDatasetColumnNames>) => (
+                                        label: translator('datasets.overview.list.actions.edit'),
+                                        onClick: () => {},
+                                        hideAction: () => (
                                             !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_DATASETS_WRITE,
-                                                item.columns.securityGroupName.toString(),
                                             )
                                         ),
                                     }, {
-                                        icon: <Visibility />,
-                                        label: translator('datasets.overview.list.actions.view'),
-                                        onClick: (id: string) => {
+                                        icon: (id: string) => {
                                             const datasets = getAsyncDatasets(state);
                                             const selectedDataset = datasets.find((item) =>
                                                 getUniqueIdFromDataset(item) === id);
-                                            redirectTo({
-                                                routeKey: ROUTE_KEYS.R_DATASET_DETAIL,
-                                                params: {
-                                                    name: selectedDataset.name,
-                                                },
-                                            });
+                                            return (
+                                                <RouteLink
+                                                    to={ROUTE_KEYS.R_DATASET_DETAIL}
+                                                    params={{
+                                                        name: selectedDataset.name,
+                                                    }}
+                                                >
+                                                    <Visibility />
+                                                </RouteLink>
+                                            );
                                         },
-                                        hideAction: (item: IListItem<IDatasetColumnNames>) => (
+                                        label: translator('datasets.overview.list.actions.view'),
+                                        onClick: () => {},
+                                        hideAction: () => (
                                             checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_DATASETS_WRITE,
-                                                item.columns.securityGroupName.toString(),
                                             )
                                         ),
                                     }, {
                                         icon: <Delete />,
                                         label: translator('datasets.overview.list.actions.delete'),
                                         onClick: this.setDatasetToDelete,
-                                        hideAction: (item: IListItem<IDatasetColumnNames>) => (
+                                        hideAction: () => (
                                             !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_DATASETS_WRITE,
-                                                item.columns.securityGroupName.toString(),
                                             )),
                                     })}
                                 />
@@ -344,6 +369,24 @@ const DatasetOverview = withStyles(styles)(
                     </Box>
                 </>
             );
+        }
+
+        private closeImportDatasetDIalogAfterSuccessfulCreate(prevProps: TProps & IObserveProps) {
+            const { status } = getAsyncDatasetDetailImport(this.props.state).create;
+            const prevStatus = getAsyncDatasetDetailImport(prevProps.state).create.status;
+
+            if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
+                this.setState({ importDatasetDialogOpen: false });
+                this.fetchDatasetsWithFilterAndPagination({});
+            }
+        }
+
+        private onImportDatasetDialogOpen() {
+            this.setState({ importDatasetDialogOpen: true });
+        }
+
+        private onImportDatasetDialogClose() {
+            this.setState({ importDatasetDialogOpen: false });
         }
 
         private closeDeleteDeleteDialogAfterSuccessfulDelete(prevProps: TProps & IObserveProps) {

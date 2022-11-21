@@ -17,10 +17,9 @@ import { getAsyncConnectionDetail } from 'state/entities/connections/selectors';
 import { StateChangeNotification } from 'models/state.models';
 import { getUniqueIdFromConnection } from 'utils/connections/connectionUtils';
 import { clone } from 'lodash';
-import Loader from 'views/common/waiting/Loader';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { getAsyncConnectionTypes } from 'state/entities/constants/selectors';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import ContentWithSidePanel from 'views/common/layout/ContentWithSidePanel';
 import { getRouteKeyByPath, redirectTo, ROUTE_KEYS } from 'views/routes';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -32,7 +31,7 @@ import {
     triggerDeleteConnectionDetail,
     triggerUpdateConnectionDetail,
 } from 'state/entities/connections/triggers';
-import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
@@ -43,6 +42,8 @@ import { TRequiredFieldsState } from 'models/form.models';
 import GenericList from 'views/common/list/GenericList';
 import { Delete, Edit } from '@material-ui/icons';
 import DescriptionList from 'views/common/list/DescriptionList';
+import Loader from 'views/common/waiting/Loader';
+import { getAsyncEnvironments } from 'state/entities/environments/selectors';
 import EditEnvironments from './EditEnvironments';
 import EditParameter from '../EditParameter';
 import DetailActions from '../DetailActions';
@@ -92,7 +93,7 @@ const ConnectionDetail = withStyles(styles)(
 
             this.state = {
                 newConnectionDetail: initialConnectionDetail,
-                environmentIndex: -1,
+                environmentIndex: 0,
                 editParameterIndex: -1,
                 isAddingParameter: false,
                 hasChangesToCheck: false,
@@ -137,18 +138,19 @@ const ConnectionDetail = withStyles(styles)(
                 isSaveDialogOpen,
             } = this.state;
             const { state } = this.props;
-            const connectionDetailAsyncStatus = getAsyncConnectionDetail(state).fetch.status;
-            const connectionTypeAsyncStatus = getAsyncConnectionTypes(state).fetch.status;
             const deleteStatus = getAsyncConnectionDetail(state).remove.status;
+            const connectionStatus = getAsyncConnectionDetail(state).fetch.status;
+            const connectionTypeStatus = getAsyncConnectionTypes(state).fetch.status;
+            const environmentStatus = getAsyncEnvironments(state).fetch.status;
             const parameter = this.getEditParameter();
             const translator = getTranslator(state);
             return (
                 <>
-                    <Loader
-                        show={
-                            connectionDetailAsyncStatus === AsyncStatus.Busy
-                            || connectionTypeAsyncStatus === AsyncStatus.Busy
-                        }
+                    <Loader show={
+                        connectionStatus === AsyncStatus.Busy
+                        || connectionTypeStatus === AsyncStatus.Busy
+                        || environmentStatus === AsyncStatus.Busy
+                    }
                     />
                     <ContentWithSidePanel
                         panel={this.renderConnectionDetailPanel()}
@@ -174,28 +176,12 @@ const ConnectionDetail = withStyles(styles)(
                         onClose={() => this.setState({ isSaveDialogOpen: false })}
                     >
                         <Typography>
-                            {
-                                checkAuthority(
-                                    state,
-                                    SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
-                                    newConnectionDetail.securityGroupName,
-                                )
-                                    ? (
-                                        <Translate
-                                            msg="connections.detail.save_connection_dialog.text"
-                                            placeholders={{
-                                                connectionName: newConnectionDetail.name,
-                                            }}
-                                        />
-                                    ) : (
-                                        <Translate
-                                            msg="connections.detail.save_connection_dialog.text_securityGroup"
-                                            placeholders={{
-                                                securityGroup: newConnectionDetail.securityGroupName,
-                                            }}
-                                        />
-                                    )
-                            }
+                            <Translate
+                                msg="connections.detail.save_connection_dialog.text"
+                                placeholders={{
+                                    connectionName: newConnectionDetail.name,
+                                }}
+                            />
                         </Typography>
                         <Box display="flex" alignItems="center" justifyContent="center" marginTop={2}>
                             <Box paddingRight={1}>
@@ -214,7 +200,6 @@ const ConnectionDetail = withStyles(styles)(
                                     disabled={!checkAuthority(
                                         state,
                                         SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
-                                        newConnectionDetail.securityGroupName,
                                     )}
 
                                 >
@@ -241,6 +226,7 @@ const ConnectionDetail = withStyles(styles)(
             } = this.state;
             const { state } = this.props;
             const translator = getTranslator(state);
+            const connectionTypeAsyncStatus = getAsyncConnectionTypes(state).fetch.status;
             const connectionTypes = getAsyncConnectionTypes(state).data || [];
             const connectionTypeListItems = mapConnectionTypeToListItems(connectionTypes);
             const autoComplete = connectionTypeListItems
@@ -254,11 +240,6 @@ const ConnectionDetail = withStyles(styles)(
                                 options={connectionTypeListItems}
                                 value={autoComplete || null}
                                 getOptionLabel={(option) => option.data.type}
-                                getOptionDisabled={() =>
-                                    !checkAuthorityGeneral(
-                                        state,
-                                        SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
-                                    )}
                                 renderInput={(params) => (
                                     <TextInput
                                         {...params}
@@ -272,7 +253,6 @@ const ConnectionDetail = withStyles(styles)(
                                             readOnly: !this.isCreateConnectionRoute() && !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
-                                                newConnectionDetail.securityGroupName,
                                             ),
                                             disableUnderline: true,
                                         }}
@@ -299,13 +279,17 @@ const ConnectionDetail = withStyles(styles)(
                                             )),
                                     });
                                 }}
+                                loading={connectionTypeAsyncStatus === AsyncStatus.Busy}
+                                disabled={!checkAuthority(
+                                    state,
+                                    SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
+                                ) || !this.isCreateConnectionRoute()}
                             />
                             <TextInput
                                 id="connection-name"
                                 label={translator('connections.detail.side.connection_name')}
                                 InputProps={{
                                     readOnly: !this.isCreateConnectionRoute() && newConnectionDetail !== undefined,
-                                    //    && !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE),
                                     disableUnderline: true,
                                 }}
                                 value={newConnectionDetail.name}
@@ -324,7 +308,6 @@ const ConnectionDetail = withStyles(styles)(
                                         || !checkAuthority(
                                             state,
                                             SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
-                                            newConnectionDetail.securityGroupName,
                                         ),
                                     disableUnderline: true,
 
@@ -533,7 +516,6 @@ const ConnectionDetail = withStyles(styles)(
                                     !this.isCreateConnectionRoute() && !checkAuthority(
                                         state,
                                         SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
-                                        newConnectionDetail.securityGroupName,
                                     )
                                 ),
                             }, {
@@ -557,7 +539,6 @@ const ConnectionDetail = withStyles(styles)(
                                     !this.isCreateConnectionRoute() && !checkAuthority(
                                         state,
                                         SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
-                                        item.data.securityGroupName,
                                     )
                                 ) || !item.canBeDeleted
                                 ),
@@ -810,4 +791,5 @@ function orderEnvironments(
 export default observe([
     StateChangeNotification.CONNECTIVITY_CONNECTION_DETAIL,
     StateChangeNotification.CONSTANTS_CONNECTION_TYPES,
+    StateChangeNotification.ENVIRONMENTS,
 ], withRouter(ConnectionDetail));

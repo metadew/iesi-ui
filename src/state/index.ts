@@ -1,7 +1,7 @@
 import { getRegisteredStore } from '@snipsonian/observable-state/es/store/storeManager';
 import { IActionableObservableStateStore } from '@snipsonian/observable-state/es/actionableStore/types';
 import { createObservableStateAction } from '@snipsonian/observable-state/es/actionableStore/actionCreators';
-import { IState, IExtraProcessInput, StateChangeNotification, IAction } from 'models/state.models';
+import { IAction, IExtraProcessInput, IState, StateChangeNotification } from 'models/state.models';
 
 /** Without circular dependencies */
 // TODO: is this something to get 'global' state?

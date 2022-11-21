@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-    Button,
-    Box,
-    makeStyles,
-    ButtonGroup,
-    Paper,
-    Theme,
-} from '@material-ui/core';
+import { Box, Button, ButtonGroup, makeStyles, Paper, Theme } from '@material-ui/core';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getTranslator } from 'state/i18n/selectors';
@@ -18,7 +11,7 @@ import { getAsyncComponentTypes } from 'state/entities/constants/selectors';
 import ExpandableParameter from 'views/design/ScriptDetail/EditAction/ExpandableParameter';
 import TextInput from 'views/common/input/TextInput';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { TRequiredFieldsState } from 'models/form.models';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 
@@ -205,7 +198,7 @@ function EditComponentDialog({ onClose, open, state, dispatch, component }: IPub
                                     }}
                                     parameter={parameter}
                                     constantParameter={constantParameter}
-                                    readOnly={!checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
+                                    readOnly={!checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)}
                                 />
                             );
                         })

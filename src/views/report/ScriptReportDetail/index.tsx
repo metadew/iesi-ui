@@ -32,7 +32,8 @@ import { THEME_COLORS } from 'config/themes/colors';
 import sortListItems from 'utils/list/sortListItems';
 import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
 import { triggerResetAsyncExecutionRequest } from 'state/entities/executionRequests/triggers';
-import ScriptExecutionDetailActions from './ScriptExecutionDetailActions';
+import RouteLink from 'views/common/navigation/RouteLink';
+import ScriptExecutionDetailActions from 'views/report/ScriptReportDetail/ScriptExecutionDetailActions';
 import ShowLabels from './ShowLabels';
 import { IExecutionDetailPathParams } from './shared';
 
@@ -155,6 +156,7 @@ function ExecutionDetail({ state }: IObserveProps) {
                             description: executionRequestDetail.description,
                             environment: scriptExecutionData.environment,
                             parameters: scriptExecutionData.inputParameters,
+                            debugMode: scriptExecutionData.debugMode,
                             executionRequestLabels: scriptExecutionData.executionLabels,
 
                         }}
@@ -212,52 +214,52 @@ function ExecutionDetail({ state }: IObserveProps) {
                 },
             };
 
-            const parentProcessId = scriptExecutionData.processId !== scriptExecutionData.parentProcessId
-                ? scriptExecutionData.parentProcessId
-                : undefined;
+            const { parentProcessId } = scriptExecutionData;
 
             return (
                 <Box marginY={1}>
                     <Box display="flex" alignItems="center" marginBottom={3}>
-                        {parentProcessId && (
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                size="small"
-                                startIcon={<ChevronLeftRounded />}
-                                onClick={() => redirectTo({
-                                    routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
-                                    params: {
-                                        executionRequestId,
-                                        runId,
-                                        processId: parentProcessId,
-                                    },
-                                })}
+                        {parentProcessId >= -1 && scriptExecutionData.processId > -1 && (
+                            <RouteLink
+                                to={ROUTE_KEYS.R_REPORT_DETAIL}
+                                params={{
+                                    executionRequestId,
+                                    runId,
+                                    processId: parentProcessId,
+                                }}
                             >
-                                <Translate msg="script_reports.detail.main.action.go_to_parent_script_detail" />
-                            </Button>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    size="small"
+                                    startIcon={<ChevronLeftRounded />}
+                                >
+                                    <Translate msg="script_reports.detail.main.action.go_to_parent_script_detail" />
+                                </Button>
+                            </RouteLink>
                         )}
-                        <Button
-                            className={classes.redirectButton}
-                            variant="contained"
-                            color="primary"
-                            size="small"
-                            endIcon={<ChevronRight />}
-                            onClick={() => redirectTo({
-                                routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                params: {
-                                    name: scriptExecutionData.scriptName,
-                                    version: scriptExecutionData.scriptVersion,
-                                },
-                            })}
-                            hidden={!checkAuthority(
-                                state,
-                                SECURITY_PRIVILEGES.S_SCRIPTS_READ,
-                                scriptExecutionData.securityGroupName,
-                            )}
+                        <RouteLink
+                            to={ROUTE_KEYS.R_SCRIPT_DETAIL}
+                            params={{
+                                name: scriptExecutionData.scriptName,
+                                version: scriptExecutionData.scriptVersion,
+                            }}
                         >
-                            <Translate msg="script_reports.overview.header.redirect_to" />
-                        </Button>
+                            <Button
+                                className={classes.redirectButton}
+                                variant="contained"
+                                color="primary"
+                                size="small"
+                                endIcon={<ChevronRight />}
+                                hidden={!checkAuthority(
+                                    state,
+                                    SECURITY_PRIVILEGES.S_SCRIPTS_READ,
+                                )}
+                            >
+                                <Translate msg="script_reports.overview.header.redirect_to" />
+                            </Button>
+                        </RouteLink>
+
                     </Box>
                     <ScriptExecutionDetailActions
                         listItems={listItems}
@@ -370,7 +372,6 @@ function ExecutionDetail({ state }: IObserveProps) {
                             hidden={scriptExecutionData && !checkAuthority(
                                 state,
                                 SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_WRITE,
-                                scriptExecutionData.securityGroupName,
                             )}
                         >
                             <Translate msg="script_reports.detail.side.execution.rerun" />

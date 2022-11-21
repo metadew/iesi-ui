@@ -1,20 +1,22 @@
 export interface IAuthState {
     username: string;
     accessToken: string;
+    refreshToken: string;
+    expiresAt: Date;
     permissions: IAccessLevel[];
 }
 
 export interface IAccessToken {
-    sub: string;
-    iss: string;
+    authorities: SECURITY_PRIVILEGES[];
+    username: string;
+}
+
+export interface IRefreshToken {
     exp: number;
-    iat: number;
-    uuid: string;
 }
 
 // TODO once authentication mechanism
 export interface IAccessLevel {
-    group: string;
     privilege: SECURITY_PRIVILEGES;
 }
 
@@ -86,6 +88,9 @@ export enum SECURITY_PRIVILEGES {
 
     S_TEAMS_READ = 'TEAMS_READ',
     S_TEAMS_WRITE = 'TEAMS_WRITE',
+
+    S_TEMPLATES_READ = 'TEMPLATES_READ',
+    S_TEMPLATES_WRITE = 'TEMPLATES_WRITE',
 
     S_ROLES_WRITE = 'ROLES_WRITE',
 

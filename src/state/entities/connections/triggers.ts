@@ -1,11 +1,7 @@
 import entitiesStateManager from 'state/entities/entitiesStateManager';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
-import { triggerFlashMessage, handleConnection } from 'state/ui/actions';
-import {
-    IConnection,
-    IConnectionByNamePayload,
-    IFetchConnectionsListPayload,
-} from 'models/state/connections.model';
+import { handleConnection, triggerFlashMessage } from 'state/ui/actions';
+import { IConnection, IConnectionByNamePayload, IFetchConnectionsListPayload } from 'models/state/connections.model';
 import { StateChangeNotification } from 'models/state.models';
 
 export const triggerFetchConnections = (payload: IFetchConnectionsListPayload) =>
@@ -17,6 +13,7 @@ export const triggerFetchConnections = (payload: IFetchConnectionsListPayload) =
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.CONNECTIVITY_CONNECTIONS_LIST],
+        itself: triggerFetchConnections,
     });
 
 export const triggerFetchConnectionDetail = (payload: IConnectionByNamePayload) =>
@@ -28,6 +25,7 @@ export const triggerFetchConnectionDetail = (payload: IConnectionByNamePayload) 
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.CONNECTIVITY_CONNECTION_DETAIL],
+        itself: triggerFetchConnectionDetail,
     });
 
 export const triggerCreateConnectionDetail = (payload: IConnection) =>
@@ -37,6 +35,7 @@ export const triggerCreateConnectionDetail = (payload: IConnection) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.CONNECTIVITY_CONNECTION_DETAIL],
+        itself: triggerCreateConnectionDetail,
         onSuccess: ({ dispatch }) => {
             dispatch(triggerFlashMessage({
                 translationKey: 'flash_messages.connection.create',
@@ -56,6 +55,7 @@ export const triggerUpdateConnectionDetail = (payload: IConnection) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.CONNECTIVITY_CONNECTION_DETAIL],
+        itself: triggerUpdateConnectionDetail,
         onSuccess: ({ dispatch }) => {
             dispatch(triggerFlashMessage({
                 translationKey: 'flash_messages.connection.edit',
@@ -75,6 +75,7 @@ export const triggerDeleteConnectionDetail = (payload: IConnectionByNamePayload)
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.CONNECTIVITY_CONNECTION_DETAIL],
+        itself: triggerDeleteConnectionDetail,
     });
 
 export const triggerUpdateConnection = (payload: IConnection | IConnection[], bulk?: boolean) =>
@@ -85,6 +86,7 @@ export const triggerUpdateConnection = (payload: IConnection | IConnection[], bu
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [],
+        itself: triggerUpdateConnection,
         bulk,
         onSuccess: ({ dispatch, currentEntity }) => {
             dispatch(triggerFlashMessage({
@@ -123,6 +125,7 @@ export const triggerCreateConnection = (payload: IConnection | IConnection[], bu
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [],
+        itself: triggerCreateConnection,
         bulk,
         onSuccess: ({ dispatch, currentEntity }) => {
             dispatch(triggerFlashMessage({
