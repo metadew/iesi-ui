@@ -8,7 +8,7 @@ import { TThemeName } from 'config/theme.config';
 import { ROUTE_KEYS } from 'views/routes';
 import { useDocumentScrollThrottled } from 'utils/document/throttledEvents';
 import { APP_HEADER_ID } from 'config/dom.config';
-import packageJson from '../../../../package.json';
+import packageJson from '../../../../package';
 import NavigationMenu from './NavigationMenu';
 import { ReactComponent as IesiLogo } from './logo.svg';
 

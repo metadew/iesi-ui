@@ -5,7 +5,7 @@
 
 /* eslint-disable import/no-extraneous-dependencies,@typescript-eslint/no-var-requires */
 const { interceptGetCall } = require('./utils/env/localProxyUtils');
-const envConfigLocal = require('./env-config.json');
+const envConfigLocal = require('./env-config');
 
 module.exports = function configure(app) {
     interceptGetCall(app, {
