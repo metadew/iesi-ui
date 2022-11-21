@@ -67,6 +67,10 @@ export const MAIN_NAV_ITEMS: IMenuItem[] = [
         translationKeySuffix: 'environments',
         securityPrivilege: SECURITY_PRIVILEGES.S_ENVIRONMENTS_READ,
     }),
+    toMenuItem({
+        routeKey: ROUTE_KEYS.R_DATASETS,
+        translationKeySuffix: 'datasets',
+    }),
 ];
 
 function toMenuItem({
