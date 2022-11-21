@@ -1,12 +1,12 @@
 import React, { ReactText } from 'react';
 import { IObserveProps, observe } from 'views/observe';
-import { Theme, Box, WithStyles, withStyles, Typography, Button } from '@material-ui/core';
+import { Box, Button, Theme, Typography, WithStyles, withStyles } from '@material-ui/core';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import {
+    getAsyncConnectionDetail,
     getAsyncConnections,
     getAsyncConnectionsEntity,
     getAsyncConnectionsPageData,
-    getAsyncConnectionDetail,
 } from 'state/entities/connections/selectors';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import GenericSort from 'views/common/list/GenericSort';
@@ -29,7 +29,7 @@ import { formatSortQueryParameter } from 'utils/core/string/format';
 import { setConnectionsListFilter } from 'state/ui/actions';
 import TransformDocumentationDialog from 'views/design/common/TransformDocumentationDialog';
 import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
-import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { ROUTE_KEYS } from 'views/routes';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import { getUniqueIdFromConnection } from 'utils/connections/connectionUtils';
 import GenericFilter from 'views/common/list/GenericFilter';
@@ -39,8 +39,9 @@ import GenericList from 'views/common/list/GenericList';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import { StateChangeNotification } from 'models/state.models';
 import OrderedList from 'views/common/list/OrderedList';
-import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
+import RouteLink from 'views/common/navigation/RouteLink';
 
 const styles = (({ palette, typography }: Theme) => ({
     header: {
@@ -84,7 +85,7 @@ const sortActions: SortActions<Partial<IConnectionColumnNamesBase>> = {
 
 const defaultSortedColumn: ISortedColumn<IConnectionColumnNamesBase> = {
     name: 'name',
-    sortOrder: SortOrder.Descending,
+    sortOrder: SortOrder.Ascending,
     sortType: SortType.String,
 };
 
@@ -177,7 +178,7 @@ const ConnectionOverview = withStyles(styles)(
                                     />
                                 </Box>
                                 {
-                                    checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE) && (
+                                    checkAuthority(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE) && (
                                         <Box display="flex" alignItems="center">
                                             <Box flex="0 0 auto" mr="8px" width="250px">
                                                 <TransformDocumentationDialog
@@ -187,17 +188,16 @@ const ConnectionOverview = withStyles(styles)(
                                                 />
                                             </Box>
                                             <Box flex="0 0 auto">
-                                                <Button
-                                                    variant="contained"
-                                                    color="secondary"
-                                                    size="small"
-                                                    startIcon={<AddRounded />}
-                                                    onClick={() => {
-                                                        redirectTo({ routeKey: ROUTE_KEYS.R_CONNECTION_NEW });
-                                                    }}
-                                                >
-                                                    <Translate msg="connections.overview.header.add_button" />
-                                                </Button>
+                                                <RouteLink to={ROUTE_KEYS.R_CONNECTION_NEW}>
+                                                    <Button
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        size="small"
+                                                        startIcon={<AddRounded />}
+                                                    >
+                                                        <Translate msg="connections.overview.header.add_button" />
+                                                    </Button>
+                                                </RouteLink>
                                             </Box>
                                         </Box>
                                     )
@@ -291,45 +291,51 @@ const ConnectionOverview = withStyles(styles)(
                                 <GenericList
                                     listActions={[].concat(
                                         {
-                                            icon: <Edit />,
                                             label: translator('connections.overview.list.actions.edit'),
-                                            onClick: (id: string) => {
+                                            icon: (id: string) => {
                                                 const connections = getAsyncConnections(state);
                                                 const selectedConnection = connections.find((item) =>
                                                     getUniqueIdFromConnection(item) === id);
-                                                redirectTo({
-                                                    routeKey: ROUTE_KEYS.R_CONNECTION_DETAIL,
-                                                    params: {
-                                                        name: selectedConnection.name,
-                                                    },
-                                                });
+                                                return (
+                                                    <RouteLink
+                                                        to={ROUTE_KEYS.R_CONNECTION_DETAIL}
+                                                        params={{
+                                                            name: selectedConnection.name,
+                                                        }}
+                                                    >
+                                                        <Edit />
+                                                    </RouteLink>
+                                                );
                                             },
-                                            hideAction: (item: IListItem<IConnectionColumnNamesBase>) => (
+                                            onClick: () => { },
+                                            hideAction: () => (
                                                 !checkAuthority(
                                                     state,
                                                     SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
-                                                    item.columns.securityGroupName.toString(),
                                                 )
                                             ),
                                         }, {
-                                            icon: <Visibility />,
                                             label: translator('connections.overview.list.actions.view'),
-                                            onClick: (id: string) => {
+                                            icon: (id: string) => {
                                                 const connections = getAsyncConnections(state);
                                                 const selectedConnection = connections.find((item) =>
                                                     getUniqueIdFromConnection(item) === id);
-                                                redirectTo({
-                                                    routeKey: ROUTE_KEYS.R_CONNECTION_DETAIL,
-                                                    params: {
-                                                        name: selectedConnection.name,
-                                                    },
-                                                });
+                                                return (
+                                                    <RouteLink
+                                                        to={ROUTE_KEYS.R_CONNECTION_DETAIL}
+                                                        params={{
+                                                            name: selectedConnection.name,
+                                                        }}
+                                                    >
+                                                        <Visibility />
+                                                    </RouteLink>
+                                                );
                                             },
-                                            hideAction: (item: IListItem<IConnectionColumnNamesBase>) => (
-                                                !checkAuthority(
+                                            onClick: () => {},
+                                            hideAction: () => (
+                                                checkAuthority(
                                                     state,
                                                     SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
-                                                    item.data.securityGroupName,
                                                 )
                                             ),
                                         }, {
@@ -337,7 +343,7 @@ const ConnectionOverview = withStyles(styles)(
                                             label: translator('connections.overview.list.actions.delete'),
                                             onClick: this.setConnectionToDelete,
                                             hideAction: () => (
-                                                !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
+                                                !checkAuthority(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                                             ),
                                         },
                                     )}

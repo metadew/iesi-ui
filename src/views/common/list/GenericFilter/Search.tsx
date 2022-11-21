@@ -1,16 +1,9 @@
-import React, { useState, useCallback } from 'react';
-import {
-    InputLabel,
-    FormControl,
-    FilledInput,
-    InputAdornment,
-    Icon,
-    FilledInputProps,
-} from '@material-ui/core';
+import React, { useCallback, useState } from 'react';
+import { FilledInput, FilledInputProps, FormControl, Icon, InputAdornment, InputLabel } from '@material-ui/core';
 import debounce from 'lodash/debounce';
 import { Search as SearchIcon } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import { IFilter, FilterType } from 'models/list.models';
+import { FilterType, IFilter } from 'models/list.models';
 
 interface IPublicProps {
     columnName: string;

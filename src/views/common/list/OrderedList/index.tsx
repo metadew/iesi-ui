@@ -1,4 +1,4 @@
-import React, { ReactNode, FC, ComponentProps } from 'react';
+import React, { ComponentProps, FC, ReactNode } from 'react';
 import {
     IconButton,
     List,

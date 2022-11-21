@@ -1,7 +1,7 @@
 import React, { ReactText } from 'react';
 import { IObserveProps, observe } from 'views/observe';
 import GenericFilter from 'views/common/list/GenericFilter';
-import { Box, Button, Theme, Typography, WithStyles, withStyles, createStyles } from '@material-ui/core';
+import { Box, Button, createStyles, Theme, Typography, withStyles, WithStyles } from '@material-ui/core';
 import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
@@ -18,27 +18,33 @@ import {
     SortOrder,
     SortType,
 } from 'models/list.models';
-import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
-import { IComponent, IComponentColumnNames, IComponentColumnNamesBase } from 'models/state/components.model';
+import { IComponent, IComponentColumnNamesBase } from 'models/state/components.model';
 import GenericList from 'views/common/list/GenericList';
 import { getTranslator } from 'state/i18n/selectors';
 import { setComponentsListFilter } from 'state/ui/actions';
 import {
+    getAsyncComponentDetail,
     getAsyncComponents,
     getAsyncComponentsEntity,
     getAsyncComponentsPageData,
-    getAsyncComponentDetail,
 } from 'state/entities/components/selectors';
 import { getUniqueIdFromComponent } from 'utils/components/componentUtils';
 import { StateChangeNotification } from 'models/state.models';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
-import { triggerDeleteComponentDetail, triggerFetchComponents } from 'state/entities/components/triggers';
-import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import {
+    triggerDeleteComponentDetail,
+    triggerFetchComponents,
+    triggerImportComponentDetail,
+} from 'state/entities/components/triggers';
+import { ROUTE_KEYS } from 'views/routes';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
+import TextFileInputDialog from 'views/common/layout/TextFileInputDialog';
+import RouteLink from 'views/common/navigation/RouteLink';
 import TransformDocumentationDialog from '../common/TransformDocumentationDialog';
 
 const styles = ({ palette, typography }: Theme) =>
@@ -83,12 +89,13 @@ const sortActions: SortActions<Partial<IComponentColumnNamesBase>> = {
 interface IComponentState {
     componentIdToDelete: string;
     loadDocDialogOpen: boolean;
+    importComponentDialogOpen: boolean;
 }
 type TProps = WithStyles<typeof styles>;
 
 const defaultSortedColumn: ISortedColumn<IComponentColumnNamesBase> = {
     name: 'name',
-    sortOrder: SortOrder.Descending,
+    sortOrder: SortOrder.Ascending,
     sortType: SortType.String,
 };
 
@@ -100,6 +107,7 @@ const ComponentsOverview = withStyles(styles)(
             this.state = {
                 componentIdToDelete: null,
                 loadDocDialogOpen: false,
+                importComponentDialogOpen: false,
             };
 
             this.renderPanel = this.renderPanel.bind(this);
@@ -143,13 +151,15 @@ const ComponentsOverview = withStyles(styles)(
 
         public render() {
             const { classes, state } = this.props;
-            const { componentIdToDelete } = this.state;
+            const { componentIdToDelete, importComponentDialogOpen } = this.state;
             const filterFromState = getComponentsListFilter(state);
             const components = getAsyncComponents(this.props.state);
             const pageData = getAsyncComponentsPageData(this.props.state);
             const listItems = mapComponentsToListItems(components);
             const translator = getTranslator(state);
             const deleteStatus = getAsyncComponentDetail(state).remove.status;
+            const importStatus = getAsyncComponentDetail(state).create.status;
+
             return (
                 <>
                     <Box height="100%" display="flex" flexDirection="column" flex="1 0 auto">
@@ -174,9 +184,24 @@ const ComponentsOverview = withStyles(styles)(
                                         />
                                     </Box>
                                     {
-                                        checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE)
-                                        && (
-                                            <Box display="flex" alignItems="center">
+                                        checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE) && (
+                                            <Box display="flex" alignItems="center" flex="0 0 auto">
+                                                <Box flex="0 0 auto" mr="16px">
+                                                    <TextFileInputDialog
+                                                        open={importComponentDialogOpen}
+                                                        onOpen={() => {
+                                                            this.setState({ importComponentDialogOpen: true });
+                                                        }}
+                                                        onClose={() => {
+                                                            this.setState({ importComponentDialogOpen: false });
+                                                        }}
+                                                        onImport={(component) => {
+                                                            triggerImportComponentDetail(component);
+                                                        }}
+                                                        showLoader={importStatus === AsyncStatus.Busy}
+                                                        metadataName="component"
+                                                    />
+                                                </Box>
                                                 <Box flex="0 0 auto" mr="8px" width="250px">
                                                     <TransformDocumentationDialog
                                                         open={this.state.loadDocDialogOpen}
@@ -185,17 +210,16 @@ const ComponentsOverview = withStyles(styles)(
                                                     />
                                                 </Box>
                                                 <Box flex="0 0 auto">
-                                                    <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        size="small"
-                                                        startIcon={<AddRounded />}
-                                                        onClick={() => {
-                                                            redirectTo({ routeKey: ROUTE_KEYS.R_COMPONENT_NEW });
-                                                        }}
-                                                    >
-                                                        <Translate msg="components.overview.header.add_button" />
-                                                    </Button>
+                                                    <RouteLink to={ROUTE_KEYS.R_COMPONENT_NEW}>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="secondary"
+                                                            size="small"
+                                                            startIcon={<AddRounded />}
+                                                        >
+                                                            <Translate msg="components.overview.header.add_button" />
+                                                        </Button>
+                                                    </RouteLink>
                                                 </Box>
                                             </Box>
                                         )
@@ -290,58 +314,65 @@ const ComponentsOverview = withStyles(styles)(
                                 <GenericList
                                     listActions={[].concat(
                                         {
-                                            icon: <Edit />,
                                             label: translator('components.overview.list.actions.edit'),
-                                            onClick: (id: string) => {
+                                            icon: (id: string) => {
                                                 const components = getAsyncComponents(this.props.state);
                                                 const selectedComponent = components.find((item) =>
                                                     getUniqueIdFromComponent(item) === id);
-                                                redirectTo({
-                                                    routeKey: ROUTE_KEYS.R_COMPONENT_DETAIL,
-                                                    params: {
-                                                        name: selectedComponent.name,
-                                                        version: selectedComponent.version.number,
-                                                    },
-                                                });
+
+                                                return (
+                                                    <RouteLink
+                                                        to={ROUTE_KEYS.R_COMPONENT_DETAIL}
+                                                        params={{
+                                                            name: selectedComponent.name,
+                                                            version: selectedComponent.version.number,
+                                                        }}
+                                                    >
+                                                        <Edit />
+                                                    </RouteLink>
+                                                );
                                             },
-                                            hideAction: (item: IListItem<IComponentColumnNames>) => (
+                                            onClick: () => {},
+                                            hideAction: () => (
                                                 !checkAuthority(
                                                     state,
                                                     SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
-                                                    item.columns.securityGroupName.toString(),
                                                 )
                                             ),
                                         }, {
-                                            icon: <Visibility />,
                                             label: translator('components.overview.list.actions.view'),
-                                            onClick: (id: string) => {
+                                            icon: (id: string) => {
                                                 const components = getAsyncComponents(this.props.state);
                                                 const selectedComponent = components.find((item) =>
                                                     getUniqueIdFromComponent(item) === id);
-                                                redirectTo({
-                                                    routeKey: ROUTE_KEYS.R_COMPONENT_DETAIL,
-                                                    params: {
-                                                        name: selectedComponent.name,
-                                                        version: selectedComponent.version.number,
-                                                    },
-                                                });
+
+                                                return (
+                                                    <RouteLink
+                                                        to={ROUTE_KEYS.R_COMPONENT_DETAIL}
+                                                        params={{
+                                                            name: selectedComponent.name,
+                                                            version: selectedComponent.version.number,
+                                                        }}
+                                                    >
+                                                        <Visibility />
+                                                    </RouteLink>
+                                                );
                                             },
-                                            hideAction: (item: IListItem<IComponentColumnNames>) => (
+                                            onClick: () => {},
+                                            hideAction: () => (
                                                 checkAuthority(
                                                     state,
                                                     SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
-                                                    item.columns.securityGroupName.toString(),
                                                 )
                                             ),
                                         }, {
                                             icon: <Delete />,
                                             label: translator('components.overview.list.actions.delete'),
                                             onClick: this.setComponentToDelete,
-                                            hideAction: (item: IListItem<IComponentColumnNames>) => (
+                                            hideAction: () => (
                                                 !checkAuthority(
                                                     state,
                                                     SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
-                                                    item.columns.securityGroupName.toString(),
                                                 )
                                             ),
                                         },

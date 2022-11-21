@@ -1,28 +1,20 @@
 import React from 'react';
 import { IRoute } from 'models/router.models';
-import { triggerFetchScripts, triggerFetchScriptDetail } from 'state/entities/scripts/triggers';
-import {
-    triggerFetchExecutionRequestDetail,
-} from 'state/entities/executionRequests/triggers';
-import {
-    triggerFetchActionTypes,
-    triggerFetchComponentTypes,
-    triggerFetchConnectionTypes,
-} from 'state/entities/constants/triggers';
-import { triggerFetchComponentDetail, triggerFetchComponents } from 'state/entities/components/triggers';
-import { triggerFetchConnectionDetail, triggerFetchConnections } from 'state/entities/connections/triggers';
+import { triggerFetchScriptDetail } from 'state/entities/scripts/triggers';
+import { triggerFetchExecutionRequestDetail } from 'state/entities/executionRequests/triggers';
+import { triggerFetchComponentDetail } from 'state/entities/components/triggers';
+import { triggerFetchConnectionDetail } from 'state/entities/connections/triggers';
 import { triggerFetchDatasetDetail } from 'state/entities/datasets/triggers';
-import { SortType, SortOrder } from 'models/list.models';
-import { formatSortQueryParameter } from 'utils/core/string/format';
-import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
-import { getStore } from 'state';
-import { getComponentsListFilter, getConnectionsListFilter, getScriptsListFilter } from 'state/ui/selectors';
-import { IFetchScriptsListPayload } from 'models/state/scripts.models';
-import { IFetchComponentsListPayload } from 'models/state/components.model';
+import { triggerFetchEnvironment } from 'state/entities/environments/triggers';
+// import { IFetchEnvironmentsListPayload } from 'models/state/environments.models';
 import { triggerFetchUserDetail } from 'state/entities/users/triggers';
 import { triggerFetchTeamDetail } from 'state/entities/teams/triggers';
 import { triggerFetchSecurityGroupDetail } from 'state/entities/securityGroups/triggers';
-import { ROUTE_KEYS, registerRoutes } from './routes';
+import TemplatesTemplate from 'views/design/templates/TemplatesTemplate';
+import TemplatesOverview from 'views/design/templates/TemplatesOverview';
+import TemplateDetail from 'views/design/templates/TemplateDetail';
+import { triggerFetchTemplate } from 'state/entities/templates/triggers';
+import { registerRoutes, ROUTE_KEYS } from './routes';
 import NotFound from './appShell/NotFound';
 import Home from './Home';
 import ScriptsTemplate from './design/ScriptsTemplate';
@@ -43,6 +35,9 @@ import LoginView from './appShell/AppLogIn/LoginPage';
 import DatasetsTemplate from './data/DatasetsTemplate';
 import DatasetDetail from './data/DatasetDetail';
 import DatasetOverview from './data/DatasetOverview';
+import EnvironmentOverview from './environment/EnvironmentOverview';
+import EnvironmentDetail from './environment/EnvironmentDetail';
+import EnvironmentTemplate from './environment/EnvironmentTemplate';
 import UserTemplate from './iam/users/UserTemplate';
 import UserOverview from './iam/users/UserOverview';
 import UserDetail from './iam/users/UserDetail';
@@ -73,9 +68,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             routeKey: ROUTE_KEYS.R_SCRIPT_NEW,
             path: '/new',
             component: ScriptDetail as React.ComponentType<unknown>,
-            executeOnRoute: [{
-                execute: triggerFetchActionTypes,
-            }],
+            executeOnRoute: [],
         },
         {
             routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
@@ -89,48 +82,10 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
                     name: routeLocation.params.name,
                     version: routeLocation.params.version,
                 }),
-            }, {
-                execute: triggerFetchActionTypes,
             }],
         },
     ],
-    executeOnRoute: [{
-        execute: () => {
-            const { getState } = getStore();
-            const { filters, onlyShowLatestVersion, page, sortedColumn } = getScriptsListFilter(getState());
-
-            const sort = sortedColumn || {
-                name: 'name',
-                sortOrder: SortOrder.Ascending,
-                sortType: SortType.String,
-            };
-
-            const payload: IFetchScriptsListPayload = {
-                sort: formatSortQueryParameter(sort),
-                filter: {
-                    version: onlyShowLatestVersion ? 'latest' : undefined,
-                    ...(filters && {
-                        name:
-                            filters.name.values.length > 0
-                            && filters.name.values[0].toString(),
-                        label:
-                            filters.labels.values.length > 0
-                            && filters.labels.values[0].toString(),
-                    }),
-                },
-                pagination: {
-                    page,
-                },
-            };
-
-            triggerFetchScripts({
-                expandResponseWith: {
-                    scheduling: false, // Default = true
-                },
-                ...payload,
-            });
-        },
-    }],
+    executeOnRoute: [],
 }, {
     routeKey: ROUTE_KEYS.R_COMPONENTS,
     path: '/components',
@@ -141,9 +96,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             routeKey: ROUTE_KEYS.R_COMPONENT_NEW,
             path: '/new',
             component: ComponentDetail as React.ComponentType<unknown>,
-            executeOnRoute: [{
-                execute: triggerFetchComponentTypes,
-            }],
+            executeOnRoute: [],
         }, {
             routeKey: ROUTE_KEYS.R_COMPONENT_DETAIL,
             path: '/:name/:version',
@@ -156,39 +109,10 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
                     name: routeLocation.params.name,
                     version: routeLocation.params.version,
                 }),
-            }, {
-                execute: triggerFetchComponentTypes,
             }],
         },
     ],
-    executeOnRoute: [{
-        execute: () => {
-            const { getState } = getStore();
-            const { filters, page, sortedColumn } = getComponentsListFilter(getState());
-
-            const sort = sortedColumn || {
-                name: 'name',
-                sortOrder: SortOrder.Ascending,
-                sortType: SortType.String,
-            };
-
-            const payload: IFetchComponentsListPayload = {
-                sort: formatSortQueryParameter(sort),
-                filter: {
-                    ...(filters && {
-                        name:
-                            filters.name.values.length > 0
-                            && filters.name.values[0].toString(),
-                    }),
-                },
-                pagination: {
-                    page,
-                },
-            };
-
-            triggerFetchComponents(payload);
-        },
-    }],
+    executeOnRoute: [],
 }, {
     routeKey: ROUTE_KEYS.R_CONNECTIONS,
     path: '/connections',
@@ -199,9 +123,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             routeKey: ROUTE_KEYS.R_CONNECTION_NEW,
             path: '/new',
             component: ConnectionDetail as React.ComponentType<unknown>,
-            executeOnRoute: [{
-                execute: triggerFetchConnectionTypes,
-            }],
+            executeOnRoute: [],
         }, {
             routeKey: ROUTE_KEYS.R_CONNECTION_DETAIL,
             path: '/:name',
@@ -213,38 +135,29 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
                 executeInputSelector: ({ routeLocation }) => ({
                     name: routeLocation.params.name,
                 }),
-            }, {
-                execute: triggerFetchConnectionTypes,
             }],
         },
     ],
-    executeOnRoute: [{
-        execute: () => {
-            const { getState } = getStore();
-            const { filters, page, sortedColumn } = getConnectionsListFilter(getState());
-
-            const sort = sortedColumn || {
-                name: 'name',
-                sortOrder: SortOrder.Ascending,
-                sortType: SortType.String,
-            };
-
-            const payload: IFetchComponentsListPayload = {
-                sort: formatSortQueryParameter(sort),
-                filter: {
-                    ...(filters && {
-                        name:
-                            filters.name.values.length > 0
-                            && filters.name.values[0].toString(),
-                    }),
-                },
-                pagination: {
-                    page,
-                },
-            };
-
-            triggerFetchConnections(payload);
-        },
+    executeOnRoute: [],
+}, {
+    routeKey: ROUTE_KEYS.R_ENVIRONMENTS,
+    path: '/environments',
+    template: EnvironmentTemplate,
+    component: EnvironmentOverview,
+    childRoutes: [{
+        routeKey: ROUTE_KEYS.R_ENVIRONMENT_NEW,
+        path: '/new',
+        component: EnvironmentDetail as React.ComponentType<unknown>,
+    }, {
+        routeKey: ROUTE_KEYS.R_ENVIRONMENT_DETAIL,
+        path: '/:name',
+        component: EnvironmentDetail as React.ComponentType<unknown>,
+        executeOnRoute: [{
+            execute: triggerFetchEnvironment as () => unknown,
+            executeInputSelector: ({ routeLocation }) => ({
+                name: routeLocation.params.name,
+            }),
+        }],
     }],
 }, {
     routeKey: ROUTE_KEYS.R_REPORTS,
@@ -264,11 +177,6 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             }),
         }],
     }],
-    executeOnRoute: [{
-        // Execution requests are being fetched in the ScriptReportsOverview component on mount.
-        // This way url query parameters can be used for the initial fetch.
-        execute: triggerFetchEnvironments,
-    }],
 }, {
     routeKey: ROUTE_KEYS.R_DATASETS,
     path: '/datasets',
@@ -286,6 +194,27 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             execute: triggerFetchDatasetDetail as () => unknown,
             executeInputSelector: ({ routeLocation }) => ({
                 name: routeLocation.params.name,
+            }),
+        }],
+    }],
+}, {
+    routeKey: ROUTE_KEYS.R_TEMPLATES,
+    path: '/templates',
+    template: TemplatesTemplate,
+    component: TemplatesOverview,
+    childRoutes: [{
+        routeKey: ROUTE_KEYS.R_TEMPLATE_NEW,
+        path: '/new',
+        component: TemplateDetail as React.ComponentType<unknown>,
+    }, {
+        routeKey: ROUTE_KEYS.R_TEMPLATE_DETAIL,
+        path: '/:name/:version',
+        component: TemplateDetail as React.ComponentType<unknown>,
+        executeOnRoute: [{
+            execute: triggerFetchTemplate as () => unknown,
+            executeInputSelector: ({ routeLocation }) => ({
+                name: routeLocation.params.name,
+                version: routeLocation.params.version,
             }),
         }],
     }],
@@ -354,11 +283,7 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
     path: '/openapi',
     template: OpenAPITemplate,
     component: OpenAPI,
-    executeOnRoute: [{
-        execute: () => triggerFetchConnectionTypes(),
-    }, {
-        execute: () => triggerFetchComponentTypes(),
-    }],
+    executeOnRoute: [],
 }, {
     routeKey: ROUTE_KEYS.R_NOT_FOUND,
     path: '/not-found',

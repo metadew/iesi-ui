@@ -13,12 +13,12 @@ export default function requiredFieldsCheck<Data = {}>({
             const newState = { ...state };
             const fieldValue = data[key as keyof Data];
 
-            if (!fieldValue) {
+            if (fieldValue === null || fieldValue === undefined) {
                 passed = false;
             }
 
             newState[key as keyof Data] = {
-                showError: !fieldValue,
+                showError: fieldValue === null || fieldValue === undefined,
             };
 
             return newState;

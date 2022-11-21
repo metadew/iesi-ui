@@ -44,6 +44,11 @@ export default function getMockState({
                     page: 1,
                     sortedColumn: null,
                 },
+                environments: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                },
                 executions: {
                     filters: null,
                     page: 1,
@@ -69,15 +74,22 @@ export default function getMockState({
                     page: 1,
                     sortedColumn: null,
                 },
+                templates: {
+                    filters: null,
+                    page: 1,
+                    sortedColumn: null,
+                    onlyShowLatestVersion: true,
+                },
             },
         },
         auth: {
             username: 'mocked-test-user',
             permissions: [{
-                group: 'PUBLIC',
                 privilege: SECURITY_PRIVILEGES.S_CONNECTIONS_READ,
             }],
             accessToken: '',
+            refreshToken: '',
+            expiresAt: new Date(),
         },
         entities: {
             actionTypes: {
@@ -189,6 +201,13 @@ export default function getMockState({
                     error: null,
                 },
             },
+            environmentDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
             openapi: {
                 data: null,
                 fetch: {
@@ -245,6 +264,13 @@ export default function getMockState({
                     error: null,
                 },
             },
+            userDetailPassword: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
             userDetailRole: {
                 data: null,
                 fetch: {
@@ -287,6 +313,20 @@ export default function getMockState({
                     error: null,
                 },
             },
+            templates: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
+            templateDetail: {
+                data: null,
+                fetch: {
+                    status: AsyncStatus.Initial,
+                    error: null,
+                },
+            },
         },
     };
 }
@@ -296,6 +336,8 @@ function getDefaultEnvConfig(): ICustomAsyncEntity<IEnvConfig> {
         data: {
             iesi_api_base_url: 'https://some.iesi-api.be',
             iesi_api_timeout_in_seconds: 1,
+            iesi_api_client_id: 'iesi-client',
+            iesi_api_client_secret: 'iesi',
             translation_label_overrides: {
                 en_GB: {},
             },

@@ -1,10 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import {
-    TooltipProps,
-    Icon as MuiIcon,
-    makeStyles,
-} from '@material-ui/core';
+import { Icon as MuiIcon, makeStyles, TooltipProps } from '@material-ui/core';
 import { Info } from '@material-ui/icons';
 import Tooltip from './Tooltip';
 

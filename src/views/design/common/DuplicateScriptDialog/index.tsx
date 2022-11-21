@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import {
-    Button,
-    Box,
-    makeStyles,
-    TextField,
-} from '@material-ui/core';
+import { Box, Button, makeStyles, TextField } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import { observe, IObserveProps } from 'views/observe';
+import { IObserveProps, observe } from 'views/observe';
 import { getScriptByUniqueIdFromDetailOrList } from 'state/entities/scripts/selectors';
 import { StateChangeNotification } from 'models/state.models';
 import { getTranslator } from 'state/i18n/selectors';

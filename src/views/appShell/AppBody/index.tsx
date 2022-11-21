@@ -1,14 +1,21 @@
-import React from 'react';
-import { Box, makeStyles, IconButton, darken } from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { Box, darken, IconButton, makeStyles } from '@material-ui/core';
 import AccentureIcon from 'views/common/icons/Accenture';
 import { THEME_COLORS } from 'config/themes/colors';
-import { Switch, Route } from 'react-router-dom';
+import { Route, Switch, useLocation } from 'react-router-dom';
 import { getRoute } from 'views/routes';
 import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { getAllowedParentRouteKeys } from 'state/auth/selectors';
-import PrivateRoute from '../AppLogIn/components/PrivateRoute';
+import Cookie from 'js-cookie';
+import {
+    triggerFetchActionTypes,
+    triggerFetchComponentTypes,
+    triggerFetchConnectionTypes,
+} from 'state/entities/constants/triggers';
+import { triggerFetchEnvironments } from 'state/entities/environments/triggers';
 import LoginView from '../AppLogIn/LoginPage';
+import PrivateRoute from '../AppLogIn/components/PrivateRoute';
 
 interface IPublicProps {
     offsetTop: number;
@@ -33,6 +40,29 @@ const useStyles = makeStyles(({ palette, spacing, typography }) => ({
 
 function AppBody({ state, offsetTop }: IObserveProps & IPublicProps) {
     const classes = useStyles();
+    const [isLoading, setIsLoading] = useState(true);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const location = useLocation();
+    const encryptedCookie = Cookie.get('app_session');
+
+    useEffect(() => {
+        if (encryptedCookie) {
+            setIsAuthenticated(true);
+            triggerFetchActionTypes();
+            triggerFetchComponentTypes();
+            triggerFetchConnectionTypes();
+            triggerFetchEnvironments({
+                sort: 'name,asc',
+            });
+        } else {
+            setIsAuthenticated(false);
+        }
+        setIsLoading(false);
+    }, [encryptedCookie, location.pathname]);
+
+    if (isLoading) {
+        return <></>;
+    }
 
     return (
         <Box
@@ -45,7 +75,6 @@ function AppBody({ state, offsetTop }: IObserveProps & IPublicProps) {
         >
             <Switch>
                 <Route path="/login" component={LoginView} />
-                ;
                 {getAllowedParentRouteKeys(state).map((routeKey) => {
                     const { path, exact, component, template } = getRoute({
                         routeKey,
@@ -63,6 +92,7 @@ function AppBody({ state, offsetTop }: IObserveProps & IPublicProps) {
                             path={path}
                             exact={exact}
                             component={parentComponent}
+                            isAuthenticated={isAuthenticated}
                         />
                     );
                 })}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormControlLabel, Switch, withStyles } from '@material-ui/core';
-import { red, green } from '@material-ui/core/colors';
+import { green, red } from '@material-ui/core/colors';
 import { observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { IAccessLevel } from 'models/state/auth.models';

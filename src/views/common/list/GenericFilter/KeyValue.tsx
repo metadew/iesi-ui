@@ -1,14 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import {
-    InputLabel,
-    FormControl,
-    FilledInput,
-    FilledInputProps,
-    Box,
-    makeStyles,
-} from '@material-ui/core';
+import React, { useEffect, useState } from 'react';
+import { Box, FilledInput, FilledInputProps, FormControl, InputLabel, makeStyles } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import { IFilter, FilterType } from 'models/list.models';
+import { FilterType, IFilter } from 'models/list.models';
 
 const useStyles = makeStyles(({ spacing }) => ({
     keyInput: {

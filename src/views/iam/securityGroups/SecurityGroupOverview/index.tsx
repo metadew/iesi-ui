@@ -29,7 +29,7 @@ import { getUniqueIdFromSecurityGroup } from 'utils/securityGroups/securityGroup
 import OrderedList from 'views/common/list/OrderedList';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericSort from 'views/common/list/GenericSort';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
@@ -38,9 +38,10 @@ import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/ent
 import { getTranslator } from 'state/i18n/selectors';
 import GenericList from 'views/common/list/GenericList';
 import { Alert } from '@material-ui/lab';
-import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { ROUTE_KEYS } from 'views/routes';
 import { StateChangeNotification } from 'models/state.models';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
+import RouteLink from 'views/common/navigation/RouteLink';
 
 const styles = ({ palette, typography }: Theme) => createStyles({
     header: {
@@ -65,7 +66,7 @@ interface IComponentState {
 
 const defaultSortedColumn: ISortedColumn<ISecurityGroupColumnNames> = {
     name: 'name',
-    sortOrder: SortOrder.Descending,
+    sortOrder: SortOrder.Ascending,
     sortType: SortType.String,
 };
 
@@ -165,22 +166,23 @@ const SecurityGroupsOverview = withStyles(styles)(
                                         />
                                     </Box>
                                     {
-                                        checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE) && (
+                                        checkAuthority(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE) && (
                                             <Box display="flex" alignItems="center">
                                                 <Box flex="0 0 auto">
-                                                    <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        size="small"
-                                                        startIcon={<AddRounded />}
-                                                        onClick={() => {
-                                                            redirectTo({
-                                                                routeKey: ROUTE_KEYS.R_SECURITY_GROUP_NEW,
-                                                            });
-                                                        }}
+                                                    <RouteLink
+                                                        to={ROUTE_KEYS.R_SECURITY_GROUP_NEW}
                                                     >
-                                                        <Translate msg="security_groups.overview.header.add_button" />
-                                                    </Button>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="secondary"
+                                                            size="small"
+                                                            startIcon={<AddRounded />}
+                                                        >
+                                                            {/* eslint-disable-next-line max-len */}
+                                                            <Translate msg="security_groups.overview.header.add_button" />
+                                                        </Button>
+                                                    </RouteLink>
+
                                                 </Box>
                                             </Box>
                                         )
@@ -266,42 +268,51 @@ const SecurityGroupsOverview = withStyles(styles)(
                                         },
                                     }}
                                     listActions={[].concat({
-                                        icon: <Edit />,
                                         label: translator('security_groups.overview.list.actions.edit'),
-                                        onClick: (id: string) => {
+                                        icon: (id: string) => {
                                             const securityGroups = getAsyncSecurityGroups(state);
                                             const selectedSecurityGroup = securityGroups
                                                 .find((securityGroup: ISecurityGroup) => (
                                                     getUniqueIdFromSecurityGroup(securityGroup) === id
                                                 ));
 
-                                            redirectTo({
-                                                routeKey: ROUTE_KEYS.R_SECURITY_GROUP_DETAIL,
-                                                params: {
-                                                    name: selectedSecurityGroup.name,
-                                                },
-                                            });
+                                            return (
+                                                <RouteLink
+                                                    to={ROUTE_KEYS.R_SECURITY_GROUP_DETAIL}
+                                                    params={{
+                                                        name: selectedSecurityGroup.name,
+                                                    }}
+                                                >
+                                                    <Edit />
+                                                </RouteLink>
+                                            );
                                         },
+                                        onClick: () => { },
                                         hideAction: () =>
-                                            !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE),
+                                            !checkAuthority(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE),
                                     }, {
-                                        icon: <Visibility />,
                                         label: translator('security_groups.overview.list.actions.view'),
-                                        onClick: (id: string) => {
+                                        icon: (id: string) => {
                                             const securityGroups = getAsyncSecurityGroups(state);
                                             const selectedSecurityGroup = securityGroups
                                                 .find((securityGroup: ISecurityGroup) => (
                                                     getUniqueIdFromSecurityGroup(securityGroup) === id
                                                 ));
-                                            redirectTo({
-                                                routeKey: ROUTE_KEYS.R_SECURITY_GROUP_DETAIL,
-                                                params: {
-                                                    name: selectedSecurityGroup.name,
-                                                },
-                                            });
+
+                                            return (
+                                                <RouteLink
+                                                    to={ROUTE_KEYS.R_SECURITY_GROUP_DETAIL}
+                                                    params={{
+                                                        name: selectedSecurityGroup.name,
+                                                    }}
+                                                >
+                                                    <Visibility />
+                                                </RouteLink>
+                                            );
                                         },
+                                        onClick: () => {},
                                         hideAction: () =>
-                                            checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE),
+                                            checkAuthority(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE),
                                     }, {
                                         icon: <Delete />,
                                         label: translator('security_groups.overview.list.actions.delete'),
@@ -314,7 +325,7 @@ const SecurityGroupsOverview = withStyles(styles)(
                                             this.setState({ securityGroupIdToDelete: selectedSecurityGroup.id });
                                         },
                                         hideAction: () =>
-                                            !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE),
+                                            !checkAuthority(state, SECURITY_PRIVILEGES.S_GROUPS_WRITE),
                                     })}
                                 />
                             ) : (
@@ -415,7 +426,6 @@ const SecurityGroupsOverview = withStyles(styles)(
 );
 
 function mapSecurityGroupsToListItems(securityGroups: ISecurityGroup[]): IListItem<ISecurityGroupColumnNames>[] {
-    console.log(securityGroups[0]);
     return securityGroups.map((securityGroup) => ({
         id: getUniqueIdFromSecurityGroup(securityGroup),
         columns: {

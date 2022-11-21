@@ -1,24 +1,16 @@
 import React from 'react';
 import { IObserveProps, observe } from 'views/observe';
-import {
-    createStyles,
-    withStyles,
-    WithStyles,
-    Theme,
-    Box,
-    Typography,
-    Button,
-} from '@material-ui/core';
+import { Box, Button, createStyles, Theme, Typography, withStyles, WithStyles } from '@material-ui/core';
 import {
     FilterConfig,
     FilterType,
+    IListItem,
     ISortedColumn,
+    ListColumns,
     ListFilters,
+    SortActions,
     SortOrder,
     SortType,
-    SortActions,
-    IListItem,
-    ListColumns,
 } from 'models/list.models';
 import { IUser, IUserColumnName } from 'models/state/user.model';
 import { getAsyncUsers, getAsyncUsersEntity, getAsyncUsersPageData } from 'state/entities/users/selectors';
@@ -31,7 +23,7 @@ import { setUsersListFilter } from 'state/ui/actions';
 import { StateChangeNotification } from 'models/state.models';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericSort from 'views/common/list/GenericSort';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { AddRounded, Edit, Visibility } from '@material-ui/icons';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
@@ -43,6 +35,7 @@ import GenericList from 'views/common/list/GenericList';
 import { getTranslator } from 'state/i18n/selectors';
 import { Alert } from '@material-ui/lab';
 import OrderedList from 'views/common/list/OrderedList';
+import RouteLink from 'views/common/navigation/RouteLink';
 
 const styles = ({ palette, typography }: Theme) => createStyles({
     header: {
@@ -76,7 +69,7 @@ interface IComponentState {
 
 const defaultSortedColumn: ISortedColumn<IUserColumnName> = {
     name: 'username',
-    sortOrder: SortOrder.Descending,
+    sortOrder: SortOrder.Ascending,
     sortType: SortType.String,
 };
 
@@ -165,20 +158,22 @@ const UsersOverview = withStyles(styles)(
                                         />
                                     </Box>
                                     {
-                                        checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE) && (
+                                        checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE) && (
                                             <Box display="flex" alignItems="center">
                                                 <Box flex="0 0 auto">
-                                                    <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        size="small"
-                                                        startIcon={<AddRounded />}
-                                                        onClick={() => {
-                                                            redirectTo({ routeKey: ROUTE_KEYS.R_USER_NEW });
-                                                        }}
+                                                    <RouteLink
+                                                        to={ROUTE_KEYS.R_USER_NEW}
                                                     >
-                                                        <Translate msg="users.overview.header.add_button" />
-                                                    </Button>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="secondary"
+                                                            size="small"
+                                                            startIcon={<AddRounded />}
+                                                        >
+                                                            <Translate msg="users.overview.header.add_button" />
+                                                        </Button>
+                                                    </RouteLink>
+
                                                 </Box>
                                             </Box>
                                         )
@@ -288,7 +283,7 @@ const UsersOverview = withStyles(styles)(
                                             });
                                         },
                                         hideAction: () =>
-                                            !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE),
+                                            !checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE),
                                     }, {
                                         icon: <Visibility />,
                                         label: translator('users.overview.list.actions.view'),
@@ -304,8 +299,8 @@ const UsersOverview = withStyles(styles)(
                                             });
                                         },
                                         hideAction: () =>
-                                            checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
-                                            || !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_READ),
+                                            checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
+                                            || !checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_READ),
                                     })}
                                 />
                             ) : (

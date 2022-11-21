@@ -1,25 +1,10 @@
 import React from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { IObserveProps, observe } from 'views/observe';
-import {
-    Box,
-    Button,
-    Collapse,
-    createStyles,
-    Typography,
-    WithStyles,
-    withStyles,
-} from '@material-ui/core';
+import { Box, Button, Collapse, createStyles, Typography, WithStyles, withStyles } from '@material-ui/core';
 import { Add, Edit, Visibility } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
-import {
-    ITeam,
-    ITeamBase,
-    ITeamPost,
-    ITeamRole,
-    ITeamRoleUser,
-    ITeamUserColumnNames,
-} from 'models/state/team.model';
+import { ITeam, ITeamBase, ITeamPost, ITeamRole, ITeamRoleUser, ITeamUserColumnNames } from 'models/state/team.model';
 import { getRouteKeyByPath, redirectTo, ROUTE_KEYS } from 'views/routes';
 import { StateChangeNotification } from 'models/state.models';
 import { getAsyncTeamDetail, getAsyncTeamDetailSecurityGroup } from 'state/entities/teams/selectors';
@@ -34,7 +19,7 @@ import { getUniqueIdFromTeam } from 'utils/teams/teamUtils';
 import { clone } from 'lodash';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import Loader from 'views/common/waiting/Loader';
 import requiredFieldsCheck from 'utils/form/requiredFieldsCheck';
 import { TRequiredFieldsState } from 'models/form.models';
@@ -49,6 +34,7 @@ import OrderedList from 'views/common/list/OrderedList';
 import { IUser } from 'models/state/user.model';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
+import RouteLink from 'views/common/navigation/RouteLink';
 import AddUser from '../AddUser';
 import EditSecurityGroups from './EditSecurityGroups';
 import DetailActions from './DetailActions';
@@ -402,41 +388,47 @@ const TeamDetail = withStyles(styles)(
                                 columns={userColumns}
                                 listActions={[
                                     {
-                                        icon: <Edit />,
-                                        label: translator(
-                                            'teams.detail.main.list.item.actions.edit',
+                                        icon: (id, index) => (
+                                            <RouteLink
+                                                to={ROUTE_KEYS.R_USER_DETAIL}
+                                                params={{
+                                                    name: users[index].username,
+                                                }}
+                                                queryParams={{
+                                                    teamName: (newTeamDetail as ITeamBase).teamName,
+                                                }}
+                                            >
+                                                <Edit />
+                                            </RouteLink>
                                         ),
-                                        onClick: (id, index) => redirectTo({
-                                            routeKey: ROUTE_KEYS.R_USER_DETAIL,
-                                            params: {
-                                                name: users[index].username,
-                                            },
-                                            queryParams: {
-                                                teamName: (newTeamDetail as ITeamBase).teamName,
-                                            },
-                                        }),
+                                        label: translator('teams.detail.main.list.item.actions.edit'),
+                                        onClick: () => {},
                                         hideAction: () =>
-                                            !checkAuthorityGeneral(
+                                            !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_USERS_WRITE,
                                             ),
                                     }, {
-                                        icon: <Visibility />,
+                                        icon: (id, index) => (
+                                            <RouteLink
+                                                params={{
+                                                    name: users[index].username,
+                                                }}
+                                                queryParams={{
+                                                    teamName: (newTeamDetail as ITeamBase).teamName,
+                                                }}
+                                                to={ROUTE_KEYS.R_USER_DETAIL}
+                                            >
+                                                <Visibility />
+                                            </RouteLink>
+                                        ),
                                         label: translator('teams.detail.main.list.item.actions.view'),
-                                        onClick: (id, index) => redirectTo({
-                                            routeKey: ROUTE_KEYS.R_USER_DETAIL,
-                                            params: {
-                                                name: users[index].username,
-                                            },
-                                            queryParams: {
-                                                teamName: (newTeamDetail as ITeamBase).teamName,
-                                            },
-                                        }),
+                                        onClick: () => {},
                                         hideAction: () =>
-                                            checkAuthorityGeneral(
+                                            checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_USERS_WRITE,
-                                            ) || !checkAuthorityGeneral(
+                                            ) || !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_USERS_READ,
                                             ),

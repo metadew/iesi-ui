@@ -1,9 +1,9 @@
 import isString from '@snipsonian/core/es/is/isString';
 import { ReactText } from 'react';
 import isObject from '@snipsonian/core/es/is/isObject';
-import { ISortedColumn, IListItem, SortOrder, SortType, IListItemValueWithSortValue } from 'models/list.models';
+import { IListItem, IListItemValueWithSortValue, ISortedColumn, SortOrder, SortType } from 'models/list.models';
 import { TObjectWithProps } from 'models/core.models';
-import { stringComparerAscending, numberComparerAscending, partsComparer } from './comparerUtils';
+import { numberComparerAscending, partsComparer, stringComparerAscending } from './comparerUtils';
 
 export default function sortListItems<LI extends IListItem<TObjectWithProps>>(
     items: LI[],

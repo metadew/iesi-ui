@@ -1,4 +1,4 @@
-import { ReactElement, ReactText, ReactNode } from 'react';
+import { ReactElement, ReactNode, ReactText } from 'react';
 import { TTranslatorComponent } from './i18n.models';
 import { TObjectWithProps } from './core.models';
 
@@ -19,7 +19,7 @@ export type ListColumns<ColumnNames> = {
 };
 
 export interface IListAction<ColumnNames> {
-    icon: ReactElement;
+    icon: ((id?: ReactText, index?: number) => ReactElement) | ReactElement;
     label: TTranslatorComponent | string;
     onClick: (id: ReactText, index: number) => void;
     hideAction?: (item: IListItem<ColumnNames>, index: number) => boolean;
@@ -94,6 +94,7 @@ export interface IFilterConfigItem {
     // You can get auto-completion by typing 'state: IState' in the selector passed to getDropdownOptions
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getDropdownOptions?: (state: any) => string[];
+    value?: string;
 }
 
 export type FilterConfig<ColumnNames> = {

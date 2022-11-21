@@ -1,11 +1,11 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { observe, IObserveProps } from 'views/observe';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { IObserveProps, observe } from 'views/observe';
 import { ITeam } from 'models/state/team.model';
 import { Box, Button, ButtonGroup, FormControl, makeStyles, TextField, Theme, Typography } from '@material-ui/core';
 import { StateChangeNotification } from 'models/state.models';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import { getTranslator } from 'state/i18n/selectors';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getAsyncTeams, getAsyncTeamsEntity } from 'state/entities/teams/selectors';
@@ -124,7 +124,7 @@ function EditTeamsDialog({
                         </Typography>
                     )
             }
-            {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
+            {checkAuthority(state, SECURITY_PRIVILEGES.S_USERS_WRITE)
                 && (
                     <Button
                         variant="outlined"

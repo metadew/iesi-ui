@@ -1,16 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
-import { Box, makeStyles, Button } from '@material-ui/core';
+import { Box, Button, makeStyles } from '@material-ui/core';
 import GoBack from 'views/common/navigation/GoBack';
 import { ROUTE_KEYS } from 'views/routes';
 import { TTranslatorComponent } from 'models/i18n.models';
 import { PlayArrowSharp } from '@material-ui/icons';
 import { AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import Loader from 'views/common/waiting/Loader';
-import {
-    APP_HEADER_HEIGHT,
-    isAppHeaderVisible as checkVisbilityAppHeader,
-} from 'views/appShell/AppHeader';
+import { APP_HEADER_HEIGHT, isAppHeaderVisible as checkVisbilityAppHeader } from 'views/appShell/AppHeader';
 import useExecuteOnUnmount from 'utils/hooks/useExecuteOnUnmount';
 
 interface IPublicProps {

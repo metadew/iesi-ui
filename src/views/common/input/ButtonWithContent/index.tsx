@@ -1,4 +1,4 @@
-import React, { ReactNode, useRef, useLayoutEffect, useState } from 'react';
+import React, { ReactNode, useLayoutEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { Box, Button, makeStyles } from '@material-ui/core';
 import { THEME_COLORS } from 'config/themes/colors';

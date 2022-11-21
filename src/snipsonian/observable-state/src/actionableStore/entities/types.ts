@@ -1,7 +1,8 @@
 import { ITraceableApiErrorBase } from '@snipsonian/core/es/typings/apiErrors';
-import { TNrOfParentNotificationLevelsToTrigger }
-    from '@snipsonian/observable-state/es/observer/extendNotificationsToTrigger';
-import { Dispatch, Action } from '@snipsonian/observable-state/es/actionableStore/types';
+import {
+    TNrOfParentNotificationLevelsToTrigger,
+} from '@snipsonian/observable-state/es/observer/extendNotificationsToTrigger';
+import { Action, Dispatch } from '@snipsonian/observable-state/es/actionableStore/types';
 
 export type TEntityKey = string;
 
@@ -115,6 +116,7 @@ export interface ITriggerAsyncEntityOperationBaseProps<State, ExtraInput extends
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onFail?: (props: { dispatch: Dispatch<Action>; error: any }) => void;
     bulk?: boolean;
+    itself: Function;
 }
 
 export interface ITriggerAsyncEntityCreateProps<State, ExtraInput extends object, StateChangeNotificationKey>

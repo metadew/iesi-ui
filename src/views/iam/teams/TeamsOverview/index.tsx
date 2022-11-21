@@ -31,7 +31,7 @@ import { StateChangeNotification } from 'models/state.models';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericSort from 'views/common/list/GenericSort';
 import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
@@ -41,6 +41,7 @@ import { getTranslator } from 'state/i18n/selectors';
 import GenericList from 'views/common/list/GenericList';
 import { Alert } from '@material-ui/lab';
 import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import RouteLink from 'views/common/navigation/RouteLink';
 
 const styles = ({ palette, typography }: Theme) => createStyles({
     header: {
@@ -68,7 +69,7 @@ interface IComponentState {
 
 const defaultSortedColumn: ISortedColumn<ITeamColumnNames> = {
     name: 'name',
-    sortOrder: SortOrder.Descending,
+    sortOrder: SortOrder.Ascending,
     sortType: SortType.String,
 };
 
@@ -168,22 +169,21 @@ const TeamsOverview = withStyles(styles)(
                                         />
                                     </Box>
                                     {
-                                        checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE) && (
+                                        checkAuthority(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE) && (
                                             <Box display="flex" alignItems="center">
                                                 <Box flex="0 0 auto">
-                                                    <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        size="small"
-                                                        startIcon={<AddRounded />}
-                                                        onClick={() => {
-                                                            redirectTo({
-                                                                routeKey: ROUTE_KEYS.R_TEAM_NEW,
-                                                            });
-                                                        }}
+                                                    <RouteLink
+                                                        to={ROUTE_KEYS.R_TEAM_NEW}
                                                     >
-                                                        <Translate msg="teams.overview.header.add_button" />
-                                                    </Button>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="secondary"
+                                                            size="small"
+                                                            startIcon={<AddRounded />}
+                                                        >
+                                                            <Translate msg="teams.overview.header.add_button" />
+                                                        </Button>
+                                                    </RouteLink>
                                                 </Box>
                                             </Box>
                                         )
@@ -291,7 +291,7 @@ const TeamsOverview = withStyles(styles)(
                                             });
                                         },
                                         hideAction: () =>
-                                            !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE),
+                                            !checkAuthority(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE),
                                     }, {
                                         icon: <Visibility />,
                                         label: translator('teams.overview.list.actions.view'),
@@ -307,7 +307,7 @@ const TeamsOverview = withStyles(styles)(
                                             });
                                         },
                                         hideAction: () =>
-                                            checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE),
+                                            checkAuthority(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE),
                                     }, {
                                         icon: <Delete />,
                                         label: translator('teams.overview.list.actions.delete'),
@@ -318,7 +318,7 @@ const TeamsOverview = withStyles(styles)(
                                             this.setState({ teamIdToDelete: selectedTeam.id });
                                         },
                                         hideAction: () =>
-                                            !checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE),
+                                            !checkAuthority(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE),
                                     })}
                                 />
                             ) : (

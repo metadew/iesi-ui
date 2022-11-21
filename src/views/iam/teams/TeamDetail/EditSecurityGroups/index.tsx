@@ -1,19 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { observe, IObserveProps } from 'views/observe';
-import {
-    Box,
-    Button,
-    ButtonGroup,
-    FormControl,
-    makeStyles,
-    TextField,
-    Theme,
-    Typography,
-} from '@material-ui/core';
+import React, { useEffect, useRef, useState } from 'react';
+import { IObserveProps, observe } from 'views/observe';
+import { Box, Button, ButtonGroup, FormControl, makeStyles, TextField, Theme, Typography } from '@material-ui/core';
 import { StateChangeNotification } from 'models/state.models';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import { getTranslator } from 'state/i18n/selectors';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { getAsyncSecurityGroups, getAsyncSecurityGroupsEntity } from 'state/entities/securityGroups/selectors';
@@ -117,7 +108,7 @@ function EditSecurityGroupDialog({
                                 content: securityGroupItem.name,
                                 selected: selectedIndex === index,
                                 button: false,
-                                onDelete: checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE)
+                                onDelete: checkAuthority(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE)
                                     ? () => onDelete(securityGroupItem.id) : null,
                                 onView: () => {
                                     redirectTo({
@@ -135,7 +126,7 @@ function EditSecurityGroupDialog({
                         </Typography>
                     )
             }
-            {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE)
+            {checkAuthority(state, SECURITY_PRIVILEGES.S_TEAMS_WRITE)
                 && (
                     <Button
                         variant="outlined"

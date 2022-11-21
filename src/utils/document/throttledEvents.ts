@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import throttle from 'lodash/throttle';
 
 export function useDocumentScrollThrottled(

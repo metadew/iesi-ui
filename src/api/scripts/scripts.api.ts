@@ -1,14 +1,18 @@
 import { IUrlParams } from '@snipsonian/core/src/url/types';
 import {
+    IExpandScriptsResponseWith,
+    IFetchScriptsListPayload,
     IFetchScriptsOptions,
-    IScriptBase,
     IScript,
-    IScriptImport,
+    IScriptBase,
+    IScriptByNameAndVersionPayload,
     IScriptByNamePayload,
-    IScriptByNameAndVersionPayload, IExpandScriptsResponseWith, IFetchScriptsListPayload, IScriptsEntity,
+    IScriptImport,
+    IScriptsEntity,
 } from 'models/state/scripts.models';
 import { IImportPayload, IListResponse, IPageData } from 'models/state/iesiGeneric.models';
 import FileSaver from 'file-saver';
+// eslint-disable-next-line import/no-cycle
 import { get, post, put, remove } from 'api/requestWrapper';
 import API_URLS from '../apiUrls';
 

@@ -16,7 +16,7 @@ import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
 import { getTranslator } from 'state/i18n/selectors';
 
-import { Edit, PlayArrowRounded, AddRounded, Delete, Visibility, FileCopy } from '@material-ui/icons';
+import { AddRounded, Delete, Edit, FileCopy, PlayArrowRounded, Visibility } from '@material-ui/icons';
 import {
     FilterConfig,
     FilterType,
@@ -32,7 +32,7 @@ import { IColumnNames, IExpandScriptsResponseWith, IScript, IScriptBase } from '
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
-import { redirectTo, ROUTE_KEYS } from 'views/routes';
+import { ROUTE_KEYS } from 'views/routes';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
@@ -59,9 +59,11 @@ import { getScriptsListFilter } from 'state/ui/selectors';
 import { setScriptsListFilter } from 'state/ui/actions';
 import ReportIcon from 'views/common/icons/Report';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
-import { checkAuthority, checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
+import RouteLink from 'views/common/navigation/RouteLink';
 import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
 import TextFileInputDialog from 'views/common/layout/TextFileInputDialog';
+import { getDecodedToken } from 'utils/users/userUtils';
 import DuplicateScriptDialog from '../common/DuplicateScriptDialog';
 
 const styles = ({ palette, typography }: Theme) =>
@@ -126,7 +128,7 @@ interface IScriptState {
 
 const defaultSortedColumn: ISortedColumn<IColumnNames> = {
     name: 'name',
-    sortOrder: SortOrder.Descending,
+    sortOrder: SortOrder.Ascending,
     sortType: SortType.String,
 };
 
@@ -238,7 +240,7 @@ const ScriptsOverview = withStyles(styles)(
                                             sortedColumn={filterFromState.sortedColumn as ISortedColumn<{}>}
                                         />
                                     </Box>
-                                    {checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)
+                                    {checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_WRITE)
                                         ? (
                                             <Box display="flex" alignItems="center" flex="0 0 auto">
                                                 <Box flex="0 0 auto" mr="16px">
@@ -252,17 +254,17 @@ const ScriptsOverview = withStyles(styles)(
                                                     />
                                                 </Box>
                                                 <Box flex="0 0 auto">
-                                                    <Button
-                                                        variant="contained"
-                                                        color="secondary"
-                                                        size="small"
-                                                        startIcon={<AddRounded />}
-                                                        onClick={() => {
-                                                            redirectTo({ routeKey: ROUTE_KEYS.R_SCRIPT_NEW });
-                                                        }}
-                                                    >
-                                                        <Translate msg="scripts.overview.header.add_button" />
-                                                    </Button>
+                                                    <RouteLink to={ROUTE_KEYS.R_SCRIPT_NEW}>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="secondary"
+                                                            size="small"
+                                                            startIcon={<AddRounded />}
+                                                        >
+                                                            <Translate msg="scripts.overview.header.add_button" />
+
+                                                        </Button>
+                                                    </RouteLink>
                                                 </Box>
                                             </Box>
                                         ) : null}
@@ -393,103 +395,109 @@ const ScriptsOverview = withStyles(styles)(
                                         icon: <PlayArrowRounded />,
                                         label: translator('scripts.overview.list.actions.execute'),
                                         onClick: this.setExecuteScriptDialogOpen,
-                                        hideAction: (item: IListItem<IColumnNames>) =>
+                                        hideAction: () =>
                                             !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_WRITE,
-                                                item.columns.securityGroupName.toString(),
                                             ),
                                     },
                                     {
-                                        icon: <Edit />,
-                                        label: translator('scripts.overview.list.actions.edit'),
-                                        onClick: (id: string) => {
+                                        icon: (id: string) => {
                                             const scripts = getAsyncScripts(this.props.state);
                                             const selectedScript = scripts.find((item) =>
                                                 getUniqueIdFromScript(item) === id);
-
-                                            redirectTo({
-                                                routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                                params: {
-                                                    name: selectedScript.name,
-                                                    version: selectedScript.version.number,
-                                                },
-                                            });
+                                            return (
+                                                <RouteLink
+                                                    to={ROUTE_KEYS.R_SCRIPT_DETAIL}
+                                                    params={{
+                                                        name: selectedScript.name,
+                                                        version: selectedScript.version.number,
+                                                    }}
+                                                >
+                                                    <Edit />
+                                                </RouteLink>
+                                            );
                                         },
-                                        hideAction: (item: IListItem<IColumnNames>) =>
+                                        onClick: () => {},
+                                        label: translator('scripts.overview.list.actions.edit'),
+                                        hideAction: () =>
                                             !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                                item.columns.securityGroupName.toString(),
                                             ),
                                     },
                                     {
-                                        icon: <Visibility />,
-                                        label: translator('scripts.overview.list.actions.view'),
-                                        onClick: (id: string) => {
+                                        icon: (id: string) => {
                                             const scripts = getAsyncScripts(this.props.state);
                                             const selectedScript = scripts.find((item) =>
                                                 getUniqueIdFromScript(item) === id);
 
-                                            redirectTo({
-                                                routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
-                                                params: {
-                                                    name: selectedScript.name,
-                                                    version: selectedScript.version.number,
-                                                },
-                                            });
+                                            return (
+                                                <RouteLink
+                                                    to={ROUTE_KEYS.R_SCRIPT_DETAIL}
+                                                    params={{
+                                                        name: selectedScript.name,
+                                                        version: selectedScript.version.number,
+                                                    }}
+                                                >
+                                                    <Visibility />
+                                                </RouteLink>
+                                            );
                                         },
-                                        hideAction: (item: IListItem<IColumnNames>) =>
+                                        label: translator('scripts.overview.list.actions.view'),
+                                        onClick: () => {},
+                                        hideAction: () =>
                                             checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                                item.columns.securityGroupName.toString(),
                                                 // eslint-disable-next-line max-len
-                                            ) || !checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_READ, item.columns.securityGroupName.toString()),
+                                            ) || !checkAuthority(state, SECURITY_PRIVILEGES.S_SCRIPTS_READ),
                                     },
                                     {
-                                        icon: <ReportIcon />,
                                         label: translator('scripts.overview.list.actions.report'),
-                                        onClick: (id: string) => {
+                                        icon: (id: string) => {
                                             const scripts = getAsyncScripts(this.props.state);
                                             const selectedScript = scripts.find((item) =>
                                                 getUniqueIdFromScript(item) === id);
 
-                                            redirectTo({
-                                                routeKey: ROUTE_KEYS.R_REPORTS,
-                                                queryParams: {
-                                                    script: selectedScript.name,
-                                                    version: selectedScript.version.number,
-                                                },
-                                            });
+                                            return (
+                                                <RouteLink
+                                                    to={ROUTE_KEYS.R_REPORTS}
+                                                    queryParams={{
+                                                        script: selectedScript.name,
+                                                        version: selectedScript.version.number,
+                                                        requester: getDecodedToken().username,
+                                                    }}
+                                                >
+                                                    <ReportIcon />
+                                                </RouteLink>
+                                            );
                                         },
-                                        hideAction: (item: IListItem<IColumnNames>) =>
+                                        onClick: () => {},
+                                        hideAction: () =>
                                             !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_EXECUTION_REQUESTS_READ,
-                                                item.columns.securityGroupName.toString(),
                                             ),
                                     },
                                     {
                                         icon: <Delete />,
                                         label: translator('scripts.overview.list.actions.delete'),
                                         onClick: this.setScriptToDelete,
-                                        hideAction: (item: IListItem<IColumnNames>) =>
+                                        hideAction: () =>
                                             !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                                item.columns.securityGroupName.toString(),
                                             ),
                                     },
                                     {
                                         icon: <FileCopy />,
                                         label: translator('scripts.overview.list.actions.duplicate'),
                                         onClick: this.setScriptToDuplicate,
-                                        hideAction: (item: IListItem<IColumnNames>) =>
+                                        hideAction: () =>
                                             !checkAuthority(
                                                 state,
                                                 SECURITY_PRIVILEGES.S_SCRIPTS_WRITE,
-                                                item.columns.securityGroupName.toString(),
                                             ),
                                     },
                                 )}

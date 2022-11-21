@@ -7,7 +7,9 @@ export const getScriptsListFilter = (state: IState) => state.ui.listFilters.scri
 export const getExecutionsListFilter = (state: IState) => state.ui.listFilters.executions;
 export const getComponentsListFilter = (state: IState) => state.ui.listFilters.components;
 export const getConnectionsListFilter = (state: IState) => state.ui.listFilters.connections;
+export const getEnvironmentsListFilter = (state: IState) => state.ui.listFilters.environments;
 export const getDatasetsListFilter = (state: IState) => state.ui.listFilters.datasets;
 export const getUsersListFilter = (state: IState) => state.ui.listFilters.users;
 export const getTeamsListFilter = (state: IState) => state.ui.listFilters.teams;
 export const getSecurityGroupsListFilter = (state: IState) => state.ui.listFilters.securityGroups;
+export const getTemplatesListFilter = (state: IState) => state.ui.listFilters.templates;

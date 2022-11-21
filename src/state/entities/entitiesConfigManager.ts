@@ -11,32 +11,39 @@ import {
     IFetchExecutionRequestListPayload,
 } from 'models/state/executionRequests.models';
 import {
-    IScriptByNameAndVersionPayload,
-    IScriptBase,
     IFetchScriptsListPayload,
+    IScriptBase,
+    IScriptByNameAndVersionPayload,
     IScriptImport,
 } from 'models/state/scripts.models';
 import { IOpenAPI } from 'models/state/openapi.model';
-import {
-    IConnection,
-    IConnectionByNamePayload,
-    IFetchConnectionsListPayload,
-} from 'models/state/connections.model';
+import { IConnection, IConnectionByNamePayload, IFetchConnectionsListPayload } from 'models/state/connections.model';
 import {
     IComponent,
-    IComponentByNameAndVersionPayload,
+    IComponentByNameAndVersionPayload, IComponentImportPayload,
     IFetchComponentsListPayload,
 } from 'models/state/components.model';
 import {
+    IEnvironment,
+    IEnvironmentByNamePayload,
+    IFetchEnvironmentsListPayload,
+} from 'models/state/environments.models';
+import {
     IDataset,
     IDatasetBase,
-    IDatasetImplementationsByUuidPayload,
-    IFetchDatasetsListPayload,
-    IDatasetByUuidPayload,
     IDatasetByNamePayload,
+    IDatasetByUuidPayload,
+    IDatasetImplementationsByUuidPayload,
     IDatasetImportPayload,
+    IFetchDatasetsListPayload,
 } from 'models/state/datasets.model';
-import { IFetchUsersListPayload, IUserByNamePayload } from 'models/state/user.model';
+import {
+    IFetchUsersListPayload,
+    IUserBase,
+    IUserByNamePayload,
+    IUserPasswordPostPayload,
+    IUserPost,
+} from 'models/state/user.model';
 import {
     IFetchTeamsListPayload,
     ITeamAssignUserRolePayload,
@@ -45,7 +52,6 @@ import {
     ITeamByNamePayload,
     ITeamDeleteUserRole,
 } from 'models/state/team.model';
-import { IUserPost } from 'models/state/user.model';
 import {
     IFetchSecurityGroupListPayload,
     ISecurityGroupAssignTeamPayload,
@@ -53,6 +59,11 @@ import {
     ISecurityGroupByNamePayload,
 } from 'models/state/securityGroups.model';
 import { IImportPayload } from 'models/state/iesiGeneric.models';
+import {
+    IFetchTemplatesListPayload,
+    ITemplateBase,
+    ITemplateByNameAndVersionPayload,
+} from 'models/state/templates.model';
 
 // eslint-disable-next-line max-len
 const entitiesConfigManager = initAsyncEntitiesConfigManager<IState, {}, ITraceableApiError, string, IExtraProcessInput>();
@@ -159,15 +170,6 @@ entitiesConfigManager.register({
         fetch: {
             api: api.scriptExecutions.fetchScriptExecutionDetail,
             apiInputSelector: ({ extraInput }) => extraInput as IScriptExecutionByRunIdAndProcessIdPayload,
-        },
-    },
-});
-
-entitiesConfigManager.register({
-    asyncEntityKey: ASYNC_ENTITY_KEYS.environments,
-    operationsConfig: {
-        fetch: {
-            api: api.environments.fetchEnvironments,
         },
     },
 });
@@ -316,6 +318,64 @@ entitiesConfigManager.register({
 });
 
 entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.environments,
+    operationsConfig: {
+        fetch: {
+            api: api.environments.fetchEnvironments,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchEnvironmentsListPayload,
+        },
+        remove: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.environments.deleteEnvironment,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IEnvironmentByNamePayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.environmentDetail,
+    operationsConfig: {
+        fetch: {
+            api: api.environments.fetchEnvironment,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IEnvironmentByNamePayload,
+        },
+        create: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.environments.createEnvironment,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IEnvironment,
+        },
+        update: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.environments.updateEnvironment,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IEnvironment,
+        },
+        remove: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.environments.deleteEnvironment,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IEnvironmentByNamePayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
     asyncEntityKey: ASYNC_ENTITY_KEYS.openapi,
     operationsConfig: {
         create: {
@@ -384,6 +444,26 @@ entitiesConfigManager.register({
 });
 
 entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.componentDetailImport,
+    operationsConfig: {
+        create: {
+            api: api.components.createComponentImport,
+            apiInputSelector: ({ extraInput }) => extraInput as IComponentImportPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.componentDetailExport,
+    operationsConfig: {
+        fetch: {
+            api: api.components.fetchComponentDownload,
+            apiInputSelector: ({ extraInput }) => extraInput as IComponentByNameAndVersionPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
     asyncEntityKey: ASYNC_ENTITY_KEYS.openapiComponents,
     operationsConfig: {
         create: {
@@ -407,6 +487,20 @@ entitiesConfigManager.register({
         update: {
             api: api.connections.updateConnection,
             apiInputSelector: ({ extraInput }) => extraInput as IConnection,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.openapiEnvironments,
+    operationsConfig: {
+        create: {
+            api: api.environments.createEnvironment,
+            apiInputSelector: ({ extraInput }) => extraInput as IEnvironment,
+        },
+        update: {
+            api: api.environments.updateEnvironment,
+            apiInputSelector: ({ extraInput }) => extraInput as IEnvironment,
         },
     },
 });
@@ -509,6 +603,14 @@ entitiesConfigManager.register({
             // @ts-ignore
             apiInputSelector: ({ extraInput }) => extraInput as IUserPost,
         },
+        update: {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.users.updateUser,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as IUserBase,
+        },
     },
 });
 
@@ -526,6 +628,16 @@ entitiesConfigManager.register({
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
             apiInputSelector: ({ extraInput }) => extraInput as ITeamDeleteUserRole,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.userDetailPassword,
+    operationsConfig: {
+        update: {
+            api: api.users.updatePassword,
+            apiInputSelector: ({ extraInput }) => extraInput as IUserPasswordPostPayload,
         },
     },
 });
@@ -615,6 +727,64 @@ entitiesConfigManager.register({
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
             apiInputSelector: ({ extraInput }) => extraInput as ISecurityGroupByIdPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.templates,
+    operationsConfig: {
+        fetch: {
+            api: api.templates.fetchTemplates,
+            apiInputSelector: ({ extraInput }) => extraInput as IFetchTemplatesListPayload,
+        },
+        remove: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.templates.deleteTemplate,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ITemplateByNameAndVersionPayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.templateDetail,
+    operationsConfig: {
+        fetch: {
+            api: api.templates.fetchTemplate,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ITemplateByNamePayload,
+        },
+        create: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.templates.createTemplate,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ITemplateBase,
+        },
+        update: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.templates.updateTemplate,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ITemplateBase,
+        },
+        remove: {
+            // TODO IESI-138: Fix operationsConfig typings, this works but errors during typechecking
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            api: api.templates.deleteTemplate,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+            // @ts-ignore
+            apiInputSelector: ({ extraInput }) => extraInput as ITemplateByNameAndVersionPayload,
         },
     },
 });

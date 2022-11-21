@@ -1,11 +1,12 @@
 import {
+    ICreateExecutionRequestPayload,
     IExecutionRequest,
     IExecutionRequestByIdPayload,
-    ICreateExecutionRequestPayload,
-    IFetchExecutionRequestListPayload,
     IExecutionRequestsEntity,
+    IFetchExecutionRequestListPayload,
 } from 'models/state/executionRequests.models';
 import { IPageData } from 'models/state/iesiGeneric.models';
+// eslint-disable-next-line import/no-cycle
 import { get, post } from 'api/requestWrapper';
 import API_URLS from '../apiUrls';
 

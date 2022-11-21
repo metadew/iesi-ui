@@ -1,14 +1,14 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import {
+    Box,
     Button,
     ButtonGroup,
-    Box,
-    Typography,
     IconButton,
-    TextField,
     makeStyles,
-    Tooltip,
+    TextField,
     Theme,
+    Tooltip,
+    Typography,
 } from '@material-ui/core';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import { Delete } from '@material-ui/icons';

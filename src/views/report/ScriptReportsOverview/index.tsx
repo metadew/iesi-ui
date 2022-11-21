@@ -1,46 +1,38 @@
 import React from 'react';
-import {
-    Typography,
-    Box,
-    Theme,
-    createStyles,
-    withStyles,
-    WithStyles,
-} from '@material-ui/core';
+import { Box, createStyles, Theme, Typography, withStyles, WithStyles } from '@material-ui/core';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import GenericList from 'views/common/list/GenericList';
 import GenericSort from 'views/common/list/GenericSort';
 import { PlayArrow, WatchLater } from '@material-ui/icons';
-import { redirectTo, ROUTE_KEYS } from 'views/routes';
-import ReportIcon from 'views/common/icons/Report';
+import { ROUTE_KEYS } from 'views/routes';
 import {
-    ListColumns,
-    ISortedColumn,
-    SortActions,
-    SortType,
-    FilterType,
-    ListFilters,
     FilterConfig,
+    FilterType,
     IListItem,
+    ISortedColumn,
+    ListColumns,
+    ListFilters,
+    SortActions,
     SortOrder,
+    SortType,
 } from 'models/list.models';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
-import { observe, IObserveProps } from 'views/observe';
+import { IObserveProps, observe } from 'views/observe';
 import { StateChangeNotification } from 'models/state.models';
 import { AsyncOperation, AsyncStatus } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { IColumnNames, IExecutionRequest } from 'models/state/executionRequests.models';
 import { ExecutionRequestStatus } from 'models/state/executionRequestStatus.models';
 import { ExecutionActionStatus, getScriptExecutionStatusForDropdown } from 'models/state/executionActionStatus.models';
 import { Alert } from '@material-ui/lab';
-import { parseISO, format as formatDate } from 'date-fns';
+import { format as formatDate, parseISO } from 'date-fns';
 import OrderedList from 'views/common/list/OrderedList';
 import { statusColorAndIconMap, StatusColors } from 'config/statusColorsAndIcons.config';
 import {
-    getAsyncExecutionRequestsEntity,
     getAsyncExecutionRequests,
+    getAsyncExecutionRequestsEntity,
     getAsyncExecutionRequestsPageData,
 } from 'state/entities/executionRequests/selectors';
 import {
@@ -55,6 +47,9 @@ import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { checkAuthority } from 'state/auth/selectors';
 import { getEnvironmentsForDropdown } from 'state/entities/environments/selectors';
 import ExecuteScriptDialog from 'views/design/common/ExecuteScriptDialog';
+import RouteLink from 'views/common/navigation/RouteLink';
+import ReportIcon from 'views/common/icons/Report';
+import { getDecodedToken } from 'utils/users/userUtils';
 
 const styles = ({ palette, typography }: Theme) =>
     createStyles({
@@ -144,6 +139,10 @@ const filterConfig: FilterConfig<Partial<IColumnNames>> = {
         filterType: FilterType.Dropdown,
         getDropdownOptions: getScriptExecutionStatusForDropdown,
     },
+    requester: {
+        label: <Translate msg="script_reports.overview.list.filter.requester" />,
+        filterType: FilterType.Search,
+    },
 };
 
 const sortActions: SortActions<Partial<IColumnNames>> = {
@@ -170,6 +169,7 @@ const defaultSortedColumn: ISortedColumn<IColumnNames> = {
 type TProps = WithStyles<typeof styles>;
 type TState = {
     selectedExecutionRequest: IExecutionRequest;
+    username: string;
 };
 
 const ScriptReportsOverview = withStyles(styles)(
@@ -179,6 +179,7 @@ const ScriptReportsOverview = withStyles(styles)(
 
             this.state = {
                 selectedExecutionRequest: null,
+                username: getDecodedToken().username,
             };
 
             this.renderPanel = this.renderPanel.bind(this);
@@ -276,7 +277,7 @@ const ScriptReportsOverview = withStyles(styles)(
                                         environment: selectedExecutionRequest.scriptExecutionRequests[0].environment,
                                         parameters: selectedExecutionRequest.scriptExecutionRequests[0].parameters,
                                         executionRequestLabels: selectedExecutionRequest.executionRequestLabels,
-
+                                        debugMode: selectedExecutionRequest.debugMode,
                                     }}
                                 />
                             )
@@ -314,7 +315,14 @@ const ScriptReportsOverview = withStyles(styles)(
                 return filtersByUrlSearchParams;
             }
 
-            return defaultFilters;
+            return {
+                ...defaultFilters,
+                requester: {
+                    name: 'requester',
+                    values: [this.state.username],
+                    filterType: FilterType.Search,
+                },
+            } as ListFilters<Partial<IColumnNames>>;
         }
 
         private renderPanel({ listItems }: { listItems: IListItem<IColumnNames, { runId: string }>[] }) {
@@ -334,7 +342,7 @@ const ScriptReportsOverview = withStyles(styles)(
         private renderContent({ listItems }: { listItems: IListItem<IColumnNames, { runId: string }>[] }) {
             const { classes, state, dispatch } = this.props;
             const translator = getTranslator(state);
-            const columns: ListColumns<IColumnNames> = {
+            const columns: ListColumns<Partial<IColumnNames>> = {
                 script: {
                     className: classes.scriptName,
                     fixedWidth: '25%',
@@ -425,26 +433,29 @@ const ScriptReportsOverview = withStyles(styles)(
                 <Box paddingBottom={5} marginX={2.8}>
                     <GenericList
                         listActions={[].concat({
-                            icon: <ReportIcon />,
                             label: translator('script_reports.overview.list.actions.report'),
-                            onClick: (id: number) => {
+                            icon: (id: string) => {
                                 const execution = listItems.find((listItem) => listItem.id === id);
 
-                                redirectTo({
-                                    routeKey: ROUTE_KEYS.R_REPORT_DETAIL,
-                                    params: {
-                                        executionRequestId: id,
-                                        runId: execution && execution.data.runId,
-                                    },
-                                });
+                                return (
+                                    <RouteLink
+                                        to={ROUTE_KEYS.R_REPORT_DETAIL}
+                                        params={{
+                                            executionRequestId: id,
+                                            runId: execution && execution.data.runId,
+                                        }}
+                                    >
+                                        <ReportIcon />
+                                    </RouteLink>
+                                );
                             },
+                            onClick: () => { },
                             hideAction: (item: IListItem<IColumnNames>) => {
                                 const execution = listItems.find((listItem) =>
                                     listItem.id === item.id);
                                 return execution.data.runId === null || !checkAuthority(
                                     state,
                                     SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_READ,
-                                    item.columns.securityGroupName.toString(),
                                 );
                             },
                         }, {
@@ -453,10 +464,9 @@ const ScriptReportsOverview = withStyles(styles)(
                             onClick: (id: number) => {
                                 this.onOpenExecuteDialog(id.toString());
                             },
-                            hideAction: (item: IListItem<IColumnNames>) => !checkAuthority(
+                            hideAction: () => !checkAuthority(
                                 state,
                                 SECURITY_PRIVILEGES.S_SCRIPT_EXECUTIONS_WRITE,
-                                item.columns.securityGroupName.toString(),
                             ),
                         })}
                         columns={columns}
@@ -524,6 +534,8 @@ const ScriptReportsOverview = withStyles(styles)(
                         && filters.runId.values[0].toString(),
                     'run-status': filters.runStatus.values.length > 0
                         && filters.runStatus.values[0].toString(),
+                    requester: filters.requester.values.length > 0
+                        && filters.requester.values[0].toString(),
                 },
                 sort: formatSortQueryParameter(sortedColumn),
             });

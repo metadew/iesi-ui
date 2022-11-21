@@ -3,9 +3,11 @@ import { IPathParams } from 'models/router.models';
 export default function replacePathPlaceholders({
     path,
     placeholders = {},
+    queryParams = {},
 }: {
     path: string;
     placeholders?: IPathParams;
+    queryParams?: IPathParams;
 }): string {
     const placeholderNames = Object.getOwnPropertyNames(placeholders);
 
@@ -22,7 +24,26 @@ export default function replacePathPlaceholders({
         path,
     );
 
-    return removeOptionalPathPlaceholdersIfNotSet({ path: updatedPath });
+    return addQueryParams({ path: updatedPath, queryParams });
+}
+
+function addQueryParams({ path, queryParams }: {
+    path: string;
+    queryParams: {
+        [key: string]: string | number;
+    };
+}) {
+    return removeOptionalPathPlaceholdersIfNotSet({
+        path: path
+            .split('')
+            .concat(Object.getOwnPropertyNames(queryParams).map((queryParam, index) => {
+                if (index === 0 && !path.includes('?')) {
+                    return `?${queryParam}=${queryParams[queryParam]}`;
+                }
+                return `&${queryParam}=${queryParams[queryParam]}`;
+            }))
+            .join(''),
+    });
 }
 
 function removeOptionalPathPlaceholdersIfNotSet({ path }: {

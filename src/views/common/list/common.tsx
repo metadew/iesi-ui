@@ -1,4 +1,4 @@
-import { makeStyles, lighten, darken } from '@material-ui/core';
+import { darken, lighten, makeStyles } from '@material-ui/core';
 import { THEME_COLORS } from 'config/themes/colors';
 
 export const useListStyles = makeStyles(({ breakpoints, palette, spacing, shape, transitions, typography }) => ({

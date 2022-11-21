@@ -1,19 +1,16 @@
 import isSet from '@snipsonian/core/es/is/isSet';
-import { IObservableStateAction, Dispatch, Action } from '@snipsonian/observable-state/es/actionableStore/types';
+import { Action, Dispatch, IObservableStateAction } from '@snipsonian/observable-state/es/actionableStore/types';
 import { createObservableStateAction } from '@snipsonian/observable-state/es/actionableStore/actionCreators';
 import {
     TNrOfParentNotificationLevelsToTrigger,
 } from '@snipsonian/observable-state/es/observer/extendNotificationsToTrigger';
-import {
-    AsyncOperation,
-    IAsyncEntity,
-    TEntityKey,
-    IEntitiesInitialState,
-    IWithKeyIndex,
-} from './types';
-
-// eslint-disable-next-line max-len
-import { asyncEntityFetch, asyncEntityCreate, asyncEntityRemove, asyncEntityUpdate } from './asyncEntityUpdaters';
+import { api as staticApi } from 'api';
+import Cookie from 'js-cookie';
+import cryptoJS from 'crypto-js';
+import { triggerLogon } from 'state/auth/actions';
+import { redirectToPath } from 'views/routes';
+import { AsyncOperation, IAsyncEntity, IEntitiesInitialState, IWithKeyIndex, TEntityKey } from './types';
+import { asyncEntityCreate, asyncEntityFetch, asyncEntityRemove, asyncEntityUpdate } from './asyncEntityUpdaters';
 
 export interface IAsyncEntityActionCreators<ActionType, State, ExtraProcessInput, StateChangeNotificationKey> {
     createAsyncEntityAction<ExtraInput extends object, ApiInput, ApiResult, ApiResponse = ApiResult>(
@@ -60,6 +57,7 @@ interface ICreateAsyncEntityActionPropsBase
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onFail: (props: { dispatch: Dispatch<Action>; error: any; currentEntity?: unknown }) => void;
     bulk?: boolean;
+    itself?: Function;
 }
 
 interface ICreateFetchAsyncEntityActionProps
@@ -118,6 +116,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
             onFail,
             onSuccess,
             bulk,
+            itself,
             // eslint-disable-next-line max-len
         }: ICreateUpdateAsyncEntityActionProps<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse>) =>
             createAsyncEntityActionBase({
@@ -135,6 +134,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                 onFail,
                 onSuccess,
                 bulk,
+                itself,
             }),
 
         updateAsyncEntityAction: <ExtraInput extends object, ApiInput, ApiResult, ApiResponse = ApiResult>({
@@ -150,6 +150,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
             onFail,
             onSuccess,
             bulk,
+            itself,
             // eslint-disable-next-line max-len
         }: ICreateUpdateAsyncEntityActionProps<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse>) =>
             createAsyncEntityActionBase({
@@ -167,6 +168,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                 onFail,
                 onSuccess,
                 bulk,
+                itself,
             }),
 
         removeAsyncEntityAction: <ExtraInput extends object, ApiInput, ApiResult, ApiResponse = ApiResult>({
@@ -180,6 +182,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
             onFail,
             onSuccess,
             bulk,
+            itself,
             // eslint-disable-next-line max-len
         }: ICreateRemoveAsyncEntityActionProps<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse>) =>
             createAsyncEntityActionBase({
@@ -197,6 +200,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                 onFail,
                 onSuccess,
                 bulk,
+                itself,
             }),
 
         // TODO (but e.g. without always storing the response on success in the data)
@@ -212,6 +216,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
             dispatch,
             onFail,
             onSuccess,
+            itself,
             // eslint-disable-next-line max-len
         }: ICreateFetchAsyncEntityActionProps<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse>) =>
             createAsyncEntityActionBase({
@@ -228,6 +233,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                 dispatch,
                 onFail,
                 onSuccess,
+                itself,
             }),
 
         resetAsyncEntityAction: ({
@@ -313,6 +319,7 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
         onSuccess,
         onFail,
         bulk,
+        itself,
         // eslint-disable-next-line max-len
     }: ICreateAsyncEntityActionPropsBase<State, StateChangeNotificationKey, ExtraInput, ApiInput, ApiResult, ApiResponse> & {
         operation: AsyncOperation;
@@ -379,6 +386,27 @@ export function initAsyncEntityActionCreators<State, ExtraProcessInput, ActionTy
                         });
                     }
                 } catch (error) {
+                    if (error.status === 401) {
+                        if (error.response.error_description.includes('Access token expired')
+                            && typeof itself === 'function') {
+                            // Refresh the token
+                            const encryptedCookie = Cookie.get('app_session');
+                            const decryptedCookieData = cryptoJS.AES.decrypt(
+                                encryptedCookie,
+                                process.env.REACT_APP_COOKIE_SECRET_KEY,
+                            );
+                            const decryptedCookie = JSON.parse(decryptedCookieData.toString(cryptoJS.enc.Utf8));
+
+                            const response = await staticApi.auth.refreshToken(decryptedCookie.refresh_token);
+                            dispatch(triggerLogon(response));
+
+                            itself(extraInput);
+                            return;
+                        }
+
+                        redirectToPath('/login', '');
+                    }
+
                     if (typeof onFail === 'function') {
                         onFail({ dispatch, error });
                     }

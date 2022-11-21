@@ -42,6 +42,11 @@ export const initialState: IState = {
                 page: 1,
                 sortedColumn: null,
             },
+            environments: {
+                filters: null,
+                page: 1,
+                sortedColumn: null,
+            },
             datasets: {
                 filters: null,
                 page: 1,
@@ -62,12 +67,20 @@ export const initialState: IState = {
                 page: 1,
                 sortedColumn: null,
             },
+            templates: {
+                filters: null,
+                page: 1,
+                sortedColumn: null,
+                onlyShowLatestVersion: true,
+            },
         },
     },
     auth: {
         // Dummy auth
         username: 'dummy-test-user',
         accessToken: '',
+        refreshToken: '',
+        expiresAt: new Date(),
         permissions: [],
     },
     entities: entitiesConfigManager.getEntitiesInititialState() as unknown as IEntitiesState,

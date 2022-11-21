@@ -1,14 +1,14 @@
 import { ITraceableApiErrorBase } from '@snipsonian/core/es/typings/apiErrors';
 import {
-    TEntityKey,
     AsyncOperation,
-    IWithKeyIndex,
+    IAsyncEntitiesConfigManager,
     IAsyncEntityApiConfig,
     IAsyncEntityKeyConfig,
     IAsyncEntityKeyConfigs,
     IAsyncEntityKeyOperationConfig,
-    IAsyncEntitiesConfigManager,
     IEntitiesInitialState,
+    IWithKeyIndex,
+    TEntityKey,
 } from './types';
 import { createAsyncEntityInitialState } from './createAsyncEntityInitialState';
 

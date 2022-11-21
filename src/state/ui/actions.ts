@@ -1,6 +1,6 @@
 import { createAction, getStore } from 'state';
 import { StateChangeNotification } from 'models/state.models';
-import { ListFilters, ISortedColumn } from 'models/list.models';
+import { ISortedColumn, ListFilters } from 'models/list.models';
 import { ITriggerFlashMessagePayload } from 'models/state/ui.models';
 import { SnackbarKey } from 'notistack';
 import { isExecutionRequestStatusPending } from 'utils/scripts/executionRequests';
@@ -16,6 +16,8 @@ import { IDatasetColumnNames, IDatasetImplementation } from 'models/state/datase
 import { IUserColumnName } from 'models/state/user.model';
 import { ITeamColumnNames } from 'models/state/team.model';
 import { ISecurityGroupColumnNames } from 'models/state/securityGroups.model';
+import { ITemplateColumnNames } from 'models/state/templates.model';
+import { IEnvironmentColumnNamesBase } from 'models/state/environments.models';
 
 export const triggerFlashMessage = (payload: ITriggerFlashMessagePayload) => createAction<ITriggerFlashMessagePayload>({
     type: 'TRIGGER_FLASH_MESSAGE',
@@ -274,6 +276,32 @@ export const setDatasetsListFilter = (payload: {
     },
 });
 
+export const setEnvironmentsListFilter = (payload: {
+    filters?: ListFilters<Partial<IEnvironmentColumnNamesBase>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<IEnvironmentColumnNamesBase>;
+}) => createAction<{
+    filters?: ListFilters<Partial<IEnvironmentColumnNamesBase>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<IEnvironmentColumnNamesBase>;
+}>({
+    type: 'UPDATE_ENVIRONMENTS_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.environments = {
+                    filters: payload.filters || draftState.ui.listFilters.environments.filters,
+                    page: payload.page || draftState.ui.listFilters.environments.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.environments.sortedColumn,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_ENVIRONMENTS],
+        });
+    },
+});
+
 export const setUsersListFilter = (payload: {
     filters?: ListFilters<Partial<IUserColumnName>>;
     page?: number;
@@ -348,6 +376,37 @@ export const setSecurityGroupsListFilter = (payload: {
                 };
             },
             notificationsToTrigger: [StateChangeNotification.LIST_FILTER_SECURITY_GROUPS],
+        });
+    },
+});
+
+export const setTemplatesListFilter = (payload: {
+    filters?: ListFilters<Partial<ITemplateColumnNames>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<ITemplateColumnNames>;
+    onlyShowLatestVersion?: boolean;
+}) => createAction<{
+    filters?: ListFilters<Partial<ITemplateColumnNames>>;
+    page?: number;
+    sortedColumn?: ISortedColumn<ITemplateColumnNames>;
+    onlyShowLatestVersion?: boolean;
+}>({
+    type: 'UPDATE_TEMPLATES_LIST_FILTER',
+    payload,
+    process({ setStateImmutable }) {
+        setStateImmutable({
+            toState: (draftState) => {
+                // eslint-disable-next-line no-param-reassign
+                draftState.ui.listFilters.templates = {
+                    filters: payload.filters || draftState.ui.listFilters.templates.filters,
+                    page: payload.page || draftState.ui.listFilters.templates.page,
+                    sortedColumn: payload.sortedColumn || draftState.ui.listFilters.templates.sortedColumn,
+                    onlyShowLatestVersion: typeof payload.onlyShowLatestVersion !== 'undefined'
+                        ? payload.onlyShowLatestVersion
+                        : draftState.ui.listFilters.templates.onlyShowLatestVersion,
+                };
+            },
+            notificationsToTrigger: [StateChangeNotification.LIST_FILTER_TEMPLATES],
         });
     },
 });

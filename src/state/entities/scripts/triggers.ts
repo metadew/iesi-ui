@@ -1,10 +1,10 @@
 import entitiesStateManager from 'state/entities/entitiesStateManager';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import {
-    IScriptByNameAndVersionPayload,
-    IScriptBase,
-    IScriptImport,
     IFetchScriptsListPayload,
+    IScriptBase,
+    IScriptByNameAndVersionPayload,
+    IScriptImport,
 } from 'models/state/scripts.models';
 import { StateChangeNotification } from 'models/state.models';
 import { triggerFlashMessage } from 'state/ui/actions';
@@ -21,6 +21,7 @@ export const triggerFetchScripts = (payload: IFetchScriptsListPayload) =>
         },
         extraInputSelector: () => payload,
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_LIST],
+        itself: triggerFetchScripts,
     });
 
 export const triggerFetchScriptDetail = (payload: IScriptByNameAndVersionPayload, redirectTo404?: boolean) =>
@@ -33,13 +34,13 @@ export const triggerFetchScriptDetail = (payload: IScriptByNameAndVersionPayload
         extraInputSelector: () => payload,
         onFail: ({ error }) => {
             if (error.status === 404 && redirectTo404) {
-                console.log(redirectTo404);
                 redirectTo({
                     routeKey: ROUTE_KEYS.R_NOT_FOUND,
                 });
             }
         },
         notificationsToTrigger: [StateChangeNotification.DESIGN_SCRIPTS_DETAIL],
+        itself: triggerFetchScriptDetail,
     });
 
 export const triggerUpdateScriptDetail = (payload: IScriptBase) =>
@@ -53,10 +54,12 @@ export const triggerUpdateScriptDetail = (payload: IScriptBase) =>
             translationKey: 'scripts.detail.error.save',
             type: 'error',
         })),
+        itself: triggerUpdateScriptDetail,
     });
 
 export const triggerCreateScriptDetail = (payload: IScriptBase | IScriptImport) =>
     entitiesStateManager.triggerAsyncEntityCreate<{}>({
+        itself: triggerCreateScriptDetail,
         asyncEntityToCreate: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetail,
         },
@@ -83,6 +86,14 @@ export const triggerCreateScriptDetail = (payload: IScriptBase | IScriptImport) 
                         break;
                 }
                 dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.common.responseError',
+                    translationPlaceholders: {
+                        message,
+                    },
+                    type: 'error',
+                }));
+            } else {
+                dispatch(triggerFlashMessage({
                     translationKey: 'flash_messages.script.error',
                     translationPlaceholders: {
                         message,
@@ -95,6 +106,7 @@ export const triggerCreateScriptDetail = (payload: IScriptBase | IScriptImport) 
 
 export const triggerDeleteScriptDetail = (payload: IScriptByNameAndVersionPayload) =>
     entitiesStateManager.triggerAsyncEntityRemove<{}>({
+        itself: triggerDeleteScriptDetail,
         asyncEntityToRemove: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetail,
         },
@@ -104,6 +116,7 @@ export const triggerDeleteScriptDetail = (payload: IScriptByNameAndVersionPayloa
 
 export const triggerExportScriptDetail = (payload: IScriptByNameAndVersionPayload) =>
     entitiesStateManager.triggerAsyncEntityFetch<{}>({
+        itself: triggerExportScriptDetail,
         asyncEntityToFetch: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetailExport,
         },
@@ -119,6 +132,7 @@ export const triggerResetAsyncScriptDetail = ({
     operation: AsyncOperation;
 }) =>
     entitiesStateManager.triggerAsyncEntityReset({
+        itself: triggerResetAsyncScriptDetail,
         asyncEntityToReset: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetail,
             resetDataOnTrigger,
@@ -130,6 +144,7 @@ export const triggerResetAsyncScriptDetail = ({
 
 export const triggerImportScriptDetail = (payload: IImportPayload) =>
     entitiesStateManager.triggerAsyncEntityCreate<{}>({
+        itself: triggerImportScriptDetail,
         asyncEntityToCreate: {
             asyncEntityKey: ASYNC_ENTITY_KEYS.scriptDetailImport,
         },

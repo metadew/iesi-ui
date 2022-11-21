@@ -15,4 +15,5 @@ export const triggerCreateTransformDocumentation = (payload: IOpenAPI) =>
         onSuccess: () => {
             redirectTo({ routeKey: ROUTE_KEYS.R_OPENAPI });
         },
+        itself: triggerCreateTransformDocumentation,
     });

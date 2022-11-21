@@ -1,17 +1,19 @@
 import { IScriptExecutionDetail } from 'models/state/scriptExecutions.models';
-import { IEnvironment } from 'models/state/environments.models';
+import { IEnvironment, IEnvironmentEntity } from 'models/state/environments.models';
 import { IAsyncEntity } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 import { ITraceableApiError } from 'models/api.models';
 import { IScript, IScriptsEntity } from 'models/state/scripts.models';
+import { ITemplate, ITemplateEntity } from 'models/state/templates.model';
 import { IExecutionRequest, IExecutionRequestsEntity } from './executionRequests.models';
 import { IActionType, IComponentType, IConnectionType } from './constants.models';
 import { IOpenAPIEntity } from './openapi.model';
 import { IComponent, IComponentEntity } from './components.model';
-import { IConnectionEntity, IConnection } from './connections.model';
+import { IConnection, IConnectionEntity } from './connections.model';
 import { IDataset, IDatasetEntity, IDatasetImplementation } from './datasets.model';
-import { IUser, IUserEntity } from './user.model';
+import { IUser, IUserEntity, IUserPasswordPost } from './user.model';
 import { ITeam, ITeamEntity } from './team.model';
 import { ISecurityGroup, ISecurityGroupEntity } from './securityGroups.model';
+
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ICustomAsyncEntity<Data> extends IAsyncEntity<Data, ITraceableApiError> {}
 
@@ -34,6 +36,8 @@ export enum ASYNC_ENTITY_KEYS {
 
     components = 'components',
     componentDetail = 'componentDetail',
+    componentDetailExport = 'componentDetailExport',
+    componentDetailImport = 'componentDetailImport',
 
     executionRequests = 'executionRequests',
     executionRequestDetail = 'executionRequestDetail',
@@ -45,6 +49,8 @@ export enum ASYNC_ENTITY_KEYS {
     openapiComponentDetail = 'openapiComponentDetail',
     openapiConnections = 'openapiConnections',
     openapiConnectionDetail = 'openapiConnectionDetail',
+    openapiEnvironments = 'openapiEnvironments',
+    openapiEnvironmentDetail = 'openapiEnvironmentDetail',
 
     authentication = 'authentication',
 
@@ -57,13 +63,17 @@ export enum ASYNC_ENTITY_KEYS {
     users = 'users',
     userDetail = 'userDetail',
     userDetailRole = 'userDetailRole',
+    userDetailPassword = 'userDetailPassword',
 
     teams = 'teams',
     teamDetail = 'teamDetail',
     teamDetailSecurityGroup = 'teamDetailSecurityGroup',
 
     securityGroups = 'securityGroups',
-    securityGroupDetail = 'securityGroupDetail'
+    securityGroupDetail = 'securityGroupDetail',
+
+    templates = 'templates',
+    templateDetail = 'templateDetail'
 }
 
 /* Keep the keys in sync with ASYNC_ENTITY_KEYS !! */
@@ -71,7 +81,8 @@ export interface IEntitiesState {
     actionTypes: ICustomAsyncEntity<IActionType[]>;
     connectionTypes: ICustomAsyncEntity<IConnectionType[]>;
     componentTypes: ICustomAsyncEntity<IComponentType[]>;
-    environments: ICustomAsyncEntity<IEnvironment[]>;
+    environments: ICustomAsyncEntity<IEnvironmentEntity>;
+    environmentDetail: ICustomAsyncEntity<IEnvironment>;
     scripts: ICustomAsyncEntity<IScriptsEntity>;
     scriptDetail: ICustomAsyncEntity<IScript>;
     scriptDetailExport: ICustomAsyncEntity<IScript>;
@@ -90,11 +101,14 @@ export interface IEntitiesState {
     scriptExecutionDetail: ICustomAsyncEntity<IScriptExecutionDetail>;
     users: ICustomAsyncEntity<IUserEntity>;
     userDetail: ICustomAsyncEntity<IUser>;
+    userDetailPassword: ICustomAsyncEntity<IUserPasswordPost>;
     userDetailRole: ICustomAsyncEntity<IUser>;
     teams: ICustomAsyncEntity<ITeamEntity>;
     teamDetail: ICustomAsyncEntity<ITeam>;
     teamDetailSecurityGroup: ICustomAsyncEntity<ISecurityGroup>;
     securityGroups: ICustomAsyncEntity<ISecurityGroupEntity>;
     securityGroupDetail: ICustomAsyncEntity<ISecurityGroup>;
+    templates: ICustomAsyncEntity<ITemplateEntity>;
+    templateDetail: ICustomAsyncEntity<ITemplate>;
     openapi: ICustomAsyncEntity<IOpenAPIEntity>;
 }

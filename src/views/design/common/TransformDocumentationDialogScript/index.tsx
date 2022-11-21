@@ -1,12 +1,5 @@
-import React, { useState, ChangeEvent } from 'react';
-import {
-    Button,
-    ButtonGroup,
-    Box,
-    TextField,
-    makeStyles,
-    Theme,
-} from '@material-ui/core';
+import React, { ChangeEvent, useState } from 'react';
+import { Box, Button, ButtonGroup, makeStyles, TextField, Theme } from '@material-ui/core';
 import ClosableDialog from 'views/common/layout/ClosableDialog';
 import { triggerCreateScriptDetail } from 'state/entities/scripts/triggers';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';

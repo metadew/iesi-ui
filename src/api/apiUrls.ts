@@ -6,9 +6,9 @@ const API_URLS = {
     ACTION_TYPES: '/action-types',
     CONNECTION_TYPES: '/connection-types',
     COMPONENT_TYPES: '/component-types',
+    ENVIRONMENT_TYPES: '/environment-types',
 
     ENVIRONMENTS: '/environments',
-    ENVIRONMENTS_LIST: '/environments/list',
     ENVIRONMENT_BY_NAME: '/environments/{name}',
 
     EXECUTION_REQUESTS: '/execution-requests',
@@ -26,14 +26,18 @@ const API_URLS = {
     CONNECTION_BY_NAME: '/connections/{name}',
 
     COMPONENTS: '/components',
+    COMPONENT_IMPORT: '/components/import',
     COMPONENT_BY_NAME: '/components/{name}',
     COMPONENT_BY_NAME_VERSION: '/components/{name}/{version}',
+    COMPONENT_BY_NAME_VERSION_DOWNLOAD: '/components/{name}/{version}/download',
 
     USERS: '/users',
     USER_BY_NAME: '/users/{name}',
     USER_BY_ID: '/users/{id}',
-    USER_LOGON: '/users/login',
+    USER_BY_ID_PASSWORD: '/users/{id}/password',
+    USER_LOGON: '/oauth/token',
     USER_CREATE: '/users/create',
+    USER_CHECK_TOKEN: '/oauth/check_token',
 
     TEAMS: '/teams',
     TEAMS_NAMES: '/teams/names',
@@ -55,6 +59,10 @@ const API_URLS = {
     DATASET_BY_NAME_DOWNLOAD: '/datasets/{name}/download',
     DATASET_BY_UUID: '/datasets/{uuid}',
     DATASET_IMPLEMENTATIONS: '/datasets/{uuid}/implementations',
+
+    TEMPLATES: '/templates',
+    TEMPLATE_BY_NAME_AND_VERSION: '/templates/{name}/{version}',
+    TEMPLATE_BY_ID: '/templates/{id}',
 
     /* eslint-enable max-len */
 };

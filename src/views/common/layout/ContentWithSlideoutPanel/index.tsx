@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
-import { makeStyles, Box, Button } from '@material-ui/core';
+import { Box, Button, makeStyles } from '@material-ui/core';
 import { TTranslatorComponent } from 'models/i18n.models';
 import { PlayArrowSharp } from '@material-ui/icons';
 

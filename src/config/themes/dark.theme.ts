@@ -1,4 +1,4 @@
-import { ThemeOptions, darken, fade } from '@material-ui/core';
+import { darken, fade, ThemeOptions } from '@material-ui/core';
 import { THEME_COLORS } from './colors';
 
 /* Keep in sync light.theme.ts !! */

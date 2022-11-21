@@ -5,7 +5,7 @@ import { Box, Button, ButtonGroup, makeStyles, Paper, Theme } from '@material-ui
 import TextInput from 'views/common/input/TextInput';
 import { getTranslator } from 'state/i18n/selectors';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
-import { checkAuthorityGeneral } from 'state/auth/selectors';
+import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 
 interface IPublicProps {
@@ -95,7 +95,7 @@ function EditAttribute({
                                 <Translate msg="components.detail.edit.footer.cancel" />
                             </Button>
                             {
-                                checkAuthorityGeneral(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE) && (
+                                checkAuthority(state, SECURITY_PRIVILEGES.S_COMPONENTS_WRITE) && (
                                     <Button
                                         variant="contained"
                                         color="secondary"

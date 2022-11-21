@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-    Box,
-    Button,
-    createStyles,
-    IconButton,
-    Theme,
-    Typography,
-    withStyles,
-    WithStyles,
-} from '@material-ui/core';
+import { Box, Button, createStyles, Theme, Typography, withStyles, WithStyles } from '@material-ui/core';
 import { IObserveProps, observe } from 'views/observe';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
@@ -17,15 +8,16 @@ import GenericList from 'views/common/list/GenericList';
 import { IListItem, ListColumns } from 'models/list.models';
 import { IConnection, IConnectionColumnNames } from 'models/state/connections.model';
 import { getUniqueIdFromConnection } from 'utils/connections/connectionUtils';
-import { Save, Edit, Delete, ArrowBack } from '@material-ui/icons';
+import { ArrowBack, Delete, Edit, Save } from '@material-ui/icons';
 import { getTranslator } from 'state/i18n/selectors';
 import { getAsyncTransformResultEntity } from 'state/entities/openapi/selectors';
-import { IComponentColumnNames, IComponent } from 'models/state/components.model';
+import { IComponent, IComponentColumnNames } from 'models/state/components.model';
 import { getUniqueIdFromComponent } from 'utils/components/componentUtils';
 import { triggerCreateConnection } from 'state/entities/connections/triggers';
 import { triggerCreateComponent } from 'state/entities/components/triggers';
 import { deleteComponent, deleteConnection } from 'state/ui/actions';
 import { StateChangeNotification } from 'models/state.models';
+import RouteLink from 'views/common/navigation/RouteLink';
 import EditConnectionDialog from '../common/EditConnectionDialog/EditConnectionDialog';
 import EditComponentDialog from '../common/EditComponentDialog/EditComponentDialog';
 
@@ -115,9 +107,9 @@ const OpenAPIOverview = withStyles(styles)(
                                 justifyContent="space-between"
                                 alignItems="flex-start"
                             >
-                                <IconButton onClick={() => redirectTo({ routeKey: ROUTE_KEYS.R_HOME })}>
+                                <RouteLink to={ROUTE_KEYS.R_HOME}>
                                     <ArrowBack />
-                                </IconButton>
+                                </RouteLink>
                                 <Typography variant="h6">
                                     <Translate
                                         msg="doc.overview.openapi_title"
