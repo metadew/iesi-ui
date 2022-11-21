@@ -20,7 +20,8 @@ import { IOpenAPI } from 'models/state/openapi.model';
 import { IConnection, IConnectionByNamePayload, IFetchConnectionsListPayload } from 'models/state/connections.model';
 import {
     IComponent,
-    IComponentByNameAndVersionPayload, IComponentImportPayload,
+    IComponentByNameAndVersionPayload,
+    IComponentImportPayload,
     IFetchComponentsListPayload,
 } from 'models/state/components.model';
 import {

@@ -16,7 +16,8 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { IComponent, IComponentAttribute, IComponentParameter } from 'models/state/components.model';
 import {
     triggerCreateComponentDetail,
-    triggerDeleteComponentDetail, triggerExportComponentDetail,
+    triggerDeleteComponentDetail,
+    triggerExportComponentDetail,
     triggerUpdateComponentDetail,
 } from 'state/entities/components/triggers';
 import { checkAuthority } from 'state/auth/selectors';
