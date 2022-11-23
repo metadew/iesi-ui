@@ -6,7 +6,7 @@ RUN mkdir /app
 COPY . /app/
 
 WORKDIR /app/
-RUN npm install
+RUN npm install --unsafe-perm=true --allow-root
 RUN npm run init-env-config
 
 ENV API_URL https://localhost:8080/api
@@ -21,4 +21,8 @@ COPY nginx.conf /etc/nginx/conf.d/configfile.template
 COPY --from=build-env /app/build/ /usr/share/nginx/html
 ENV PORT 8080
 
-CMD sh -c "envsubst '\$PORT' < /etc/nginx/conf.d/configfile.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+RUN . ~/.bashrc
+RUN /bin/bash -c "envsubst '\$PORT' < /etc/nginx/conf.d/configfile.template > /etc/nginx/conf.d/default.conf"
+RUN /bin/bash -c "nginx -g 'daemon off;'"
+
+EXPOSE $PORT
