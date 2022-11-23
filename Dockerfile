@@ -23,6 +23,7 @@ ENV PORT 8080
 
 RUN . ~/.bashrc
 RUN /bin/bash -c "envsubst '\$PORT' < /etc/nginx/conf.d/configfile.template > /etc/nginx/conf.d/default.conf"
-RUN /bin/bash -c "nginx -g 'daemon off;'"
+CMD sh -c "nginx -g 'daemon off;'"
+
 
 EXPOSE $PORT
