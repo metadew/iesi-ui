@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build -t iesi-ui ../
+podman build -t localhost/iesi-ui ../
