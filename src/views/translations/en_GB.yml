@@ -296,6 +296,7 @@ script_reports:
         labels: Label
         run_id: Run Id
         run_status: Status
+        requester: Requester
       labels:
         environment: Environment
         labels: Labels

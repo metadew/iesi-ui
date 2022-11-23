@@ -10,6 +10,7 @@
 
 # production
 /build
+/build.zip
 
 # custom config
 /src/env-config.json
