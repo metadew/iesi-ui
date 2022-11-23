@@ -244,9 +244,9 @@ function ExecutionDetail({ state }: IObserveProps) {
                                 name: scriptExecutionData.scriptName,
                                 version: scriptExecutionData.scriptVersion,
                             }}
+                            className={classes.redirectButton}
                         >
                             <Button
-                                className={classes.redirectButton}
                                 variant="contained"
                                 color="primary"
                                 size="small"
