@@ -199,6 +199,9 @@ const ScriptDetail = withStyles(styles)(
             const deleteStatus = getAsyncScriptDetail(this.props.state).remove.status;
             const editAction = this.getEditAction();
 
+            console.log('SCRIPT STATUS: ', scriptDetailAsyncStatus);
+            console.log('ACTION TYPE STATUS: ', actionTypesAsyncStatus);
+
             return (
                 <>
                     <Loader
@@ -716,7 +719,9 @@ const ScriptDetail = withStyles(styles)(
             const prevScriptDetail = getAsyncScriptDetail(prevProps.state).data;
             // eslint-disable-next-line max-len
             if (getUniqueIdFromScript(scriptDetail) !== getUniqueIdFromScript(prevScriptDetail)) {
+                console.log('AKOUKOU');
                 const scriptDetailDeepClone = clone(scriptDetail);
+                console.log('DEEP CLONE: ', scriptDetailDeepClone);
                 // eslint-disable-next-line react/no-did-update-set-state
                 this.setState({ newScriptDetail: scriptDetailDeepClone });
             }
