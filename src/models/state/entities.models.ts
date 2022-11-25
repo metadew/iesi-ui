@@ -28,6 +28,8 @@ export enum ASYNC_ENTITY_KEYS {
 
     connections = 'connections',
     connectionDetail = 'connectionDetail',
+    connectionDetailExport = 'connectionDetailExport',
+    connectionDetailImport = 'connectionDetailImport',
 
     scripts = 'scripts',
     scriptDetail = 'scriptDetail',

@@ -28,7 +28,7 @@ import { IConnectionType } from 'models/state/constants.models';
 import { IListItem, ListColumns } from 'models/list.models';
 import {
     triggerCreateConnectionDetail,
-    triggerDeleteConnectionDetail,
+    triggerDeleteConnectionDetail, triggerExportConnectionDetail,
     triggerUpdateConnectionDetail,
 } from 'state/entities/connections/triggers';
 import { checkAuthority } from 'state/auth/selectors';
@@ -500,6 +500,7 @@ const ConnectionDetail = withStyles(styles)(
                                 this.setState({ isAddingParameter: true });
                             }}
                             isCreateRoute={this.isCreateConnectionRoute()}
+                            onExport={() => this.onExportConnection()}
                         />
                     </Box>
                     <Box marginY={1}>
@@ -630,6 +631,17 @@ const ConnectionDetail = withStyles(styles)(
                 },
                 hasChangesToCheck: true,
             }));
+        }
+
+        private onExportConnection() {
+            const { state } = this.props;
+            const detail = getAsyncConnectionDetail(state).data;
+
+            if (detail) {
+                triggerExportConnectionDetail({
+                    name: detail.name,
+                });
+            }
         }
 
         private onDeleteConnection() {

@@ -17,7 +17,12 @@ import {
     IScriptImport,
 } from 'models/state/scripts.models';
 import { IOpenAPI } from 'models/state/openapi.model';
-import { IConnection, IConnectionByNamePayload, IFetchConnectionsListPayload } from 'models/state/connections.model';
+import {
+    IConnection,
+    IConnectionByNamePayload,
+    IConnectionImportPayload,
+    IFetchConnectionsListPayload,
+} from 'models/state/connections.model';
 import {
     IComponent,
     IComponentByNameAndVersionPayload, IComponentImportPayload,
@@ -313,6 +318,26 @@ entitiesConfigManager.register({
             // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
             // @ts-ignore
             apiInputSelector: ({ extraInput }) => extraInput as IConnectionByNamePayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.connectionDetailExport,
+    operationsConfig: {
+        fetch: {
+            api: api.connections.fetchConnectionDownload,
+            apiInputSelector: ({ extraInput }) => extraInput as IConnectionByNamePayload,
+        },
+    },
+});
+
+entitiesConfigManager.register({
+    asyncEntityKey: ASYNC_ENTITY_KEYS.connectionDetailImport,
+    operationsConfig: {
+        create: {
+            api: api.connections.createConnectionImport,
+            apiInputSelector: ({ extraInput }) => extraInput as IConnectionImportPayload,
         },
     },
 });

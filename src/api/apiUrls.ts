@@ -23,7 +23,10 @@ const API_URLS = {
     SCRIPT_EXECUTION_BY_RUN_AND_PROCESS_ID: '/script-executions/{runId}/{processId}',
 
     CONNECTIONS: '/connections',
+    CONNECTION_IMPORT: '/connections/import',
     CONNECTION_BY_NAME: '/connections/{name}',
+    CONNECTION_BY_NAME_DOWNLOAD: '/connections/{name}/download',
+    CONNECTION: '/connections/{name}/import',
 
     COMPONENTS: '/components',
     COMPONENT_IMPORT: '/components/import',
