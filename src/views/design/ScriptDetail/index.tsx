@@ -166,7 +166,9 @@ const ScriptDetail = withStyles(styles)(
         public componentDidMount() {
             const { name, version } = this.props.match.params as IScriptByNameAndVersionPayload;
 
+            console.log('HELLO');
             if (!this.isCreateScriptRoute()) {
+                console.log('TENTEND');
                 triggerFetchScriptDetail({
                     name,
                     version,
