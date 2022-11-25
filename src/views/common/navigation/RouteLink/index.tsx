@@ -57,7 +57,6 @@ function RouteLink(props: IPublicProps) {
             activeClassName={ACTIVE_CLASS_NAME}
             className={classnames(flashMessageLink ? classes.flashMessageLink : classes.routeLink, className)}
             ref={props.innerRef}
-            target="_blank"
         >
             {children}
         </RouterNavLink>
