@@ -1003,6 +1003,7 @@ templates:
       sort:
         template_name: Template name
       actions:
+        edit: Edit
         delete: Delete
       fetch_error: Something went wrong during the loading of the templates
     delete_template_dialog:
