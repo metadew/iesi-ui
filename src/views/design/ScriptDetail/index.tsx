@@ -13,7 +13,7 @@ import {
 import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import { Alert } from '@material-ui/lab';
-import { IScript, IScriptAction } from 'models/state/scripts.models';
+import { IScript, IScriptAction, IScriptByNameAndVersionPayload } from 'models/state/scripts.models';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import TextInput from 'views/common/input/TextInput';
 import DescriptionList from 'views/common/list/DescriptionList';
@@ -161,6 +161,17 @@ const ScriptDetail = withStyles(styles)(
             this.onDeleteScript = this.onDeleteScript.bind(this);
             this.onDeleteAction = this.onDeleteAction.bind(this);
             this.onCloseExecuteDialog = this.onCloseExecuteDialog.bind(this);
+        }
+
+        public componentDidMount() {
+            const { name, version } = this.props.match.params as IScriptByNameAndVersionPayload;
+
+            if (!this.isCreateScriptRoute()) {
+                triggerFetchScriptDetail({
+                    name,
+                    version,
+                });
+            }
         }
 
         public componentDidUpdate(prevProps: TProps & IObserveProps) {

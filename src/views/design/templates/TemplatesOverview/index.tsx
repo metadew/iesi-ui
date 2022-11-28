@@ -328,7 +328,7 @@ const TemplatesOverview = withStyles(styles)(
                                             return (
                                                 <RouteLink
                                                     to={ROUTE_KEYS.R_TEMPLATE_DETAIL}
-                                                    queryParams={{
+                                                    params={{
                                                         name: selectedTemplate.name,
                                                         version: selectedTemplate.version,
                                                     }}
