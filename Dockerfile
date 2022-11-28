@@ -9,7 +9,7 @@ WORKDIR /app/
 RUN npm install --unsafe-perm=true --allow-root
 RUN npm run init-env-config
 
-ENV API_URL https://localhost:8080/api
+ENV API_URL https://iesibackendhqjlu7hnwtcte.azurewebsites.net/api
 ENV API_TIMEOUT 10
 
 RUN npm run build --url=$API_URL --timeout=$API_TIMEOUT
