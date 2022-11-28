@@ -166,9 +166,7 @@ const ScriptDetail = withStyles(styles)(
         public componentDidMount() {
             const { name, version } = this.props.match.params as IScriptByNameAndVersionPayload;
 
-            console.log('HELLO');
             if (!this.isCreateScriptRoute()) {
-                console.log('TENTEND');
                 triggerFetchScriptDetail({
                     name,
                     version,
@@ -200,9 +198,6 @@ const ScriptDetail = withStyles(styles)(
             const translator = getTranslator(state);
             const deleteStatus = getAsyncScriptDetail(this.props.state).remove.status;
             const editAction = this.getEditAction();
-
-            console.log('SCRIPT STATUS: ', scriptDetailAsyncStatus);
-            console.log('ACTION TYPE STATUS: ', actionTypesAsyncStatus);
 
             return (
                 <>
@@ -721,9 +716,7 @@ const ScriptDetail = withStyles(styles)(
             const prevScriptDetail = getAsyncScriptDetail(prevProps.state).data;
             // eslint-disable-next-line max-len
             if (getUniqueIdFromScript(scriptDetail) !== getUniqueIdFromScript(prevScriptDetail)) {
-                console.log('AKOUKOU');
                 const scriptDetailDeepClone = clone(scriptDetail);
-                console.log('DEEP CLONE: ', scriptDetailDeepClone);
                 // eslint-disable-next-line react/no-did-update-set-state
                 this.setState({ newScriptDetail: scriptDetailDeepClone });
             }
