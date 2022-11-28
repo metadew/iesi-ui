@@ -12,6 +12,7 @@ import TemplatesTemplate from 'views/design/templates/TemplatesTemplate';
 import TemplatesOverview from 'views/design/templates/TemplatesOverview';
 import TemplateDetail from 'views/design/templates/TemplateDetail';
 import { triggerFetchTemplate } from 'state/entities/templates/triggers';
+import { triggerFetchScriptDetail } from 'state/entities/scripts/triggers';
 import { registerRoutes, ROUTE_KEYS } from './routes';
 import NotFound from './appShell/NotFound';
 import Home from './Home';
@@ -72,7 +73,13 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             routeKey: ROUTE_KEYS.R_SCRIPT_DETAIL,
             path: '/:name/:version',
             component: ScriptDetail as React.ComponentType<unknown>,
-            executeOnRoute: [],
+            executeOnRoute: [{
+                execute: triggerFetchScriptDetail as () => unknown,
+                executeInputSelector: ({ routeLocation }) => ({
+                    name: routeLocation.params.name,
+                    version: routeLocation.params.version,
+                }),
+            }],
         },
     ],
     executeOnRoute: [],

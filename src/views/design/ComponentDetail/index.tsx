@@ -665,6 +665,9 @@ const ComponentDetail = withStyles(styles)(
         private updateComponentInStateIfNewComponentWasLoaded(prevProps: TProps & IObserveProps) {
             const componentDetail = getAsyncComponentDetail(this.props.state).data;
             const prevComponentDetail = getAsyncComponentDetail(prevProps.state).data;
+
+            console.log('COMPONENT DETAIL: ', componentDetail);
+            console.log('PREV COMPONENT DETAIL: ', prevComponentDetail);
             // eslint-disable-next-line max-len
             if (getUniqueIdFromComponent(componentDetail) !== getUniqueIdFromComponent(prevComponentDetail)) {
                 const componentDetailDeepClone = clone(componentDetail);
