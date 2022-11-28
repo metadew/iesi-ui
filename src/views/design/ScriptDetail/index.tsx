@@ -163,17 +163,6 @@ const ScriptDetail = withStyles(styles)(
             this.onCloseExecuteDialog = this.onCloseExecuteDialog.bind(this);
         }
 
-        public componentDidMount() {
-            const { name, version } = this.props.match.params as IScriptByNameAndVersionPayload;
-
-            if (!this.isCreateScriptRoute()) {
-                triggerFetchScriptDetail({
-                    name,
-                    version,
-                });
-            }
-        }
-
         public componentDidUpdate(prevProps: TProps & IObserveProps) {
             this.updateScriptInStateIfNewScriptWasLoaded(prevProps);
             this.refreshPageAfterUpdate(prevProps);
