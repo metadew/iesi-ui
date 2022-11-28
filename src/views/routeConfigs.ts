@@ -1,12 +1,10 @@
 import React from 'react';
 import { IRoute } from 'models/router.models';
-import { triggerFetchScriptDetail } from 'state/entities/scripts/triggers';
 import { triggerFetchExecutionRequestDetail } from 'state/entities/executionRequests/triggers';
 import { triggerFetchComponentDetail } from 'state/entities/components/triggers';
 import { triggerFetchConnectionDetail } from 'state/entities/connections/triggers';
 import { triggerFetchDatasetDetail } from 'state/entities/datasets/triggers';
 import { triggerFetchEnvironment } from 'state/entities/environments/triggers';
-// import { IFetchEnvironmentsListPayload } from 'models/state/environments.models';
 import { triggerFetchUserDetail } from 'state/entities/users/triggers';
 import { triggerFetchTeamDetail } from 'state/entities/teams/triggers';
 import { triggerFetchSecurityGroupDetail } from 'state/entities/securityGroups/triggers';
@@ -14,6 +12,7 @@ import TemplatesTemplate from 'views/design/templates/TemplatesTemplate';
 import TemplatesOverview from 'views/design/templates/TemplatesOverview';
 import TemplateDetail from 'views/design/templates/TemplateDetail';
 import { triggerFetchTemplate } from 'state/entities/templates/triggers';
+import { triggerFetchScriptDetail } from 'state/entities/scripts/triggers';
 import { registerRoutes, ROUTE_KEYS } from './routes';
 import NotFound from './appShell/NotFound';
 import Home from './Home';
@@ -75,8 +74,6 @@ const ALL_ROUTES: IRoute<ROUTE_KEYS>[] = [{
             path: '/:name/:version',
             component: ScriptDetail as React.ComponentType<unknown>,
             executeOnRoute: [{
-                // TODO: Fix this typing error so we dont need to cast to () => unknown? Can this be simpler?
-                // Maybe pass the routeLocation to the execute so we dont need the executeInputSelector prop?
                 execute: triggerFetchScriptDetail as () => unknown,
                 executeInputSelector: ({ routeLocation }) => ({
                     name: routeLocation.params.name,
