@@ -24,7 +24,11 @@ import {
 } from 'models/list.models';
 import { getConnectionsListFilter } from 'state/ui/selectors';
 import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
-import { triggerDeleteConnectionDetail, triggerFetchConnections } from 'state/entities/connections/triggers';
+import {
+    triggerDeleteConnectionDetail,
+    triggerFetchConnections,
+    triggerImportConnectionDetail,
+} from 'state/entities/connections/triggers';
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { setConnectionsListFilter } from 'state/ui/actions';
 import TransformDocumentationDialog from 'views/design/common/TransformDocumentationDialog';
@@ -42,6 +46,7 @@ import OrderedList from 'views/common/list/OrderedList';
 import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import RouteLink from 'views/common/navigation/RouteLink';
+import TextFileInputDialog from 'views/common/layout/TextFileInputDialog';
 
 const styles = (({ palette, typography }: Theme) => ({
     header: {
@@ -92,6 +97,7 @@ const defaultSortedColumn: ISortedColumn<IConnectionColumnNamesBase> = {
 interface IComponentState {
     connectionIdToDelete: string;
     loadDocDialogOpen: boolean;
+    importConnectionDialogOpen: boolean;
 }
 type TProps = WithStyles<typeof styles>;
 
@@ -103,6 +109,7 @@ const ConnectionOverview = withStyles(styles)(
             this.state = {
                 connectionIdToDelete: null,
                 loadDocDialogOpen: false,
+                importConnectionDialogOpen: false,
             };
 
             this.onSort = this.onSort.bind(this);
@@ -148,12 +155,16 @@ const ConnectionOverview = withStyles(styles)(
 
         public render() {
             const { classes, state } = this.props;
-            const { loadDocDialogOpen, connectionIdToDelete } = this.state;
+            const { loadDocDialogOpen,
+                    connectionIdToDelete,
+                    importConnectionDialogOpen,
+            } = this.state;
             const pageData = getAsyncConnectionsPageData(state);
             const filterFromState = getConnectionsListFilter(state);
             const connections = getAsyncConnections(state);
             const listItems = mapConnectionsToListItems(connections);
             const deleteStatus = getAsyncConnectionDetail(state).remove.status;
+            const importStatus = getAsyncConnectionDetail(state).create.status;
             const translator = getTranslator(state);
             return (
                 <Box height="100%" display="flex" flexDirection="column" flex="1 0 auto">
@@ -179,7 +190,23 @@ const ConnectionOverview = withStyles(styles)(
                                 </Box>
                                 {
                                     checkAuthority(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE) && (
-                                        <Box display="flex" alignItems="center">
+                                        <Box display="flex" alignItems="center" flex="0 0 auto">
+                                            <Box flex="0 0 auto" mr="16px">
+                                                <TextFileInputDialog
+                                                    open={importConnectionDialogOpen}
+                                                    onOpen={() => {
+                                                        this.setState({ importConnectionDialogOpen: true });
+                                                    }}
+                                                    onClose={() => {
+                                                        this.setState({ importConnectionDialogOpen: false });
+                                                    }}
+                                                    onImport={(connection) => {
+                                                        triggerImportConnectionDetail(connection);
+                                                    }}
+                                                    showLoader={importStatus === AsyncStatus.Busy}
+                                                    metadataName="connection"
+                                                />
+                                            </Box>
                                             <Box flex="0 0 auto" mr="8px" width="250px">
                                                 <TransformDocumentationDialog
                                                     open={loadDocDialogOpen}

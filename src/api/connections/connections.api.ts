@@ -4,10 +4,11 @@ import { get, post, put, remove } from 'api/requestWrapper';
 import {
     IConnection,
     IConnectionByNamePayload,
-    IConnectionEntity,
+    IConnectionEntity, IConnectionImportPayload,
     IFetchConnectionsListPayload,
 } from 'models/state/connections.model';
 import { IPageData } from 'models/state/iesiGeneric.models';
+import FileSaver from 'file-saver';
 
 interface IConnectionsResponse {
     _embedded: {
@@ -47,6 +48,21 @@ export function fetchConnection({ name }: IConnectionByNamePayload) {
     });
 }
 
+export function fetchConnectionDownload({ name }: IConnectionByNamePayload) {
+    return get<any>({
+        needsAuthentication: true,
+        isIesiApi: true,
+        url: API_URLS.CONNECTION_BY_NAME_DOWNLOAD,
+        responseType: 'blob',
+        pathParams: {
+            name,
+        },
+    }).then((response) => {
+        const blob = new Blob([response]);
+        FileSaver.saveAs(blob, `connection_${name}.zip`);
+    });
+}
+
 export function createConnection(connection: IConnection) {
     return post<IConnection>({
         needsAuthentication: true,
@@ -54,6 +70,20 @@ export function createConnection(connection: IConnection) {
         url: API_URLS.CONNECTIONS,
         body: connection,
         contentType: 'application/json',
+    });
+}
+
+export async function createConnectionImport({ value }: IConnectionImportPayload) {
+    return post<string | FormData>({
+        needsAuthentication: true,
+        isIesiApi: true,
+        url: API_URLS.CONNECTION_IMPORT,
+        body: value,
+        contentType: value instanceof FormData ? 'multipart/form-data' : 'text/plain',
+        headers: {
+            'Content-Type': value instanceof FormData ? 'multipart/form-data' : 'text/plain',
+        },
+        mapResponse: ({ data }) => data,
     });
 }
 

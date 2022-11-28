@@ -1,7 +1,12 @@
 import entitiesStateManager from 'state/entities/entitiesStateManager';
 import { ASYNC_ENTITY_KEYS } from 'models/state/entities.models';
 import { handleConnection, triggerFlashMessage } from 'state/ui/actions';
-import { IConnection, IConnectionByNamePayload, IFetchConnectionsListPayload } from 'models/state/connections.model';
+import {
+    IConnection,
+    IConnectionByNamePayload,
+    IConnectionImportPayload,
+    IFetchConnectionsListPayload,
+} from 'models/state/connections.model';
 import { StateChangeNotification } from 'models/state.models';
 
 export const triggerFetchConnections = (payload: IFetchConnectionsListPayload) =>
@@ -46,6 +51,48 @@ export const triggerCreateConnectionDetail = (payload: IConnection) =>
             translationKey: 'flash_messages.error',
             type: 'error',
         })),
+    });
+
+export const triggerExportConnectionDetail = (payload: IConnectionByNamePayload) => {
+    entitiesStateManager.triggerAsyncEntityFetch<{}>({
+        asyncEntityToFetch: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.connectionDetailExport,
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.CONNECTIVITY_CONNECTION_DETAIL],
+        itself: triggerExportConnectionDetail,
+    });
+};
+
+export const triggerImportConnectionDetail = (payload: IConnectionImportPayload) =>
+    entitiesStateManager.triggerAsyncEntityCreate<{}>({
+        asyncEntityToCreate: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.connectionDetailImport,
+        },
+        onSuccess: ({ dispatch }) => dispatch(
+            triggerFlashMessage({
+                type: 'success',
+                translationKey: 'flash_messages.connection.import',
+            }),
+        ),
+        onFail: ({ dispatch, error }) => {
+            if (error.status) {
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.common.responseError',
+                    translationPlaceholders: {
+                        message: error.response?.message,
+                    },
+                    type: 'error',
+                }));
+            } else {
+                dispatch(triggerFlashMessage({
+                    translationKey: 'flash_messages.connection.import_error',
+                }));
+            }
+        },
+        extraInputSelector: () => payload,
+        notificationsToTrigger: [StateChangeNotification.CONNECTIVITY_CONNECTION_DETAIL],
+        itself: triggerImportConnectionDetail,
     });
 
 export const triggerUpdateConnectionDetail = (payload: IConnection) =>

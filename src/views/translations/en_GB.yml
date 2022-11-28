@@ -82,6 +82,8 @@ flash_messages:
     create: 'The connection has been created successfully'
     edit: 'The connection has been updated successfully'
     error: 'An error has occured: {error}'
+    import: 'The connection has been successfully imported !'
+    import_error: 'There is an error during the import of the connection'
   environment:
     create: 'The environment has been created successfully'
     edit: 'The environment has been updated successfully'

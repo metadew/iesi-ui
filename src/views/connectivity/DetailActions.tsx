@@ -1,6 +1,11 @@
 import React from 'react';
 import { Box, Button, darken, IconButton, makeStyles, Paper } from '@material-ui/core';
-import { AddRounded as AddIcon, Delete as DeleteIcon, Save as SaveIcon } from '@material-ui/icons';
+import {
+    AddRounded as AddIcon,
+    Delete as DeleteIcon,
+    GetApp as ExportIcon,
+    Save as SaveIcon,
+} from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import { THEME_COLORS } from 'config/themes/colors';
 import Tooltip from 'views/common/tooltips/Tooltip';
@@ -46,6 +51,7 @@ function DetailActions({
     onSave,
     isCreateRoute,
     state,
+    onExport,
 }: IPublicProps & IObserveProps) {
     const classes = useStyles();
     const translator = getTranslator(state);
@@ -57,6 +63,16 @@ function DetailActions({
             onClick={onDelete}
         >
             <DeleteIcon />
+        </IconButton>
+    );
+
+    const ExportButton = (
+        <IconButton
+            disabled={isCreateRoute}
+            aria-label={translator('connections.detail.main.actions.export')}
+            onClick={onExport}
+        >
+            <ExportIcon />
         </IconButton>
     );
 
@@ -110,15 +126,24 @@ function DetailActions({
                             ) : (
                                 <>
                                     {checkAuthority(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
-                                        ? (
-                                            <Tooltip
-                                                title={translator('connections.detail.main.actions.delete')}
-                                                enterDelay={1000}
-                                                enterNextDelay={1000}
-                                            >
-                                                {DeleteButton}
-                                            </Tooltip>
-                                        ) : null}
+                                        && (
+                                            <>
+                                                <Tooltip
+                                                    title={translator('connections.detail.main.actions.delete')}
+                                                    enterDelay={1000}
+                                                    enterNextDelay={1000}
+                                                >
+                                                    {DeleteButton}
+                                                </Tooltip>
+                                                <Tooltip
+                                                    title={translator('connections.detail.main.actions.export')}
+                                                    enterDelay={1000}
+                                                    enterNextDelay={1000}
+                                                >
+                                                    {ExportButton}
+                                                </Tooltip>
+                                            </>
+                                        )}
                                 </>
                             )}
                         </Paper>

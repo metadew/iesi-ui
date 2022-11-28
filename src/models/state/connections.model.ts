@@ -54,3 +54,7 @@ export interface IConnectionColumnNamesBase {
     description: string;
     environments: number;
 }
+
+export interface IConnectionImportPayload {
+    value: string | FormData;
+}
