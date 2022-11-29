@@ -8,6 +8,7 @@ export interface IFetchConnectionsListPayload {
 
 interface IConnectionListFilter {
     name?: string;
+    type?: string;
 }
 export interface IConnectionByNamePayload {
     name: string;

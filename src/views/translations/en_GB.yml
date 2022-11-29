@@ -485,6 +485,7 @@ connections:
         edit: Edit
       filter:
         connection_name: Connection name
+        connection_type: Connection type
       sort:
         connection_name: Connection name
         version: Version
