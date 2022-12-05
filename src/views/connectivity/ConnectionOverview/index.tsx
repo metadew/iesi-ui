@@ -79,6 +79,10 @@ const filterConfig: FilterConfig<Partial<IConnectionColumnNamesBase>> = {
         label: <Translate msg="connections.overview.list.filter.connection_name" />,
         filterType: FilterType.Search,
     },
+    type: {
+        label: <Translate msg="connections.overview.list.filter.connection_type" />,
+        filterType: FilterType.Search,
+    },
 };
 
 const sortActions: SortActions<Partial<IConnectionColumnNamesBase>> = {
@@ -113,7 +117,7 @@ const ConnectionOverview = withStyles(styles)(
             };
 
             this.onSort = this.onSort.bind(this);
-            this.fetchConnectionssWithFilterAndPagination = this.fetchConnectionssWithFilterAndPagination.bind(this);
+            this.fetchConnectionsWithFilterAndPagination = this.fetchConnectionsWithFilterAndPagination.bind(this);
             this.renderPanel = this.renderPanel.bind(this);
             this.renderContent = this.renderContent.bind(this);
             this.onFilter = this.onFilter.bind(this);
@@ -133,7 +137,7 @@ const ConnectionOverview = withStyles(styles)(
             const { dispatch } = this.props;
             const initialFilters = this.combineFiltersFromUrlAndCurrentFilters();
 
-            this.fetchConnectionssWithFilterAndPagination({ newListFilters: initialFilters, newPage: 1 });
+            this.fetchConnectionsWithFilterAndPagination({ newListFilters: initialFilters, newPage: 1 });
             dispatch(setConnectionsListFilter({ filters: initialFilters }));
         }
 
@@ -379,7 +383,7 @@ const ConnectionOverview = withStyles(styles)(
                                     pagination={{
                                         pageData,
                                         onChange: ({ page }) => {
-                                            this.fetchConnectionssWithFilterAndPagination({ newPage: page });
+                                            this.fetchConnectionsWithFilterAndPagination({ newPage: page });
                                             dispatch(setConnectionsListFilter({ page }));
                                         },
                                     }}
@@ -395,7 +399,7 @@ const ConnectionOverview = withStyles(styles)(
 
         private onSort(sortedColumn: ISortedColumn<IConnectionColumnNamesBase>) {
             const { dispatch } = this.props;
-            this.fetchConnectionssWithFilterAndPagination({ newSortedColumn: sortedColumn });
+            this.fetchConnectionsWithFilterAndPagination({ newSortedColumn: sortedColumn });
             dispatch(setConnectionsListFilter({ sortedColumn }));
         }
 
@@ -430,7 +434,7 @@ const ConnectionOverview = withStyles(styles)(
             return defaultFilters;
         }
 
-        private fetchConnectionssWithFilterAndPagination({
+        private fetchConnectionsWithFilterAndPagination({
             newPage,
             newListFilters,
             newSortedColumn,
@@ -452,6 +456,8 @@ const ConnectionOverview = withStyles(styles)(
                 filter: {
                     name: filters.name.values.length > 0
                         && filters.name.values[0].toString(),
+                    type: filters.type.values.length > 0
+                        && filters.type.values[0].toString(),
                 },
                 sort: formatSortQueryParameter(sortedColumn),
             });
@@ -459,7 +465,7 @@ const ConnectionOverview = withStyles(styles)(
 
         private onFilter(listFilters: ListFilters<Partial<IConnectionColumnNamesBase>>) {
             const { dispatch } = this.props;
-            this.fetchConnectionssWithFilterAndPagination({ newListFilters: listFilters });
+            this.fetchConnectionsWithFilterAndPagination({ newListFilters: listFilters });
             dispatch(setConnectionsListFilter({ filters: listFilters }));
         }
 
@@ -482,7 +488,7 @@ const ConnectionOverview = withStyles(styles)(
 
             if (status === AsyncStatus.Success && prevStatus !== AsyncStatus.Success) {
                 this.clearConnectionToDelete();
-                this.fetchConnectionssWithFilterAndPagination({});
+                this.fetchConnectionsWithFilterAndPagination({});
             }
         }
 
