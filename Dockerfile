@@ -1,29 +1,31 @@
 # Stage 1 - Install dependencies and build the app
-FROM node:12.20 AS build-env
+FROM node:14.17.6 AS build-env
 
-# Copy files to container and build
-RUN mkdir /app
-COPY . /app/
-
-WORKDIR /app/
+WORKDIR /app
+COPY ./package.json /app/package.json
+COPY ./package-lock.json /app/package-lock.json
 RUN npm install --unsafe-perm=true --allow-root
+
+COPY . /app
 RUN npm run init-env-config
 
-ENV API_URL https://iesibackendhqjlu7hnwtcte.azurewebsites.net/api
+ENV API_URL http://localhost:8080/api
 ENV API_TIMEOUT 10
+
 
 RUN npm run build --url=$API_URL --timeout=$API_TIMEOUT
 
 # Stage 2 - Create the runtime image
 FROM nginx
 
-COPY nginx.conf /etc/nginx/conf.d/configfile.template
 COPY --from=build-env /app/build/ /usr/share/nginx/html
+COPY docker/nginx.template.conf /etc/nginx/conf.d/default.conf
+COPY docker/env-config.template.json /usr/share/nginx/html/env-config.json
+COPY docker/run.sh /usr/share/nginx/html/run.sh
+
+RUN chmod 777 /usr/share/nginx/html/run.sh
+
 ENV PORT 8080
 
-RUN . ~/.bashrc
-RUN /bin/bash -c "envsubst '\$PORT' < /etc/nginx/conf.d/configfile.template > /etc/nginx/conf.d/default.conf"
-CMD sh -c "nginx -g 'daemon off;'"
-
-
 EXPOSE $PORT
+ENTRYPOINT ["/usr/share/nginx/html/run.sh"]
