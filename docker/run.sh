@@ -4,11 +4,13 @@ echo running the IESI UI container ...
 echo Filling configuration placeholders ...
 
 tmp=$(mktemp)
-nginx_config_file=/etc/nginx/conf.d/default.conf
 env_config_file=/usr/share/nginx/html/env-config.json
+nginx_config_file=/etc/nginx/conf.d/nginx.template
 
-envsubst < "$nginx_config_file" > "$tmp" && mv "$tmp" "$nginx_config_file"
-envsubst $PORT < "$nginx_config_file" > /etc/nginx/conf.d/default-test.conf
+envsubst < "$env_config_file" > "$tmp" && mv "$tmp" "$env_config_file"
+envsubst '$PORT' < "$nginx_config_file" > /etc/nginx/conf.d/default.conf
+
+chmod 777 $env_config_file
 
 
 
