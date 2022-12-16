@@ -1,0 +1,11 @@
+{
+  "iesi_api_base_url":"$API_URL",
+  "iesi_api_timeout_in_seconds": $API_TIMEOUT,
+  "iesi_api_client_id":"$API_CLIENT_ID",
+  "iesi_api_client_secret":"$API_CLIENT_SECRET",
+  "translation_label_overrides":{
+    "en_GB":{
+
+    }
+  }
+}
