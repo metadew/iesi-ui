@@ -1,5 +1,6 @@
 import { IState } from 'models/state.models';
 import { IComponent } from 'models/state/components.model';
+import { getUniqueIdFromComponent } from 'utils/components/componentUtils';
 
 export const getAsyncComponentsEntity = (state: IState) => state.entities.components;
 
@@ -15,3 +16,12 @@ export const getAsyncComponentsPageData = (state: IState) => {
 };
 
 export const getAsyncComponentDetail = (state: IState) => state.entities.componentDetail;
+
+export const getComponentByUniqueIdFromDetailOrList = (state: IState, uniqueId: string) => {
+    const componentDetail = getAsyncComponentDetail(state);
+    if (componentDetail.data && getUniqueIdFromComponent(componentDetail.data) === uniqueId) {
+        return componentDetail.data;
+    }
+    const components = getAsyncComponents(state);
+    return components.find((component) => getUniqueIdFromComponent(component) === uniqueId);
+};

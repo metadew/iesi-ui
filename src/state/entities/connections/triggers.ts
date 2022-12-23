@@ -8,6 +8,7 @@ import {
     IFetchConnectionsListPayload,
 } from 'models/state/connections.model';
 import { StateChangeNotification } from 'models/state.models';
+import { AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 
 export const triggerFetchConnections = (payload: IFetchConnectionsListPayload) =>
     entitiesStateManager.triggerAsyncEntityFetch<{}>({
@@ -63,6 +64,24 @@ export const triggerExportConnectionDetail = (payload: IConnectionByNamePayload)
         itself: triggerExportConnectionDetail,
     });
 };
+
+export const triggerResetAsyncConnectionDetail = ({
+    resetDataOnTrigger,
+    operation,
+}: {
+    resetDataOnTrigger?: boolean;
+    operation: AsyncOperation;
+}) =>
+    entitiesStateManager.triggerAsyncEntityReset({
+        itself: triggerResetAsyncConnectionDetail,
+        asyncEntityToReset: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.connectionDetail,
+            resetDataOnTrigger,
+        },
+        extraInputSelector: () => ({}),
+        notificationsToTrigger: [StateChangeNotification.CONNECTIVITY_CONNECTION_DETAIL],
+        operation,
+    });
 
 export const triggerImportConnectionDetail = (payload: IConnectionImportPayload) =>
     entitiesStateManager.triggerAsyncEntityCreate<{}>({

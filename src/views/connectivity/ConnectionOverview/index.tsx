@@ -32,7 +32,7 @@ import {
 import { formatSortQueryParameter } from 'utils/core/string/format';
 import { setConnectionsListFilter } from 'state/ui/actions';
 import TransformDocumentationDialog from 'views/design/common/TransformDocumentationDialog';
-import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
+import { AddRounded, Delete, Edit, FileCopy, Visibility } from '@material-ui/icons';
 import { ROUTE_KEYS } from 'views/routes';
 import ContentWithSlideoutPanel from 'views/common/layout/ContentWithSlideoutPanel';
 import { getUniqueIdFromConnection } from 'utils/connections/connectionUtils';
@@ -47,6 +47,7 @@ import { checkAuthority } from 'state/auth/selectors';
 import { SECURITY_PRIVILEGES } from 'models/state/auth.models';
 import RouteLink from 'views/common/navigation/RouteLink';
 import TextFileInputDialog from 'views/common/layout/TextFileInputDialog';
+import DuplicateConnectionDialog from 'views/connectivity/ConnectionOverview/DuplicateConnectionDialog';
 
 const styles = (({ palette, typography }: Theme) => ({
     header: {
@@ -102,6 +103,7 @@ interface IComponentState {
     connectionIdToDelete: string;
     loadDocDialogOpen: boolean;
     importConnectionDialogOpen: boolean;
+    connectionIdToDuplicate: string;
 }
 type TProps = WithStyles<typeof styles>;
 
@@ -114,6 +116,7 @@ const ConnectionOverview = withStyles(styles)(
                 connectionIdToDelete: null,
                 loadDocDialogOpen: false,
                 importConnectionDialogOpen: false,
+                connectionIdToDuplicate: null,
             };
 
             this.onSort = this.onSort.bind(this);
@@ -123,6 +126,7 @@ const ConnectionOverview = withStyles(styles)(
             this.onFilter = this.onFilter.bind(this);
 
             this.setConnectionToDelete = this.setConnectionToDelete.bind(this);
+            this.setConnectionToDuplicate = this.setConnectionToDuplicate.bind(this);
             this.onDeleteConnection = this.onDeleteConnection.bind(this);
             // eslint-disable-next-line max-len
             this.closeDeleteConnectionDialogAfterSuccessfulDelete = this.closeDeleteConnectionDialogAfterSuccessfulDelete.bind(this);
@@ -130,6 +134,7 @@ const ConnectionOverview = withStyles(styles)(
 
             this.onLoadDocDialogOpen = this.onLoadDocDialogOpen.bind(this);
             this.onLoadDocDialogClose = this.onLoadDocDialogClose.bind(this);
+            this.onCloseDuplicateDialog = this.onCloseDuplicateDialog.bind(this);
             this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
         }
 
@@ -159,9 +164,11 @@ const ConnectionOverview = withStyles(styles)(
 
         public render() {
             const { classes, state } = this.props;
-            const { loadDocDialogOpen,
-                    connectionIdToDelete,
-                    importConnectionDialogOpen,
+            const {
+                loadDocDialogOpen,
+                connectionIdToDelete,
+                connectionIdToDuplicate,
+                importConnectionDialogOpen,
             } = this.state;
             const pageData = getAsyncConnectionsPageData(state);
             const filterFromState = getConnectionsListFilter(state);
@@ -254,6 +261,11 @@ const ConnectionOverview = withStyles(styles)(
                         onClose={this.clearConnectionToDelete}
                         onConfirm={this.onDeleteConnection}
                         showLoader={deleteStatus === AsyncStatus.Busy}
+                    />
+                    <DuplicateConnectionDialog
+                        connectionUniqueId={connectionIdToDuplicate}
+                        open={!!connectionIdToDuplicate}
+                        onClose={this.onCloseDuplicateDialog}
                     />
                 </Box>
             );
@@ -376,6 +388,15 @@ const ConnectionOverview = withStyles(styles)(
                                             hideAction: () => (
                                                 !checkAuthority(state, SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE)
                                             ),
+                                        }, {
+                                            icon: <FileCopy />,
+                                            label: translator('connections.overview.list.actions.duplicate'),
+                                            onClick: this.setConnectionToDuplicate,
+                                            hideAction: () =>
+                                                !checkAuthority(
+                                                    state,
+                                                    SECURITY_PRIVILEGES.S_CONNECTIONS_WRITE,
+                                                ),
                                         },
                                     )}
                                     columns={columns}
@@ -500,12 +521,20 @@ const ConnectionOverview = withStyles(styles)(
             this.setState({ connectionIdToDelete: null });
         }
 
+        private setConnectionToDuplicate(id: ReactText) {
+            this.setState({ connectionIdToDuplicate: id as string });
+        }
+
         private onLoadDocDialogOpen() {
             this.setState((state) => ({ ...state, loadDocDialogOpen: true }));
         }
 
         private onLoadDocDialogClose() {
             this.setState((state) => ({ ...state, loadDocDialogOpen: false }));
+        }
+
+        private onCloseDuplicateDialog() {
+            this.setState({ connectionIdToDuplicate: null });
         }
     },
 );
