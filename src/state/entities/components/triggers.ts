@@ -8,6 +8,7 @@ import {
     IFetchComponentsListPayload,
 } from 'models/state/components.model';
 import { StateChangeNotification } from 'models/state.models';
+import { AsyncOperation } from 'snipsonian/observable-state/src/actionableStore/entities/types';
 
 export const triggerFetchComponents = (payload: IFetchComponentsListPayload) =>
     entitiesStateManager.triggerAsyncEntityFetch<{}>({
@@ -207,4 +208,22 @@ export const triggerCreateComponent = (payload: IComponent | IComponent[], bulk?
                 }));
             }
         },
+    });
+
+export const triggerResetAsyncComponentDetail = ({
+    resetDataOnTrigger,
+    operation,
+}: {
+    resetDataOnTrigger?: boolean;
+    operation: AsyncOperation;
+}) =>
+    entitiesStateManager.triggerAsyncEntityReset({
+        itself: triggerResetAsyncComponentDetail,
+        asyncEntityToReset: {
+            asyncEntityKey: ASYNC_ENTITY_KEYS.componentDetail,
+            resetDataOnTrigger,
+        },
+        extraInputSelector: () => ({}),
+        notificationsToTrigger: [StateChangeNotification.DESIGN_COMPONENT_DETAIL],
+        operation,
     });

@@ -2,7 +2,7 @@ import React, { ReactText } from 'react';
 import { IObserveProps, observe } from 'views/observe';
 import GenericFilter from 'views/common/list/GenericFilter';
 import { Box, Button, createStyles, Theme, Typography, withStyles, WithStyles } from '@material-ui/core';
-import { AddRounded, Delete, Edit, Visibility } from '@material-ui/icons';
+import { AddRounded, Delete, Edit, FileCopy, Visibility } from '@material-ui/icons';
 import Translate from '@snipsonian/react/es/components/i18n/Translate';
 import AppTemplateContainer from 'views/appShell/AppTemplateContainer';
 import { getComponentsListFilter } from 'state/ui/selectors';
@@ -45,6 +45,7 @@ import { getIntialFiltersFromFilterConfig } from 'utils/list/filters';
 import ConfirmationDialog from 'views/common/layout/ConfirmationDialog';
 import TextFileInputDialog from 'views/common/layout/TextFileInputDialog';
 import RouteLink from 'views/common/navigation/RouteLink';
+import DuplicateComponentDialog from 'views/design/ComponentsOverview/DuplicateComponentDialog';
 import TransformDocumentationDialog from '../common/TransformDocumentationDialog';
 
 const styles = ({ palette, typography }: Theme) =>
@@ -90,6 +91,7 @@ interface IComponentState {
     componentIdToDelete: string;
     loadDocDialogOpen: boolean;
     importComponentDialogOpen: boolean;
+    componentIdToDuplicate: string;
 }
 type TProps = WithStyles<typeof styles>;
 
@@ -108,12 +110,14 @@ const ComponentsOverview = withStyles(styles)(
                 componentIdToDelete: null,
                 loadDocDialogOpen: false,
                 importComponentDialogOpen: false,
+                componentIdToDuplicate: null,
             };
 
             this.renderPanel = this.renderPanel.bind(this);
             this.renderContent = this.renderContent.bind(this);
             this.setComponentToDelete = this.setComponentToDelete.bind(this);
             this.clearComponentToDelete = this.clearComponentToDelete.bind(this);
+            this.setComponentToDuplicate = this.setComponentToDuplicate.bind(this);
             this.onDeleteComponent = this.onDeleteComponent.bind(this);
             // eslint-disable-next-line max-len
             this.closeDeleteComponentDialogAfterSuccessfulDelete = this.closeDeleteComponentDialogAfterSuccessfulDelete.bind(this);
@@ -123,6 +127,7 @@ const ComponentsOverview = withStyles(styles)(
             this.combineFiltersFromUrlAndCurrentFilters = this.combineFiltersFromUrlAndCurrentFilters.bind(this);
             this.onLoadDocDialogOpen = this.onLoadDocDialogOpen.bind(this);
             this.onLoadDocDialogClose = this.onLoadDocDialogClose.bind(this);
+            this.onCloseDuplicateDialog = this.onCloseDuplicateDialog.bind(this);
         }
 
         public componentDidMount() {
@@ -151,7 +156,11 @@ const ComponentsOverview = withStyles(styles)(
 
         public render() {
             const { classes, state } = this.props;
-            const { componentIdToDelete, importComponentDialogOpen } = this.state;
+            const {
+                componentIdToDelete,
+                componentIdToDuplicate,
+                importComponentDialogOpen,
+            } = this.state;
             const filterFromState = getComponentsListFilter(state);
             const components = getAsyncComponents(this.props.state);
             const pageData = getAsyncComponentsPageData(this.props.state);
@@ -245,6 +254,11 @@ const ComponentsOverview = withStyles(styles)(
                             onClose={this.clearComponentToDelete}
                             onConfirm={this.onDeleteComponent}
                             showLoader={deleteStatus === AsyncStatus.Busy}
+                        />
+                        <DuplicateComponentDialog
+                            componentUniqueId={componentIdToDuplicate}
+                            open={!!componentIdToDuplicate}
+                            onClose={this.onCloseDuplicateDialog}
                         />
                     </Box>
                 </>
@@ -375,6 +389,14 @@ const ComponentsOverview = withStyles(styles)(
                                                     SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
                                                 )
                                             ),
+                                        }, {
+                                            icon: <FileCopy />,
+                                            label: translator('components.overview.list.actions.duplicate'),
+                                            onClick: this.setComponentToDuplicate,
+                                            hideAction: () => !checkAuthority(
+                                                state,
+                                                SECURITY_PRIVILEGES.S_COMPONENTS_WRITE,
+                                            ),
                                         },
                                     )}
                                     columns={columns}
@@ -440,12 +462,20 @@ const ComponentsOverview = withStyles(styles)(
             dispatch(setComponentsListFilter({ filters: listFilters }));
         }
 
+        private setComponentToDuplicate(id: ReactText) {
+            this.setState({ componentIdToDuplicate: id as string });
+        }
+
         private onLoadDocDialogOpen() {
             this.setState((state) => ({ ...state, loadDocDialogOpen: true }));
         }
 
         private onLoadDocDialogClose() {
             this.setState((state) => ({ ...state, loadDocDialogOpen: false }));
+        }
+
+        private onCloseDuplicateDialog() {
+            this.setState({ componentIdToDuplicate: null });
         }
 
         private combineFiltersFromUrlAndCurrentFilters() {
